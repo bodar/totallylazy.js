@@ -4,4 +4,4 @@ const fuse = FuseBox.init({
     target : 'browser@es5',
     output : "dist/$name.js"
 });
-fuse.bundle("es5-bundle").instructions(" > index.ts");
+fuse.bundle("es5-bundle").instructions(" > api.ts");
