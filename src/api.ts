@@ -8,9 +8,14 @@ export interface Message {
 }
 
 export interface Request extends Message {
-    readonly method: string
+    readonly method: 'GET' | 'POST' | string
     readonly url: string,
     readonly version?: string,
+}
+
+export interface Uri {
+    readonly scheme:string,
+    readonly authority:string,
 }
 
 export interface Response extends Message {
