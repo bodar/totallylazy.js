@@ -1,0 +1,178 @@
+import {UnhandledError, Debug} from "./errors";
+import {coerce} from "./strings";
+
+export interface Request {
+    method: string
+    url: string
+    headers?: Object
+    entity?: Object
+}
+
+export interface Response {
+    status: number
+    headers: Object
+    entity: Entity
+}
+
+export class Entity {
+    constructor(private content: string) {
+    }
+
+    xml() {
+        return new DOMParser().parseFromString(this.content, "application/xml");
+    }
+
+    text() {
+        return this.content;
+    }
+
+    json() {
+        return JSON.parse(this.content);
+    }
+
+    html() {
+        return new DOMParser().parseFromString(this.content, "text/html");
+    }
+}
+
+export const fireAndForget = (ignore: Response) => {
+};
+
+var previousRequest = {};
+
+export function http(request: Request, responseHandler: (response: Response) => void = fireAndForget): () => void {
+    if (JSON.stringify(request) == JSON.stringify(previousRequest)) {
+        Debug.log("duplicate request", request, previousRequest);
+        return () => {};
+    }
+    previousRequest = request;
+    let handler = new XMLHttpRequest();
+    handler.open(request.method, request.url, true);
+    handler.withCredentials = true;
+    let headers = request.headers || {};
+    Object.keys(headers).forEach(name => {
+        handler.setRequestHeader(name, headers[name]);
+    });
+    handler.addEventListener("readystatechange", UnhandledError.capture(() => {
+        if (handler.readyState == 4) {
+            let headers = handler.getAllResponseHeaders().split("\n").reduce((a, header) => {
+                let pair = header.split(": ");
+                a[pair[0]] = pair[1];
+                return a;
+            }, {});
+            responseHandler({status: handler.status, headers: headers, entity: new Entity(handler.responseText)});
+        }
+    }));
+    handler.send(request.entity);
+    return () => {
+        handler.abort();
+    }
+}
+
+export interface Uri {
+    scheme: string
+    host: string
+    authority: string
+    path: string
+    query: string
+    fragment: string
+    toString: Function
+}
+
+export function uri(value: string): Uri {
+    let a = document.createElement('a');
+    a.href = value;
+    return {
+        scheme: a.protocol ? a.protocol.replace(/(:$)/, '') : '',
+        host: a.hostname,
+        authority: a.host,
+        path: a.pathname.indexOf("/") === 0 ? a.pathname : "/" + a.pathname,
+        query: a.search ? a.search.replace(/(^\?)/, '') : '',
+        fragment: a.hash ? a.hash.replace(/(^#)/, '') : '',
+        toString: function () {
+            let builder: string[] = [];
+            if (this.scheme != "") {
+                builder.push(this.scheme);
+                builder.push(":");
+            }
+            if (this.authority != "") {
+                builder.push("//");
+                builder.push(this.authority);
+            }
+            builder.push(this.path);
+            if (this.query != "") {
+                builder.push("?");
+                builder.push(this.query);
+            }
+            if (this.fragment != "") {
+                builder.push("#");
+                builder.push(this.fragment);
+            }
+            return builder.join("");
+        }
+    }
+}
+
+export function queryObject(href: string = document.location.href) {
+    let query = uri(href).query;
+    if (query == "") return {};
+    return query.split("&").map(function (pair) {
+        return pair.split("=");
+    }).reduce(function (a, v) {
+        let name = v[0];
+        let newValue = coerce(v[1]);
+        let oldValue = a[name];
+        if (typeof(oldValue) == 'undefined') {
+            a[name] = newValue;
+        } else if (typeof(oldValue) == 'object') {
+            oldValue.push(newValue);
+        } else {
+            a[name] = [oldValue, newValue];
+        }
+        return a;
+    }, {});
+}
+
+export function toQueryString(obj: Object) {
+    let result: String[] = [];
+    Object.keys(obj).forEach(key => {
+        var values = obj[key];
+        if (values == null) {
+            result.push(encodeURIComponent(key));
+        }
+        else if (typeof(values) == 'object') {
+            values.forEach((value: any) => {
+                result.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+            })
+        } else {
+            result.push(encodeURIComponent(key) + '=' + encodeURIComponent(values));
+        }
+    });
+    return result.join('&');
+}
+
+export class BaseUrl {
+    static baseUrl(name: string): string {
+        let extractor = {
+            regex: new RegExp("(https?:\/\/[^\/]+\/[^\/]+\/).*" + name),
+            process: (value: String) => {
+                return value.match(extractor.regex)[1];
+            }
+        };
+        try {
+            throw new Error();
+        } catch (e) {
+            try {
+                return extractor.process(e.stack);
+            } catch (e) {
+                return extractor.process((document.querySelector('script[src$="' + name + '"]') as HTMLScriptElement).src);
+            }
+        }
+    }
+
+    static origin(url: string) {
+        let a = document.createElement('a');
+        a.href = url;
+        return `${a.protocol}//${a.host}`;
+    }
+}

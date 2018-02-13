@@ -2,23 +2,25 @@ export interface HttpHandler {
     handle(request: Request): Promise<Response>;
 }
 
-export interface Request {
+export interface Message {
+    readonly headers?: Headers,
+    readonly body?: Body
+}
+
+export interface Request extends Message {
     readonly method: string
     readonly url: URL,
     readonly version?: string,
-    readonly headers?: Headers,
 }
 
-export interface Response {
-    readonly status: Status,
-    readonly headers?: Headers,
-}
-
-export interface Status {
-    readonly code: number,
-    readonly description: string
+export interface Response extends Message {
+    readonly status: number,
 }
 
 export interface Headers {
     readonly [name: string]: string | string[];
+}
+
+export interface Body {
+
 }
