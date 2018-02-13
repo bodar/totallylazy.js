@@ -9,7 +9,7 @@ export interface Message {
 
 export interface Request extends Message {
     readonly method: string
-    readonly url: URL,
+    readonly url: string,
     readonly version?: string,
 }
 
@@ -22,5 +22,5 @@ export interface Headers {
 }
 
 export interface Body {
-
+    readonly value: string;
 }
