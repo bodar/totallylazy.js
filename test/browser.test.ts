@@ -1,16 +1,45 @@
-import {suite, test} from "mocha-typescript";
 import {assert} from 'chai';
+import {Request, Headers} from "../src/api";
 
-@suite
-class HelloWorld {
-    @test "Does this work"() {
-        assert(match({method: 'GET', url: '/some/path'}, {method: 'GET', url: /path$/}))
-        assert(!match({method: 'GET', url: 1}, {method: 'GET', url: /path$/}))
-        assert(!match({method: 'GET', url: "/some"}, {method: 'GET', url: /path$/}))
-    }
+describe('Select', function () {
+    it('Foo', function () {
+        let request: Request = {method: 'GET', url: '/some/path'};
+        let expected = "MATCHED";
+        let actual = match(request,
+            pattern({method: 'GET', url: "/some/(path)"}, (arg: { headers: Headers }) => {
+            return expected;
+        }));
+        assert( actual == expected );
+    });
+});
+
+
+interface Pattern<T, R> {
+    matches(instance: T): R | undefined
 }
 
-function match(instance: any, filter: { [name: string]: any | RegExp; }): boolean {
+class SimplePattern<T,R> implements Pattern<T,R>{
+    matches(instance: T): R | undefined {
+        return undefined;
+    }
+
+}
+
+function pattern<T, R>(filter: Partial<T>, handler: (instance:Partial<T>) => R): Pattern<T,R> {
+    throw new Error("Unsupported")
+}
+
+function match<T, R>(instance: T, patterns: Pattern<T, R>[]): R {
+    for (let i = 0; i < patterns.length; i++) {
+        const pattern = patterns[i];
+        const result = pattern.matches(instance);
+        if (typeof result != 'undefined') return result;
+    }
+    throw new Error("Non exhaustive matches detected");
+}
+
+
+function old(instance: any, filter: { [name: string]: any | RegExp; }): boolean {
     if (!filter) {
         return true;
     }

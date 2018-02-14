@@ -20,12 +20,12 @@ export class BrowserHttpHandler implements HttpHandler {
         return new Promise<Response>((resolve, reject) => {
             handler.addEventListener("readystatechange", () => {
                 if (handler.readyState == 4) {
-                    let headers: Headers = handler.getAllResponseHeaders().split("\n").reduce((mutable: {[name: string]: string | string[]}, header) => {
+                    let headers: Headers = handler.getAllResponseHeaders().split("\n").reduce((mutable: { [name: string]: string | string[] }, header) => {
                         let [name, value] = header.split(": ");
                         let currentValue = mutable[name];
-                        if(Array.isArray(currentValue)) currentValue.push(value);
-                        if(typeof currentValue == 'string') mutable[name] = [currentValue, value];
-                        if(currentValue == null) mutable[name] = value;
+                        if (Array.isArray(currentValue)) currentValue.push(value);
+                        if (typeof currentValue == 'string') mutable[name] = [currentValue, value];
+                        if (currentValue == null) mutable[name] = value;
                         return mutable;
                     }, {});
                     resolve({status: handler.status, headers: headers, body: {value: handler.responseText}});
