@@ -1,30 +1,8 @@
-import {assert} from 'chai';
-import {Request} from "../src/api";
-
-describe('Pattern matching', function () {
-    it('Can verify a subset of an object', function () {
-        assert(subset({method: 'GET', url: '/some/path'}, {method: 'GET', url: '/some/path'}));
-    });
-
-    it('Lets get the types right first', function () {
-        let request: Request = {method: 'GET', url: '/some/path'};
-
-        let result = match(request,
-            pattern<Request, string>({method: 'GET', url: '/some/path'}, ({headers}) => {
-                return 'MATCHED';
-            })
-        );
-
-        assert(result, 'MATCHED');
-    });
-});
-
-
-interface Pattern<T, R> {
+export interface Pattern<T, R> {
     matches(instance: T): R | undefined
 }
 
-class SimplePattern<T, R> implements Pattern<T, R> {
+export class SimplePattern<T, R> implements Pattern<T, R> {
     constructor(private filter: Partial<T>, private handler: (instance: Partial<T>) => R) {}
 
     matches(instance: T): R | undefined {
@@ -36,11 +14,11 @@ class SimplePattern<T, R> implements Pattern<T, R> {
 
 }
 
-function pattern<T, R>(filter: Partial<T>, handler: (instance: Partial<T>) => R): Pattern<T, R> {
+export function pattern<T, R>(filter: Partial<T>, handler: (instance: Partial<T>) => R): Pattern<T, R> {
     return new SimplePattern(filter, handler)
 }
 
-function match<T, R>(instance: T, ...patterns: Pattern<T, R>[]): R {
+export function match<T, R>(instance: T, ...patterns: Pattern<T, R>[]): R {
     for (let i = 0; i < patterns.length; i++) {
         const pattern = patterns[i];
         const result = pattern.matches(instance);
@@ -50,7 +28,7 @@ function match<T, R>(instance: T, ...patterns: Pattern<T, R>[]): R {
 }
 
 
-function subset(instance: any, filter: { [name: string]: any | RegExp; }): boolean {
+export function subset(instance: any, filter: { [name: string]: any | RegExp; }): boolean {
     if (!filter) {
         return true;
     }
