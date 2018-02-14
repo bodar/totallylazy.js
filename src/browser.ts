@@ -1,9 +1,9 @@
-import {HttpHandler, Request, Response, Headers} from "./api";
+import {Handler, Request, Response, Headers} from "./api";
 
-export class BrowserHttpHandler implements HttpHandler {
+export class BrowserHttpHandler implements Handler {
     handle(request: Request): Promise<Response> {
         let handler = new XMLHttpRequest();
-        handler.open(request.method, request.url, true);
+        handler.open(request.method, request.uri, true);
         handler.withCredentials = true;
         let headers: Headers = request.headers || {};
         Object.keys(headers).forEach(name => {
