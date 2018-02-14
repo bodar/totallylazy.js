@@ -1,15 +1,21 @@
 import {assert} from 'chai';
-import {Request, Headers} from "../src/api";
+import {Request} from "../src/api";
 
-describe('Select', function () {
-    it('Foo', function () {
+describe('Pattern matching', function () {
+    it('Can verify a subset of an object', function () {
+        assert(subset({method: 'GET', url: '/some/path'}, {method: 'GET', url: '/some/path'}));
+    });
+
+    it('Lets get the types right first', function () {
         let request: Request = {method: 'GET', url: '/some/path'};
-        let expected = "MATCHED";
-        let actual = match(request,
-            pattern({method: 'GET', url: "/some/(path)"}, (arg: { headers: Headers }) => {
-            return expected;
-        }));
-        assert( actual == expected );
+
+        let result = match(request,
+            pattern<Request, string>({method: 'GET', url: '/some/path'}, ({headers}) => {
+                return 'MATCHED';
+            })
+        );
+
+        assert(result, 'MATCHED');
     });
 });
 
@@ -18,18 +24,23 @@ interface Pattern<T, R> {
     matches(instance: T): R | undefined
 }
 
-class SimplePattern<T,R> implements Pattern<T,R>{
+class SimplePattern<T, R> implements Pattern<T, R> {
+    constructor(private filter: Partial<T>, private handler: (instance: Partial<T>) => R) {}
+
     matches(instance: T): R | undefined {
+        if(subset(instance, this.filter)) {
+            return this.handler(instance);
+        }
         return undefined;
     }
 
 }
 
-function pattern<T, R>(filter: Partial<T>, handler: (instance:Partial<T>) => R): Pattern<T,R> {
-    throw new Error("Unsupported")
+function pattern<T, R>(filter: Partial<T>, handler: (instance: Partial<T>) => R): Pattern<T, R> {
+    return new SimplePattern(filter, handler)
 }
 
-function match<T, R>(instance: T, patterns: Pattern<T, R>[]): R {
+function match<T, R>(instance: T, ...patterns: Pattern<T, R>[]): R {
     for (let i = 0; i < patterns.length; i++) {
         const pattern = patterns[i];
         const result = pattern.matches(instance);
@@ -39,7 +50,7 @@ function match<T, R>(instance: T, patterns: Pattern<T, R>[]): R {
 }
 
 
-function old(instance: any, filter: { [name: string]: any | RegExp; }): boolean {
+function subset(instance: any, filter: { [name: string]: any | RegExp; }): boolean {
     if (!filter) {
         return true;
     }
