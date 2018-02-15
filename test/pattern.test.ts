@@ -3,7 +3,7 @@ import {get, post, Request} from "../src/api";
 import {match, case_, isPartial} from "../src/pattern";
 
 describe('pattern matching', function () {
-    it('can verify a partial of an object at runtime', function () {
+    it('can verify a partial objects values match', function () {
         assert(isPartial(get('/some/path'), {method: 'GET'}));
         assert(isPartial(get('/some/path'), {uri: '/some/path'}));
         assert(!isPartial(get('/some/path'), {method: 'POST'}));

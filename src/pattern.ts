@@ -28,19 +28,17 @@ export function match<T, R>(instance: T, ...patterns: Matcher<T, R>[]): R {
 }
 
 
-export function isPartial(instance: any, partial: { [name: string]: any | RegExp; }): boolean {
+export function isPartial<T>(instance: T, partial: Partial<T>): boolean {
     if (!partial) {
         return true;
     }
 
-    return Object.keys(partial).every(function (key) {
-        var expected = partial[key];
-        let actual = instance[key];
+    return Object.keys(partial).every(function (k) {
+        let key = k as keyof T;
+        let actual: any = instance[key];
+        let expected: any = partial[key];
 
-        if (expected instanceof RegExp && typeof actual == 'string') {
-            return expected.test(actual);
-        }
-        if (expected instanceof Object && actual instanceof Object) {
+        if (actual instanceof Object && expected instanceof Object) {
             return isPartial(actual, expected);
         }
         return partial[key] === actual;
