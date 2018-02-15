@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {get, post, Request} from "../src/api";
-import {match, case_, isPartial, Pattern, regex, apply} from "../src/pattern";
+import {match, case_, isPartial, Pattern, regex, apply, PatternResult} from "../src/pattern";
 
 describe('pattern matching', function () {
     it('can verify a partial objects values match', function () {
@@ -29,6 +29,12 @@ describe('pattern matching', function () {
         const pattern: Pattern<Request> = {uri: regex(/foo/)}
     });
 
+    it('pattern result instance values can be destructured results of the value', function () {
+        const a: PatternResult<Request> = {uri: ['foo','bar']};
+        const b: PatternResult<Request> = {uri: {path: ''}};
+        const c: PatternResult<Request> = {uri: '/foo/bar'};
+    });
+
     it('regex returns capture groups', function () {
         let groups = regex(/Hello (World)/).matches('Hello World');
         if (groups == undefined) throw new Error();
@@ -46,7 +52,7 @@ describe('pattern matching', function () {
 
     it('can match against a pattern instance', function () {
         assert(match(get('Hello World'),
-            case_({uri: regex(/Hello (World)/)} as Pattern<Request>, ({uri:[, w]}) => w)) == "World");
+            case_({uri: regex(/Hello (World)/)} as Pattern<Request>, ({uri:[,w]}) => w)) == "World");
     });
 
 });
