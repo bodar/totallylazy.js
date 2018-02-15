@@ -1,21 +1,23 @@
 import {assert} from 'chai';
-import {get} from "../src/api";
-import {match, case_, subset} from "../src/pattern";
+import {get, post, Request} from "../src/api";
+import {match, case_, isPartial} from "../src/pattern";
 
-describe('Pattern matching', function () {
-    it('Can verify a subset of an object', function () {
-        assert(subset(get('/some/path'), {method: 'GET'}));
+describe('pattern matching', function () {
+    it('can verify a partial of an object at runtime', function () {
+        assert(isPartial(get('/some/path'), {method: 'GET'}));
     });
 
-    it('can match', function () {
-        const expected = "plain/text";
-        const request = get('/some/path', {'Content-Type': expected});
+    it('can match against a partial instance', function () {
+        assert(match(get('/some/path'),
+            case_({uri: '/some/path'} as Partial<Request>, (request) => request.method)) === "GET");
+        assert(match(post('/some/path'),
+            case_({uri: '/some/path'} as Partial<Request>, (request) => request.method)) === "POST");
 
-        const actual = match(request,
-            case_(get('/some/path'), ({headers: {'Content-Type': type}}) => type)
-        );
+    });
 
-        assert(actual === expected);
+    it('can destructure what was matched', function () {
+        assert(match(get('/some/path'),
+            case_({uri: '/some/path'} as Partial<Request>, ({method}) => method)) === "GET");
     });
 });
 

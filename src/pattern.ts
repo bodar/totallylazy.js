@@ -2,12 +2,12 @@ export interface Matcher<T, R> {
     matches(instance: T): R | undefined
 }
 
-export class SubsetMatcher<T, R> implements Matcher<T, R> {
+export class CaseMatcher<T, R> implements Matcher<T, R> {
     constructor(private filter: Partial<T>, private handler: (instance: T) => R) {
     }
 
     matches(instance: T): R | undefined {
-        if (subset(instance, this.filter)) {
+        if (isPartial(instance, this.filter)) {
             return this.handler(instance);
         }
         return undefined;
@@ -15,7 +15,7 @@ export class SubsetMatcher<T, R> implements Matcher<T, R> {
 }
 
 export function case_<T, R>(partial: Partial<T>, handler: (instance: T) => R): Matcher<T, R> {
-    return new SubsetMatcher(partial, handler)
+    return new CaseMatcher(partial, handler)
 }
 
 export function match<T, R>(instance: T, ...patterns: Matcher<T, R>[]): R {
@@ -28,21 +28,21 @@ export function match<T, R>(instance: T, ...patterns: Matcher<T, R>[]): R {
 }
 
 
-export function subset(instance: any, filter: { [name: string]: any | RegExp; }): boolean {
-    if (!filter) {
+export function isPartial(instance: any, partial: { [name: string]: any | RegExp; }): boolean {
+    if (!partial) {
         return true;
     }
 
-    return Object.keys(filter).every(function (key) {
-        var expected = filter[key];
+    return Object.keys(partial).every(function (key) {
+        var expected = partial[key];
         let actual = instance[key];
 
         if (expected instanceof RegExp && typeof actual == 'string') {
             return expected.test(actual);
         }
         if (expected instanceof Object && actual instanceof Object) {
-            return subset(actual, expected);
+            return isPartial(actual, expected);
         }
-        return filter[key] === actual;
+        return partial[key] === actual;
     });
 }
