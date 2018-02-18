@@ -26,8 +26,8 @@ export class CaseMatcher<T, R> implements Matcher<T, R> {
     }
 }
 
-export type Pattern<T> = { [P in keyof T]?: T[P] | Matcher<T[P], {} | any[]>; }
-export type PatternResult<T> = { [P in keyof T]?: T[P] | any[] | { [key:string]:any }; }
+export type Pattern<T> = { [P in keyof T]?: T[P] | Matcher<T[P], any[] | { [key: string]: any }>; }
+export type PatternResult<T> = { [P in keyof T]?: T[P] | any[] | { [key: string]: any }; }
 
 export function regex(value: RegExp): RegexMatcher {
     return new RegexMatcher(value)
@@ -61,7 +61,7 @@ export function apply<T>(instance: T, pattern: Pattern<T>): PatternResult<T> | u
     const keys = Object.keys(pattern);
     for (let i = 0; i < keys.length; i++) {
         let key = keys[i] as keyof T;
-        let actual: any = instance[key];
+        let actual = instance[key];
         let expected: any = pattern[key];
 
         if (typeof actual == 'string' && expected instanceof Object && 'matches' in expected) {

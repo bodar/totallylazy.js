@@ -1,6 +1,6 @@
 import {assert} from 'chai';
-import {get, post, Request} from "../src/api";
-import {match, case_, isPartial, Pattern, regex, apply, PatternResult} from "../src/pattern";
+import {get, post, Request} from "./api";
+import {match, case_, isPartial, Pattern, regex, apply, PatternResult} from "./pattern";
 
 describe('pattern matching', function () {
     it('can verify a partial objects values match', function () {
@@ -21,15 +21,15 @@ describe('pattern matching', function () {
             case_({uri: '/some/path'} as Partial<Request>, ({method}) => method)) == "GET");
     });
 
-    it('pattern instance must match keys and values', function () {
+    it('type check: pattern instance must match keys and values', function () {
         const pattern: Pattern<Request> = {uri: '/some/path'}
     });
 
-    it('pattern instance values can be RegExp', function () {
+    it('type check: pattern instance values can be RegExp', function () {
         const pattern: Pattern<Request> = {uri: regex(/foo/)}
     });
 
-    it('pattern result instance values can be destructured results of the value', function () {
+    it('type check: pattern result instance values can be destructured results of the value', function () {
         const a: PatternResult<Request> = {uri: ['foo','bar']};
         const b: PatternResult<Request> = {uri: {path: ''}};
         const c: PatternResult<Request> = {uri: '/foo/bar'};

@@ -1,14 +1,27 @@
-import {FuseBox} from "fuse-box";
+import {FuseBox, WebIndexPlugin} from 'fuse-box';
 import {src, task, context} from 'fuse-box/sparky';
 
-context(() => FuseBox.init({
-    homeDir: "src",
-    target: 'server@esnext',
-    output: "dist/$name.js"
-}));
-
-task('default', ['clean']);
+task('default', ['clean', 'build']);
 
 task('clean', async () => {
     await src('./dist').clean('dist/').exec();
 });
+
+task('build', async () => {
+    let fuse = FuseBox.init({
+        homeDir: 'src',
+        target: 'browser@es5',
+        output : "dist/$name.js",
+        sourceMaps: true,
+        plugins: [
+            WebIndexPlugin({
+                path: '.',
+                template: 'src/mocha.html',
+                target: 'mocha.html'
+            })
+        ]
+    });
+    fuse.bundle("browser.test", "> *.test.ts");
+    fuse.run();
+});
+
