@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {get, post, Request} from "./api";
+import {get, post, Request} from "./http";
 import {match, case_, isPartial, Pattern, regex, apply, PatternResult} from "./pattern";
 
 describe('pattern matching', function () {

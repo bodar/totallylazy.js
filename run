@@ -6,3 +6,4 @@ nvm use
 yarn install
 yarn test
 yarn build
+yarn test:browser
