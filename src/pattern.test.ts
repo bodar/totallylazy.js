@@ -54,8 +54,4 @@ describe('pattern matching', function () {
         assert(match(get('Hello World'),
             case_({uri: regex(/Hello (World)/)} as Pattern<Request>, ({uri:[,w]}) => w)) == "World");
     });
-
 });
-
-
-

@@ -13,8 +13,7 @@ handlers.forEach((handler) => {
                 assert(response.status == 200);
                 done();
             }, reason => {
-                assert(reason == 'Ooops');
-                done();
+                assert(false, "Should never get here");
             });
         });
     });

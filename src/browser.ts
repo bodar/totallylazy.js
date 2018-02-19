@@ -9,11 +9,11 @@ export class XmlHttpHandler implements Handler {
                 this.handler.open(request.method, request.uri, true);
                 this.handler.withCredentials = true;
                 this.setHeaders(request.headers);
-                this.handler.onload = () => {
+                this.handler.addEventListener("load", () => {
                     resolve({status: this.handler.status, headers: this.getHeaders(), body: {value: this.handler.responseText}});
-                };
-                this.handler.onerror = (e) => reject(e);
-                if (request.body) this.handler.send(request.body.value);
+                });
+                this.handler.addEventListener("error", (e) => reject(e));
+                this.handler.send(request.body ? request.body.value : undefined);
             }
         );
     }
