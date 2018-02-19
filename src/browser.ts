@@ -1,4 +1,4 @@
-import {Handler, Request, Response, Headers} from "./api";
+import {Handler, Request, Response, Headers} from "./http";
 
 export class XmlHttpHandler implements Handler {
     constructor(private readonly handler: XMLHttpRequest = new XMLHttpRequest()) {
@@ -10,7 +10,11 @@ export class XmlHttpHandler implements Handler {
                 this.handler.withCredentials = true;
                 this.setHeaders(request.headers);
                 this.handler.addEventListener("load", () => {
-                    resolve({status: this.handler.status, headers: this.getHeaders(), body: {value: this.handler.responseText}});
+                    resolve({
+                        status: this.handler.status,
+                        headers: this.getHeaders(),
+                        body: {value: this.handler.responseText}
+                    });
                 });
                 this.handler.addEventListener("error", (e) => reject(e));
                 this.handler.send(request.body ? request.body.value : undefined);
