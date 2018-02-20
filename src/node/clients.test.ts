@@ -3,13 +3,14 @@ import {handlerContract} from "../handler.contract";
 
 describe("NodeClientHandler", function () {
     function runningInNode() {
+        console.log("runningInNode", typeof process, process.versions);
         return (typeof process !== 'undefined') && (typeof process.versions.node !== 'undefined')
     }
 
     handlerContract(async () => {
-        if (!runningInNode()) Promise.reject("");
+        if (!runningInNode()) throw new Error("Unsupported");
 
-        const {NodeClientHandler} = await import('./server');
+        const {NodeClientHandler} = await import('./clients');
         return new NodeClientHandler();
     });
 });

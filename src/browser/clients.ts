@@ -13,11 +13,11 @@ export class XmlHttpHandler implements Handler {
                     resolve({
                         status: this.handler.status,
                         headers: this.getHeaders(),
-                        body: {value: this.handler.responseText}
+                        body: this.handler.responseText
                     });
                 });
                 this.handler.addEventListener("error", (e) => reject(e));
-                this.handler.send(request.body ? request.body.value : undefined);
+                this.handler.send(request.body);
             }
         );
     }

@@ -8,7 +8,7 @@ export interface Filter {
 
 export interface Message {
     readonly headers: Headers,
-    readonly body?: Body
+    readonly body?: string
 }
 
 export interface Request extends Message {
@@ -30,7 +30,7 @@ export type Method =
     | 'UPGRADE'
     | string;
 
-export function request(method: Method, uri: string, headers?: Headers, body?: Body): Request {
+export function request(method: Method, uri: string, headers?: Headers, body?: string): Request {
     return {method, uri, headers: headers || {}, body}
 }
 
@@ -38,7 +38,7 @@ export function get(uri: string, headers?: Headers): Request {
     return request("GET", uri, headers);
 }
 
-export function post(uri: string, headers?: Headers, body?: Body): Request {
+export function post(uri: string, headers?: Headers, body?: string): Request {
     return request("POST", uri, headers, body);
 }
 
@@ -83,7 +83,3 @@ export type Header =
     | 'X-CorrelationID'
     | 'Transfer-Encoding'
     | 'Access-Control-Allow-Origin';
-
-export interface Body {
-    readonly value: string;
-}

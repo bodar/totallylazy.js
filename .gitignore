@@ -4,3 +4,4 @@ node_modules
 .fusebox
 dist
 *.js
+*.js.map
