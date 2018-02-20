@@ -64,7 +64,7 @@ export function apply<T>(instance: T, pattern: Pattern<T>): PatternResult<T> | u
         let actual = instance[key];
         let expected: any = pattern[key];
 
-        if (typeof actual == 'string' && expected instanceof Object && 'matches' in expected) {
+        if (expected instanceof Object && 'matches' in expected) {
             let result = expected.matches(actual);
             if (typeof result == undefined) return undefined;
             clone[key] = result;

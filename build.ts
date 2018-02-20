@@ -21,7 +21,6 @@ task('build', async () => {
             })
         ]
     });
-    fuse.bundle("browser.test", "> *.test.ts");
+    fuse.bundle("browser.test", "> **/*.test.ts");
     fuse.run();
 });
-

@@ -4,6 +4,6 @@ set -e
 source ${NVM_DIR}/nvm.sh
 nvm use
 yarn install
-yarn test
 yarn build
+yarn test
 yarn test:browser
