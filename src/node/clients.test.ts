@@ -3,7 +3,6 @@ import {handlerContract} from "../handler.contract";
 
 describe("NodeClientHandler", function () {
     function runningInNode() {
-        console.log("runningInNode", typeof process, process.versions);
         return (typeof process !== 'undefined') && (typeof process.versions.node !== 'undefined')
     }
 

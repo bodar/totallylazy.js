@@ -1,5 +1,5 @@
 import {FuseBox, WebIndexPlugin} from 'fuse-box';
-import {src, task, context} from 'fuse-box/sparky';
+import {src, task, context, tsc} from 'fuse-box/sparky';
 
 task('default', ['clean', 'build']);
 
@@ -22,5 +22,5 @@ task('build', async () => {
         ]
     });
     fuse.bundle("tests", "> **/*.test.ts");
-    fuse.run();
+    await fuse.run();
 });

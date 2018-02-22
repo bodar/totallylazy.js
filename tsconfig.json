@@ -1,14 +1,23 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "ES6",
+    "target": "es5",
     "strict": true,
     "importHelpers": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "downlevelIteration": true,
     "sourceMap": true,
     "typeRoots": [
       "./node_modules/@types"
-    ]
-  }
+    ],
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "moduleResolution": "node"
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
