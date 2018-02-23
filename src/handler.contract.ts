@@ -20,7 +20,8 @@ export function handlerContract(factory: () => Promise<Handler>) {
         const response = await this.handler.handle(post('http://httpbin.org/post', {'Content-Length': String(body.length)}, new StringBody(body)));
         assert.equal(response.status, 200);
 
-        assert.equal(JSON.parse(response.body.text()).data, body);
+        let text = await response.body.text();
+        assert.equal(JSON.parse(text).data, body);
     });
 
     it("supports chunked encoding", async function () {
@@ -28,7 +29,7 @@ export function handlerContract(factory: () => Promise<Handler>) {
         assert.equal(response.status, 200);
 
         for await (const chunk of response.body) {
-            assert.equal(chunk.text().length, 5);
+            assert.equal(chunk.data().byteLength, 10);
         }
     });
 }

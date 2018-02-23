@@ -44,13 +44,6 @@ export function stringChunk(value:string):Chunk {
     }
 }
 
-export function arrayChunk(value:Uint8Array):Chunk {
-    return {
-        text: () => new TextDecoder("UTF-8").decode(value),
-        data: () => value,
-    }
-}
-
 export interface Request extends Message {
     readonly method: Method
     readonly uri: string,
