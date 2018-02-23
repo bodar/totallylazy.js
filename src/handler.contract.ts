@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {get, Handler, post} from "./api";
+import {Chunk, get, Handler, post, StringBody} from "./api";
 
 export function handlerContract(factory: () => Promise<Handler>) {
     before(function () {
@@ -17,11 +17,18 @@ export function handlerContract(factory: () => Promise<Handler>) {
 
     it("supports POST", async function () {
         let body = "Hello";
-        const response = await this.handler.handle(post('http://httpbin.org/post', {'Content-Length': String(body.length)}, body));
+        const response = await this.handler.handle(post('http://httpbin.org/post', {'Content-Length': String(body.length)}, new StringBody(body)));
+        assert.equal(response.status, 200);
+
+        assert.equal(JSON.parse(response.body.text()).data, body);
+    });
+
+    it("supports chunked encoding", async function () {
+        const response = await this.handler.handle(get('http://httpbin.org/stream-bytes/10?chunk_size=5'));
         assert.equal(response.status, 200);
 
         for await (const chunk of response.body) {
-            assert.equal(JSON.parse(chunk).data, body);
+            assert.equal(chunk.text().length, 5);
         }
     });
 }

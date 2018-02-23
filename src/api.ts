@@ -8,7 +8,47 @@ export interface Filter {
 
 export interface Message {
     readonly headers: Headers,
-    readonly body?: string
+    readonly body?: Body
+}
+
+if(typeof Symbol.asyncIterator == 'undefined') {
+    (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
+}
+
+export interface Body{
+    text():Promise<string>,
+    [Symbol.asyncIterator]():AsyncIterator<Chunk>
+}
+
+export interface Chunk {
+    text():string,
+    data():Uint8Array
+}
+
+export class StringBody implements Body{
+    constructor(private value:string){}
+
+    text(): Promise<string> {
+        return Promise.resolve(this.value);
+    }
+
+    async *[Symbol.asyncIterator]() {
+        yield stringChunk(this.value);
+    }
+}
+
+export function stringChunk(value:string):Chunk {
+    return {
+        text: () => value,
+        data: () => new TextEncoder().encode(value),
+    }
+}
+
+export function arrayChunk(value:Uint8Array):Chunk {
+    return {
+        text: () => new TextDecoder("UTF-8").decode(value),
+        data: () => value,
+    }
 }
 
 export interface Request extends Message {
@@ -30,7 +70,7 @@ export type Method =
     | 'UPGRADE'
     | string;
 
-export function request(method: Method, uri: string, headers?: Headers, body?: string): Request {
+export function request(method: Method, uri: string, headers?: Headers, body?: Body): Request {
     return {method, uri, headers: headers || {}, body}
 }
 
@@ -38,7 +78,7 @@ export function get(uri: string, headers?: Headers): Request {
     return request("GET", uri, headers);
 }
 
-export function post(uri: string, headers?: Headers, body?: string): Request {
+export function post(uri: string, headers?: Headers, body?: Body): Request {
     return request("POST", uri, headers, body);
 }
 

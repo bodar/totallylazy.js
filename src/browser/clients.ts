@@ -1,4 +1,4 @@
-import {Handler, Request, Response, Headers} from "../api";
+import {Handler, Request, Response, Headers, StringBody} from "../api";
 
 export class XmlHttpHandler implements Handler {
     constructor(private readonly handler: XMLHttpRequest = new XMLHttpRequest()) {
@@ -13,7 +13,7 @@ export class XmlHttpHandler implements Handler {
                     resolve({
                         status: this.handler.status,
                         headers: this.getHeaders(),
-                        body: this.handler.responseText
+                        body: new StringBody(this.handler.responseText)
                     });
                 });
                 this.handler.addEventListener("error", (e) => reject(e));
