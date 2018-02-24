@@ -25,7 +25,7 @@ export function handlerContract(factory: () => Promise<Handler>) {
     });
 
     it("supports chunked encoding", async function () {
-        const response = await this.handler.handle(get('http://httpbin.org/stream-bytes/10?chunk_size=5'));
+        const response = await this.handler.handle(get('http://httpbin.org/stream-bytes/10'));
         assert.equal(response.status, 200);
 
         for await (const chunk of response.body) {

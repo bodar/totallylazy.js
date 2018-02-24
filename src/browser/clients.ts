@@ -1,4 +1,4 @@
-import {Handler, Request, Response, Headers, StringBody} from "../api";
+import {Handler, Request, Response, Headers, Header, Body, Chunk} from "../api";
 
 export class XmlHttpHandler implements Handler {
     constructor(private readonly handler: XMLHttpRequest = new XMLHttpRequest()) {
@@ -8,16 +8,23 @@ export class XmlHttpHandler implements Handler {
         return new Promise<Response>((resolve, reject) => {
                 this.handler.open(request.method, request.uri, true);
                 this.handler.withCredentials = true;
+                this.handler.responseType = 'arraybuffer';
                 this.setHeaders(request.headers);
                 this.handler.addEventListener("load", () => {
                     resolve({
                         status: this.handler.status,
                         headers: this.getHeaders(),
-                        body: new StringBody(this.handler.responseText)
+                        body: new XMLHttpBody(this.handler)
                     });
                 });
                 this.handler.addEventListener("error", (e) => reject(e));
-                this.handler.send(request.body);
+                if(request.body) {
+                    request.body.text().then(text => {
+                        this.handler.send(text);
+                    })
+                } else {
+                    this.handler.send();
+                }
             }
         );
     }
@@ -33,9 +40,13 @@ export class XmlHttpHandler implements Handler {
         }, {});
     }
 
+    private unsafeHeaders: Header[] = ['Content-Length'];
+
     private setHeaders(headers: Headers) {
-        Object.keys(headers).forEach(name => {
-            let value = headers[name as keyof Headers];
+        Object.keys(headers).forEach(raw => {
+            let name = raw as keyof Headers;
+            if (this.unsafeHeaders.indexOf(name) != -1) return;
+            let value = headers[name];
             if (typeof value == 'undefined') return;
             if (Array.isArray(value)) {
                 for (let i = 0; i < value.length; i++) {
@@ -46,6 +57,25 @@ export class XmlHttpHandler implements Handler {
                 this.handler.setRequestHeader(name, value);
             }
         });
+    }
+}
+
+class XMLHttpBody implements Body{
+    constructor(private value:XMLHttpRequest){}
+
+    text(): Promise<string> {
+        return Promise.resolve(this.decode());
+    }
+
+    async *[Symbol.asyncIterator]() {
+        yield {
+            text: () => this.decode(),
+            data: () => this.value.response,
+        }
+    }
+
+    private decode():string {
+        return new TextDecoder('UTF-8').decode(this.value.response);
     }
 }
 
