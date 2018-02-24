@@ -11,33 +11,36 @@ export interface Message {
     readonly body?: Body
 }
 
-if(typeof Symbol.asyncIterator == 'undefined') {
+if (typeof Symbol.asyncIterator == 'undefined') {
     (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
 }
 
-export interface Body{
-    text():Promise<string>,
-    [Symbol.asyncIterator]():AsyncIterator<Chunk>
+export interface Body {
+    text(): Promise<string>,
+
+    [Symbol.asyncIterator](): AsyncIterator<Chunk>
 }
 
 export interface Chunk {
-    text():string,
-    data():Uint8Array
+    text(): string,
+
+    data(): Uint8Array
 }
 
-export class StringBody implements Body{
-    constructor(private value:string){}
+export class StringBody implements Body {
+    constructor(private value: string) {
+    }
 
     text(): Promise<string> {
         return Promise.resolve(this.value);
     }
 
-    async *[Symbol.asyncIterator]() {
+    async * [Symbol.asyncIterator]() {
         yield stringChunk(this.value);
     }
 }
 
-export function stringChunk(value:string):Chunk {
+export function stringChunk(value: string): Chunk {
     return {
         text: () => value,
         data: () => new TextEncoder().encode(value),
@@ -71,8 +74,8 @@ export function get(uri: string, headers?: Headers): Request {
     return request("GET", uri, headers);
 }
 
-export function post(uri: string, headers?: Headers, body?: Body): Request {
-    return request("POST", uri, headers, body);
+export function post(uri: string, headers?: Headers, body?: string | Body): Request {
+    return request("POST", uri, headers, typeof body == 'string' ? new StringBody(body) : body);
 }
 
 export interface Response extends Message {

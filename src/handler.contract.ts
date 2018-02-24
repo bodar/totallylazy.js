@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {Chunk, get, Handler, post, StringBody} from "./api";
+import {get, Handler, post, StringBody} from "./api";
 
 export function handlerContract(factory: () => Promise<Handler>) {
     before(function () {
@@ -17,7 +17,7 @@ export function handlerContract(factory: () => Promise<Handler>) {
 
     it("supports POST", async function () {
         let body = "Hello";
-        const response = await this.handler.handle(post('http://httpbin.org/post', {'Content-Length': String(body.length)}, new StringBody(body)));
+        const response = await this.handler.handle(post('http://httpbin.org/post', {'Content-Length': String(body.length)}, body));
         assert.equal(response.status, 200);
 
         let text = await response.body.text();

@@ -5,7 +5,7 @@ import {URL} from 'url';
 
 export class NodeClientHandler implements Handler {
     handle(request: Request): Promise<Response> {
-        return new Promise<Response>((resolve, reject) => {
+        return new Promise<Response>(resolve => {
                 const url = new URL(request.uri);
                 let nodeRequest = NodeRequest({
                     method: request.method,
@@ -55,69 +55,17 @@ class MessageBody implements Body {
     }
 
     [Symbol.asyncIterator](): AsyncIterator<Chunk> {
-        return new IncomingMessageIterator(this.message);
-    }
-}
-
-type IteratorState = [Function, Function] | IteratorResult<Chunk> | Error;
-
-class IncomingMessageIterator implements AsyncIterator<Chunk> {
-    private state: IteratorState[] = [];
-
-    constructor(private message: IncomingMessage) {
+        const iterator = new AsyncIteratorHandler<Chunk>();
         this.message.on("data", chunk => {
-            this.handle({value: typeof chunk == 'string' ? stringChunk(chunk) : bufferChunk(chunk), done: false});
+            iterator.handle({value: typeof chunk == 'string' ? stringChunk(chunk) : bufferChunk(chunk), done: false});
         });
         this.message.on("end", () => {
-            this.handle({value: null as any, done: true})
+            iterator.handle({value: null as any, done: true})
         });
         this.message.on("error", error => {
-            this.handle((error))
+            iterator.handle(error)
         });
-    }
-
-    handle(state: IteratorState) {
-        if (Array.isArray(state)) {
-            const head = this.state.pop();
-            if (typeof head == 'undefined') {
-                this.state.push(state);
-            } else {
-                const [resolve, reject] = state;
-                if (head instanceof Error) reject(head);
-                else resolve(head);
-            }
-        }
-        else {
-            const head = this.state.pop();
-            if (Array.isArray(head)) {
-                const [resolve, reject] = head;
-                if (state instanceof Error) reject(state);
-                else resolve(state);
-            } else {
-                this.state.push(state);
-            }
-        }
-    }
-
-    next(value?: any): Promise<IteratorResult<Chunk>> {
-        const self = this;
-        return new Promise<IteratorResult<Chunk>>((resolve, reject) => {
-            self.handle([resolve, reject]);
-        });
-    }
-
-    return(value?: any): Promise<IteratorResult<Chunk>> {
-        const self = this;
-        return new Promise<IteratorResult<Chunk>>((resolve, reject) => {
-            self.handle([resolve, reject]);
-        });
-    }
-
-    throw(e?: any): Promise<IteratorResult<Chunk>> {
-        const self = this;
-        return new Promise<IteratorResult<Chunk>>((resolve, reject) => {
-            self.handle([resolve, reject]);
-        });
+        return iterator;
     }
 }
 
@@ -134,3 +82,35 @@ function bufferChunk(value: Buffer): Chunk {
         data: () => value,
     }
 }
+
+type StateHandler = [Function, Function];
+type IteratorState<T> = StateHandler | IteratorResult<T> | Error;
+
+function isStateHandler<T>(state: IteratorState<T>): state is StateHandler {
+    return Array.isArray(state);
+}
+
+function consume<T>(state: IteratorResult<T> | Error, [resolve, reject]:[Function, Function]){
+    if (state instanceof Error) reject(state);
+    else resolve(state);
+}
+
+class AsyncIteratorHandler<T> implements AsyncIterator<T> {
+    private state: IteratorState<T>[] = [];
+
+    handle(newState: IteratorState<T>) {
+        const nextState = this.state.pop();
+        if(typeof nextState == 'undefined') return this.state.push(newState);
+        if(isStateHandler(newState) && !isStateHandler(nextState)) return consume(nextState, newState);
+        if(!isStateHandler(newState) && isStateHandler(nextState)) return consume(newState, nextState);
+        this.state.unshift(nextState);
+        this.state.push(newState);
+    }
+
+    next(value?: any): Promise<IteratorResult<T>> {
+        return new Promise<IteratorResult<T>>((resolve, reject) => {
+            this.handle([resolve, reject]);
+        });
+    }
+}
+

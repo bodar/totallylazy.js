@@ -12,7 +12,7 @@
   "scripts": {
     "build": "ts-node build.ts",
     "test": "mocha --require ts-node/register 'src/**/*.test.ts'",
-    "test:browser": "mocha-headless-chrome -f dist/mocha.html"
+    "test:browser": "mocha-headless-chrome -f dist/mocha.html -a remote-debugging-port=9222"
   },
   "devDependencies": {
     "@types/chai": "^4.1.2",
