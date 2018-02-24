@@ -18,7 +18,7 @@ export class XmlHttpHandler implements Handler {
                     });
                 });
                 this.handler.addEventListener("error", (e) => reject(e));
-                if(request.body) {
+                if (request.body) {
                     request.body.text().then(text => {
                         this.handler.send(text);
                     })
@@ -60,22 +60,31 @@ export class XmlHttpHandler implements Handler {
     }
 }
 
-class XMLHttpBody implements Body{
-    constructor(private value:XMLHttpRequest){}
+class XMLHttpBody implements Body {
+    constructor(private value: XMLHttpRequest) {
+    }
 
     text(): Promise<string> {
         return Promise.resolve(this.decode());
     }
 
-    async *[Symbol.asyncIterator]() {
+    async * [Symbol.asyncIterator]() {
         yield {
             text: () => this.decode(),
-            data: () => this.value.response,
+            data: () => this.encode(),
         }
     }
 
-    private decode():string {
-        return new TextDecoder('UTF-8').decode(this.value.response);
+    private decode(): string {
+        return typeof this.value.response == 'string' ?
+            this.value.response :
+            new TextDecoder('UTF-8').decode(this.value.response);
+    }
+
+    private encode(): Uint8Array {
+        return typeof this.value.response == 'string' ?
+            new TextEncoder().encode(this.value.response) :
+            this.value.response;
     }
 }
 
