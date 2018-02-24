@@ -71,20 +71,12 @@ class XMLHttpBody implements Body {
     async * [Symbol.asyncIterator]() {
         yield {
             text: () => this.decode(),
-            data: () => this.encode(),
+            data: () => this.value.response,
         }
     }
 
     private decode(): string {
-        return typeof this.value.response == 'string' ?
-            this.value.response :
-            new TextDecoder('UTF-8').decode(this.value.response);
-    }
-
-    private encode(): Uint8Array {
-        return typeof this.value.response == 'string' ?
-            new TextEncoder().encode(this.value.response) :
-            this.value.response;
+        return new TextDecoder('UTF-8').decode(this.value.response);
     }
 }
 
