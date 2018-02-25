@@ -11,12 +11,16 @@ export interface Matcher<T, R> {
     matches(instance: T): R | undefined
 }
 
-export function case_<T, R>(pattern: Pattern<T>, handler: (instance: PatternResult<T>) => R): Matcher<T, R> {
+export function case_<T, R>(pattern: Pattern<T>, handler: (instance: Matched<T>) => R): Matcher<T, R> {
     return new CaseMatcher(pattern, handler)
 }
 
+export function default_<T, R>(handler: () => R): Matcher<any, R> {
+    return case_({}, handler);
+}
+
 export class CaseMatcher<T, R> implements Matcher<T, R> {
-    constructor(private pattern: Pattern<T>, private handler: (instance: PatternResult<T>) => R) {
+    constructor(private pattern: Pattern<T>, private handler: (instance: Matched<T>) => R) {
     }
 
     matches(instance: T): R | undefined {
@@ -27,7 +31,7 @@ export class CaseMatcher<T, R> implements Matcher<T, R> {
 }
 
 export type Pattern<T> = { [P in keyof T]?: T[P] | Matcher<T[P], any[] | { [key: string]: any }>; }
-export type PatternResult<T> = { [P in keyof T]?: T[P] | any[] | { [key: string]: any }; }
+export type Matched<T> = { [P in keyof T]?: T[P] | any[] | { [key: string]: any }; }
 
 export function regex(value: RegExp): RegexMatcher {
     return new RegexMatcher(value)
@@ -56,8 +60,8 @@ export function isPartial<T>(instance: T, partial: Partial<T>): boolean {
     });
 }
 
-export function apply<T>(instance: T, pattern: Pattern<T>): PatternResult<T> | undefined {
-    let clone: PatternResult<T> = Object.assign({}, instance);
+export function apply<T>(instance: T, pattern: Pattern<T>): Matched<T> | undefined {
+    let clone: Matched<T> = Object.assign({}, instance);
     const keys = Object.keys(pattern);
     for (let i = 0; i < keys.length; i++) {
         let key = keys[i] as keyof T;

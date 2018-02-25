@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {get, post, Request} from "./api";
-import {match, case_, isPartial, Pattern, regex, apply, PatternResult} from "./pattern";
+import {match, case_, isPartial, Pattern, regex, apply, Matched} from "./pattern";
 
 describe('pattern matching', function () {
     it('can verify a partial objects values match', function () {
@@ -30,9 +30,9 @@ describe('pattern matching', function () {
     });
 
     it('type check: pattern result instance values can be destructured results of the value', function () {
-        const a: PatternResult<Request> = {uri: ['foo','bar']};
-        const b: PatternResult<Request> = {uri: {path: ''}};
-        const c: PatternResult<Request> = {uri: '/foo/bar'};
+        const a: Matched<Request> = {uri: ['foo','bar']};
+        const b: Matched<Request> = {uri: {path: ''}};
+        const c: Matched<Request> = {uri: '/foo/bar'};
     });
 
     it('regex returns capture groups', function () {

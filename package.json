@@ -29,6 +29,7 @@
     "uglify-js": "^3.3.10"
   },
   "dependencies": {
+    "http-shutdown": "^1.2.0",
     "text-encoding": "^0.6.4"
   }
 }

@@ -1,4 +1,4 @@
-import {Handler, Request, Response, Headers, Body, Chunk} from "../api";
+import {host, Handler, Request, Response, Headers, Body, Chunk} from "../api";
 import {request as NodeRequest, IncomingMessage} from 'http';
 import {TextEncoder} from 'text-encoding';
 import {URL} from 'url';
@@ -6,11 +6,12 @@ import {URL} from 'url';
 export class NodeClientHandler implements Handler {
     handle(request: Request): Promise<Response> {
         return new Promise<Response>(resolve => {
-                const url = new URL(request.uri);
+                let [hostname, port = 80] = host(request).split(':');
                 let nodeRequest = NodeRequest({
                     method: request.method,
-                    path: url.pathname,
-                    hostname: url.host,
+                    path: request.uri,
+                    hostname: hostname,
+                    port: port,
                     headers: request.headers
                 }, (nodeResponse: IncomingMessage) => {
                     resolve({
@@ -90,7 +91,7 @@ function isStateHandler<T>(state: IteratorState<T>): state is StateHandler {
     return Array.isArray(state);
 }
 
-function consume<T>(state: IteratorResult<T> | Error, [resolve, reject]:[Function, Function]){
+function consume<T>(state: IteratorResult<T> | Error, [resolve, reject]: [Function, Function]) {
     if (state instanceof Error) reject(state);
     else resolve(state);
 }
@@ -100,9 +101,9 @@ class AsyncIteratorHandler<T> implements AsyncIterator<T> {
 
     handle(newState: IteratorState<T>) {
         const nextState = this.state.pop();
-        if(typeof nextState == 'undefined') return this.state.push(newState);
-        if(isStateHandler(newState) && !isStateHandler(nextState)) return consume(nextState, newState);
-        if(!isStateHandler(newState) && isStateHandler(nextState)) return consume(newState, nextState);
+        if (typeof nextState == 'undefined') return this.state.push(newState);
+        if (isStateHandler(newState) && !isStateHandler(nextState)) return consume(nextState, newState);
+        if (!isStateHandler(newState) && isStateHandler(nextState)) return consume(newState, nextState);
         this.state.unshift(nextState);
         this.state.push(newState);
     }

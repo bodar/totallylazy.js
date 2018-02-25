@@ -1,23 +1,23 @@
 import {assert} from 'chai';
-import {get, Handler, post, StringBody} from "./api";
+import {get, Handler, HostHandler, post} from "./api";
 
-export function handlerContract(factory: () => Promise<Handler>) {
+export function handlerContract(factory: () => Promise<Handler>, host = "httpbin.org") {
     before(function () {
         return factory().then((handler: Handler) => {
-            this.handler = handler;
+            this.handler = new HostHandler(handler, host);
         }, () => {
             this.skip();
-        })
+        });
     });
 
     it("supports GET", async function () {
-        const response = await this.handler.handle(get('http://httpbin.org/get'));
+        const response = await this.handler.handle(get('/get'));
         assert.equal(response.status, 200);
     });
 
     it("supports POST", async function () {
         let body = "Hello";
-        const response = await this.handler.handle(post('http://httpbin.org/post', {'Content-Length': String(body.length)}, body));
+        const response = await this.handler.handle(post('/post', {'Content-Length': String(body.length)}, body));
         assert.equal(response.status, 200);
 
         let text = await response.body.text();
@@ -25,7 +25,7 @@ export function handlerContract(factory: () => Promise<Handler>) {
     });
 
     it("supports chunked encoding", async function () {
-        const response = await this.handler.handle(get('http://httpbin.org/stream-bytes/10'));
+        const response = await this.handler.handle(get('/stream-bytes/10'));
         assert.equal(response.status, 200);
 
         for await (const chunk of response.body) {

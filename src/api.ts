@@ -2,6 +2,10 @@ export interface Handler {
     handle(request: Request): Promise<Response>;
 }
 
+export interface Closeable {
+    close(): Promise<void>
+}
+
 export interface Filter {
     filter(handler: Handler): Handler;
 }
@@ -66,8 +70,8 @@ export type Method =
     | 'UPGRADE'
     | string;
 
-export function request(method: Method, uri: string, headers?: Headers, body?: Body): Request {
-    return {method, uri, headers: headers || {}, body}
+export function request(method: Method, uri: string, headers?: Headers, body?: string | Body): Request {
+    return {method, uri, headers: headers || {}, body: typeof body == 'string' ? new StringBody(body) : body};
 }
 
 export function get(uri: string, headers?: Headers): Request {
@@ -75,11 +79,23 @@ export function get(uri: string, headers?: Headers): Request {
 }
 
 export function post(uri: string, headers?: Headers, body?: string | Body): Request {
-    return request("POST", uri, headers, typeof body == 'string' ? new StringBody(body) : body);
+    return request("POST", uri, headers, body);
 }
 
 export interface Response extends Message {
     readonly status: number,
+}
+
+export function response(status: number, headers?: Headers, body?: string | Body): Response {
+    return {status, headers: headers || {}, body: typeof body == 'string' ? new StringBody(body) : body}
+}
+
+export function ok(headers?: Headers, body?: string | Body): Response {
+    return response(200, headers, body);
+}
+
+export function notFound(headers?: Headers, body?: string | Body): Response {
+    return response(404, headers, body);
 }
 
 export type Headers = { readonly [h in Header]?: string | string[] }
@@ -119,3 +135,31 @@ export type Header =
     | 'X-CorrelationID'
     | 'Transfer-Encoding'
     | 'Access-Control-Allow-Origin';
+
+export function modify<T, K extends keyof T>(instance: T, key: K, handler: (value: T[K]) => T[K]): T {
+    return Object.assign({}, instance, {[key]: handler(instance[key])});
+}
+
+export function const_<T>(value: T): () => T {
+    return () => value;
+}
+
+export function replace<T, K extends keyof T>(key: K, value: T[K]): (instance: T) => T {
+    return instance => modify(instance, key, const_(value));
+}
+
+export function host(request:Request):string {
+    // TODO: Parse request.uri and if authority present use that as per RFC
+    let value = request.headers.Host;
+    if(typeof value != 'string') throw new Error("Bad Request");
+    return value;
+}
+
+export class HostHandler implements Handler {
+    constructor(private handler: Handler, private host: string) {
+    }
+
+    handle(request: Request): Promise<Response> {
+        return this.handler.handle(modify(request, 'headers', replace('Host', this.host)));
+    }
+}
