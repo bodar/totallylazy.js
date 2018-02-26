@@ -1,7 +1,7 @@
 import {Closeable, Handler, Header, Headers, request, Request, Response} from "../api";
 import {createServer, Server, IncomingMessage, ServerResponse} from 'http';
 
-export class NodeServerHandler implements Handler, Closeable {
+export class NodeServerHandler implements Handler, Closeable<void> {
     private server: Server;
 
     constructor(private handler: Handler, {port = 8080} = {}) {

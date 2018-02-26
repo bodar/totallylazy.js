@@ -2,8 +2,8 @@ export interface Handler {
     handle(request: Request): Promise<Response>;
 }
 
-export interface Closeable {
-    close(): Promise<void>
+export interface Closeable<T> {
+    close(): Promise<T>
 }
 
 export interface Filter {
@@ -148,10 +148,10 @@ export function replace<T, K extends keyof T>(key: K, value: T[K]): (instance: T
     return instance => modify(instance, key, const_(value));
 }
 
-export function host(request:Request):string {
+export function host(request: Request): string {
     // TODO: Parse request.uri and if authority present use that as per RFC
     let value = request.headers.Host;
-    if(typeof value != 'string') throw new Error("Bad Request");
+    if (typeof value != 'string') throw new Error("Bad Request");
     return value;
 }
 
@@ -162,4 +162,26 @@ export class HostHandler implements Handler {
     handle(request: Request): Promise<Response> {
         return this.handler.handle(modify(request, 'headers', replace('Host', this.host)));
     }
+}
+
+export class Uri {
+    static RFC_3986: RegExp = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
+    scheme: string;
+    authority: string;
+    path: string;
+    query: string;
+    fragment: string;
+
+    constructor(value: string) {
+        const match = Uri.RFC_3986.exec(value);
+        if (!match) throw new Error(`Invalid Uri: ${value}`);
+        const [, , scheme, , authority, path, , query, , fragment] = match;
+        this.scheme = scheme;
+        this.authority = authority;
+        this.path = path;
+        this.query = query;
+        this.fragment = fragment;
+    }
+
+
 }
