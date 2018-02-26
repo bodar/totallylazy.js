@@ -1,11 +1,11 @@
-import {Body, Handler, notFound, ok, Request, Response} from "./api";
+import {Body, get, Handler, notFound, ok, post, Request, Response} from "./api";
 import {match, case_, default_, Matched} from "./pattern";
 
 export class HttpBinHandler implements Handler {
     handle(request: Request): Promise<Response> {
         return match(request,
-            case_({uri: '/get'}, this.get),
-            case_({uri: '/post'}, this.post),
+            case_(get('/get'), this.get),
+            case_(post('/post'), this.post),
             default_(this.notFound));
     }
 

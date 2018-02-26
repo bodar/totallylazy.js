@@ -53,7 +53,7 @@ export function stringChunk(value: string): Chunk {
 
 export interface Request extends Message {
     readonly method: Method
-    readonly uri: string,
+    readonly uri: Uri,
     readonly version?: string,
 }
 
@@ -70,15 +70,20 @@ export type Method =
     | 'UPGRADE'
     | string;
 
-export function request(method: Method, uri: string, headers?: Headers, body?: string | Body): Request {
-    return {method, uri, headers: headers || {}, body: typeof body == 'string' ? new StringBody(body) : body};
+export function request(method: Method, uri: Uri | string, headers?: Headers, body?: string | Body): Request {
+    return {
+        method,
+        uri: typeof uri == 'string' ? new Uri(uri) : uri,
+        headers: headers || {},
+        body: typeof body == 'string' ? new StringBody(body) : body
+    };
 }
 
-export function get(uri: string, headers?: Headers): Request {
+export function get(uri: Uri | string, headers?: Headers): Request {
     return request("GET", uri, headers);
 }
 
-export function post(uri: string, headers?: Headers, body?: string | Body): Request {
+export function post(uri: Uri | string, headers?: Headers, body?: string | Body): Request {
     return request("POST", uri, headers, body);
 }
 
@@ -149,7 +154,7 @@ export function replace<T, K extends keyof T>(key: K, value: T[K]): (instance: T
 }
 
 export function host(request: Request): string {
-    // TODO: Parse request.uri and if authority present use that as per RFC
+    if (typeof request.uri.authority != 'undefined') return request.uri.authority;
     let value = request.headers.Host;
     if (typeof value != 'string') throw new Error("Bad Request");
     return value;
@@ -164,13 +169,17 @@ export class HostHandler implements Handler {
     }
 }
 
+/**
+ * Uri class based on {@link https://tools.ietf.org/html/rfc3986 RFC 3986}
+ */
 export class Uri {
-    static RFC_3986: RegExp = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
-    scheme: string;
-    authority: string;
+    /** {@link https://tools.ietf.org/html/rfc3986#appendix-B } */
+    static RFC_3986 = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
+    scheme: string | undefined;
+    authority: string | undefined;
     path: string;
-    query: string;
-    fragment: string;
+    query: string | undefined;
+    fragment: string | undefined;
 
     constructor(value: string) {
         const match = Uri.RFC_3986.exec(value);
@@ -183,5 +192,15 @@ export class Uri {
         this.fragment = fragment;
     }
 
+    /** {@link https://tools.ietf.org/html/rfc3986#section-5.3} */
+    toString() {
+        const result: string[] = [];
 
+        if (typeof this.scheme != 'undefined') result.push(this.scheme, ":");
+        if (typeof this.authority != 'undefined') result.push("//", this.authority);
+        result.push(this.path);
+        if (typeof this.query != 'undefined') result.push("?", this.query);
+        if (typeof this.fragment != 'undefined') result.push("#", this.fragment);
+        return result.join('');
+    }
 }

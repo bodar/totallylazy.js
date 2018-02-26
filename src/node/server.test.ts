@@ -8,7 +8,7 @@ describe("NodeServerHandler", function () {
         return (typeof process !== 'undefined') && (typeof process.versions.node !== 'undefined')
     }
 
-    let server:Handler & Closeable;
+    let server:Handler & Closeable<void>;
 
     before(async function() {
         if (!runningInNode()) throw new Error("Unsupported");

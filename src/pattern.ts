@@ -37,12 +37,12 @@ export function regex(value: RegExp): RegexMatcher {
     return new RegexMatcher(value)
 }
 
-export class RegexMatcher implements Matcher<string, string[]> {
+export class RegexMatcher implements Matcher<any, string[]> {
     constructor(private value: RegExp) {
     }
 
-    matches(instance: string): string[] | undefined {
-        const match = this.value.exec(instance);
+    matches(instance: any): string[] | undefined {
+        const match = this.value.exec(instance.toString());
         return match ? match.slice() : undefined;
     }
 }
@@ -68,15 +68,17 @@ export function apply<T>(instance: T, pattern: Pattern<T>): Matched<T> | undefin
         let actual = instance[key];
         let expected: any = pattern[key];
 
+        if(typeof expected == 'undefined') continue;
+
         if (expected instanceof Object && 'matches' in expected) {
             let result = expected.matches(actual);
-            if (typeof result == undefined) return undefined;
+            if (typeof result == 'undefined') return undefined;
             clone[key] = result;
         } else if (actual instanceof Object && expected instanceof Object) {
             let result = apply(actual, expected);
-            if (typeof result == undefined) return undefined;
+            if (typeof result == 'undefined') return undefined;
             clone[key] = result;
-        } else if (pattern[key] !== actual) return undefined;
+        } else if (expected !== actual) return undefined;
     }
 
     return clone;

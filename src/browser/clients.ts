@@ -6,7 +6,7 @@ export class XmlHttpHandler implements Handler {
 
     handle(request: Request): Promise<Response> {
         return new Promise<Response>((resolve, reject) => {
-                this.handler.open(request.method, request.uri, true);
+                this.handler.open(request.method, request.uri.toString(), true);
                 this.handler.withCredentials = true;
                 this.handler.responseType = 'arraybuffer';
                 this.setHeaders(request.headers);

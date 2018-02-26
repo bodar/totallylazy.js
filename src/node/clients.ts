@@ -9,7 +9,7 @@ export class NodeClientHandler implements Handler {
                 let [hostname, port = 80] = host(request).split(':');
                 let nodeRequest = NodeRequest({
                     method: request.method,
-                    path: request.uri,
+                    path: request.uri.path,
                     hostname: hostname,
                     port: port,
                     headers: request.headers
