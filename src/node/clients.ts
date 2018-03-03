@@ -33,7 +33,7 @@ export class NodeClientHandler implements Handler {
     }
 }
 
-class MessageBody implements Body {
+export class MessageBody implements Body {
     constructor(private message: IncomingMessage) {
     }
 
@@ -108,7 +108,7 @@ class AsyncIteratorHandler<T> implements AsyncIterator<T> {
         this.state.push(newState);
     }
 
-    next(value?: any): Promise<IteratorResult<T>> {
+    next(): Promise<IteratorResult<T>> {
         return new Promise<IteratorResult<T>>((resolve, reject) => {
             this.handle([resolve, reject]);
         });

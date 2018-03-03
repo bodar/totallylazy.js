@@ -11,18 +11,20 @@ describe("NodeServerHandler", function () {
     let server:Handler & Closeable<void>;
 
     before(async function() {
-        if (!runningInNode()) throw new Error("Unsupported");
+        if (!runningInNode()) this.skip();
 
         const {NodeServerHandler} = await import('./server');
         server = new NodeServerHandler(new HttpBinHandler());
     });
 
     handlerContract(async () => {
+        if (!runningInNode()) throw new Error("Unsupported");
+
         const {NodeClientHandler} = await import('./clients');
         return new NodeClientHandler();
     }, "localhost:8080");
 
     after(function(){
-        return server.close();
+        if(server) return server.close();
     });
 });
