@@ -1,4 +1,4 @@
-import {Handler, Request, Response, Headers, Header, Body} from "../api";
+import {Handler, Request, Response, Headers, Header, Body, host, modify, replace, const_, Uri} from "../api";
 
 export class XmlHttpHandler implements Handler {
     constructor(private readonly handler: XMLHttpRequest = new XMLHttpRequest()) {
@@ -6,7 +6,10 @@ export class XmlHttpHandler implements Handler {
 
     handle(request: Request): Promise<Response> {
         return new Promise<Response>((resolve, reject) => {
-                this.handler.open(request.method, request.uri.toString(), true);
+                const authority = host(request);
+                let uri = request.uri;
+                uri.authority = authority;
+                this.handler.open(request.method, uri.toString(), true);
                 this.handler.withCredentials = true;
                 this.handler.responseType = 'arraybuffer';
                 this.setHeaders(request.headers);
@@ -40,7 +43,7 @@ export class XmlHttpHandler implements Handler {
         }, {});
     }
 
-    private unsafeHeaders: Header[] = ['Content-Length'];
+    private unsafeHeaders: Header[] = ['Content-Length', 'Host'];
 
     private setHeaders(headers: Headers) {
         Object.keys(headers).forEach(raw => {
