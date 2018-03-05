@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import {get, Handler, HostHandler, post} from "./api";
 
-export function handlerContract(factory: () => Promise<Handler>, host = "httpbin.org") {
+export function handlerContract(factory: () => Promise<Handler>, host = "eu.httpbin.org") {
     before(function () {
         return factory().then((handler: Handler) => {
             this.handler = new HostHandler(handler, host);
