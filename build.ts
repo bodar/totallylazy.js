@@ -1,9 +1,7 @@
 import {FuseBox, WebIndexPlugin} from 'fuse-box';
-import {src, task, context, tsc} from 'fuse-box/sparky';
+import {src, task, tsc} from 'fuse-box/sparky';
 import * as Mocha from 'mocha';
-import * as fs from 'fs';
-import * as path from 'path';
-import {promisify} from 'util';
+import {Path} from './src/files';
 
 task('default', ['clean', 'compile', 'test',  'bundle']);
 
@@ -17,9 +15,11 @@ task('compile', async () => {
 
 task('test', async () => {
     const mocha = new Mocha();
-    const src = await promisify(fs.readdir)('src');
-    let test = '.test.js';
-    src.filter(file => file.substr(-test.length) === test).forEach(file => mocha.addFile(path.join('src', file)));
+    for await (const source of new Path('src').descendants()) {
+        if(source.name.endsWith('.test.js')) {
+            mocha.addFile(source.absolutePath);
+        }
+    }
     await new Promise((resolved, rejected) => mocha.run(failures => failures == 0 ? resolved() : rejected("Tests failed " + failures)));
 });
 

@@ -46,8 +46,7 @@ export class MessageBody implements Body {
 
         return new Promise<string>((resolve, reject) => {
             this.message.on("end", () => {
-                let foo = buffer.join("").toString();
-                resolve(foo)
+                resolve(buffer.join("").toString())
             });
             this.message.on("error", error => {
                 reject(error);
