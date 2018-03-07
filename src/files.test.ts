@@ -14,14 +14,11 @@ describe("files", function () {
 
     it('can tell if directory', async () => {
         assert(await new Path('src').isDirectory);
-    })
-
+    });
 
     it('can list descendants', async () => {
         for await (const child of new Path('src').descendants()) {
             //TODO something sensible
         }
     });
-
-
 });
