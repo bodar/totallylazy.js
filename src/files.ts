@@ -39,8 +39,8 @@ export class Path implements PathLike {
 
     async * descendants(): AsyncIterable<Path> {
         for await (const child of this.children()) {
-            if (await child.isDirectory) yield* child.descendants();
             yield child;
+            if (await child.isDirectory) yield* child.descendants();
         }
     }
 }
