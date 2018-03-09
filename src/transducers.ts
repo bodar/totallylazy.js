@@ -3,11 +3,9 @@ if (typeof Symbol.asyncIterator == 'undefined') {
 }
 
 export abstract class Transducer<A, B> {
-    abstract apply(iterable: AsyncIterable<A>): AsyncIterable<B>;
+    abstract async_(iterable: AsyncIterable<A>): AsyncIterable<B>;
 
-    call(...values: A[]): AsyncIterable<B> {
-        return this.apply(toIterable(...values));
-    }
+    abstract sync(iterable: Iterable<A>): Iterable<B>;
 
     compose<C>(other: Transducer<B, C>): Transducer<A, C> {
         return compose(other, this);
@@ -31,7 +29,11 @@ export abstract class Transducer<A, B> {
 }
 
 export class IdentityTransducer<A> extends Transducer<A, A> {
-    apply(iterator: AsyncIterable<A>): AsyncIterable<A> {
+    async_(iterator: AsyncIterable<A>): AsyncIterable<A> {
+        return iterator;
+    }
+
+    sync(iterator: Iterable<A>): Iterable<A> {
         return iterator;
     }
 }
@@ -52,17 +54,16 @@ export class MapTransducer<A, B> extends Transducer<A, B> {
         super();
     }
 
-    apply(iterable: AsyncIterable<A>): AsyncIterable<B> {
-        const self = this;
-        const iterator = iterable[Symbol.asyncIterator]();
-        return asyncIterable({
-            next(): Promise<IteratorResult<B>> {
-                return iterator.next().then(result => {
-                    if (result.done) return result as any;
-                    return {value: self.mapper(result.value), done: false};
-                });
-            }
-        });
+    async *async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
+        for await (const a of iterable){
+            yield this.mapper(a);
+        }
+    }
+
+    *sync(iterable: Iterable<A>): Iterable<B> {
+        for (const a of iterable){
+            yield this.mapper(a);
+        }
     }
 }
 
@@ -77,18 +78,16 @@ export class FilterTransducer<A> extends Transducer<A, A> {
         super();
     }
 
-    apply(iterable: AsyncIterable<A>): AsyncIterable<A> {
-        const self = this;
-        const iterator = iterable[Symbol.asyncIterator]();
-        return asyncIterable({
-            next(): Promise<IteratorResult<A>> {
-                return iterator.next().then(result => {
-                    if (result.done) return result as any;
-                    if (self.predicate(result.value)) return {value: result.value, done: false};
-                    return this.next();
-                });
-            }
-        });
+    async *async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        for await (const a of iterable){
+            if(this.predicate(a)) yield a;
+        }
+    }
+
+    *sync(iterable: Iterable<A>): Iterable<A> {
+        for (const a of iterable){
+            if(this.predicate(a)) yield a;
+        }
     }
 }
 
@@ -110,8 +109,12 @@ export class CompositeTransducer<A, B, C> extends Transducer<A, C> {
         super();
     }
 
-    apply(iterator: AsyncIterable<A>): AsyncIterable<C> {
-        return this.b.apply(this.a.apply(iterator));
+    async_(iterator: AsyncIterable<A>): AsyncIterable<C> {
+        return this.b.async_(this.a.async_(iterator));
+    }
+
+    sync(iterator: Iterable<A>): Iterable<C> {
+        return this.b.sync(this.a.sync(iterator));
     }
 }
 
@@ -130,18 +133,16 @@ export class ScanTransducer<A, B> extends Transducer<A, B> {
         super();
     }
 
-    apply(iterable: AsyncIterable<A>): AsyncIterable<B> {
-        const self = this;
-        const iterator = iterable[Symbol.asyncIterator]();
-        return asyncIterable({
-            next(): Promise<IteratorResult<B>> {
-                return iterator.next().then(result => {
-                    if (result.done) return result as any;
-                    self.accumilator = self.reducer.call(self.accumilator, result.value);
-                    return {value: self.accumilator, done: false};
-                })
-            }
-        });
+    async *async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
+        for await (const a of iterable){
+            yield this.accumilator = this.reducer.call(this.accumilator, a);
+        }
+    }
+
+    *sync(iterable: Iterable<A>): Iterable<B> {
+        for (const a of iterable){
+            yield this.accumilator = this.reducer.call(this.accumilator, a);
+        }
     }
 }
 
@@ -154,18 +155,22 @@ export class TakeTransducer<A> extends Transducer<A, A> {
         super();
     }
 
-    apply(iterable: AsyncIterable<A>): AsyncIterable<A> {
-        const self = this;
-        const iterator = iterable[Symbol.asyncIterator]();
-        return asyncIterable({
-            next(): Promise<IteratorResult<A>> {
-                if(self.count == 0) return Promise.resolve({done: true} as IteratorResult<A>);
-                return iterator.next().then(result => {
-                    self.count--;
-                    return result;
-                })
-            }
-        });
+    async *async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        if(this.count == 0) return;
+        for await (const a of iterable){
+            yield a;
+            this.count--;
+            if(this.count == 0) return;
+        }
+    }
+
+    *sync(iterable: Iterable<A>): Iterable<A> {
+        if(this.count == 0) return;
+        for (const a of iterable){
+            yield a;
+            this.count--;
+            if(this.count == 0) return;
+        }
     }
 }
 
@@ -185,24 +190,29 @@ export class Sum implements Reducer<number, number> {
 
 export const sum = new Sum();
 
-export async function* toIterable<T>(...t: T[]): AsyncIterable<T> {
+export function* iterable<T>(...t: T[]): Iterable<T> {
     yield* t;
 }
 
-export async function toArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
+export async function asyncArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
     const result: T[] = [];
     for await (const value of iterable) result.push(value);
     return result;
 }
 
-export async function* iterate<T>(generator: (t:T) => T, value: T): AsyncIterable<T> {
+export function syncArray<T>(iterable: Iterable<T>): T[] {
+    return [...iterable];
+}
+
+
+export function* iterate<T>(generator: (t:T) => T, value: T): Iterable<T> {
     while (true){
         yield value;
         value = generator(value);
     }
 }
 
-export async function* repeat<T>(generator: () => T): AsyncIterable<T> {
+export function* repeat<T>(generator: () => T): Iterable<T> {
     while (true){
         yield generator();
     }
@@ -216,8 +226,12 @@ export function add(a:number, b:number):number {
     return a + b;
 }
 
-export async function* range(start:number): AsyncIterable<number>{
+export function* range(start:number): Iterable<number>{
     yield* iterate(increment, start);
+}
+
+export async function* async_<T>(iterable:Iterable<T>):AsyncIterable<T>{
+    yield* iterable;
 }
 
 // TODO
