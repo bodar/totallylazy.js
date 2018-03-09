@@ -23,6 +23,10 @@ export abstract class Transducer<A, B> {
         return take(count, this);
     }
 
+    takeWhile(predicate: Predicate<B>): Transducer<A, B> {
+        return takeWhile(predicate, this);
+    }
+
     scan<C>(reducer: Reducer<B, C>): Transducer<A, C> {
         return scan(reducer, this);
     }
@@ -54,14 +58,14 @@ export class MapTransducer<A, B> extends Transducer<A, B> {
         super();
     }
 
-    async *async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
-        for await (const a of iterable){
+    async * async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
+        for await (const a of iterable) {
             yield this.mapper(a);
         }
     }
 
-    *sync(iterable: Iterable<A>): Iterable<B> {
-        for (const a of iterable){
+    * sync(iterable: Iterable<A>): Iterable<B> {
+        for (const a of iterable) {
             yield this.mapper(a);
         }
     }
@@ -78,15 +82,15 @@ export class FilterTransducer<A> extends Transducer<A, A> {
         super();
     }
 
-    async *async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
-        for await (const a of iterable){
-            if(this.predicate(a)) yield a;
+    async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        for await (const a of iterable) {
+            if (this.predicate(a)) yield a;
         }
     }
 
-    *sync(iterable: Iterable<A>): Iterable<A> {
-        for (const a of iterable){
-            if(this.predicate(a)) yield a;
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        for (const a of iterable) {
+            if (this.predicate(a)) yield a;
         }
     }
 }
@@ -133,14 +137,14 @@ export class ScanTransducer<A, B> extends Transducer<A, B> {
         super();
     }
 
-    async *async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
-        for await (const a of iterable){
+    async * async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
+        for await (const a of iterable) {
             yield this.accumilator = this.reducer.call(this.accumilator, a);
         }
     }
 
-    *sync(iterable: Iterable<A>): Iterable<B> {
-        for (const a of iterable){
+    * sync(iterable: Iterable<A>): Iterable<B> {
+        for (const a of iterable) {
             yield this.accumilator = this.reducer.call(this.accumilator, a);
         }
     }
@@ -155,27 +159,50 @@ export class TakeTransducer<A> extends Transducer<A, A> {
         super();
     }
 
-    async *async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
-        if(this.count == 0) return;
-        for await (const a of iterable){
+    async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        if (this.count == 0) return;
+        for await (const a of iterable) {
             yield a;
-            this.count--;
-            if(this.count == 0) return;
+            if ((--this.count) == 0) return;
         }
     }
 
-    *sync(iterable: Iterable<A>): Iterable<A> {
-        if(this.count == 0) return;
-        for (const a of iterable){
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        if (this.count == 0) return;
+        for (const a of iterable) {
             yield a;
-            this.count--;
-            if(this.count == 0) return;
+            if ((--this.count) == 0) return;
         }
     }
 }
 
-export function take<A, B>(count:number, transducer: Transducer<A, B>): Transducer<A, B> {
+export function take<A, B>(count: number, transducer: Transducer<A, B>): Transducer<A, B> {
     return compose(new TakeTransducer(count), transducer);
+}
+
+
+export class TakeWhileTransducer<A> extends Transducer<A, A> {
+    constructor(public predicate: Predicate<A>) {
+        super();
+    }
+
+    async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        for await (const a of iterable) {
+            if (this.predicate(a)) yield a;
+            else return;
+        }
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        for (const a of iterable) {
+            if (this.predicate(a)) yield a;
+            else return;
+        }
+    }
+}
+
+export function takeWhile<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {
+    return compose(new TakeWhileTransducer(predicate), transducer);
 }
 
 export class Sum implements Reducer<number, number> {
@@ -205,32 +232,32 @@ export function syncArray<T>(iterable: Iterable<T>): T[] {
 }
 
 
-export function* iterate<T>(generator: (t:T) => T, value: T): Iterable<T> {
-    while (true){
+export function* iterate<T>(generator: (t: T) => T, value: T): Iterable<T> {
+    while (true) {
         yield value;
         value = generator(value);
     }
 }
 
 export function* repeat<T>(generator: () => T): Iterable<T> {
-    while (true){
+    while (true) {
         yield generator();
     }
 }
 
-export function increment(a:number):number {
+export function increment(a: number): number {
     return a + 1;
 }
 
-export function add(a:number, b:number):number {
+export function add(a: number, b: number): number {
     return a + b;
 }
 
-export function* range(start:number): Iterable<number>{
+export function* range(start: number): Iterable<number> {
     yield* iterate(increment, start);
 }
 
-export async function* async_<T>(iterable:Iterable<T>):AsyncIterable<T>{
+export async function* async_<T>(iterable: Iterable<T>): AsyncIterable<T> {
     yield* iterable;
 }
 

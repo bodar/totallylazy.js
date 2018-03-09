@@ -19,6 +19,10 @@ describe("transducers", () => {
         return assertSync(transducer<number>().take(4).sync([0, 1, 2, 3, 4, 5, 6, 7, 8]), 0, 1, 2, 3);
     });
 
+    it("can take while", async () => {
+        return assertSync(transducer<number>().takeWhile(n => n < 4).sync([0, 1, 2, 3, 4, 5, 6, 7, 8]), 0, 1, 2, 3);
+    });
+
     it("supports terminating early with take", async () => {
         let called = false;
         assertSync(transducer<number>().take(0).sync(repeat(() => {
