@@ -311,7 +311,7 @@ export class Sequence<A> implements Iterable<A> {
 
 export function sequence<A>(iterable: Iterable<A>): Sequence<A>;
 export function sequence<A, B>(iterable: Iterable<B>, transducer: Transducer<B, A>): Sequence<A>;
-export function sequence<A>(iterable: Iterable<A>, transducer?: Transducer<any, A>) {
+export function sequence<A, B>(iterable: Iterable<B>, transducer?: Transducer<B, A>) {
     return new Sequence(iterable, transducer);
 }
 
