@@ -11,6 +11,10 @@ export abstract class Transducer<A, B> {
         return compose(other, this);
     }
 
+    decompose(): Transducer<any, any>[] {
+        return decompose(this);
+    }
+
     map<C>(mapper: Mapper<B, C>): Transducer<A, C> {
         return map(mapper, this);
     }
@@ -99,15 +103,6 @@ export function filter<A, B>(predicate: Predicate<B>, transducer: Transducer<A, 
     return compose(new FilterTransducer(predicate), transducer);
 }
 
-export function asyncIterable<A>(iterator: AsyncIterator<A>): AsyncIterable<A> {
-    return {
-        [Symbol.asyncIterator](): AsyncIterator<A> {
-            return iterator;
-        }
-    };
-}
-
-
 export class CompositeTransducer<A, B, C> extends Transducer<A, C> {
     constructor(public a: Transducer<A, B>, public b: Transducer<B, C>) {
         super();
@@ -124,6 +119,14 @@ export class CompositeTransducer<A, B, C> extends Transducer<A, C> {
 
 export function compose<A, B, C>(b: Transducer<B, C>, a: Transducer<A, B>): CompositeTransducer<A, B, C> {
     return new CompositeTransducer(a, b);
+}
+
+export function decompose(transducer: Transducer<any, any>): Transducer<any, any>[] {
+    if (transducer instanceof CompositeTransducer) {
+        const compositeTransducer = transducer as CompositeTransducer<any, any, any>;
+        return [...decompose(compositeTransducer.a), ...decompose(compositeTransducer.b)];
+    }
+    return [transducer];
 }
 
 export interface Reducer<A, B> {
@@ -249,26 +252,67 @@ export function increment(a: number): number {
     return a + 1;
 }
 
-export function add(a: number, b: number): number {
-    return a + b;
+export function add(a: number): (b: number) => number;
+export function add(a: number, b: number): number;
+export function add(a: number, b?: number) {
+    if (b === undefined) return (b: number) => a + b;
+    else return a + b;
 }
 
-export function* range(start: number): Iterable<number> {
-    yield* iterate(increment, start);
+export function subtract(a: number): (b: number) => number;
+export function subtract(a: number, b: number): number;
+export function subtract(a: number, b?: number) {
+    if (b === undefined) return (b: number) => b - a;
+    else return a - b;
+}
+
+export function* range(start: number, end?: number, step: number = 1): Iterable<number> {
+    if (end === undefined) yield* iterate(increment, start);
+    else {
+        const absoluteStep = Math.abs(step);
+        if (end < start) yield* sequence(iterate(subtract(absoluteStep), start)).takeWhile(n => n >= end);
+        else yield* sequence(iterate(add(absoluteStep), start)).takeWhile(n => n <= end);
+    }
 }
 
 export async function* async_<T>(iterable: Iterable<T>): AsyncIterable<T> {
     yield* iterable;
 }
 
-// TODO
-// export async function* range(start:number, end:number): AsyncIterable<number> {
-//     if (end < start) yield* range(start, end, -1);
-//     yield* range(start).takeWhile(n => n <=end);
-// }
-//
-// export async function* range(final int start, final int end, final int step): AsyncIterable<number> {
-//     if (end < start) yield* iterate(add(step), start).takeWhile(n => n >=end);
-//     yield* iterate(add(step), start).takeWhile(n => n <=end);
-// }
+export class Sequence<A> implements Iterable<A> {
+    constructor(public iterable: Iterable<any>, public transducer: Transducer<any, A> = identity()) {
+    }
+
+    [Symbol.iterator](): Iterator<A> {
+        return this.transducer.sync(this.iterable)[Symbol.iterator]()
+    }
+
+    map<B>(mapper: Mapper<A, B>): Sequence<B> {
+        return sequence(this.iterable, this.transducer.map(mapper));
+    }
+
+    filter(predicate: Predicate<A>): Sequence<A> {
+        return sequence(this.iterable, this.transducer.filter(predicate));
+    }
+
+    take(count: number): Sequence<A> {
+        return sequence(this.iterable, this.transducer.take(count));
+    }
+
+    takeWhile(predicate: Predicate<A>): Sequence<A> {
+        return sequence(this.iterable, this.transducer.takeWhile(predicate));
+    }
+
+    scan<B>(reducer: Reducer<A, B>): Sequence<B> {
+        return sequence(this.iterable, this.transducer.scan(reducer));
+    }
+
+}
+
+export function sequence<A>(iterable: Iterable<A>): Sequence<A>;
+export function sequence<A, B>(iterable: Iterable<B>, transducer: Transducer<B, A>): Sequence<A>;
+export function sequence<A>(iterable: Iterable<A>, transducer?: Transducer<any, A>) {
+    return new Sequence(iterable, transducer);
+}
+
 
