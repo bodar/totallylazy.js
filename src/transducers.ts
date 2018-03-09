@@ -17,8 +17,12 @@ export abstract class Transducer<A, B> {
         return map(mapper, this);
     }
 
-    filter<C>(predicate: Predicate<B>): Transducer<A, B> {
+    filter(predicate: Predicate<B>): Transducer<A, B> {
         return filter(predicate, this);
+    }
+
+    take(count: number): Transducer<A, B> {
+        return take(count, this);
     }
 
     scan<C>(reducer: Reducer<B, C>): Transducer<A, C> {
@@ -145,6 +149,30 @@ export function scan<A, B, C>(reducer: Reducer<B, C>, transducer: Transducer<A, 
     return compose(new ScanTransducer(reducer), transducer);
 }
 
+export class TakeTransducer<A> extends Transducer<A, A> {
+    constructor(public count: number) {
+        super();
+    }
+
+    apply(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        const self = this;
+        const iterator = iterable[Symbol.asyncIterator]();
+        return asyncIterable({
+            next(): Promise<IteratorResult<A>> {
+                if(self.count == 0) return Promise.resolve({done: true} as IteratorResult<A>);
+                return iterator.next().then(result => {
+                    self.count--;
+                    return result;
+                })
+            }
+        });
+    }
+}
+
+export function take<A, B>(count:number, transducer: Transducer<A, B>): Transducer<A, B> {
+    return compose(new TakeTransducer(count), transducer);
+}
+
 export class Sum implements Reducer<number, number> {
     call(a: number, b: number): number {
         return a + b;
@@ -166,3 +194,40 @@ export async function toArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
     for await (const value of iterable) result.push(value);
     return result;
 }
+
+export async function* iterate<T>(generator: (t:T) => T, value: T): AsyncIterable<T> {
+    while (true){
+        yield value;
+        value = generator(value);
+    }
+}
+
+export async function* repeat<T>(generator: () => T): AsyncIterable<T> {
+    while (true){
+        yield generator();
+    }
+}
+
+export function increment(a:number):number {
+    return a + 1;
+}
+
+export function add(a:number, b:number):number {
+    return a + b;
+}
+
+export async function* range(start:number): AsyncIterable<number>{
+    yield* iterate(increment, start);
+}
+
+// TODO
+// export async function* range(start:number, end:number): AsyncIterable<number> {
+//     if (end < start) yield* range(start, end, -1);
+//     yield* range(start).takeWhile(n => n <=end);
+// }
+//
+// export async function* range(final int start, final int end, final int step): AsyncIterable<number> {
+//     if (end < start) yield* iterate(add(step), start).takeWhile(n => n >=end);
+//     yield* iterate(add(step), start).takeWhile(n => n <=end);
+// }
+

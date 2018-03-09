@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {transducer, sum, toArray} from "./transducers";
+import {transducer, sum, toArray, iterate, increment, repeat} from "./transducers";
 
 
 describe("transducers", () => {
@@ -13,6 +13,16 @@ describe("transducers", () => {
 
     it("can scan", async () => {
         return assertResult(transducer<number>().scan(sum).call(0, 2, 4), 0, 2, 6);
+    });
+
+    it("can take", async () => {
+        return assertResult(transducer<number>().take(4).call(0, 1, 2, 3, 4, 5, 6, 7, 8), 0, 1, 2, 3);
+    });
+
+    it("support terminating early with take", async () => {
+        return assertResult(transducer<number>().take(0).apply(repeat(() => {
+            throw new Error();
+        })));
     });
 
     async function assertResult<T>(iterable: AsyncIterable<T>, ...expected: T[]) {
