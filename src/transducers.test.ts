@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import {
-    transducer, sum, asyncArray, iterate, increment, repeat, async_, syncArray, identity,
-    IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer, range
+    transducer, sum, asyncArray, increment, repeat, syncArray, range,
+    IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer
 } from "./transducers";
 
 
