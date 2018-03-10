@@ -46,6 +46,7 @@ describe("transducers", () => {
     });
 
     it("supports ranges", () => {
+        assertSync(range(1).take(3), 1, 2, 3);
         assertSync(range(1, 5), 1, 2, 3, 4, 5);
         assertSync(range(5, 1), 5, 4, 3, 2, 1);
         assertSync(range(1, 10, 2), 1, 3, 5, 7, 9);
