@@ -2,7 +2,27 @@ if (typeof Symbol.asyncIterator == 'undefined') {
     (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
 }
 
-export abstract class Transducer<A, B> {
+export interface Contract<A> {
+    map<B>(mapper: Mapper<A, B>): Contract<B>;
+
+    filter(predicate: Predicate<A>): Contract<A>;
+
+    find(predicate: Predicate<A>): Contract<A>;
+
+    first(): Contract<A>;
+
+    last(): Contract<A>;
+
+    take(count: number): Contract<A>;
+
+    takeWhile(predicate: Predicate<A>): Contract<A>;
+
+    scan<B>(reducer: Reducer<A, B>): Contract<B>;
+
+    reduce<B>(reducer: Reducer<A, B>): Contract<B>;
+}
+
+export abstract class Transducer<A, B> implements Contract<B> {
     abstract async_(iterable: AsyncIterable<A>): AsyncIterable<B>;
 
     abstract sync(iterable: Iterable<A>): Iterable<B>;
@@ -23,6 +43,18 @@ export abstract class Transducer<A, B> {
         return filter(predicate, this);
     }
 
+    find(predicate: Predicate<B>): Transducer<A, B> {
+        return find(predicate, this);
+    }
+
+    first(): Transducer<A, B> {
+        return first(this);
+    }
+
+    last(): Transducer<A, B> {
+        return last(this);
+    }
+
     take(count: number): Transducer<A, B> {
         return take(count, this);
     }
@@ -34,15 +66,19 @@ export abstract class Transducer<A, B> {
     scan<C>(reducer: Reducer<B, C>): Transducer<A, C> {
         return scan(reducer, this);
     }
+
+    reduce<C>(reducer: Reducer<B, C>): Transducer<A, C> {
+        return reduce(reducer, this);
+    }
 }
 
 export class IdentityTransducer<A> extends Transducer<A, A> {
-    async_(iterator: AsyncIterable<A>): AsyncIterable<A> {
-        return iterator;
+    async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        return iterable;
     }
 
-    sync(iterator: Iterable<A>): Iterable<A> {
-        return iterator;
+    sync(iterable: Iterable<A>): Iterable<A> {
+        return iterable;
     }
 }
 
@@ -53,6 +89,44 @@ export function identity<A>(): IdentityTransducer<A> {
 // alias
 export function transducer<A>(): IdentityTransducer<A> {
     return identity()
+}
+
+export class FirstTransducer<A> extends Transducer<A, A> {
+    async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        for await (const a of iterable) {
+            yield a;
+            return;
+        }
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        for (const a of iterable) {
+            yield a;
+            return;
+        }
+    }
+}
+
+export function first<A, B>(transducer: Transducer<A, B>): Transducer<A, B> {
+    return compose(new FirstTransducer(), transducer);
+}
+
+export class LastTransducer<A> extends Transducer<A, A> {
+    async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        let last;
+        for await (last of iterable);
+        if (last !== undefined) yield last;
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        let last;
+        for (last of iterable);
+        if (last !== undefined) yield last;
+    }
+}
+
+export function last<A, B>(transducer: Transducer<A, B>): Transducer<A, B> {
+    return compose(new LastTransducer(), transducer);
 }
 
 export type Mapper<A, B> = (a: A) => B;
@@ -101,6 +175,10 @@ export class FilterTransducer<A> extends Transducer<A, A> {
 
 export function filter<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {
     return compose(new FilterTransducer(predicate), transducer);
+}
+
+export function find<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {
+    return first(filter(predicate, transducer));
 }
 
 export class CompositeTransducer<A, B, C> extends Transducer<A, C> {
@@ -155,6 +233,10 @@ export class ScanTransducer<A, B> extends Transducer<A, B> {
 
 export function scan<A, B, C>(reducer: Reducer<B, C>, transducer: Transducer<A, B>): Transducer<A, C> {
     return compose(new ScanTransducer(reducer), transducer);
+}
+
+export function reduce<A, B, C>(reducer: Reducer<B, C>, transducer: Transducer<A, B>): Transducer<A, C> {
+    return last(scan(reducer, transducer));
 }
 
 export class TakeTransducer<A> extends Transducer<A, A> {
@@ -281,8 +363,7 @@ export function range(start: number, end?: number, step: number = 1): Sequence<n
     });
 }
 
-
-export class Sequence<A> implements Iterable<A> {
+export class Sequence<A> implements Iterable<A>, Contract<A> {
     private constructor(public iterable: Iterable<any>, public transducer: Transducer<any, A> = identity()) {
     }
 
@@ -304,6 +385,18 @@ export class Sequence<A> implements Iterable<A> {
         return sequence(this.iterable, this.transducer.filter(predicate));
     }
 
+    find(predicate: Predicate<A>): Sequence<A> {
+        return sequence(this.iterable, this.transducer.find(predicate));
+    }
+
+    first(): Sequence<A> {
+        return sequence(this.iterable, this.transducer.first());
+    }
+
+    last(): Sequence<A> {
+        return sequence(this.iterable, this.transducer.first());
+    }
+
     take(count: number): Sequence<A> {
         return sequence(this.iterable, this.transducer.take(count));
     }
@@ -315,9 +408,13 @@ export class Sequence<A> implements Iterable<A> {
     scan<B>(reducer: Reducer<A, B>): Sequence<B> {
         return sequence(this.iterable, this.transducer.scan(reducer));
     }
+
+    reduce<B>(reducer: Reducer<A, B>): Sequence<B> {
+        return sequence(this.iterable, this.transducer.reduce(reducer));
+    }
 }
 
-export class AsyncSequence<A> implements AsyncIterable<A> {
+export class AsyncSequence<A> implements AsyncIterable<A>, Contract<A> {
     private constructor(public iterable: AsyncIterable<any>, public transducer: Transducer<any, A> = identity()) {
     }
 
@@ -339,6 +436,18 @@ export class AsyncSequence<A> implements AsyncIterable<A> {
         return sequence(this.iterable, this.transducer.filter(predicate));
     }
 
+    find(predicate: Predicate<A>): AsyncSequence<A> {
+        return sequence(this.iterable, this.transducer.find(predicate));
+    }
+
+    first(): AsyncSequence<A> {
+        return sequence(this.iterable, this.transducer.first());
+    }
+
+    last(): AsyncSequence<A> {
+        return sequence(this.iterable, this.transducer.last());
+    }
+
     take(count: number): AsyncSequence<A> {
         return sequence(this.iterable, this.transducer.take(count));
     }
@@ -349,6 +458,10 @@ export class AsyncSequence<A> implements AsyncIterable<A> {
 
     scan<B>(reducer: Reducer<A, B>): AsyncSequence<B> {
         return sequence(this.iterable, this.transducer.scan(reducer));
+    }
+
+    reduce<B>(reducer: Reducer<A, B>): AsyncSequence<B> {
+        return sequence(this.iterable, this.transducer.reduce(reducer));
     }
 }
 
