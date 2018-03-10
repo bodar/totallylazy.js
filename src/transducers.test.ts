@@ -1,53 +1,57 @@
 import {assert} from 'chai';
 import {
     transducer, sum, asyncArray, increment, repeat, syncArray, range,
-    IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer
+    IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer, toArray
 } from "./transducers";
 
 
 describe("transducers", () => {
     it("can map", () => {
-        assertSync(transducer<number>().map(n => n.toString()).sync([2]), "2");
+        assertSync(transducer<number>().map(n => n.toString()).transduce([2]), "2");
     });
 
     it("can filter", () => {
-        assertSync(transducer<number>().filter(n => n % 2 == 0).sync([0, 1, 2, 3, 4]), 0, 2, 4);
+        assertSync(transducer<number>().filter(n => n % 2 == 0).transduce([0, 1, 2, 3, 4]), 0, 2, 4);
     });
 
     it("supports first", () => {
-        assertSync(transducer<number>().first().sync([]));
-        assertSync(transducer<number>().first().sync([0, 1, 2, 3, 4]), 0);
+        assertSync(transducer<number>().first().transduce([]));
+        assertSync(transducer<number>().first().transduce([0, 1, 2, 3, 4]), 0);
     });
 
     it("supports last", () => {
-        assertSync(transducer<number>().last().sync([]));
-        assertSync(transducer<number>().last().sync([0, 1, 2, 3, 4]), 4);
+        assertSync(transducer<number>().last().transduce([]));
+        assertSync(transducer<number>().last().transduce([0, 1, 2, 3, 4]), 4);
     });
 
     it("can find", () => {
-        assertSync(transducer<number>().find(n => n > 2).sync([0, 1, 2, 3, 4]), 3);
-        assertSync(transducer<number>().find(n => n > 2).sync([]));
+        assertSync(transducer<number>().find(n => n > 2).transduce([0, 1, 2, 3, 4]), 3);
+        assertSync(transducer<number>().find(n => n > 2).transduce([]));
     });
 
     it("can scan", () => {
-        assertSync(transducer<number>().scan(sum).sync([0, 2, 4]), 0, 2, 6);
+        assertSync(transducer<number>().scan(sum).transduce([0, 2, 4]), 0, 2, 6);
     });
 
     it("can reduce", () => {
-        assertSync(transducer<number>().reduce(sum).sync([0, 2, 4]), 6);
+        assertSync(transducer<number>().reduce(sum).transduce([0, 2, 4]), 6);
+    });
+
+    it("can reduce to array", () => {
+        assertSync(transducer<number>().reduce(toArray<number>()).transduce([0, 2, 4]), [0, 2, 4]);
     });
 
     it("can take", () => {
-        assertSync(transducer<number>().take(4).sync([0, 1, 2, 3, 4, 5, 6, 7, 8]), 0, 1, 2, 3);
+        assertSync(transducer<number>().take(4).transduce([0, 1, 2, 3, 4, 5, 6, 7, 8]), 0, 1, 2, 3);
     });
 
     it("can take while", async () => {
-        assertSync(transducer<number>().takeWhile(n => n < 4).sync([0, 1, 2, 3, 4, 5, 6, 7, 8]), 0, 1, 2, 3);
+        assertSync(transducer<number>().takeWhile(n => n < 4).transduce([0, 1, 2, 3, 4, 5, 6, 7, 8]), 0, 1, 2, 3);
     });
 
     it("supports terminating early with take", async () => {
         let called = false;
-        assertSync(transducer<number>().take(0).sync(repeat(() => {
+        assertSync(transducer<number>().take(0).transduce(repeat(() => {
             called = true;
             throw new Error();
         })));
@@ -69,6 +73,7 @@ describe("transducers", () => {
         assertSync(range(1, 5), 1, 2, 3, 4, 5);
         assertSync(range(5, 1), 5, 4, 3, 2, 1);
         assertSync(range(1, 10, 2), 1, 3, 5, 7, 9);
+        assertSync(range(10, 1, 2), 10, 8, 6, 4, 2);
     });
 
     function assertSync<T>(actual: Iterable<T>, ...expected: T[]) {

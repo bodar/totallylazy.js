@@ -1,3 +1,5 @@
+import {lazy, replace} from "./lazy";
+
 if (typeof Symbol.asyncIterator == 'undefined') {
     (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
 }
@@ -23,9 +25,16 @@ export interface Contract<A> {
 }
 
 export abstract class Transducer<A, B> implements Contract<B> {
+    abstract sync(iterable: Iterable<A>): Iterable<B>;
+
     abstract async_(iterable: AsyncIterable<A>): AsyncIterable<B>;
 
-    abstract sync(iterable: Iterable<A>): Iterable<B>;
+    transduce(iterable: Iterable<A>): Iterable<B>;
+    transduce(iterable: AsyncIterable<A>): AsyncIterable<B>;
+    transduce(iterable: any) {
+        if (isIterable(iterable)) return this.sync(iterable);
+        if (isAsyncIterable(iterable)) return this.async_(iterable);
+    }
 
     compose<C>(other: Transducer<B, C>): Transducer<A, C> {
         return compose(other, this);
@@ -114,13 +123,13 @@ export function first<A, B>(transducer: Transducer<A, B>): Transducer<A, B> {
 export class LastTransducer<A> extends Transducer<A, A> {
     async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
         let last;
-        for await (last of iterable);
+        for await (last of iterable) ;
         if (last !== undefined) yield last;
     }
 
     * sync(iterable: Iterable<A>): Iterable<A> {
         let last;
-        for (last of iterable);
+        for (last of iterable) ;
         if (last !== undefined) yield last;
     }
 }
@@ -211,6 +220,21 @@ export interface Reducer<A, B> {
     call(accumilator: B, instance: A): B;
 
     identity(): B;
+}
+
+export class ToArray<A> implements Reducer<A, A[]> {
+    call(accumilator: A[], instance: A): A[] {
+        accumilator.push(instance);
+        return accumilator;
+    }
+
+    identity(): A[] {
+        return [];
+    }
+}
+
+export function toArray<A>() {
+    return new ToArray<A>();
 }
 
 export class ScanTransducer<A, B> extends Transducer<A, B> {
@@ -306,16 +330,15 @@ export function* iterable<T>(...t: T[]): IterableIterator<T> {
     yield* t;
 }
 
+export function syncArray<T>(iterable: Iterable<T>): T[] {
+    return [...iterable];
+}
+
 export async function asyncArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
     const result: T[] = [];
     for await (const value of iterable) result.push(value);
     return result;
 }
-
-export function syncArray<T>(iterable: Iterable<T>): T[] {
-    return [...iterable];
-}
-
 
 export function iterate<T>(generator: (t: T) => T, value: T): Sequence<T> {
     return sequence(function* () {
@@ -487,10 +510,10 @@ export function sequence(iterable: Source<any>, transducer?: Transducer<any, any
 }
 
 function isIterable(instance: any): instance is Iterable<any> {
-    return (<Iterable<any>>instance)[Symbol.iterator] !== undefined;
+    return typeof instance == 'object' && Symbol.iterator in instance;
 }
 
 function isAsyncIterable(instance: any): instance is AsyncIterable<any> {
-    return (<AsyncIterable<any>>instance)[Symbol.asyncIterator] !== undefined;
+    return typeof instance == 'object' && Symbol.asyncIterator in instance;
 }
 
