@@ -236,7 +236,7 @@ export function syncArray<T>(iterable: Iterable<T>): T[] {
 
 
 export function iterate<T>(generator: (t: T) => T, value: T): Sequence<T> {
-    return seq(function* () {
+    return sequence(function* () {
         while (true) {
             yield value;
             value = generator(value);
@@ -245,7 +245,7 @@ export function iterate<T>(generator: (t: T) => T, value: T): Sequence<T> {
 }
 
 export function repeat<T>(generator: () => T): Sequence<T> {
-    return seq(function* () {
+    return sequence(function* () {
         while (true) {
             yield generator();
         }
@@ -271,7 +271,7 @@ export function subtract(a: number, b?: number) {
 }
 
 export function range(start: number, end?: number, step: number = 1): Sequence<number> {
-    return seq(function* () {
+    return sequence(function* () {
         if (end === undefined) yield* iterate(increment, start);
         else {
             const absoluteStep = Math.abs(step);
@@ -283,7 +283,13 @@ export function range(start: number, end?: number, step: number = 1): Sequence<n
 
 
 export class Sequence<A> implements Iterable<A> {
-    constructor(public iterable: Iterable<any>, public transducer: Transducer<any, A> = identity()) {
+    private constructor(public iterable: Iterable<any>, public transducer: Transducer<any, A> = identity()) {
+    }
+
+    static of<A>(iterable: Iterable<A>): Sequence<A>;
+    static of<B, A>(iterable: Iterable<B>, transducer: Transducer<B, A>): Sequence<A>;
+    static of<B, A>(iterable: Iterable<B>, transducer?: Transducer<B, A>) {
+        return new Sequence<A>(iterable, transducer);
     }
 
     [Symbol.iterator](): Iterator<A> {
@@ -291,28 +297,34 @@ export class Sequence<A> implements Iterable<A> {
     }
 
     map<B>(mapper: Mapper<A, B>): Sequence<B> {
-        return seq(this.iterable, this.transducer.map(mapper));
+        return sequence(this.iterable, this.transducer.map(mapper));
     }
 
     filter(predicate: Predicate<A>): Sequence<A> {
-        return seq(this.iterable, this.transducer.filter(predicate));
+        return sequence(this.iterable, this.transducer.filter(predicate));
     }
 
     take(count: number): Sequence<A> {
-        return seq(this.iterable, this.transducer.take(count));
+        return sequence(this.iterable, this.transducer.take(count));
     }
 
     takeWhile(predicate: Predicate<A>): Sequence<A> {
-        return seq(this.iterable, this.transducer.takeWhile(predicate));
+        return sequence(this.iterable, this.transducer.takeWhile(predicate));
     }
 
     scan<B>(reducer: Reducer<A, B>): Sequence<B> {
-        return seq(this.iterable, this.transducer.scan(reducer));
+        return sequence(this.iterable, this.transducer.scan(reducer));
     }
 }
 
 export class AsyncSequence<A> implements AsyncIterable<A> {
-    constructor(public iterable: AsyncIterable<any>, public transducer: Transducer<any, A> = identity()) {
+    private constructor(public iterable: AsyncIterable<any>, public transducer: Transducer<any, A> = identity()) {
+    }
+
+    static of<A>(iterable: AsyncIterable<A>): AsyncSequence<A>;
+    static of<B, A>(iterable: AsyncIterable<B>, transducer: Transducer<B, A>): AsyncSequence<A>;
+    static of<B, A>(iterable: AsyncIterable<B>, transducer?: Transducer<B, A>) {
+        return new AsyncSequence<A>(iterable, transducer);
     }
 
     [Symbol.asyncIterator](): AsyncIterator<A> {
@@ -320,50 +332,52 @@ export class AsyncSequence<A> implements AsyncIterable<A> {
     }
 
     map<B>(mapper: Mapper<A, B>): AsyncSequence<B> {
-        return aseq(this.iterable, this.transducer.map(mapper));
+        return sequence(this.iterable, this.transducer.map(mapper));
     }
 
     filter(predicate: Predicate<A>): AsyncSequence<A> {
-        return aseq(this.iterable, this.transducer.filter(predicate));
+        return sequence(this.iterable, this.transducer.filter(predicate));
     }
 
     take(count: number): AsyncSequence<A> {
-        return aseq(this.iterable, this.transducer.take(count));
+        return sequence(this.iterable, this.transducer.take(count));
     }
 
     takeWhile(predicate: Predicate<A>): AsyncSequence<A> {
-        return aseq(this.iterable, this.transducer.takeWhile(predicate));
+        return sequence(this.iterable, this.transducer.takeWhile(predicate));
     }
 
     scan<B>(reducer: Reducer<A, B>): AsyncSequence<B> {
-        return aseq(this.iterable, this.transducer.scan(reducer));
+        return sequence(this.iterable, this.transducer.scan(reducer));
     }
 }
 
 type IterableGenerator<A> = () => IterableIterator<A>;
+type AsyncIterableGenerator<A> = () => AsyncIterableIterator<A>;
+type Source<A> = Iterable<A> | AsyncIterable<A> | IterableGenerator<A> | AsyncIterableGenerator<A>;
 
-export function seq<A>(iterable: IterableGenerator<A>): Sequence<A>;
-export function seq<A>(iterable: Iterable<A>): Sequence<A>;
-export function seq<A, B>(iterable: Iterable<B>, transducer: Transducer<B, A>): Sequence<A>;
-export function seq<A, B>(iterable: Iterable<B> | IterableGenerator<A>, transducer?: Transducer<B, A>) {
-    if (typeof iterable == 'function') return new Sequence(iterable(), transducer);
-    return new Sequence(iterable, transducer);
+export function sequence<A>(iterable: IterableGenerator<A>): Sequence<A>;
+export function sequence<A>(iterable: AsyncIterableGenerator<A>): AsyncSequence<A>;
+export function sequence<A>(iterable: Iterable<A>): Sequence<A>;
+export function sequence<A>(iterable: AsyncIterable<A>): AsyncSequence<A>;
+export function sequence<A, B>(iterable: Iterable<B>, transducer: Transducer<B, A>): Sequence<A>;
+export function sequence<A, B>(iterable: AsyncIterable<B>, transducer: Transducer<B, A>): AsyncSequence<A>;
+export function sequence(iterable: Source<any>, transducer?: Transducer<any, any>) {
+    if (typeof iterable == 'function') iterable = iterable();
+    if (typeof transducer == 'undefined') {
+        if (isIterable(iterable)) return Sequence.of(iterable);
+        if (isAsyncIterable(iterable)) return AsyncSequence.of(iterable);
+    } else {
+        if (isIterable(iterable)) return Sequence.of(iterable, transducer);
+        if (isAsyncIterable(iterable)) return AsyncSequence.of(iterable, transducer);
+    }
 }
 
 function isIterable(instance: any): instance is Iterable<any> {
     return (<Iterable<any>>instance)[Symbol.iterator] !== undefined;
 }
 
-type AsyncIterableGenerator<A> = () => AsyncIterableIterator<A>;
-
-export function aseq<A>(iterable: Iterable<A>): AsyncSequence<A>
-export function aseq<A>(iterable: AsyncIterableGenerator<A>): AsyncSequence<A>;
-export function aseq<A>(iterable: AsyncIterable<A>): AsyncSequence<A>;
-export function aseq<A, B>(iterable: AsyncIterable<B>, transducer: Transducer<B, A>): AsyncSequence<A>;
-export function aseq<A, B>(iterable: Iterable<A> | AsyncIterable<B> | AsyncIterableGenerator<A>, transducer?: Transducer<B, A>) {
-    if (typeof iterable == 'function') return aseq(iterable());
-    if (isIterable(iterable)) return aseq(async function* () {
-        yield* iterable;
-    });
-    return new AsyncSequence(iterable, transducer);
+function isAsyncIterable(instance: any): instance is AsyncIterable<any> {
+    return (<AsyncIterable<any>>instance)[Symbol.asyncIterator] !== undefined;
 }
+
