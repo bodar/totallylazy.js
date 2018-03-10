@@ -1,5 +1,3 @@
-import {lazy, replace} from "./lazy";
-
 if (typeof Symbol.asyncIterator == 'undefined') {
     (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
 }
@@ -387,7 +385,7 @@ export function range(start: number, end?: number, step: number = 1): Sequence<n
 }
 
 export class Sequence<A> implements Iterable<A>, Contract<A> {
-    private constructor(public iterable: Iterable<any>, public transducer: Transducer<any, A> = identity()) {
+    private constructor(public readonly iterable: Iterable<any>, public readonly transducer: Transducer<any, A> = identity()) {
     }
 
     static of<A>(iterable: Iterable<A>): Sequence<A>;
@@ -400,45 +398,49 @@ export class Sequence<A> implements Iterable<A>, Contract<A> {
         return this.transducer.sync(this.iterable)[Symbol.iterator]()
     }
 
+    create<B>(transducer: Transducer<A, B>): Sequence<B> {
+        return sequence(this.iterable, transducer);
+    }
+
     map<B>(mapper: Mapper<A, B>): Sequence<B> {
-        return sequence(this.iterable, this.transducer.map(mapper));
+        return this.create(this.transducer.map(mapper));
     }
 
     filter(predicate: Predicate<A>): Sequence<A> {
-        return sequence(this.iterable, this.transducer.filter(predicate));
+        return this.create(this.transducer.filter(predicate));
     }
 
     find(predicate: Predicate<A>): Sequence<A> {
-        return sequence(this.iterable, this.transducer.find(predicate));
+        return this.create(this.transducer.find(predicate));
     }
 
     first(): Sequence<A> {
-        return sequence(this.iterable, this.transducer.first());
+        return this.create(this.transducer.first());
     }
 
     last(): Sequence<A> {
-        return sequence(this.iterable, this.transducer.first());
+        return this.create(this.transducer.first());
     }
 
     take(count: number): Sequence<A> {
-        return sequence(this.iterable, this.transducer.take(count));
+        return this.create(this.transducer.take(count));
     }
 
     takeWhile(predicate: Predicate<A>): Sequence<A> {
-        return sequence(this.iterable, this.transducer.takeWhile(predicate));
+        return this.create(this.transducer.takeWhile(predicate));
     }
 
     scan<B>(reducer: Reducer<A, B>): Sequence<B> {
-        return sequence(this.iterable, this.transducer.scan(reducer));
+        return this.create(this.transducer.scan(reducer));
     }
 
     reduce<B>(reducer: Reducer<A, B>): Sequence<B> {
-        return sequence(this.iterable, this.transducer.reduce(reducer));
+        return this.create(this.transducer.reduce(reducer));
     }
 }
 
 export class AsyncSequence<A> implements AsyncIterable<A>, Contract<A> {
-    private constructor(public iterable: AsyncIterable<any>, public transducer: Transducer<any, A> = identity()) {
+    private constructor(public readonly iterable: AsyncIterable<any>, public readonly transducer: Transducer<any, A> = identity()) {
     }
 
     static of<A>(iterable: AsyncIterable<A>): AsyncSequence<A>;
@@ -451,40 +453,44 @@ export class AsyncSequence<A> implements AsyncIterable<A>, Contract<A> {
         return this.transducer.async_(this.iterable)[Symbol.asyncIterator]()
     }
 
+    create<B>(transducer: Transducer<A, B>): AsyncSequence<B> {
+        return sequence(this.iterable, transducer);
+    }
+
     map<B>(mapper: Mapper<A, B>): AsyncSequence<B> {
-        return sequence(this.iterable, this.transducer.map(mapper));
+        return this.create(this.transducer.map(mapper));
     }
 
     filter(predicate: Predicate<A>): AsyncSequence<A> {
-        return sequence(this.iterable, this.transducer.filter(predicate));
+        return this.create(this.transducer.filter(predicate));
     }
 
     find(predicate: Predicate<A>): AsyncSequence<A> {
-        return sequence(this.iterable, this.transducer.find(predicate));
+        return this.create(this.transducer.find(predicate));
     }
 
     first(): AsyncSequence<A> {
-        return sequence(this.iterable, this.transducer.first());
+        return this.create(this.transducer.first());
     }
 
     last(): AsyncSequence<A> {
-        return sequence(this.iterable, this.transducer.last());
+        return this.create(this.transducer.last());
     }
 
     take(count: number): AsyncSequence<A> {
-        return sequence(this.iterable, this.transducer.take(count));
+        return this.create(this.transducer.take(count));
     }
 
     takeWhile(predicate: Predicate<A>): AsyncSequence<A> {
-        return sequence(this.iterable, this.transducer.takeWhile(predicate));
+        return this.create(this.transducer.takeWhile(predicate));
     }
 
     scan<B>(reducer: Reducer<A, B>): AsyncSequence<B> {
-        return sequence(this.iterable, this.transducer.scan(reducer));
+        return this.create(this.transducer.scan(reducer));
     }
 
     reduce<B>(reducer: Reducer<A, B>): AsyncSequence<B> {
-        return sequence(this.iterable, this.transducer.reduce(reducer));
+        return this.create(this.transducer.reduce(reducer));
     }
 }
 
