@@ -436,13 +436,13 @@ export function range(start: number, end?: number, step: number = 1): Sequence<n
 
 type PromiseExecutor<A> = (resolve: (value?: A | PromiseLike<A>) => void, reject: (reason?: any) => void) => void;
 
-export class EnhancedPromise<A> extends Transducable<A> implements PromiseLike<A>, AsyncIterable<A>, Contract<A> {
+export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncIterable<A>, Contract<A> {
     protected constructor(public readonly original: Promise<any>, public readonly transducer: Transducer<any, A> = identity()) {
         super(transducer);
     }
 
-    static of<A>(executor: PromiseExecutor<A>): EnhancedPromise<A> {
-        return new EnhancedPromise<A>(new Promise<any>(executor));
+    static of<A>(executor: PromiseExecutor<A>): Single<A> {
+        return new Single<A>(new Promise<any>(executor));
     }
 
     then<B, E>(onfulfilled?: ((value: A) => (PromiseLike<B> | B)) | null | undefined, onrejected?: ((reason: any) => (PromiseLike<E> | E)) | null | undefined): PromiseLike<B | E> {
@@ -456,29 +456,29 @@ export class EnhancedPromise<A> extends Transducable<A> implements PromiseLike<A
         }())[Symbol.asyncIterator]()
     }
 
-    create<B>(transducer: Transducer<A, B>): EnhancedPromise<B> {
-        return new EnhancedPromise(this.original, transducer);
+    create<B>(transducer: Transducer<A, B>): Single<B> {
+        return new Single(this.original, transducer);
     }
 }
 
-export interface EnhancedPromise<A> {
-    map<B>(mapper: Mapper<A, B>): EnhancedPromise<B>;
+export interface Single<A> {
+    map<B>(mapper: Mapper<A, B>): Single<B>;
 
-    filter(predicate: Predicate<A>): EnhancedPromise<A>;
+    filter(predicate: Predicate<A>): Single<A>;
 
-    find(predicate: Predicate<A>): EnhancedPromise<A>;
+    find(predicate: Predicate<A>): Single<A>;
 
-    first(): EnhancedPromise<A>;
+    first(): Single<A>;
 
-    last(): EnhancedPromise<A>;
+    last(): Single<A>;
 
-    take(count: number): EnhancedPromise<A>;
+    take(count: number): Single<A>;
 
-    takeWhile(predicate: Predicate<A>): EnhancedPromise<A>;
+    takeWhile(predicate: Predicate<A>): Single<A>;
 
-    scan<B>(reducer: Reducer<A, B>): EnhancedPromise<B>;
+    scan<B>(reducer: Reducer<A, B>): Single<B>;
 
-    reduce<B>(reducer: Reducer<A, B>): EnhancedPromise<B>;
+    reduce<B>(reducer: Reducer<A, B>): Single<B>;
 }
 
 export class Sequence<A> extends Transducable<A> implements Iterable<A>, Contract<A> {
@@ -521,7 +521,7 @@ export interface Sequence<A> {
     reduce<B>(reducer: Reducer<A, B>): Sequence<B>;
 }
 
-export class AsyncSequence<A> extends Transducable<A> implements AsyncIterable<A>, Contract<A> {
+export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection<A> {
     protected constructor(public readonly iterable: AsyncIterable<any>, public readonly transducer: Transducer<any, A> = identity()) {
         super(transducer);
     }
