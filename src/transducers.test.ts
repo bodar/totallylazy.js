@@ -2,7 +2,7 @@ import {assert} from 'chai';
 import {
     transducer, sum, asyncArray, increment, repeat, syncArray, range, Option,
     IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer, toArray, Single,
-    sequence
+    sequence, Sequence
 } from "./transducers";
 
 
@@ -86,10 +86,8 @@ describe("transducers", () => {
     });
 
     it("supports flatMap", () => {
-        let actual = sequence([1, 2, 3]).flatMap(n => sequence([n, n * 2]));
-        assertSync(actual, 1, 2, 2, 4, 3, 6);
+        assertSync(sequence([1, 2, 3]).flatMap(n => sequence([n, n * 2])), 1, 2, 2, 4, 3, 6);
     });
-
 
     function assertSync<T>(actual: Iterable<T>, ...expected: T[]) {
         assert.deepEqual(syncArray(actual), expected);

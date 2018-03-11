@@ -25,9 +25,11 @@ export interface Contract<A> {
 }
 
 export interface Collection<A> extends Contract<A>, Iterable<A> {
+    flatMap<B>(mapper: Mapper<A, Collection<B>>): Collection<B>;
 }
 
 export interface AsyncCollection<A> extends Contract<A>, AsyncIterable<A> {
+    flatMap<B>(mapper: Mapper<A, AsyncCollection<B>>): AsyncCollection<B>;
 }
 
 export abstract class Transducer<A, B> implements Contract<B> {
@@ -468,7 +470,7 @@ export function range(start: number, end?: number, step: number = 1): Sequence<n
 
 type Executor<A> = (resolve: (value?: A | PromiseLike<A>) => void, reject: (reason?: any) => void) => void;
 
-export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncIterable<A>{
+export class Single<A> extends Transducable<A> implements PromiseLike<A>, Collection<A>{
     protected constructor(public readonly original: Promise<any>, public readonly transducer: Transducer<any, A> = identity()) {
         super(transducer);
     }
@@ -496,7 +498,7 @@ export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncI
     }
 }
 
-export interface Single<A> extends Contract<A>{
+export interface Single<A> extends Collection<A>{
     map<B>(mapper: Mapper<A, B>): Single<B>;
 
     flatMap<B>(mapper: Mapper<A, Single<B>>): Single<B>;
@@ -518,7 +520,7 @@ export interface Single<A> extends Contract<A>{
     reduce<B>(reducer: Reducer<A, B>): Single<B>;
 }
 
-export class Sequence<A> extends Transducable<A> implements Iterable<A> {
+export class Sequence<A> extends Transducable<A> implements Collection<A> {
     protected constructor(public readonly iterable: Iterable<any>, public readonly transducer: Transducer<any, A> = identity()) {
         super(transducer);
     }
@@ -538,7 +540,7 @@ export class Sequence<A> extends Transducable<A> implements Iterable<A> {
     }
 }
 
-export interface Sequence<A> extends Contract<A> {
+export interface Sequence<A> extends Collection<A> {
     map<B>(mapper: Mapper<A, B>): Sequence<B>;
 
     flatMap<B>(mapper: Mapper<A, Sequence<B>>): Sequence<B>;
@@ -580,7 +582,7 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
     }
 }
 
-export interface AsyncSequence<A> extends Contract<A> {
+export interface AsyncSequence<A> extends AsyncCollection<A> {
     map<B>(mapper: Mapper<A, B>): AsyncSequence<B>;
 
     flatMap<B>(mapper: Mapper<A, AsyncSequence<B>>): AsyncSequence<B>;
@@ -631,7 +633,7 @@ function isAsyncIterable(instance: any): instance is AsyncIterable<any> {
     return typeof instance == 'object' && Symbol.asyncIterator in instance;
 }
 
-export class Option<A> extends Transducable<A> implements Iterable<A>, Contract<A> {
+export class Option<A> extends Transducable<A> implements Collection<A> {
     protected constructor(public readonly value?: any, public readonly transducer: Transducer<any, A> = identity()) {
         super(transducer);
     }
@@ -653,7 +655,7 @@ export class Option<A> extends Transducable<A> implements Iterable<A>, Contract<
     }
 }
 
-export interface Option<A> extends Contract<A> {
+export interface Option<A> extends Collection<A> {
     map<B>(mapper: Mapper<A, B>): Option<B>;
 
     flatMap<B>(mapper: Mapper<A, Option<B>>): Option<B>;
