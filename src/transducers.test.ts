@@ -1,7 +1,8 @@
 import {assert} from 'chai';
 import {
     transducer, sum, asyncArray, increment, repeat, syncArray, range, Option,
-    IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer, toArray, EnhancedPromise
+    IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer, toArray, EnhancedPromise,
+    sequence, some
 } from "./transducers";
 
 
@@ -83,6 +84,11 @@ describe("transducers", () => {
     it("supports Option", () => {
         assertSync(Option.some(1).map(n => n.toString()), '1');
     });
+
+    it("supports Sequence to Option to Single", () => {
+        assertSync(sequence([1,2,3,4]).first().reduce(sum), 1);
+    });
+
 
     function assertSync<T>(actual: Iterable<T>, ...expected: T[]) {
         assert.deepEqual(syncArray(actual), expected);

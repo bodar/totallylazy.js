@@ -22,6 +22,12 @@ export interface Contract<A> {
     reduce<B>(reducer: Reducer<A, B>): Contract<B>;
 }
 
+export interface Collection<A> extends Contract<A>, Iterable<A> {
+}
+
+export interface AsyncCollection<A> extends Contract<A>, AsyncIterable<A> {
+}
+
 export abstract class Transducer<A, B> implements Contract<B> {
     abstract sync(iterable: Iterable<A>): Iterable<B>;
 
@@ -76,6 +82,49 @@ export abstract class Transducer<A, B> implements Contract<B> {
 
     reduce<C>(reducer: Reducer<B, C>): Transducer<A, C> {
         return reduce(reducer, this);
+    }
+}
+
+export abstract class Transducable<A> implements Contract<A> {
+    protected constructor(public readonly transducer: Transducer<any, A> = identity()) {
+    }
+
+    abstract create<B>(transducer: Transducer<A, B>): Transducable<B>;
+
+    map<B>(mapper: Mapper<A, B>): Transducable<B> {
+        return this.create(this.transducer.map(mapper));
+    }
+
+    filter(predicate: Predicate<A>): Transducable<A> {
+        return this.create(this.transducer.filter(predicate));
+    }
+
+    find(predicate: Predicate<A>): Transducable<A> {
+        return this.create(this.transducer.find(predicate));
+    }
+
+    first(): Transducable<A> {
+        return this.create(this.transducer.first());
+    }
+
+    last(): Transducable<A> {
+        return this.create(this.transducer.first());
+    }
+
+    take(count: number): Transducable<A> {
+        return this.create(this.transducer.take(count));
+    }
+
+    takeWhile(predicate: Predicate<A>): Transducable<A> {
+        return this.create(this.transducer.takeWhile(predicate));
+    }
+
+    scan<B>(reducer: Reducer<A, B>): Transducable<B> {
+        return this.create(this.transducer.scan(reducer));
+    }
+
+    reduce<B>(reducer: Reducer<A, B>): Transducable<B> {
+        return this.create(this.transducer.reduce(reducer));
     }
 }
 
@@ -384,70 +433,15 @@ export function range(start: number, end?: number, step: number = 1): Sequence<n
     });
 }
 
-export class Option<A> implements Iterable<A>, Contract<A> {
-    private constructor(public value?:any, public readonly transducer: Transducer<any, A> = identity()) {
-    }
-
-    static some<A>(instance:A): Option<A>{
-        return new Option<A>(instance);
-    }
-
-    static none<A>(): Option<A>{
-        return new Option<A>();
-    }
-
-    [Symbol.iterator](): Iterator<A> {
-        return this.transducer.sync([this.value])[Symbol.iterator]()
-    }
-
-    create<B>(transducer: Transducer<A, B>): Option<B> {
-        return new Option(this.value, transducer);
-    }
-
-    map<B>(mapper: Mapper<A, B>): Option<B> {
-        return this.create(this.transducer.map(mapper));
-    }
-
-    filter(predicate: Predicate<A>): Option<A> {
-        return this.create(this.transducer.filter(predicate));
-    }
-
-    find(predicate: Predicate<A>): Option<A> {
-        return this.create(this.transducer.find(predicate));
-    }
-
-    first(): Option<A> {
-        return this.create(this.transducer.first());
-    }
-
-    last(): Option<A> {
-        return this.create(this.transducer.first());
-    }
-
-    take(count: number): Option<A> {
-        return this.create(this.transducer.take(count));
-    }
-
-    takeWhile(predicate: Predicate<A>): Option<A> {
-        return this.create(this.transducer.takeWhile(predicate));
-    }
-
-    scan<B>(reducer: Reducer<A, B>): Option<B> {
-        return this.create(this.transducer.scan(reducer));
-    }
-
-    reduce<B>(reducer: Reducer<A, B>): Option<B> {
-        return this.create(this.transducer.reduce(reducer));
-    }
-}
 
 type PromiseExecutor<A> = (resolve: (value?: A | PromiseLike<A>) => void, reject: (reason?: any) => void) => void;
 
-export class EnhancedPromise<A> implements PromiseLike<A>, AsyncIterable<A>, Contract<A> {
-    private constructor(public readonly original:Promise<any>, public readonly transducer: Transducer<any, A> = identity()) {
+export class EnhancedPromise<A> extends Transducable<A> implements PromiseLike<A>, AsyncIterable<A>, Contract<A> {
+    protected constructor(public readonly original: Promise<any>, public readonly transducer: Transducer<any, A> = identity()) {
+        super(transducer);
     }
 
-    static of<A>(executor: PromiseExecutor<A>): EnhancedPromise<A>{
+    static of<A>(executor: PromiseExecutor<A>): EnhancedPromise<A> {
         return new EnhancedPromise<A>(new Promise<any>(executor));
     }
 
@@ -457,7 +451,7 @@ export class EnhancedPromise<A> implements PromiseLike<A>, AsyncIterable<A>, Con
 
     [Symbol.asyncIterator](): AsyncIterator<A> {
         const self = this;
-        return this.transducer.async_(async function*() {
+        return this.transducer.async_(async function* () {
             yield self;
         }())[Symbol.asyncIterator]()
     }
@@ -465,46 +459,31 @@ export class EnhancedPromise<A> implements PromiseLike<A>, AsyncIterable<A>, Con
     create<B>(transducer: Transducer<A, B>): EnhancedPromise<B> {
         return new EnhancedPromise(this.original, transducer);
     }
-
-    map<B>(mapper: Mapper<A, B>): EnhancedPromise<B> {
-        return this.create(this.transducer.map(mapper));
-    }
-
-    filter(predicate: Predicate<A>): EnhancedPromise<A> {
-        return this.create(this.transducer.filter(predicate));
-    }
-
-    find(predicate: Predicate<A>): EnhancedPromise<A> {
-        return this.create(this.transducer.find(predicate));
-    }
-
-    first(): EnhancedPromise<A> {
-        return this.create(this.transducer.first());
-    }
-
-    last(): EnhancedPromise<A> {
-        return this.create(this.transducer.first());
-    }
-
-    take(count: number): EnhancedPromise<A> {
-        return this.create(this.transducer.take(count));
-    }
-
-    takeWhile(predicate: Predicate<A>): EnhancedPromise<A> {
-        return this.create(this.transducer.takeWhile(predicate));
-    }
-
-    scan<B>(reducer: Reducer<A, B>): EnhancedPromise<B> {
-        return this.create(this.transducer.scan(reducer));
-    }
-
-    reduce<B>(reducer: Reducer<A, B>): EnhancedPromise<B> {
-        return this.create(this.transducer.reduce(reducer));
-    }
 }
 
-export class Sequence<A> implements Iterable<A>, Contract<A> {
-    private constructor(public readonly iterable: Iterable<any>, public readonly transducer: Transducer<any, A> = identity()) {
+export interface EnhancedPromise<A> {
+    map<B>(mapper: Mapper<A, B>): EnhancedPromise<B>;
+
+    filter(predicate: Predicate<A>): EnhancedPromise<A>;
+
+    find(predicate: Predicate<A>): EnhancedPromise<A>;
+
+    first(): EnhancedPromise<A>;
+
+    last(): EnhancedPromise<A>;
+
+    take(count: number): EnhancedPromise<A>;
+
+    takeWhile(predicate: Predicate<A>): EnhancedPromise<A>;
+
+    scan<B>(reducer: Reducer<A, B>): EnhancedPromise<B>;
+
+    reduce<B>(reducer: Reducer<A, B>): EnhancedPromise<B>;
+}
+
+export class Sequence<A> extends Transducable<A> implements Iterable<A>, Contract<A> {
+    protected constructor(public readonly iterable: Iterable<any>, public readonly transducer: Transducer<any, A> = identity()) {
+        super(transducer);
     }
 
     static of<A>(iterable: Iterable<A>): Sequence<A>;
@@ -520,46 +499,31 @@ export class Sequence<A> implements Iterable<A>, Contract<A> {
     create<B>(transducer: Transducer<A, B>): Sequence<B> {
         return sequence(this.iterable, transducer);
     }
-
-    map<B>(mapper: Mapper<A, B>): Sequence<B> {
-        return this.create(this.transducer.map(mapper));
-    }
-
-    filter(predicate: Predicate<A>): Sequence<A> {
-        return this.create(this.transducer.filter(predicate));
-    }
-
-    find(predicate: Predicate<A>): Sequence<A> {
-        return this.create(this.transducer.find(predicate));
-    }
-
-    first(): Sequence<A> {
-        return this.create(this.transducer.first());
-    }
-
-    last(): Sequence<A> {
-        return this.create(this.transducer.first());
-    }
-
-    take(count: number): Sequence<A> {
-        return this.create(this.transducer.take(count));
-    }
-
-    takeWhile(predicate: Predicate<A>): Sequence<A> {
-        return this.create(this.transducer.takeWhile(predicate));
-    }
-
-    scan<B>(reducer: Reducer<A, B>): Sequence<B> {
-        return this.create(this.transducer.scan(reducer));
-    }
-
-    reduce<B>(reducer: Reducer<A, B>): Sequence<B> {
-        return this.create(this.transducer.reduce(reducer));
-    }
 }
 
-export class AsyncSequence<A> implements AsyncIterable<A>, Contract<A> {
-    private constructor(public readonly iterable: AsyncIterable<any>, public readonly transducer: Transducer<any, A> = identity()) {
+export interface Sequence<A> {
+    map<B>(mapper: Mapper<A, B>): Sequence<B>;
+
+    filter(predicate: Predicate<A>): Sequence<A>;
+
+    find(predicate: Predicate<A>): Sequence<A>;
+
+    first(): Sequence<A>;
+
+    last(): Sequence<A>;
+
+    take(count: number): Sequence<A>;
+
+    takeWhile(predicate: Predicate<A>): Sequence<A>;
+
+    scan<B>(reducer: Reducer<A, B>): Sequence<B>;
+
+    reduce<B>(reducer: Reducer<A, B>): Sequence<B>;
+}
+
+export class AsyncSequence<A> extends Transducable<A> implements AsyncIterable<A>, Contract<A> {
+    protected constructor(public readonly iterable: AsyncIterable<any>, public readonly transducer: Transducer<any, A> = identity()) {
+        super(transducer);
     }
 
     static of<A>(iterable: AsyncIterable<A>): AsyncSequence<A>;
@@ -575,42 +539,26 @@ export class AsyncSequence<A> implements AsyncIterable<A>, Contract<A> {
     create<B>(transducer: Transducer<A, B>): AsyncSequence<B> {
         return sequence(this.iterable, transducer);
     }
+}
 
-    map<B>(mapper: Mapper<A, B>): AsyncSequence<B> {
-        return this.create(this.transducer.map(mapper));
-    }
+export interface AsyncSequence<A> {
+    map<B>(mapper: Mapper<A, B>): AsyncSequence<B>;
 
-    filter(predicate: Predicate<A>): AsyncSequence<A> {
-        return this.create(this.transducer.filter(predicate));
-    }
+    filter(predicate: Predicate<A>): AsyncSequence<A>;
 
-    find(predicate: Predicate<A>): AsyncSequence<A> {
-        return this.create(this.transducer.find(predicate));
-    }
+    find(predicate: Predicate<A>): AsyncSequence<A>;
 
-    first(): AsyncSequence<A> {
-        return this.create(this.transducer.first());
-    }
+    first(): AsyncSequence<A>;
 
-    last(): AsyncSequence<A> {
-        return this.create(this.transducer.last());
-    }
+    last(): AsyncSequence<A>;
 
-    take(count: number): AsyncSequence<A> {
-        return this.create(this.transducer.take(count));
-    }
+    take(count: number): AsyncSequence<A>;
 
-    takeWhile(predicate: Predicate<A>): AsyncSequence<A> {
-        return this.create(this.transducer.takeWhile(predicate));
-    }
+    takeWhile(predicate: Predicate<A>): AsyncSequence<A>;
 
-    scan<B>(reducer: Reducer<A, B>): AsyncSequence<B> {
-        return this.create(this.transducer.scan(reducer));
-    }
+    scan<B>(reducer: Reducer<A, B>): AsyncSequence<B>;
 
-    reduce<B>(reducer: Reducer<A, B>): AsyncSequence<B> {
-        return this.create(this.transducer.reduce(reducer));
-    }
+    reduce<B>(reducer: Reducer<A, B>): AsyncSequence<B>;
 }
 
 type IterableGenerator<A> = () => IterableIterator<A>;
@@ -640,5 +588,47 @@ function isIterable(instance: any): instance is Iterable<any> {
 
 function isAsyncIterable(instance: any): instance is AsyncIterable<any> {
     return typeof instance == 'object' && Symbol.asyncIterator in instance;
+}
+
+export class Option<A> extends Transducable<A> implements Iterable<A>, Contract<A> {
+    protected constructor(public readonly value?: any, public readonly transducer: Transducer<any, A> = identity()) {
+        super(transducer);
+    }
+
+    static some<A>(instance: A): Option<A> {
+        return new Option<A>(instance);
+    }
+
+    static none<A>(): Option<A> {
+        return new Option<A>();
+    }
+
+    [Symbol.iterator](): Iterator<A> {
+        return this.transducer.sync(typeof this.value !== 'undefined' ? [this.value] : [])[Symbol.iterator]()
+    }
+
+    create<B>(transducer: Transducer<A, B>): Option<B> {
+        return new Option(this.value, transducer);
+    }
+}
+
+export interface Option<A> extends Collection<A> {
+    map<B>(mapper: Mapper<A, B>): Option<B>;
+
+    filter(predicate: Predicate<A>): Option<A>;
+
+    find(predicate: Predicate<A>): Option<A>;
+
+    first(): Option<A>;
+
+    last(): Option<A>;
+
+    take(count: number): Option<A>;
+
+    takeWhile(predicate: Predicate<A>): Option<A>;
+
+    scan<B>(reducer: Reducer<A, B>): Option<B>;
+
+    reduce<B>(reducer: Reducer<A, B>): Option<B>;
 }
 
