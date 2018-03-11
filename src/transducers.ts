@@ -426,23 +426,26 @@ export function range(start: number, end?: number, step: number = 1): Sequence<n
     return sequence(function* () {
         if (end === undefined) yield* iterate(increment, start);
         else {
-            const absoluteStep = Math.abs(step);
-            if (end < start) yield* iterate(subtract(absoluteStep), start).takeWhile(n => n >= end);
-            else yield* iterate(add(absoluteStep), start).takeWhile(n => n <= end);
+            const absolute = Math.abs(step);
+            if (end < start) yield* iterate(subtract(absolute), start).takeWhile(n => n >= end);
+            else yield* iterate(add(absolute), start).takeWhile(n => n <= end);
         }
     });
 }
 
 
-type PromiseExecutor<A> = (resolve: (value?: A | PromiseLike<A>) => void, reject: (reason?: any) => void) => void;
+type Executor<A> = (resolve: (value?: A | PromiseLike<A>) => void, reject: (reason?: any) => void) => void;
 
 export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncIterable<A>, Contract<A> {
     protected constructor(public readonly original: Promise<any>, public readonly transducer: Transducer<any, A> = identity()) {
         super(transducer);
     }
 
-    static of<A>(executor: PromiseExecutor<A>): Single<A> {
-        return new Single<A>(new Promise<any>(executor));
+    static of<A>(promise: PromiseLike<A>): Single<A>
+    static of<A>(executor: Executor<A>): Single<A>
+    static of<A>(value: any) {
+        if(typeof value == 'function') return new Single<A>(new Promise<any>(value));
+        return new Single<A>(value);
     }
 
     then<B, E>(onfulfilled?: ((value: A) => (PromiseLike<B> | B)) | null | undefined, onrejected?: ((reason: any) => (PromiseLike<E> | E)) | null | undefined): PromiseLike<B | E> {

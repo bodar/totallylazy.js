@@ -2,7 +2,7 @@ import {assert} from 'chai';
 import {
     transducer, sum, asyncArray, increment, repeat, syncArray, range, Option,
     IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer, toArray, Single,
-    sequence, some
+    sequence
 } from "./transducers";
 
 
