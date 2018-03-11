@@ -5,6 +5,8 @@ if (typeof Symbol.asyncIterator == 'undefined') {
 export interface Contract<A> {
     map<B>(mapper: Mapper<A, B>): Contract<B>;
 
+    flatMap<B>(mapper: Mapper<A, Contract<B>>): Contract<B>;
+
     filter(predicate: Predicate<A>): Contract<A>;
 
     find(predicate: Predicate<A>): Contract<A>;
@@ -52,6 +54,10 @@ export abstract class Transducer<A, B> implements Contract<B> {
         return map(mapper, this);
     }
 
+    flatMap<C>(mapper: Mapper<B, Contract<C>>): Transducer<A, C> {
+        return flatMap(mapper, this);
+    }
+
     filter(predicate: Predicate<B>): Transducer<A, B> {
         return filter(predicate, this);
     }
@@ -93,6 +99,10 @@ export abstract class Transducable<A> implements Contract<A> {
 
     map<B>(mapper: Mapper<A, B>): Transducable<B> {
         return this.create(this.transducer.map(mapper));
+    }
+
+    flatMap<B>(mapper: Mapper<A, Transducable<B>>): Transducable<B> {
+        return this.create(this.transducer.flatMap(mapper));
     }
 
     filter(predicate: Predicate<A>): Transducable<A> {
@@ -207,6 +217,28 @@ export class MapTransducer<A, B> extends Transducer<A, B> {
 
 export function map<A, B, C>(mapper: Mapper<B, C>, transducer: Transducer<A, B>): Transducer<A, C> {
     return compose(new MapTransducer(mapper), transducer);
+}
+
+export class FlatMapTransducer<A, B> extends Transducer<A, B> {
+    constructor(public mapper: Mapper<A, Contract<B>>) {
+        super();
+    }
+
+    async * async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
+        for await (const a of iterable) {
+            yield* this.mapper(a) as any as AsyncIterable<B>;
+        }
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<B> {
+        for (const a of iterable) {
+            yield* this.mapper(a) as any as Iterable<B>;
+        }
+    }
+}
+
+export function flatMap<A, B, C>(mapper: Mapper<B, Contract<C>>, transducer: Transducer<A, B>): Transducer<A, C> {
+    return compose(new FlatMapTransducer(mapper), transducer);
 }
 
 export type Predicate<A> = (a: A) => boolean;
@@ -436,7 +468,7 @@ export function range(start: number, end?: number, step: number = 1): Sequence<n
 
 type Executor<A> = (resolve: (value?: A | PromiseLike<A>) => void, reject: (reason?: any) => void) => void;
 
-export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncIterable<A>, Contract<A> {
+export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncIterable<A>{
     protected constructor(public readonly original: Promise<any>, public readonly transducer: Transducer<any, A> = identity()) {
         super(transducer);
     }
@@ -464,8 +496,10 @@ export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncI
     }
 }
 
-export interface Single<A> {
+export interface Single<A> extends Contract<A>{
     map<B>(mapper: Mapper<A, B>): Single<B>;
+
+    flatMap<B>(mapper: Mapper<A, Single<B>>): Single<B>;
 
     filter(predicate: Predicate<A>): Single<A>;
 
@@ -484,7 +518,7 @@ export interface Single<A> {
     reduce<B>(reducer: Reducer<A, B>): Single<B>;
 }
 
-export class Sequence<A> extends Transducable<A> implements Iterable<A>, Contract<A> {
+export class Sequence<A> extends Transducable<A> implements Iterable<A> {
     protected constructor(public readonly iterable: Iterable<any>, public readonly transducer: Transducer<any, A> = identity()) {
         super(transducer);
     }
@@ -504,8 +538,10 @@ export class Sequence<A> extends Transducable<A> implements Iterable<A>, Contrac
     }
 }
 
-export interface Sequence<A> {
+export interface Sequence<A> extends Contract<A> {
     map<B>(mapper: Mapper<A, B>): Sequence<B>;
+
+    flatMap<B>(mapper: Mapper<A, Sequence<B>>): Sequence<B>;
 
     filter(predicate: Predicate<A>): Sequence<A>;
 
@@ -544,8 +580,10 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
     }
 }
 
-export interface AsyncSequence<A> {
+export interface AsyncSequence<A> extends Contract<A> {
     map<B>(mapper: Mapper<A, B>): AsyncSequence<B>;
+
+    flatMap<B>(mapper: Mapper<A, AsyncSequence<B>>): AsyncSequence<B>;
 
     filter(predicate: Predicate<A>): AsyncSequence<A>;
 
@@ -615,8 +653,10 @@ export class Option<A> extends Transducable<A> implements Iterable<A>, Contract<
     }
 }
 
-export interface Option<A> extends Collection<A> {
+export interface Option<A> extends Contract<A> {
     map<B>(mapper: Mapper<A, B>): Option<B>;
+
+    flatMap<B>(mapper: Mapper<A, Option<B>>): Option<B>;
 
     filter(predicate: Predicate<A>): Option<A>;
 

@@ -85,8 +85,9 @@ describe("transducers", () => {
         assertSync(Option.some(1).map(n => n.toString()), '1');
     });
 
-    it("supports Sequence to Option to Single", () => {
-        assertSync(sequence([1,2,3,4]).first().reduce(sum), 1);
+    it("supports flatMap", () => {
+        let actual = sequence([1, 2, 3]).flatMap(n => sequence([n, n * 2]));
+        assertSync(actual, 1, 2, 2, 4, 3, 6);
     });
 
 
