@@ -1,9 +1,8 @@
 import {assert} from 'chai';
 import {
-    transducer, sum, asyncArray, increment, repeat, syncArray, range, Option,
-    IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer, toArray, Single,
-    sequence, Sequence
-} from "./transducers";
+    transducer, asyncArray, syncArray, IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer, toArray} from "./transducers";
+import {Option, range, repeat, sequence, Sequence, Single} from "./sequence";
+import {increment, sum} from "./numbers";
 
 
 describe("transducers", () => {
