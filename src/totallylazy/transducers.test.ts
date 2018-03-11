@@ -1,8 +1,9 @@
 import {assert} from 'chai';
 import {
-    transducer, asyncArray, syncArray, IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer, toArray} from "./transducers";
+    transducer, IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer, intoArray} from "./transducers";
 import {Option, range, repeat, sequence, Sequence, Single} from "./sequence";
 import {increment, sum} from "./numbers";
+import {toPromiseArray, toArray} from "./collections";
 
 
 describe("transducers", () => {
@@ -38,7 +39,7 @@ describe("transducers", () => {
     });
 
     it("can reduce to array", () => {
-        assertSync(transducer<number>().reduce(toArray<number>()).transduce([0, 2, 4]), [0, 2, 4]);
+        assertSync(transducer<number>().reduce(intoArray<number>()).transduce([0, 2, 4]), [0, 2, 4]);
     });
 
     it("can take", () => {
@@ -89,10 +90,10 @@ describe("transducers", () => {
     });
 
     function assertSync<T>(actual: Iterable<T>, ...expected: T[]) {
-        assert.deepEqual(syncArray(actual), expected);
+        assert.deepEqual(toArray(actual), expected);
     }
 
     async function assertAsync<T>(iterable: AsyncIterable<T>, ...expected: T[]) {
-        assert.deepEqual(await asyncArray(iterable), expected);
+        assert.deepEqual(await toPromiseArray(iterable), expected);
     }
 });

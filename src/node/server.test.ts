@@ -2,12 +2,9 @@ import {assert} from 'chai';
 import {handlerContract} from "../handler.contract";
 import {HttpBinHandler} from "../httpbin";
 import {Closeable, Handler} from "../api";
+import {runningInNode} from "../totallylazy/node";
 
 describe("NodeServerHandler", function () {
-    function runningInNode() {
-        return (typeof process !== 'undefined') && (typeof process.versions.node !== 'undefined')
-    }
-
     let server:Handler & Closeable<void>;
 
     before(async function() {

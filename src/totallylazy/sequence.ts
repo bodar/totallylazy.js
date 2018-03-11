@@ -46,7 +46,7 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
     }
 
     create<B>(transducer: Transducer<A, B>): Sequence<B> {
-        return sequence(this.iterable, transducer);
+        return Sequence.of(this.iterable, transducer);
     }
 }
 
@@ -88,7 +88,7 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
     }
 
     create<B>(transducer: Transducer<A, B>): AsyncSequence<B> {
-        return sequence(this.iterable, transducer);
+        return AsyncSequence.of(this.iterable, transducer);
     }
 }
 

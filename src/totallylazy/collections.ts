@@ -48,3 +48,17 @@ export function isIterable(instance: any): instance is Iterable<any> {
 export function isAsyncIterable(instance: any): instance is AsyncIterable<any> {
     return typeof instance == 'object' && Symbol.asyncIterator in instance;
 }
+
+export function toIterable<T>(...t: T[]): Iterable<T> {
+    return t;
+}
+
+export function toArray<T>(iterable: Iterable<T>): T[] {
+    return [...iterable];
+}
+
+export async function toPromiseArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
+    const result: T[] = [];
+    for await (const value of iterable) result.push(value);
+    return result;
+}

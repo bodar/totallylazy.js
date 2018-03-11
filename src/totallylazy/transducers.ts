@@ -1,9 +1,5 @@
 import {Contract, isAsyncIterable, isIterable, Mapper, Predicate, Reducer} from "./collections";
 
-if (typeof Symbol.asyncIterator == 'undefined') {
-    (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
-}
-
 export abstract class Transducer<A, B> implements Contract<B> {
     abstract sync(iterable: Iterable<A>): Iterable<B>;
 
@@ -265,19 +261,22 @@ export function decompose(transducer: Transducer<any, any>): Transducer<any, any
     return [transducer];
 }
 
-export class ToArray<A> implements Reducer<A, A[]> {
-    call(accumilator: A[], instance: A): A[] {
-        accumilator.push(instance);
-        return accumilator;
+export class IntoArray<A> implements Reducer<A, A[]> {
+    constructor(public seed: A[] = []) {
+    }
+
+    call(accumulator:A[], instance: A): A[] {
+        accumulator.push(instance);
+        return accumulator;
     }
 
     identity(): A[] {
-        return [];
+        return this.seed;
     }
 }
 
-export function toArray<A>() {
-    return new ToArray<A>();
+export function intoArray<A>(seed?:A[]) {
+    return new IntoArray<A>(seed);
 }
 
 export class ScanTransducer<A, B> extends Transducer<A, B> {
@@ -358,18 +357,4 @@ export function takeWhile<A, B>(predicate: Predicate<B>, transducer: Transducer<
 }
 
 
-
-export function* iterable<T>(...t: T[]): IterableIterator<T> {
-    yield* t;
-}
-
-export function syncArray<T>(iterable: Iterable<T>): T[] {
-    return [...iterable];
-}
-
-export async function asyncArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
-    const result: T[] = [];
-    for await (const value of iterable) result.push(value);
-    return result;
-}
 

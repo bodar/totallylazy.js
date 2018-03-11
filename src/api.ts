@@ -1,3 +1,7 @@
+if (typeof Symbol.asyncIterator == 'undefined') {
+    (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
+}
+
 export interface Handler {
     handle(request: Request): Promise<Response>;
 }
@@ -13,10 +17,6 @@ export interface Filter {
 export interface Message {
     readonly headers: Headers,
     readonly body?: Body
-}
-
-if (typeof Symbol.asyncIterator == 'undefined') {
-    (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
 }
 
 export interface Body {

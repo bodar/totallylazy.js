@@ -1,7 +1,7 @@
 import {FuseBox, WebIndexPlugin} from 'fuse-box';
 import {src, task, tsc} from 'fuse-box/sparky';
 import * as Mocha from 'mocha';
-import {Path} from './src/files';
+import {Path} from './src/totallylazy/files';
 
 task('default', ['clean', 'compile', 'test',  'bundle']);
 

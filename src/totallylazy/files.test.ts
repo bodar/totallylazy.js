@@ -1,7 +1,12 @@
 import {assert} from 'chai';
 import {Path} from './files';
+import {runningInNode} from "./node";
 
 describe("files", function () {
+    before(function() {
+        if (!runningInNode()) this.skip();
+    });
+
     it('can return absolute path', function () {
         assert(new Path('src').absolutePath.endsWith("http4js/src"));
     });
