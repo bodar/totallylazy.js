@@ -3,6 +3,7 @@ import * as path from 'path';
 import {promisify} from 'util';
 import {lazy} from './lazy';
 import {Stats} from "fs";
+import {AsyncSequence, sequence, Sequence} from "./sequence";
 
 export interface PathLike {
     name: string
@@ -24,9 +25,12 @@ export class Path implements PathLike {
         return lazy(this, 'absolutePath', path.resolve(this.parent, this.name));
     }
 
-    async * children(): AsyncIterable<Path> {
-        const names: string[] = await promisify(fs.readdir)(this.absolutePath);
-        yield* names.map(name => new Path(name, this.absolutePath));
+    children(): AsyncSequence<Path> {
+        const self = this;
+        return sequence(async function*() {
+            const names: string[] = await promisify(fs.readdir)(self.absolutePath);
+            yield* names.map(name => new Path(name, self.absolutePath));
+        })
     }
 
     get isDirectory(): Promise<boolean> {
@@ -37,11 +41,14 @@ export class Path implements PathLike {
         return lazy(this, 'stats', promisify(fs.lstat)(this.absolutePath));
     }
 
-    async * descendants(): AsyncIterable<Path> {
-        for await (const child of this.children()) {
-            yield child;
-            if (await child.isDirectory) yield* child.descendants();
-        }
+    descendants(): AsyncSequence<Path> {
+        const self = this;
+        return sequence(async function*() {
+            for await (const child of self.children()) {
+                yield child;
+                if (await child.isDirectory) yield* child.descendants();
+            }
+        });
     }
 }
 
