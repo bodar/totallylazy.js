@@ -21,7 +21,7 @@ describe("Sequence", () => {
     });
 
     it("decomposition still works even when moving from Sequence to Option", () => {
-        const value: Option<number> = sequence([1, 2, 3]).flatMap(n => sequence([n, n * 2])).find(n => n > 2);
+        const value = sequence([1, 2, 3]).flatMap(n => sequence([n, n * 2])).find(n => n > 2);
         assert.instanceOf(value, Option);
         const [identity, flatMap, filter, first] = value.transducer.decompose();
         assert.instanceOf(identity, IdentityTransducer);

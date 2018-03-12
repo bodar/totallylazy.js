@@ -49,6 +49,18 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
         return Sequence.of(this.iterable, transducer);
     }
 
+    map<B>(mapper: Mapper<A, B>): Sequence<B>{
+        return this.create(this.transducer.map(mapper));
+    }
+
+    flatMap<B>(mapper: Mapper<A, Sequence<B>>): Sequence<B>{
+        return this.create(this.transducer.flatMap(mapper));
+    }
+
+    filter(predicate: Predicate<A>): Sequence<A>{
+        return this.create(this.transducer.filter(predicate));
+    }
+
     find(predicate: Predicate<A>): Option<A>{
         return Option.of(this.iterable, this.transducer.find(predicate));
     }
@@ -60,28 +72,22 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
     last(): Option<A>{
         return Option.of(this.iterable, this.transducer.last());
     }
-}
 
-export interface Sequence<A> extends Collection<A> {
-    map<B>(mapper: Mapper<A, B>): Sequence<B>;
+    take(count: number): Sequence<A>{
+        return this.create(this.transducer.take(count));
+    }
 
-    flatMap<B>(mapper: Mapper<A, Sequence<B>>): Sequence<B>;
+    takeWhile(predicate: Predicate<A>): Sequence<A>{
+        return this.create(this.transducer.takeWhile(predicate));
+    }
 
-    filter(predicate: Predicate<A>): Sequence<A>;
+    scan<B>(reducer: Reducer<A, B>): Sequence<B>{
+        return this.create(this.transducer.scan(reducer));
+    }
 
-    find(predicate: Predicate<A>): Option<A>;
-
-    first(): Option<A>;
-
-    last(): Option<A>;
-
-    take(count: number): Sequence<A>;
-
-    takeWhile(predicate: Predicate<A>): Sequence<A>;
-
-    scan<B>(reducer: Reducer<A, B>): Sequence<B>;
-
-    reduce<B>(reducer: Reducer<A, B>): Sequence<B>;
+    reduce<B>(reducer: Reducer<A, B>): Sequence<B>{
+        return this.create(this.transducer.reduce(reducer));
+    }
 }
 
 export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection<A> {
@@ -102,28 +108,46 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
     create<B>(transducer: Transducer<A, B>): AsyncSequence<B> {
         return AsyncSequence.of(this.iterable, transducer);
     }
-}
 
-export interface AsyncSequence<A> extends AsyncCollection<A> {
-    map<B>(mapper: Mapper<A, B>): AsyncSequence<B>;
+    map<B>(mapper: Mapper<A, B>): AsyncSequence<B> {
+        return this.create(this.transducer.map(mapper));
+    }
 
-    flatMap<B>(mapper: Mapper<A, AsyncSequence<B>>): AsyncSequence<B>;
+    flatMap<B>(mapper: Mapper<A, AsyncSequence<B>>): AsyncSequence<B> {
+        return this.create(this.transducer.flatMap(mapper));
+    }
 
-    filter(predicate: Predicate<A>): AsyncSequence<A>;
+    filter(predicate: Predicate<A>): AsyncSequence<A> {
+        return this.create(this.transducer.filter(predicate));
+    }
 
-    find(predicate: Predicate<A>): AsyncSequence<A>;
+    find(predicate: Predicate<A>): AsyncSequence<A> {
+        return this.create(this.transducer.find(predicate));
+    }
 
-    first(): AsyncSequence<A>;
+    first(): AsyncSequence<A> {
+        return this.create(this.transducer.first());
+    }
 
-    last(): AsyncSequence<A>;
+    last(): AsyncSequence<A> {
+        return this.create(this.transducer.first());
+    }
 
-    take(count: number): AsyncSequence<A>;
+    take(count: number): AsyncSequence<A> {
+        return this.create(this.transducer.take(count));
+    }
 
-    takeWhile(predicate: Predicate<A>): AsyncSequence<A>;
+    takeWhile(predicate: Predicate<A>): AsyncSequence<A> {
+        return this.create(this.transducer.takeWhile(predicate));
+    }
 
-    scan<B>(reducer: Reducer<A, B>): AsyncSequence<B>;
+    scan<B>(reducer: Reducer<A, B>): AsyncSequence<B> {
+        return this.create(this.transducer.scan(reducer));
+    }
 
-    reduce<B>(reducer: Reducer<A, B>): AsyncSequence<B>;
+    reduce<B>(reducer: Reducer<A, B>): AsyncSequence<B> {
+        return this.create(this.transducer.reduce(reducer));
+    }
 }
 
 type IterableGenerator<A> = () => IterableIterator<A>;
@@ -175,28 +199,46 @@ export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncC
     create<B>(transducer: Transducer<A, B>): Single<B> {
         return new Single(this.original, transducer);
     }
-}
 
-export interface Single<A> extends AsyncCollection<A> {
-    map<B>(mapper: Mapper<A, B>): Single<B>;
+    map<B>(mapper: Mapper<A, B>): Single<B> {
+        return this.create(this.transducer.map(mapper));
+    }
 
-    flatMap<B>(mapper: Mapper<A, Single<B>>): Single<B>;
+    flatMap<B>(mapper: Mapper<A, Single<B>>): Single<B> {
+        return this.create(this.transducer.flatMap(mapper));
+    }
 
-    filter(predicate: Predicate<A>): Single<A>;
+    filter(predicate: Predicate<A>): Single<A> {
+        return this.create(this.transducer.filter(predicate));
+    }
 
-    find(predicate: Predicate<A>): Single<A>;
+    find(predicate: Predicate<A>): Single<A> {
+        return this.create(this.transducer.find(predicate));
+    }
 
-    first(): Single<A>;
+    first(): Single<A> {
+        return this.create(this.transducer.first());
+    }
 
-    last(): Single<A>;
+    last(): Single<A> {
+        return this.create(this.transducer.first());
+    }
 
-    take(count: number): Single<A>;
+    take(count: number): Single<A> {
+        return this.create(this.transducer.take(count));
+    }
 
-    takeWhile(predicate: Predicate<A>): Single<A>;
+    takeWhile(predicate: Predicate<A>): Single<A> {
+        return this.create(this.transducer.takeWhile(predicate));
+    }
 
-    scan<B>(reducer: Reducer<A, B>): Single<B>;
+    scan<B>(reducer: Reducer<A, B>): Single<B> {
+        return this.create(this.transducer.scan(reducer));
+    }
 
-    reduce<B>(reducer: Reducer<A, B>): Single<B>;
+    reduce<B>(reducer: Reducer<A, B>): Single<B> {
+        return this.create(this.transducer.reduce(reducer));
+    }
 }
 
 export class Option<A> extends Transducable<A> implements Collection<A> {
@@ -224,27 +266,45 @@ export class Option<A> extends Transducable<A> implements Collection<A> {
     create<B>(transducer: Transducer<A, B>): Option<B> {
         return Option.of(this.iterable, transducer);
     }
-}
 
-export interface Option<A> extends Collection<A> {
-    map<B>(mapper: Mapper<A, B>): Option<B>;
+    map<B>(mapper: Mapper<A, B>): Option<B> {
+        return this.create(this.transducer.map(mapper));
+    }
 
-    flatMap<B>(mapper: Mapper<A, Option<B>>): Option<B>;
+    flatMap<B>(mapper: Mapper<A, Option<B>>): Option<B> {
+        return this.create(this.transducer.flatMap(mapper));
+    }
 
-    filter(predicate: Predicate<A>): Option<A>;
+    filter(predicate: Predicate<A>): Option<A> {
+        return this.create(this.transducer.filter(predicate));
+    }
 
-    find(predicate: Predicate<A>): Option<A>;
+    find(predicate: Predicate<A>): Option<A> {
+        return this.create(this.transducer.find(predicate));
+    }
 
-    first(): Option<A>;
+    first(): Option<A> {
+        return this.create(this.transducer.first());
+    }
 
-    last(): Option<A>;
+    last(): Option<A> {
+        return this.create(this.transducer.first());
+    }
 
-    take(count: number): Option<A>;
+    take(count: number): Option<A> {
+        return this.create(this.transducer.take(count));
+    }
 
-    takeWhile(predicate: Predicate<A>): Option<A>;
+    takeWhile(predicate: Predicate<A>): Option<A> {
+        return this.create(this.transducer.takeWhile(predicate));
+    }
 
-    scan<B>(reducer: Reducer<A, B>): Option<B>;
+    scan<B>(reducer: Reducer<A, B>): Option<B> {
+        return this.create(this.transducer.scan(reducer));
+    }
 
-    reduce<B>(reducer: Reducer<A, B>): Option<B>;
+    reduce<B>(reducer: Reducer<A, B>): Option<B> {
+        return this.create(this.transducer.reduce(reducer));
+    }
 }
 
