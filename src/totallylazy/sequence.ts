@@ -69,6 +69,12 @@ export interface Sequence<A> extends Collection<A> {
 
     filter(predicate: Predicate<A>): Sequence<A>;
 
+    find(predicate: Predicate<A>): Option<A>;
+
+    first(): Option<A>;
+
+    last(): Option<A>;
+
     take(count: number): Sequence<A>;
 
     takeWhile(predicate: Predicate<A>): Sequence<A>;
