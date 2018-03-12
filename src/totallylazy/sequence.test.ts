@@ -15,6 +15,9 @@ describe("Sequence", () => {
         assertSync(sequence([1, 2, 3]).flatMap(n => sequence([n, n * 2])), 1, 2, 2, 4, 3, 6);
     });
 
+    it("operations terminate early", () => {
+        assertSync(range(1).flatMap(n => sequence([n, n * 2])).take(6), 1, 2, 2, 4, 3, 6);
+    });
 });
 
 describe("Single", () => {
