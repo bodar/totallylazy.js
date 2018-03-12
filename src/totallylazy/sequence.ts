@@ -49,6 +49,10 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
         return Sequence.of(this.iterable, transducer);
     }
 
+    find(predicate: Predicate<A>): Option<A>{
+        return Option.of(this.iterable, this.transducer.find(predicate));
+    }
+
     first(): Option<A>{
         return Option.of(this.iterable, this.transducer.first());
     }
@@ -64,8 +68,6 @@ export interface Sequence<A> extends Collection<A> {
     flatMap<B>(mapper: Mapper<A, Sequence<B>>): Sequence<B>;
 
     filter(predicate: Predicate<A>): Sequence<A>;
-
-    find(predicate: Predicate<A>): Sequence<A>;
 
     take(count: number): Sequence<A>;
 

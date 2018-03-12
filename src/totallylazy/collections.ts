@@ -34,11 +34,47 @@ export interface Contract<A> {
 }
 
 export interface Collection<A> extends Contract<A>, Iterable<A> {
+    map<B>(mapper: Mapper<A, B>): Collection<B>;
+
     flatMap<B>(mapper: Mapper<A, Collection<B>>): Collection<B>;
+
+    filter(predicate: Predicate<A>): Collection<A>;
+
+    find(predicate: Predicate<A>): Collection<A>;
+
+    first(): Collection<A>;
+
+    last(): Collection<A>;
+
+    take(count: number): Collection<A>;
+
+    takeWhile(predicate: Predicate<A>): Collection<A>;
+
+    scan<B>(reducer: Reducer<A, B>): Collection<B>;
+
+    reduce<B>(reducer: Reducer<A, B>): Collection<B>;
 }
 
 export interface AsyncCollection<A> extends Contract<A>, AsyncIterable<A> {
+    map<B>(mapper: Mapper<A, B>): AsyncCollection<B>;
+
     flatMap<B>(mapper: Mapper<A, AsyncCollection<B>>): AsyncCollection<B>;
+
+    filter(predicate: Predicate<A>): AsyncCollection<A>;
+
+    find(predicate: Predicate<A>): AsyncCollection<A>;
+
+    first(): AsyncCollection<A>;
+
+    last(): AsyncCollection<A>;
+
+    take(count: number): AsyncCollection<A>;
+
+    takeWhile(predicate: Predicate<A>): AsyncCollection<A>;
+
+    scan<B>(reducer: Reducer<A, B>): AsyncCollection<B>;
+
+    reduce<B>(reducer: Reducer<A, B>): AsyncCollection<B>;
 }
 
 export function isIterable(instance: any): instance is Iterable<any> {
