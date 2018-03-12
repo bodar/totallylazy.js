@@ -1,6 +1,15 @@
 import {assert} from 'chai';
 import {Option, range, sequence, Sequence, Single} from "./sequence";
 import {assertAsync, assertSync} from "./collections.test";
+import {
+    FilterTransducer,
+    IdentityTransducer,
+    MapTransducer,
+    ScanTransducer,
+    TakeTransducer,
+    FlatMapTransducer,
+    FirstTransducer
+} from "./transducers";
 
 describe("Sequence", () => {
     it("supports ranges", () => {
@@ -9,6 +18,16 @@ describe("Sequence", () => {
         assertSync(range(5, 1), 5, 4, 3, 2, 1);
         assertSync(range(1, 10, 2), 1, 3, 5, 7, 9);
         assertSync(range(10, 1, 2), 10, 8, 6, 4, 2);
+    });
+
+    it("decomposition still works even when moving from Sequence to Option", () => {
+        const value: Option<number> = sequence([1, 2, 3]).flatMap(n => sequence([n, n * 2])).find(n => n > 2);
+        assert.instanceOf(value, Option);
+        const [identity, flatMap, filter, first] = value.transducer.decompose();
+        assert.instanceOf(identity, IdentityTransducer);
+        assert.instanceOf(flatMap, FlatMapTransducer);
+        assert.instanceOf(filter, FilterTransducer);
+        assert.instanceOf(first, FirstTransducer);
     });
 
     it("supports flatMap", () => {
