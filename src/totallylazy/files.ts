@@ -25,12 +25,9 @@ export class Path implements PathLike {
         return lazy(this, 'absolutePath', path.resolve(this.parent, this.name));
     }
 
-    children(): AsyncSequence<Path> {
-        const self = this;
-        return sequence(async function*() {
-            const names: string[] = await promisify(fs.readdir)(self.absolutePath);
-            yield* names.map(name => new Path(name, self.absolutePath));
-        })
+    async * children(): AsyncIterable<Path> {
+        const names: string[] = await promisify(fs.readdir)(this.absolutePath);
+        yield* names.map(name => new Path(name, this.absolutePath));
     }
 
     get isDirectory(): Promise<boolean> {
@@ -41,14 +38,11 @@ export class Path implements PathLike {
         return lazy(this, 'stats', promisify(fs.lstat)(this.absolutePath));
     }
 
-    descendants(): AsyncSequence<Path> {
-        const self = this;
-        return sequence(async function*() {
-            for await (const child of self.children()) {
-                yield child;
-                if (await child.isDirectory) yield* child.descendants();
-            }
-        });
+    async * descendants(): AsyncIterable<Path> {
+        for await (const child of this.children()) {
+            yield child;
+            if (await child.isDirectory) yield* child.descendants();
+        }
     }
 }
 

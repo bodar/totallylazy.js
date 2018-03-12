@@ -259,13 +259,11 @@ export function compose<A, B, C>(b: Transducer<B, C>, a: Transducer<A, B>): Comp
 
 export function* decompose(transducer: Transducer<any, any>): Iterable<Transducer<any, any>> {
     if (transducer instanceof CompositeTransducer) {
-        const compositeTransducer = transducer as CompositeTransducer<any, any, any>;
-        yield* decompose(compositeTransducer.a);
-        yield* decompose(compositeTransducer.b);
+        yield* decompose(transducer.a);
+        yield* decompose(transducer.b);
     } else {
         yield transducer;
     }
-
 }
 
 export class IntoArray<A> implements Reducer<A, A[]> {
