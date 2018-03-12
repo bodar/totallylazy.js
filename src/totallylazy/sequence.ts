@@ -137,7 +137,7 @@ export function sequence(iterable: Source<any>, transducer?: Transducer<any, any
 
 type Executor<A> = (resolve: (value?: A | PromiseLike<A>) => void, reject: (reason?: any) => void) => void;
 
-export class Single<A> extends Transducable<A> implements PromiseLike<A>, Collection<A> {
+export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncCollection<A> {
     protected constructor(public readonly original: Promise<any>, public readonly transducer: Transducer<any, A> = identity()) {
         super(transducer);
     }
@@ -165,7 +165,7 @@ export class Single<A> extends Transducable<A> implements PromiseLike<A>, Collec
     }
 }
 
-export interface Single<A> extends Collection<A> {
+export interface Single<A> extends AsyncCollection<A> {
     map<B>(mapper: Mapper<A, B>): Single<B>;
 
     flatMap<B>(mapper: Mapper<A, Single<B>>): Single<B>;
