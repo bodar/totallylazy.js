@@ -83,6 +83,7 @@ describe("transducers", () => {
 
     it("supports Option", () => {
         assertSync(Option.some(1).map(n => n.toString()), '1');
+        assertSync(Option.none().map(n => n.toString()));
     });
 
     it("supports flatMap", () => {

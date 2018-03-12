@@ -48,6 +48,14 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
     create<B>(transducer: Transducer<A, B>): Sequence<B> {
         return Sequence.of(this.iterable, transducer);
     }
+
+    first(): Option<A>{
+        return Option.of(this.iterable, this.transducer.first());
+    }
+
+    last(): Option<A>{
+        return Option.of(this.iterable, this.transducer.last());
+    }
 }
 
 export interface Sequence<A> extends Collection<A> {
@@ -58,10 +66,6 @@ export interface Sequence<A> extends Collection<A> {
     filter(predicate: Predicate<A>): Sequence<A>;
 
     find(predicate: Predicate<A>): Sequence<A>;
-
-    first(): Sequence<A>;
-
-    last(): Sequence<A>;
 
     take(count: number): Sequence<A>;
 
@@ -188,24 +192,29 @@ export interface Single<A> extends AsyncCollection<A> {
 }
 
 export class Option<A> extends Transducable<A> implements Collection<A> {
-    protected constructor(public readonly value?: any, public readonly transducer: Transducer<any, A> = identity()) {
+    protected constructor(public readonly iterable: Iterable<any>, public readonly transducer: Transducer<any, A> = identity()) {
         super(transducer);
     }
 
     static some<A>(instance: A): Option<A> {
-        return new Option<A>(instance);
+        return new Option<A>([instance]);
     }
 
     static none<A>(): Option<A> {
-        return new Option<A>();
+        return new Option<A>([]);
+    }
+
+    // package-protected!
+    static of<B, A>(iterable: Iterable<B>, transducer: Transducer<B, A>): Option<A>{
+        return new Option<A>(iterable, transducer);
     }
 
     [Symbol.iterator](): Iterator<A> {
-        return this.transducer.sync(typeof this.value !== 'undefined' ? [this.value] : [])[Symbol.iterator]()
+        return this.transducer.sync(this.iterable)[Symbol.iterator]()
     }
 
     create<B>(transducer: Transducer<A, B>): Option<B> {
-        return new Option(this.value, transducer);
+        return Option.of(this.iterable, transducer);
     }
 }
 
