@@ -1,10 +1,5 @@
 import {assert} from 'chai';
-import {
-    transducer, IdentityTransducer, MapTransducer, FilterTransducer, ScanTransducer, TakeTransducer, intoArray
-} from "./transducers";
-import {Option, range, repeat, sequence, Sequence, Single} from "./sequence";
-import {increment, sum} from "./numbers";
-import {toPromiseArray, toArray} from "./collections";
+import {Option, range, sequence, Sequence, Single} from "./sequence";
 import {assertAsync, assertSync} from "./collections.test";
 
 describe("Sequence", () => {
