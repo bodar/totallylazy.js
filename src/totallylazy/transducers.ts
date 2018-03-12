@@ -16,7 +16,7 @@ export abstract class Transducer<A, B> implements Contract<B> {
         return compose(other, this);
     }
 
-    decompose(): Transducer<any, any>[] {
+    decompose(): Iterable<Transducer<any, any>> {
         return decompose(this);
     }
 
@@ -66,6 +66,10 @@ export abstract class Transducable<A> implements Contract<A> {
     }
 
     abstract create<B>(transducer: Transducer<A, B>): Transducable<B>;
+
+    decompose(): Iterable<Transducer<any, any>> {
+        return this.transducer.decompose();
+    }
 
     map<B>(mapper: Mapper<A, B>): Transducable<B> {
         return this.create(this.transducer.map(mapper));
@@ -253,19 +257,22 @@ export function compose<A, B, C>(b: Transducer<B, C>, a: Transducer<A, B>): Comp
     return new CompositeTransducer(a, b);
 }
 
-export function decompose(transducer: Transducer<any, any>): Transducer<any, any>[] {
+export function* decompose(transducer: Transducer<any, any>): Iterable<Transducer<any, any>> {
     if (transducer instanceof CompositeTransducer) {
         const compositeTransducer = transducer as CompositeTransducer<any, any, any>;
-        return [...decompose(compositeTransducer.a), ...decompose(compositeTransducer.b)];
+        yield* decompose(compositeTransducer.a);
+        yield* decompose(compositeTransducer.b);
+    } else {
+        yield transducer;
     }
-    return [transducer];
+
 }
 
 export class IntoArray<A> implements Reducer<A, A[]> {
     constructor(public seed: A[] = []) {
     }
 
-    call(accumulator:A[], instance: A): A[] {
+    call(accumulator: A[], instance: A): A[] {
         accumulator.push(instance);
         return accumulator;
     }
@@ -275,7 +282,7 @@ export class IntoArray<A> implements Reducer<A, A[]> {
     }
 }
 
-export function intoArray<A>(seed?:A[]) {
+export function intoArray<A>(seed?: A[]) {
     return new IntoArray<A>(seed);
 }
 
