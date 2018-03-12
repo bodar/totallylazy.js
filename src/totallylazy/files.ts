@@ -3,7 +3,6 @@ import * as path from 'path';
 import {promisify} from 'util';
 import {lazy} from './lazy';
 import {Stats} from "fs";
-import {AsyncSequence, sequence, Sequence} from "./sequence";
 
 export interface PathLike {
     name: string
