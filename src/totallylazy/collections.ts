@@ -98,3 +98,7 @@ export async function toPromiseArray<T>(iterable: AsyncIterable<T>): Promise<T[]
     for await (const value of iterable) result.push(value);
     return result;
 }
+
+export async function * toAsyncIterable<A>(promise:PromiseLike<A>): AsyncIterable<A>{
+    yield promise;
+}

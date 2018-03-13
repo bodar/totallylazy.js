@@ -1,4 +1,7 @@
-import {AsyncCollection, Collection, isAsyncIterable, isIterable, Mapper, Predicate, Reducer} from "./collections";
+import {
+    AsyncCollection, Collection, isAsyncIterable, isIterable, Mapper, Predicate, Reducer,
+    toAsyncIterable
+} from "./collections";
 import {identity, Transducable, Transducer} from "./transducers";
 import {add, increment, subtract} from "./numbers";
 
@@ -191,9 +194,7 @@ export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncC
 
     [Symbol.asyncIterator](): AsyncIterator<A> {
         const self = this;
-        return this.transducer.async_(async function* () {
-            yield self;
-        }())[Symbol.asyncIterator]()
+        return this.transducer.async_(toAsyncIterable(this))[Symbol.asyncIterator]()
     }
 
     create<B>(transducer: Transducer<A, B>): Single<B> {

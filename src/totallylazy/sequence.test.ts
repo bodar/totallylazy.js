@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {Option, range, sequence, Sequence, Single} from "./sequence";
-import {assertAsync, assertSync} from "./collections.test";
+import {assertAsync, assertAsyncThrows, assertSync} from "./collections.test";
 import {FilterTransducer, FirstTransducer, FlatMapTransducer, IdentityTransducer} from "./transducers";
 
 describe("Sequence", () => {
@@ -35,6 +35,11 @@ describe("Single", () => {
     it("is PromiseLike", () => {
         return assertAsync(Single.of((resolve) => resolve(2)).map(n => n.toString()), '2');
     });
+
+    it("is PromiseLike and can return an error", () => {
+        return assertAsyncThrows(Single.of((ignore, reject) => reject("Error")).map(n => n.toString()), 'Error');
+    });
+
 });
 
 describe("Option", () => {
