@@ -1,4 +1,4 @@
-import {Contract, isAsyncIterable, isIterable, Mapper, Predicate, Reducer} from "./collections";
+import {Contract, isAsyncIterable, isIterable, isPromiseLike, Mapper, Predicate, Reducer} from "./collections";
 
 export abstract class Transducer<A, B> implements Contract<B>, PromiseLike<B> {
     abstract sync(iterable: Iterable<A>): Iterable<B>;
@@ -29,7 +29,7 @@ export abstract class Transducer<A, B> implements Contract<B>, PromiseLike<B> {
     }
 
     then<C, Err>(onfulfilled?: ((value: B) => (PromiseLike<C> | C)) | null | undefined, onrejected?: ((reason: any) => (PromiseLike<Err> | Err)) | null | undefined): Transducer<A, C | Err> {
-        return then(onfulfilled, onrejected, this);
+        return then(this, onfulfilled, onrejected);
     }
 
     filter(predicate: Predicate<B>): Transducer<A, B> {
@@ -217,25 +217,23 @@ export function flatMap<A, B, C>(mapper: Mapper<B, Contract<C>>, transducer: Tra
     return compose(new FlatMapTransducer(mapper), transducer);
 }
 
-export class ThenTransducer<A, B, C, Err> extends Transducer<A, B> {
-    constructor(public onfulfilled?: ((value: B) => (PromiseLike<C> | C)) | null | undefined, public onrejected?: ((reason: any) => (PromiseLike<Err> | Err)) | null | undefined) {
+export class ThenTransducer<A, B, Err> extends Transducer<A, B> {
+    constructor(public onfulfilled?: ((value: A) => (PromiseLike<B> | B)) | null | undefined, public onrejected?: ((reason: any) => (PromiseLike<Err> | Err)) | null | undefined) {
         super();
     }
 
     async * async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
-        for await (const a of iterable) {
-            if(this.onfulfilled){
-                let result: PromiseLike<C> | C = this.onfulfilled(a);
-                yield result;
-
+        try {
+            for await (const a of iterable) {
+                if (this.onfulfilled) yield this.onfulfilled(a);
             }
+        } catch (e) {
+            if(this.onrejected) this.onrejected(e);
         }
     }
 
     * sync(iterable: Iterable<A>): Iterable<B> {
-        for (const a of iterable) {
-            yield* this.mapper(a) as any as Iterable<B>;
-        }
+        throw new Error("Unsupported operation");
     }
 }
 

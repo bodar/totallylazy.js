@@ -191,7 +191,7 @@ export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncC
     }
 
     then<B, E>(onfulfilled?: ((value: A) => (PromiseLike<B> | B)) | null | undefined, onrejected?: ((reason: any) => (PromiseLike<E> | E)) | null | undefined): PromiseLike<B | E> {
-        this.create(this.transducer.then(onfulfilled, onrejected));
+        return this.create(this.transducer.then(onfulfilled, onrejected));
     }
 
     [Symbol.asyncIterator](): AsyncIterator<A> {
