@@ -1,6 +1,6 @@
 import {Contract, isAsyncIterable, isIterable, Mapper, Predicate, Reducer} from "./collections";
 
-export abstract class Transducer<A, B> implements Contract<B> {
+export abstract class Transducer<A, B> implements Contract<B>, PromiseLike<B> {
     abstract sync(iterable: Iterable<A>): Iterable<B>;
 
     abstract async_(iterable: AsyncIterable<A>): AsyncIterable<B>;
@@ -26,6 +26,10 @@ export abstract class Transducer<A, B> implements Contract<B> {
 
     flatMap<C>(mapper: Mapper<B, Contract<C>>): Transducer<A, C> {
         return flatMap(mapper, this);
+    }
+
+    then<C, Err>(onfulfilled?: ((value: B) => (PromiseLike<C> | C)) | null | undefined, onrejected?: ((reason: any) => (PromiseLike<Err> | Err)) | null | undefined): Transducer<A, C | Err> {
+        return then(onfulfilled, onrejected, this);
     }
 
     filter(predicate: Predicate<B>): Transducer<A, B> {
@@ -211,6 +215,32 @@ export class FlatMapTransducer<A, B> extends Transducer<A, B> {
 
 export function flatMap<A, B, C>(mapper: Mapper<B, Contract<C>>, transducer: Transducer<A, B>): Transducer<A, C> {
     return compose(new FlatMapTransducer(mapper), transducer);
+}
+
+export class ThenTransducer<A, B, C, Err> extends Transducer<A, B> {
+    constructor(public onfulfilled?: ((value: B) => (PromiseLike<C> | C)) | null | undefined, public onrejected?: ((reason: any) => (PromiseLike<Err> | Err)) | null | undefined) {
+        super();
+    }
+
+    async * async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
+        for await (const a of iterable) {
+            if(this.onfulfilled){
+                let result: PromiseLike<C> | C = this.onfulfilled(a);
+                yield result;
+
+            }
+        }
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<B> {
+        for (const a of iterable) {
+            yield* this.mapper(a) as any as Iterable<B>;
+        }
+    }
+}
+
+export function then<A, B, C, Err>(transducer: Transducer<A, B>, onfulfilled?: ((value: B) => (PromiseLike<C> | C)) | null | undefined, onrejected?: ((reason: any) => (PromiseLike<Err> | Err)) | null | undefined): Transducer<A, C> {
+    return compose(new ThenTransducer(onfulfilled, onrejected), transducer);
 }
 
 export class FilterTransducer<A> extends Transducer<A, A> {

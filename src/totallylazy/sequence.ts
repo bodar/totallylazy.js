@@ -1,5 +1,5 @@
 import {
-    AsyncCollection, Collection, isAsyncIterable, isIterable, Mapper, Predicate, Reducer,
+    AsyncCollection, Collection, isAsyncIterable, isIterable, isPromiseLike, Mapper, Predicate, Reducer,
     toAsyncIterable
 } from "./collections";
 import {identity, Transducable, Transducer} from "./transducers";
@@ -52,43 +52,43 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
         return Sequence.of(this.iterable, transducer);
     }
 
-    map<B>(mapper: Mapper<A, B>): Sequence<B>{
+    map<B>(mapper: Mapper<A, B>): Sequence<B> {
         return this.create(this.transducer.map(mapper));
     }
 
-    flatMap<B>(mapper: Mapper<A, Sequence<B>>): Sequence<B>{
+    flatMap<B>(mapper: Mapper<A, Sequence<B>>): Sequence<B> {
         return this.create(this.transducer.flatMap(mapper));
     }
 
-    filter(predicate: Predicate<A>): Sequence<A>{
+    filter(predicate: Predicate<A>): Sequence<A> {
         return this.create(this.transducer.filter(predicate));
     }
 
-    find(predicate: Predicate<A>): Option<A>{
+    find(predicate: Predicate<A>): Option<A> {
         return Option.of(this.iterable, this.transducer.find(predicate));
     }
 
-    first(): Option<A>{
+    first(): Option<A> {
         return Option.of(this.iterable, this.transducer.first());
     }
 
-    last(): Option<A>{
+    last(): Option<A> {
         return Option.of(this.iterable, this.transducer.last());
     }
 
-    take(count: number): Sequence<A>{
+    take(count: number): Sequence<A> {
         return this.create(this.transducer.take(count));
     }
 
-    takeWhile(predicate: Predicate<A>): Sequence<A>{
+    takeWhile(predicate: Predicate<A>): Sequence<A> {
         return this.create(this.transducer.takeWhile(predicate));
     }
 
-    scan<B>(reducer: Reducer<A, B>): Sequence<B>{
+    scan<B>(reducer: Reducer<A, B>): Sequence<B> {
         return this.create(this.transducer.scan(reducer));
     }
 
-    reduce<B>(reducer: Reducer<A, B>): Sequence<B>{
+    reduce<B>(reducer: Reducer<A, B>): Sequence<B> {
         return this.create(this.transducer.reduce(reducer));
     }
 }
@@ -177,19 +177,21 @@ export function sequence(iterable: Source<any>, transducer?: Transducer<any, any
 type Executor<A> = (resolve: (value?: A | PromiseLike<A>) => void, reject: (reason?: any) => void) => void;
 
 export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncCollection<A> {
-    protected constructor(public readonly original: Promise<any>, public readonly transducer: Transducer<any, A> = identity()) {
+    protected constructor(public readonly iterable: AsyncIterable<any>, public readonly transducer: Transducer<any, A> = identity()) {
         super(transducer);
     }
 
     static of<A>(promise: PromiseLike<A>): Single<A>
     static of<A>(executor: Executor<A>): Single<A>
-    static of<A>(value: any) {
-        if (typeof value == 'function') return new Single<A>(new Promise<any>(value));
-        return new Single<A>(value);
+    static of<B, A>(iterable: Iterable<B>, transducer: Transducer<B, A>): Single<A>;
+    static of(value: any, transducer?: Transducer<any, any>) {
+        if (typeof value == 'function') return new Single<any>(toAsyncIterable(new Promise<any>(value)));
+        if (isPromiseLike(value)) return new Single<any>(toAsyncIterable(value));
+        return new Single<any>(value, transducer);
     }
 
     then<B, E>(onfulfilled?: ((value: A) => (PromiseLike<B> | B)) | null | undefined, onrejected?: ((reason: any) => (PromiseLike<E> | E)) | null | undefined): PromiseLike<B | E> {
-        return this.original.then(onfulfilled, onrejected);
+        this.create(this.transducer.then(onfulfilled, onrejected));
     }
 
     [Symbol.asyncIterator](): AsyncIterator<A> {
@@ -198,7 +200,7 @@ export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncC
     }
 
     create<B>(transducer: Transducer<A, B>): Single<B> {
-        return new Single(this.original, transducer);
+        return new Single(this.iterable, transducer);
     }
 
     map<B>(mapper: Mapper<A, B>): Single<B> {
@@ -256,7 +258,7 @@ export class Option<A> extends Transducable<A> implements Collection<A> {
     }
 
     // package-protected!
-    static of<B, A>(iterable: Iterable<B>, transducer: Transducer<B, A>): Option<A>{
+    static of<B, A>(iterable: Iterable<B>, transducer: Transducer<B, A>): Option<A> {
         return new Option<A>(iterable, transducer);
     }
 

@@ -85,6 +85,10 @@ export function isAsyncIterable(instance: any): instance is AsyncIterable<any> {
     return typeof instance == 'object' && Symbol.asyncIterator in instance;
 }
 
+export function isPromiseLike(instance: any): instance is PromiseLike<any> {
+    return typeof instance == 'object' && 'then' in instance;
+}
+
 export function toIterable<T>(...t: T[]): Iterable<T> {
     return t;
 }
