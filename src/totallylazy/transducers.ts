@@ -1,4 +1,8 @@
-import {Contract, isAsyncIterable, isIterable, isPromiseLike, Mapper, Predicate, Reducer} from "./collections";
+import {
+    ascending,
+    Comparator, Contract, isAsyncIterable, isIterable, isPromiseLike, Mapper, Predicate,
+    Reducer, toArray, toPromiseArray
+} from "./collections";
 
 export abstract class Transducer<A, B> implements Contract<B> {
     abstract sync(iterable: Iterable<A>): Iterable<B>;
@@ -59,6 +63,10 @@ export abstract class Transducer<A, B> implements Contract<B> {
     reduce<C>(reducer: Reducer<B, C>): Transducer<A, C> {
         return reduce(reducer, this);
     }
+
+    sort(comparator: Comparator<B> = ascending): Transducer<A, B> {
+        return sort(comparator, this);
+    }
 }
 
 export abstract class Transducable<A> implements Contract<A> {
@@ -109,6 +117,10 @@ export abstract class Transducable<A> implements Contract<A> {
 
     reduce<B>(reducer: Reducer<A, B>): Transducable<B> {
         return this.create(this.transducer.reduce(reducer));
+    }
+
+    sort(comparator?: Comparator<A>): Transducable<A> {
+        return this.create(this.transducer.sort(comparator));
     }
 }
 
@@ -359,6 +371,28 @@ export class TakeWhileTransducer<A> extends Transducer<A, A> {
 
 export function takeWhile<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {
     return compose(new TakeWhileTransducer(predicate), transducer);
+}
+
+export class SortTransducer<A> extends Transducer<A, A> {
+    constructor(public comparator: Comparator<A>) {
+        super();
+    }
+
+    async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        const array = await toPromiseArray(iterable);
+        array.sort(this.comparator)
+        yield* array;
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        const array = toArray(iterable);
+        array.sort(this.comparator);
+        yield* array;
+    }
+}
+
+export function sort<A, B>(comparator: Comparator<B>, transducer: Transducer<A, B>): Transducer<A, B> {
+    return compose(new SortTransducer(comparator), transducer);
 }
 
 

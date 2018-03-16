@@ -11,6 +11,7 @@ import {
 import {repeat} from "./sequence";
 import {increment, sum} from "./numbers";
 import {assertSync} from "./collections.test";
+import {ascending, by, Comparator, descending} from "./collections";
 
 
 describe("transducers", () => {
@@ -55,6 +56,29 @@ describe("transducers", () => {
 
     it("can take while", async () => {
         assertSync(transducer<number>().takeWhile(n => n < 4).transduce([0, 1, 2, 3, 4, 5, 6, 7, 8]), 0, 1, 2, 3);
+    });
+
+    it("can sort", async () => {
+        assertSync(transducer<number>().sort().transduce([3, 4, 8, 1, 2, 0, 3, 2, 9]), 0, 1, 2, 2, 3, 3, 4, 8, 9);
+        assertSync(transducer<number>().sort(ascending).transduce([3, 4, 8, 1, 2, 0, 3, 2, 9]), 0, 1, 2, 2, 3, 3, 4, 8, 9);
+        assertSync(transducer<number>().sort(descending).transduce([3, 4, 8, 1, 2, 0, 3, 2, 9]), 9, 8, 4, 3, 3, 2, 2, 1, 0);
+    });
+
+    it("can sort by property of object", async () => {
+        class Cat{
+            constructor(public name:string, public age:number){}
+        }
+
+        const freaky = new Cat('Freaky', 17);
+        const fatty = new Cat('Fatty', 18);
+        const cats = [freaky, fatty];
+
+        assertSync(transducer<Cat>().sort(by('name')).transduce(cats), fatty, freaky);
+        assertSync(transducer<Cat>().sort(by('name', ascending)).transduce(cats), fatty, freaky);
+        assertSync(transducer<Cat>().sort(by('name', descending)).transduce(cats), freaky, fatty);
+        assertSync(transducer<Cat>().sort(by('age')).transduce(cats), freaky, fatty);
+        assertSync(transducer<Cat>().sort(by('age', ascending)).transduce(cats), freaky, fatty);
+        assertSync(transducer<Cat>().sort(by('age', descending)).transduce(cats), fatty, freaky);
     });
 
     it("supports terminating early with take", async () => {

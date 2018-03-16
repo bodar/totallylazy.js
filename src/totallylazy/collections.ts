@@ -1,9 +1,12 @@
+import {sort, Transducer} from "./transducers";
+
 if (typeof Symbol.asyncIterator == 'undefined') {
     (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
 }
 
 export type Mapper<A, B> = (a: A) => B;
 export type Predicate<A> = (a: A) => boolean;
+export type Comparator<A> = (a: A, b: A) => number;
 
 export interface Reducer<A, B> {
     call(accumilator: B, instance: A): B;
@@ -31,6 +34,8 @@ export interface Contract<A> {
     scan<B>(reducer: Reducer<A, B>): Contract<B>;
 
     reduce<B>(reducer: Reducer<A, B>): Contract<B>;
+
+    sort(comparator?: Comparator<A>): Contract<A>;
 }
 
 export interface Collection<A> extends Contract<A>, Iterable<A> {
@@ -53,6 +58,8 @@ export interface Collection<A> extends Contract<A>, Iterable<A> {
     scan<B>(reducer: Reducer<A, B>): Collection<B>;
 
     reduce<B>(reducer: Reducer<A, B>): Collection<B>;
+
+    sort(comparator?: Comparator<A>): Collection<A>;
 }
 
 export interface AsyncCollection<A> extends Contract<A>, AsyncIterable<A> {
@@ -75,6 +82,8 @@ export interface AsyncCollection<A> extends Contract<A>, AsyncIterable<A> {
     scan<B>(reducer: Reducer<A, B>): AsyncCollection<B>;
 
     reduce<B>(reducer: Reducer<A, B>): AsyncCollection<B>;
+
+    sort(comparator?: Comparator<A>): AsyncCollection<A>;
 }
 
 export function isIterable(instance: any): instance is Iterable<any> {
@@ -103,6 +112,26 @@ export async function toPromiseArray<T>(iterable: AsyncIterable<T>): Promise<T[]
     return result;
 }
 
-export async function * toAsyncIterable<A>(promise:PromiseLike<A>): AsyncIterable<A>{
+export async function* toAsyncIterable<A>(promise: PromiseLike<A>): AsyncIterable<A> {
     yield promise;
 }
+
+export const ascending = (a: any, b: any) => {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+};
+
+export const descending = (a: any, b: any) => {
+    if (a < b) return 1;
+    if (a > b) return -1;
+    return 0;
+};
+
+export function by<A, K extends keyof A>(key: K, comparator: Comparator<A[K]> = ascending): Comparator<A> {
+    return (a: A, b: A) => {
+        return comparator(a[key], b[key]);
+    }
+}
+
+

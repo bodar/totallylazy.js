@@ -1,8 +1,8 @@
 import {
-    AsyncCollection, Collection, isAsyncIterable, isIterable, isPromiseLike, Mapper, Predicate, Reducer,
+    AsyncCollection, Collection, Comparator, isAsyncIterable, isIterable, isPromiseLike, Mapper, Predicate, Reducer,
     toAsyncIterable
 } from "./collections";
-import {identity, Transducable, Transducer} from "./transducers";
+import {identity, sort, Transducable, Transducer} from "./transducers";
 import {add, increment, subtract} from "./numbers";
 
 export function iterate<T>(generator: (t: T) => T, value: T): Sequence<T> {
@@ -91,6 +91,10 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
     reduce<B>(reducer: Reducer<A, B>): Sequence<B> {
         return this.create(this.transducer.reduce(reducer));
     }
+
+    sort(comparator?: Comparator<A>): Sequence<A> {
+        return this.create(this.transducer.sort(comparator));
+    }
 }
 
 export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection<A> {
@@ -150,6 +154,10 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
 
     reduce<B>(reducer: Reducer<A, B>): AsyncSequence<B> {
         return this.create(this.transducer.reduce(reducer));
+    }
+
+    sort(comparator?: Comparator<A>): AsyncSequence<A> {
+        return this.create(this.transducer.sort(comparator));
     }
 }
 
@@ -242,6 +250,10 @@ export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncC
     reduce<B>(reducer: Reducer<A, B>): Single<B> {
         return this.create(this.transducer.reduce(reducer));
     }
+
+    sort(comparator?: Comparator<A>): Single<A> {
+        return this.create(this.transducer.sort(comparator));
+    }
 }
 
 export class Option<A> extends Transducable<A> implements Collection<A> {
@@ -308,6 +320,10 @@ export class Option<A> extends Transducable<A> implements Collection<A> {
 
     reduce<B>(reducer: Reducer<A, B>): Option<B> {
         return this.create(this.transducer.reduce(reducer));
+    }
+
+    sort(comparator?: Comparator<A>): Option<A> {
+        return this.create(this.transducer.sort(comparator));
     }
 }
 
