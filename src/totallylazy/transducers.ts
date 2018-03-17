@@ -380,7 +380,7 @@ export class SortTransducer<A> extends Transducer<A, A> {
 
     async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
         const array = await toPromiseArray(iterable);
-        array.sort(this.comparator)
+        array.sort(this.comparator);
         yield* array;
     }
 

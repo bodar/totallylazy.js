@@ -11,7 +11,9 @@ export class NodeServerHandler implements Handler, Closeable<void> {
                 nodeRequest.url || "",
                 nodeRequest.headers as Headers,
                 new MessageBody(nodeRequest));
-            this.handle(req).then(response => {
+
+            (async () => {
+                const response = await this.handle(req);
                 nodeResponse.statusCode = response.status;
                 for (let h in response.headers) {
                     const name = h as Header;
@@ -20,17 +22,19 @@ export class NodeServerHandler implements Handler, Closeable<void> {
                 }
                 if (response.body) {
                     try {
-                        response.body.text().then(response => {
-                            nodeResponse.write(response);
-                            nodeResponse.end();
-                        })
+                        const text = await response.body.text();
+                        nodeResponse.write(text);
                     } catch (e) {
-                        step(nodeResponse, response.body[Symbol.asyncIterator]());
+                        for await(const value of response.body) {
+                            nodeResponse.write(Buffer.from(value.data().buffer as any));
+                        }
+                    } finally {
+                        nodeResponse.end();
                     }
                 } else {
                     nodeResponse.end();
                 }
-            });
+            })();
         });
         this.server.listen(port);
     }
@@ -48,16 +52,8 @@ export class NodeServerHandler implements Handler, Closeable<void> {
     }
 }
 
-function step(nodeResponse: ServerResponse, iterator: AsyncIterator<Chunk>) {
-    let next = iterator.next();
-    next.then(result => {
-        if (result.value) {
-            nodeResponse.write(Buffer.from(result.value.data().buffer as any));
-        }
-        if (result.done) {
-            nodeResponse.end();
-        } else {
-            step(nodeResponse, iterator);
-        }
-    });
+async function foo(): Promise<any> {
+    let newVar = await ['Hello'];
+    return newVar
 }
+
