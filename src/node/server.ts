@@ -52,8 +52,3 @@ export class NodeServerHandler implements Handler, Closeable<void> {
     }
 }
 
-async function foo(): Promise<any> {
-    let newVar = await ['Hello'];
-    return newVar
-}
-
