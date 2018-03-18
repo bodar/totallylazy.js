@@ -1,4 +1,4 @@
-import {Body, Chunk, get, Handler, notFound, ok, post, Request, Response} from "./api";
+import {Body, Chunk, get, Handler, isBody, notFound, ok, post, Request, Response} from "./api";
 import {match, case_, default_, Matched, regex} from "./totallylazy/pattern";
 
 export class HttpBinHandler implements Handler {
@@ -10,22 +10,24 @@ export class HttpBinHandler implements Handler {
             default_(this.notFound));
     }
 
-    get(request: Matched<Request>): Promise<Response> {
-        return Promise.resolve(ok());
+    async get(request: Matched<Request>) {
+        return ok();
     }
 
-    post(request: Matched<Request>): Promise<Response> {
-        return request.body ? (request.body as Body).text().then(data => {
+    async post({body}: Matched<Request>) {
+        if (isBody(body)) {
+            const data = await body.text();
             return ok({}, JSON.stringify({data}));
-        }) : Promise.resolve(ok());
+        }
+        return ok();
     }
 
-    streamBytes({uri:[,size]}: Matched<Request>): Promise<Response> {
-        return Promise.resolve(ok({}, new ByteBody(randomBytes(size))));
+    async streamBytes({uri: [size]}: Matched<Request>) {
+        return ok({}, new ByteBody(randomBytes(size)));
     }
 
-    notFound() {
-        return Promise.resolve(notFound());
+    async notFound() {
+        return notFound();
     }
 }
 
@@ -40,8 +42,9 @@ function randomBytes(length: number) {
     return new Uint8Array(Float32Array.from(buffer).buffer).slice(0, length);
 }
 
-class ByteChunk  implements Chunk{
-    constructor(private value:Uint8Array){}
+class ByteChunk implements Chunk {
+    constructor(private value: Uint8Array) {
+    }
 
     text(): string {
         throw new Error("Unsupported operation error");
@@ -52,8 +55,9 @@ class ByteChunk  implements Chunk{
     }
 }
 
-class ByteBody implements Body{
-    constructor(private value:Uint8Array){}
+class ByteBody implements Body {
+    constructor(private value: Uint8Array) {
+    }
 
     text(): Promise<string> {
         throw new Error("Unsupported operation error");

@@ -43,7 +43,7 @@ export class RegexMatcher implements Matcher<any, string[]> {
 
     matches(instance: any): string[] | undefined {
         const match = this.value.exec(instance.toString());
-        return match ? match.slice() : undefined;
+        return match ? match.slice(1) : undefined;
     }
 }
 

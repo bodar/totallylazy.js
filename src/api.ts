@@ -25,6 +25,10 @@ export interface Body {
     [Symbol.asyncIterator](): AsyncIterator<Chunk>
 }
 
+export function isBody(instance: any): instance is Body {
+    return typeof instance == 'object' && 'text' in instance && Symbol.asyncIterator in instance;
+}
+
 export interface Chunk {
     text(): string,
 

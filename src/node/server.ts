@@ -1,4 +1,4 @@
-import {Chunk, Closeable, Handler, Header, Headers, request, Request, Response} from "../api";
+import {Chunk, Closeable, Handler, Header, Headers, isBody, request, Request, Response} from "../api";
 import {createServer, Server, IncomingMessage, ServerResponse} from 'http';
 import {MessageBody} from "./clients";
 
@@ -20,7 +20,7 @@ export class NodeServerHandler implements Handler, Closeable<void> {
                     const value = response.headers[name];
                     if (value) nodeResponse.setHeader(name, value);
                 }
-                if (response.body) {
+                if(isBody(response.body)){
                     try {
                         const text = await response.body.text();
                         nodeResponse.write(text);

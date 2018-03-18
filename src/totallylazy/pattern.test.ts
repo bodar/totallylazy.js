@@ -10,15 +10,15 @@ describe('pattern matching', function () {
     });
 
     it('can match against a partial instance', function () {
-        assert(match(get('/some/path'),
-            case_({uri: new Uri('/some/path')} as Partial<Request>, (request) => request.method)) == "GET");
-        assert(match(post('/some/path'),
-            case_({uri: new Uri('/some/path')} as Partial<Request>, (request) => request.method)) == "POST");
+        assert.equal(match(get('/some/path'),
+            case_({uri: new Uri('/some/path')} as Partial<Request>, (request) => request.method)), "GET");
+        assert.equal(match(post('/some/path'),
+            case_({uri: new Uri('/some/path')} as Partial<Request>, (request) => request.method)), "POST");
     });
 
     it('can destructure what was matched', function () {
-        assert(match(get('/some/path'),
-            case_({uri: new Uri('/some/path')} as Partial<Request>, ({method}) => method)) == "GET");
+        assert.equal(match(get('/some/path'),
+            case_({uri: new Uri('/some/path')} as Partial<Request>, ({method}) => method)), "GET");
     });
 
     it('type check: pattern instance must match keys and values', function () {
@@ -38,20 +38,19 @@ describe('pattern matching', function () {
     it('regex returns capture groups', function () {
         let groups = regex(/Hello (World)/).matches('Hello World');
         if (groups == undefined) throw new Error();
-        assert(groups[0] == 'Hello World');
-        assert(groups[1] == 'World');
+        assert.equal(groups[0], 'World');
     });
 
     it('pattern instance mixes in result', function () {
         const pattern: Pattern<Request> = {uri: regex(/Hello (World)/)};
         const request = get('Hello World');
         const mixed: any = apply(request, pattern);
-        assert(mixed.method == 'GET');
-        assert(mixed.uri[1] == 'World');
+        assert.equal(mixed.method, 'GET');
+        assert.equal(mixed.uri[0], 'World');
     });
 
     it('can match against a pattern instance', function () {
-        assert(match(get('Hello World'),
-            case_({uri: regex(/Hello (World)/)} as Pattern<Request>, ({uri: [, w]}) => w)) == "World");
+        assert.equal(match(get('Hello Dan'),
+            case_({uri: regex(/Hello (\w+)/)} as Pattern<Request>, ({uri: [name]}) => name)), "Dan");
     });
 });
