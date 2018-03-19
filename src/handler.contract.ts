@@ -1,13 +1,14 @@
 import {assert} from 'chai';
 import {get, Handler, HostHandler, post} from "./api";
 
-export function handlerContract(factory: () => Promise<Handler>, host = "eu.httpbin.org") {
-    before(function () {
-        return factory().then((handler: Handler) => {
-            this.handler = new HostHandler(handler, host);
-        }, () => {
+export function handlerContract(factory: () => Promise<Handler>, host = Promise.resolve("eu.httpbin.org")) {
+    before(async function () {
+        try {
+            const handler = await factory();
+            this.handler = new HostHandler(handler, await host);
+        } catch (e) {
             this.skip();
-        });
+        }
     });
 
     it("supports GET", async function () {

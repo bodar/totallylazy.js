@@ -5,4 +5,3 @@ source ${NVM_DIR}/nvm.sh
 nvm use
 yarn install
 yarn build
-yarn test:browser

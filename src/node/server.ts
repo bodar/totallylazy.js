@@ -1,12 +1,13 @@
-import {Chunk, Closeable, Handler, Header, Headers, isBody, request, Request, Response} from "../api";
-import {createServer, Server, IncomingMessage, ServerResponse} from 'http';
+import {Server, Handler, Header, Headers, isBody, request, Request, Response, Uri} from "../api";
+import {createServer, IncomingMessage, ServerResponse, Server as NodeServer} from 'http';
 import {MessageBody} from "./clients";
 
-export class NodeServerHandler implements Handler, Closeable<void> {
-    private server: Server;
+export class NodeServerHandler implements Server {
+    private server: NodeServer;
+    private uri: Promise<Uri>;
 
-    constructor(private handler: Handler, {port = 8080} = {}) {
-        this.server = createServer((nodeRequest: IncomingMessage, nodeResponse: ServerResponse) => {
+    constructor(private handler: Handler, {port = 0} = {}) {
+        const server = createServer((nodeRequest: IncomingMessage, nodeResponse: ServerResponse) => {
             let req = request(nodeRequest.method || "",
                 nodeRequest.url || "",
                 nodeRequest.headers as Headers,
@@ -36,7 +37,13 @@ export class NodeServerHandler implements Handler, Closeable<void> {
                 }
             })();
         });
+        this.server = server;
         this.server.listen(port);
+        this.uri = new Promise<Uri>((resolve) => {
+            server.on('listening', () => {
+                resolve(new Uri(`http://localhost:${server.address().port}/`))
+            })
+        })
     }
 
     handle(request: Request): Promise<Response> {
@@ -49,6 +56,10 @@ export class NodeServerHandler implements Handler, Closeable<void> {
                 resolve();
             });
         });
+    }
+
+    url(): Promise<Uri> {
+        return this.uri;
     }
 }
 

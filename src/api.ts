@@ -10,6 +10,10 @@ export interface Closeable<T> {
     close(): Promise<T>
 }
 
+export interface Server extends Handler, Closeable<void>{
+    url(): Promise<Uri>
+}
+
 export interface Filter {
     filter(handler: Handler): Handler;
 }

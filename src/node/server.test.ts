@@ -1,27 +1,37 @@
 import {assert} from 'chai';
 import {handlerContract} from "../handler.contract";
 import {HttpBinHandler} from "../httpbin";
-import {Closeable, Handler} from "../api";
+import {Server} from "../api";
 import {runningInNode} from "../totallylazy/node";
 
 describe("NodeServerHandler", function () {
-    let server:Handler & Closeable<void>;
-
-    before(async function() {
-        if (!runningInNode()) this.skip();
-
+    const server = new Promise<Server>(async (resolve) => {
         const {NodeServerHandler} = await import('./server');
-        server = new NodeServerHandler(new HttpBinHandler());
+        resolve(new NodeServerHandler(new HttpBinHandler()));
     });
+
+    before(async function () {
+        if (!runningInNode()) this.skip();
+    });
+
+    async function host(): Promise<string> {
+        const s = await server;
+        const url = await s.url();
+        if (url.authority) return url.authority;
+        throw new Error("Should never get here");
+    }
 
     handlerContract(async () => {
         if (!runningInNode()) throw new Error("Unsupported");
 
         const {NodeClientHandler} = await import('./clients');
         return new NodeClientHandler();
-    }, "localhost:8080");
+    }, host());
 
-    after(function(){
-        if(server) return server.close();
+    after(async function () {
+        try {
+            (await server).close()
+        } catch (ignore) {
+        }
     });
 });

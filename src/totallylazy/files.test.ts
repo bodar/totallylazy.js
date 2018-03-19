@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {Path} from './files';
+import {File} from './files';
 import {runningInNode} from "./node";
 
 describe("files", function () {
@@ -8,22 +8,32 @@ describe("files", function () {
     });
 
     it('can return absolute path', function () {
-        assert(new Path('src').absolutePath.endsWith("http4js/src"));
+        assert(new File('src').absolutePath.endsWith("http4js/src"));
     });
 
     it('can list children', async () => {
-        for await (const child of new Path('src').children()) {
+        for await (const child of new File('src').children()) {
             //TODO something sensible
         }
     });
 
     it('can tell if directory', async () => {
-        assert(await new Path('src').isDirectory);
+        assert(await new File('src').isDirectory);
     });
 
     it('can list descendants', async () => {
-        for await (const child of new Path('src').descendants()) {
+        for await (const child of new File('src').descendants()) {
             //TODO something sensible
         }
+    });
+
+    it('can get file content as bytes', async () => {
+        const bytes:Uint8Array = await new File('build.ts').bytes();
+        assert(bytes.length > 0);
+    });
+
+    it('can get file content as string', async () => {
+        const content:string = await new File('build.ts').content();
+        assert(content.length > 0);
     });
 });
