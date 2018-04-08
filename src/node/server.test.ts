@@ -5,9 +5,13 @@ import {Server} from "../api";
 import {runningInNode} from "../totallylazy/node";
 
 describe("NodeServerHandler", function () {
-    const server = new Promise<Server>(async (resolve) => {
-        const {NodeServerHandler} = await import('./server');
-        resolve(new NodeServerHandler(new HttpBinHandler()));
+    const server = new Promise<Server>(async (resolve, reject) => {
+        try {
+            const {NodeServerHandler} = await import('./server');
+            resolve(new NodeServerHandler(new HttpBinHandler()));
+        } catch (e) {
+            reject(e);
+        }
     });
 
     before(async function () {
@@ -30,7 +34,7 @@ describe("NodeServerHandler", function () {
 
     after(async function () {
         try {
-            (await server).close()
+            return (await server).close();
         } catch (ignore) {
         }
     });

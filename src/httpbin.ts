@@ -42,7 +42,7 @@ function randomBytes(length: number) {
     return new Uint8Array(Float32Array.from(buffer).buffer).slice(0, length);
 }
 
-class ByteChunk implements Chunk {
+export class ByteChunk implements Chunk {
     constructor(private value: Uint8Array) {
     }
 
@@ -55,7 +55,7 @@ class ByteChunk implements Chunk {
     }
 }
 
-class ByteBody implements Body {
+export class ByteBody implements Body {
     constructor(private value: Uint8Array) {
     }
 

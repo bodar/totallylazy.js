@@ -3,8 +3,9 @@ import {src, task, tsc} from 'fuse-box/sparky';
 import * as Mocha from 'mocha';
 import {File} from './src/totallylazy/files';
 import {NodeServerHandler} from './src/node/server';
-import runner = require('mocha-headless-chrome');
+import * as puppeteer from 'puppeteer';
 import {notFound, ok, Uri} from "./src/api";
+import {ByteBody} from "./src/httpbin";
 
 
 task('default', ['clean', 'compile', 'test', 'bundle', 'test-browser']);
@@ -24,7 +25,7 @@ task('test', async () => {
             mocha.addFile(source.absolutePath);
         }
     }
-    await new Promise((resolved, rejected) => mocha.run(failures => failures == 0 ? resolved() : rejected("Tests failed " + failures)));
+    await new Promise((resolved, rejected) => mocha.reporter('tap').run(failures => failures == 0 ? resolved() : rejected("Tests failed " + failures)));
 });
 
 task('bundle', async () => {
@@ -50,25 +51,31 @@ task('test-browser', async () => {
         handle: async (request) => {
             const path = '.' + request.uri.path;
             try {
-                let content = await new File(path).content();
-                return ok({"Content-Length": String(content.length)}, content);
+                let content = await new File(path).bytes();
+                return ok({"Content-Length": String(content.length)}, new ByteBody(content));
             } catch (e) {
                 return notFound({"Content-Length": String(e.toString().length)}, e.toString());
             }
         }
     });
 
+    const browser = await puppeteer.launch({headless: true});
+
     try {
+        let page = await browser.newPage();
+        page.on("console", (message: any) => console[message.type()](message.text()));
+
         const url = await server.url() + 'dist/mocha.html';
+        await page.goto(url, {waitUntil: 'load'});
 
-        console.log(url);
-
-        return runner({
-            file: url,
-            reporter: 'dot',
-            visible: true,
+        return await page.evaluate(() => {
+            return new Promise((resolved: Function, rejected: Function) => {
+                mocha.reporter('tap').run(failures => failures == 0 ? resolved("SUCCESS") : rejected("FAILED: " + failures))
+            });
         });
+
     } finally {
-        // await server.close();
+        await browser.close();
+        await server.close();
     }
 });
