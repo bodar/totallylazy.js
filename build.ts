@@ -25,7 +25,7 @@ task('test', async () => {
             mocha.addFile(source.absolutePath);
         }
     }
-    await new Promise((resolved, rejected) => mocha.reporter('tap').run(failures => failures == 0 ? resolved() : rejected("Tests failed " + failures)));
+    await new Promise((resolved, rejected) => mocha.reporter('spec').run(failures => failures == 0 ? resolved() : rejected("Tests failed " + failures)));
 });
 
 task('bundle', async () => {
@@ -62,15 +62,21 @@ task('test-browser', async () => {
     const browser = await puppeteer.launch({headless: true});
 
     try {
-        let page = await browser.newPage();
-        page.on("console", (message: any) => console[message.type()](message.text()));
+        const page = await browser.newPage();
+
+        page.on("console", (message: any) => {
+            (async() => {
+                const args = await Promise.all(message.args().map(a => a.jsonValue()));
+                console[message.type()](...args);
+            })();
+        });
 
         const url = await server.url() + 'dist/mocha.html';
         await page.goto(url, {waitUntil: 'load'});
 
         return await page.evaluate(() => {
             return new Promise((resolved: Function, rejected: Function) => {
-                mocha.reporter('tap').run(failures => failures == 0 ? resolved("SUCCESS") : rejected("FAILED: " + failures))
+                mocha.reporter('spec').run(failures => failures == 0 ? resolved("SUCCESS") : rejected("FAILED: " + failures))
             });
         });
 
