@@ -3,8 +3,8 @@ import {src, task, tsc} from 'fuse-box/sparky';
 import * as Mocha from 'mocha';
 import {File} from './src/totallylazy/files';
 import {NodeServerHandler} from './src/node/server';
-import * as puppeteer from 'puppeteer';
-import {ok, Uri} from "./src/api";
+import runner = require('mocha-headless-chrome');
+import {notFound, ok, Uri} from "./src/api";
 
 
 task('default', ['clean', 'compile', 'test', 'bundle', 'test-browser']);
@@ -49,43 +49,26 @@ task('test-browser', async () => {
     const server = new NodeServerHandler({
         handle: async (request) => {
             const path = '.' + request.uri.path;
-            let content = await new File(path).content();
-            return ok({"Content-Length": String(content.length)}, content);
+            try {
+                let content = await new File(path).content();
+                return ok({"Content-Length": String(content.length)}, content);
+            } catch (e) {
+                return notFound({"Content-Length": String(e.toString().length)}, e.toString());
+            }
         }
     });
-    const browser = await puppeteer.launch();
 
     try {
-        let page = await browser.newPage();
-        page.on("console", (message: any) => {
-            console.log(message.text());
-        });
-
         const url = await server.url() + 'dist/mocha.html';
-        await page.goto(url, {waitUntil: 'load'});
 
-        const result = await page.evaluate(() => {
-            console.log("SCRIPTS: " + document.getElementsByTagName("script").length);
-            const handle = (resolved:Function, rejected:Function) => {
-                if(typeof mocha === 'undefined'){
-                    console.log("UNDEFINED");
-                    setTimeout(handle, 5, resolved, rejected);
-                } else {
-                    console.log("DEFINED: " + mocha);
-                    mocha.run(failures => failures == 0 ? resolved("SUCCESS") : rejected("FAILED: " + failures))
-                }
-            };
-            return new Promise(handle);
+        console.log(url);
+
+        return runner({
+            file: url,
+            reporter: 'dot',
+            visible: true,
         });
-
-        console.log(result);
-
-        await page.screenshot({path: 'mocha.png'});
-
-        return result
-
     } finally {
-        await browser.close();
-        await server.close();
+        // await server.close();
     }
 });
