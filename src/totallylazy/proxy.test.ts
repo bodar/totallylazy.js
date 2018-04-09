@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {method, on} from "./proxy";
+import {call, on} from "./proxy";
 
 describe("proxy", () => {
     it("", () => {
@@ -7,10 +7,12 @@ describe("proxy", () => {
             firstname():string {
                 return "dan";
             }
+
+            public lastname = "Bod"
         }
 
 
-        const m = method(on(User).firstname());
+        const m = call(on(User).firstname().length);
         console.log(m)
     })
 });
