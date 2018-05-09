@@ -12,6 +12,11 @@ task('default', ['clean', 'compile', 'test', 'bundle', 'test-browser']);
 
 task('clean', async () => {
     await src('./dist').clean('dist/').exec();
+    for await (const source of new File('src').descendants()) {
+        if (source.name.endsWith('.js') || source.name.endsWith('.js.map')) {
+            source.delete();
+        }
+    }
 });
 
 task('compile', async () => {
@@ -65,7 +70,7 @@ task('test-browser', async () => {
         const page = await browser.newPage();
 
         page.on("console", (message: any) => {
-            (async() => {
+            (async () => {
                 const args = await Promise.all(message.args().map(a => a.jsonValue()));
                 console[message.type()](...args);
             })();
