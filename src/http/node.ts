@@ -1,4 +1,4 @@
-import {Body, Chunk, Handler, Header, Headers, host, isBody, Request, request, Response, Server, Uri} from "./index";
+import {Body, Chunk, Handler, Header, Headers, host, isBody, Request, request, Response, Server, Uri} from ".";
 import {createServer, IncomingMessage, request as NodeRequest, Server as NodeServer, ServerResponse} from 'http';
 import {TextEncoder} from 'text-encoding';
 import {URL} from 'url';
@@ -33,41 +33,43 @@ export class ClientHandler implements Handler {
     }
 }
 
+export const adapter = (handler:Handler) => (nodeRequest: IncomingMessage, nodeResponse: ServerResponse) => {
+    let req = request(nodeRequest.method || "",
+        nodeRequest.url || "",
+        nodeRequest.headers as Headers,
+        new MessageBody(nodeRequest));
+
+    (async () => {
+        const response = await handler.handle(req);
+        nodeResponse.statusCode = response.status;
+        for (let h in response.headers) {
+            const name = h as Header;
+            const value = response.headers[name];
+            if (value) nodeResponse.setHeader(name, value);
+        }
+        if (isBody(response.body)) {
+            try {
+                const text = await response.body.text();
+                nodeResponse.write(text);
+            } catch (e) {
+                for await(const value of response.body) {
+                    nodeResponse.write(Buffer.from(value.data().buffer as any));
+                }
+            } finally {
+                nodeResponse.end();
+            }
+        } else {
+            nodeResponse.end();
+        }
+    })();
+};
+
 export class ServerHandler implements Server {
     private server: NodeServer;
     private uri: Promise<Uri>;
 
     constructor(private handler: Handler, {port = 0} = {}) {
-        const server = createServer((nodeRequest: IncomingMessage, nodeResponse: ServerResponse) => {
-            let req = request(nodeRequest.method || "",
-                nodeRequest.url || "",
-                nodeRequest.headers as Headers,
-                new MessageBody(nodeRequest));
-
-            (async () => {
-                const response = await this.handle(req);
-                nodeResponse.statusCode = response.status;
-                for (let h in response.headers) {
-                    const name = h as Header;
-                    const value = response.headers[name];
-                    if (value) nodeResponse.setHeader(name, value);
-                }
-                if (isBody(response.body)) {
-                    try {
-                        const text = await response.body.text();
-                        nodeResponse.write(text);
-                    } catch (e) {
-                        for await(const value of response.body) {
-                            nodeResponse.write(Buffer.from(value.data().buffer as any));
-                        }
-                    } finally {
-                        nodeResponse.end();
-                    }
-                } else {
-                    nodeResponse.end();
-                }
-            })();
-        });
+        const server = createServer(adapter(this));
         this.server = server;
         this.server.listen(port);
         this.uri = new Promise<Uri>((resolve) => {

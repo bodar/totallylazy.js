@@ -4,7 +4,7 @@ import {runningInNode} from "../node";
 import {HttpBinHandler} from "./httpbin";
 import {Server} from "./index";
 
-describe("NodeClientHandler", function () {
+describe("ClientHandler", function () {
     handlerContract(async () => {
         if (!runningInNode()) throw new Error("Unsupported");
 
@@ -13,7 +13,7 @@ describe("NodeClientHandler", function () {
     });
 });
 
-describe("NodeServerHandler", function () {
+describe("ServerHandler", function () {
     const server = new Promise<Server>(async (resolve, reject) => {
         try {
             const {ServerHandler} = await import('./node');

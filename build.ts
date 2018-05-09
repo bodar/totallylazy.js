@@ -91,7 +91,6 @@ task('test-browser', async () => {
     }
 });
 
-task('publish', async () => {
+task('package', async () => {
     bumpVersion('package.json', { type: 'patch' });
-    await npmPublish({ path: 'dist' });
 });

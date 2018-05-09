@@ -58,13 +58,18 @@ export class File {
     }
 
     async delete(): Promise<void> {
-        try {
-            if (await !this.exists) return Promise.resolve();
-            if (await this.isDirectory) return await promisify(fs.rmdir)(this.absolutePath);
-            return await promisify(fs.unlink)(this.absolutePath);
-        } catch (e) {
-            return Promise.reject(e);
+        if (await !this.exists) return Promise.resolve();
+        if (await this.isDirectory) return await promisify(fs.rmdir)(this.absolutePath);
+        return await promisify(fs.unlink)(this.absolutePath);
+    }
+
+    async copy(destination: string | File, flags?: number): Promise<void> {
+        destination = destination instanceof File ? destination : new File(destination);
+        if(await destination.isDirectory) {
+            destination = new File(this.name, destination.absolutePath);
         }
+
+        return await promisify(fs.copyFile)(this.absolutePath, destination.absolutePath, flags);
     }
 }
 
