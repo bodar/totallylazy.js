@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {handlerContract} from "../handler.contract";
-import {runningInNode} from "../totallylazy/node";
+import {runningInNode} from "../../node";
 
 describe("NodeClientHandler", function () {
     handlerContract(async () => {

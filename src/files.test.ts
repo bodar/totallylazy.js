@@ -8,7 +8,7 @@ describe("files", function () {
     });
 
     it('can return absolute path', function () {
-        assert(new File('src').absolutePath.endsWith("http4js/src"));
+        assert(new File('src').absolutePath.endsWith("totallylazy.js/src"));
     });
 
     it('can list children', async () => {

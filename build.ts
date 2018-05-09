@@ -1,11 +1,11 @@
 import {FuseBox, WebIndexPlugin} from 'fuse-box';
 import {src, task, tsc} from 'fuse-box/sparky';
 import * as Mocha from 'mocha';
-import {File} from './src/totallylazy/files';
-import {NodeServerHandler} from './src/node/server';
+import {File} from './src/files';
+import {NodeServerHandler} from './src/http/node/server';
 import * as puppeteer from 'puppeteer';
-import {notFound, ok, Uri} from "./src/api";
-import {ByteBody} from "./src/httpbin";
+import {notFound, ok, Uri} from "./src/http/api";
+import {ByteBody} from "./src/http/httpbin";
 
 
 task('default', ['clean', 'compile', 'test', 'bundle', 'test-browser']);

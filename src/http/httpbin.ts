@@ -1,5 +1,5 @@
 import {Body, Chunk, get, Handler, isBody, notFound, ok, post, Request, Response} from "./api";
-import {match, case_, default_, Matched, regex} from "./totallylazy/pattern";
+import {match, case_, default_, Matched, regex} from "../pattern";
 
 export class HttpBinHandler implements Handler {
     handle(request: Request): Promise<Response> {

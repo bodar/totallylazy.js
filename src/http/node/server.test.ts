@@ -2,7 +2,7 @@ import {assert} from 'chai';
 import {handlerContract} from "../handler.contract";
 import {HttpBinHandler} from "../httpbin";
 import {Server} from "../api";
-import {runningInNode} from "../totallylazy/node";
+import {runningInNode} from "../../node";
 
 describe("NodeServerHandler", function () {
     const server = new Promise<Server>(async (resolve, reject) => {
