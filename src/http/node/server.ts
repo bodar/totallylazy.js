@@ -1,4 +1,4 @@
-import {Server, Handler, Header, Headers, isBody, request, Request, Response, Uri} from "../api";
+import {Server, Handler, Header, Headers, isBody, request, Request, Response, Uri} from "../index";
 import {createServer, IncomingMessage, ServerResponse, Server as NodeServer} from 'http';
 import {MessageBody} from "./clients";
 

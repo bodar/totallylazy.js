@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import {handlerContract} from "../handler.contract";
 import {HttpBinHandler} from "../httpbin";
-import {Server} from "../api";
+import {Server} from "../index";
 import {runningInNode} from "../../node";
 
 describe("NodeServerHandler", function () {

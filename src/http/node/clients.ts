@@ -1,4 +1,4 @@
-import {host, Handler, Request, Response, Headers, Body, Chunk} from "../api";
+import {host, Handler, Request, Response, Headers, Body, Chunk} from "../index";
 import {request as NodeRequest, IncomingMessage} from 'http';
 import {TextEncoder} from 'text-encoding';
 import {URL} from 'url';

@@ -1,4 +1,4 @@
-import {Uri} from './api';
+import {Uri} from './index';
 import {assert} from 'chai';
 
 describe('Uri', function() {

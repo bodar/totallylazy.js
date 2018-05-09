@@ -1,4 +1,4 @@
-import {Handler, Request, Response, Headers, Header, Body, host, modify, replace, const_, Uri} from "../api";
+import {Handler, Request, Response, Headers, Header, Body, host, modify, replace, const_, Uri} from "../index";
 
 export class XmlHttpHandler implements Handler {
     constructor(private readonly handler: XMLHttpRequest = new XMLHttpRequest()) {
