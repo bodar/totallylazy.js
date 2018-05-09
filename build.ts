@@ -2,9 +2,9 @@ import {FuseBox, WebIndexPlugin} from 'fuse-box';
 import {src, task, tsc, bumpVersion, npmPublish} from 'fuse-box/sparky';
 import * as Mocha from 'mocha';
 import {File} from './src/files';
-import {NodeServerHandler} from './src/http/node/server';
+import {ServerHandler} from './src/http/node';
+import {notFound, ok} from "./src/http";
 import * as puppeteer from 'puppeteer';
-import {notFound, ok, Uri} from "./src/http/index";
 import {ByteBody} from "./src/http/httpbin";
 
 
@@ -52,7 +52,7 @@ task('bundle', async () => {
 });
 
 task('test-browser', async () => {
-    const server = new NodeServerHandler({
+    const server = new ServerHandler({
         handle: async (request) => {
             const path = '.' + request.uri.path;
             try {

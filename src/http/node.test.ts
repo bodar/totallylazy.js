@@ -1,14 +1,23 @@
 import {assert} from 'chai';
-import {handlerContract} from "../handler.contract";
-import {HttpBinHandler} from "../httpbin";
-import {Server} from "../index";
-import {runningInNode} from "../../node";
+import {handlerContract} from "./handler.contract";
+import {runningInNode} from "../node";
+import {HttpBinHandler} from "./httpbin";
+import {Server} from "./index";
+
+describe("NodeClientHandler", function () {
+    handlerContract(async () => {
+        if (!runningInNode()) throw new Error("Unsupported");
+
+        const {ClientHandler} = await import('./node');
+        return new ClientHandler();
+    });
+});
 
 describe("NodeServerHandler", function () {
     const server = new Promise<Server>(async (resolve, reject) => {
         try {
-            const {NodeServerHandler} = await import('./server');
-            resolve(new NodeServerHandler(new HttpBinHandler()));
+            const {ServerHandler} = await import('./node');
+            resolve(new ServerHandler(new HttpBinHandler()));
         } catch (e) {
             reject(e);
         }
@@ -28,8 +37,8 @@ describe("NodeServerHandler", function () {
     handlerContract(async () => {
         if (!runningInNode()) throw new Error("Unsupported");
 
-        const {NodeClientHandler} = await import('./clients');
-        return new NodeClientHandler();
+        const {ClientHandler} = await import('./node');
+        return new ClientHandler();
     }, host());
 
     after(async function () {
