@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "private": false,
   "files": [
-    "src/*"
+    "dist/*"
   ],
   "scripts": {
     "build": "ts-node build.ts"

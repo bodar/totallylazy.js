@@ -2,7 +2,7 @@ import {
     AsyncCollection, Collection, Comparator, isAsyncIterable, isIterable, isPromiseLike, Mapper, Predicate, Reducer,
     toAsyncIterable
 } from "./collections";
-import {identity, sort, Transducable, Transducer} from "./transducers";
+import {identity, Transducable, Transducer} from "./transducers";
 import {add, increment, subtract} from "./numbers";
 
 export function iterate<T>(generator: (t: T) => T, value: T): Sequence<T> {
@@ -161,9 +161,9 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
     }
 }
 
-type IterableGenerator<A> = () => IterableIterator<A>;
-type AsyncIterableGenerator<A> = () => AsyncIterableIterator<A>;
-type Source<A> = Iterable<A> | AsyncIterable<A> | IterableGenerator<A> | AsyncIterableGenerator<A>;
+export type IterableGenerator<A> = () => IterableIterator<A>;
+export type AsyncIterableGenerator<A> = () => AsyncIterableIterator<A>;
+export type Source<A> = Iterable<A> | AsyncIterable<A> | IterableGenerator<A> | AsyncIterableGenerator<A>;
 
 export function sequence<A>(iterable: IterableGenerator<A>): Sequence<A>;
 export function sequence<A>(iterable: AsyncIterableGenerator<A>): AsyncSequence<A>;
@@ -182,7 +182,7 @@ export function sequence(iterable: Source<any>, transducer?: Transducer<any, any
     }
 }
 
-type Executor<A> = (resolve: (value?: A | PromiseLike<A>) => void, reject: (reason?: any) => void) => void;
+export type Executor<A> = (resolve: (value?: A | PromiseLike<A>) => void, reject: (reason?: any) => void) => void;
 
 export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncCollection<A> {
     protected constructor(public readonly iterable: AsyncIterable<any>, public readonly transducer: Transducer<any, A> = identity()) {
