@@ -9,6 +9,7 @@ LOTS STILL MISSING!
  * Includes HTTP as a function (think minimal UtterlyIdle/HTTP4K)
  * Minimal dependencies (just polyfills if needed)
  
- Coming soon
+ TODO
+ * NPM Publishing directory ('remove src')
  * LINQ/SQL projections using the Transducers (think LazyRecords)
  
