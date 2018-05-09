@@ -1,4 +1,4 @@
-import {Body, Chunk, get, Handler, isBody, notFound, ok, post, Request, Response} from "./index";
+import {Body, Chunk, get, Handler, isBody, notFound, ok, post, Request, Response} from ".";
 import {match, case_, default_, Matched, regex} from "../pattern";
 
 export class HttpBinHandler implements Handler {

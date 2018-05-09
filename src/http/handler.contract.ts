@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {get, Handler, HostHandler, post} from "./index";
+import {get, Handler, HostHandler, post} from ".";
 
 export function handlerContract(factory: () => Promise<Handler>, host = Promise.resolve("eu.httpbin.org")) {
     before(async function () {
