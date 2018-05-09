@@ -1,14 +1,12 @@
 {
-  "name": "totallylazy.js",
-  "version": "0.1.0",
+  "name": "@bodar/totallylazy.js",
+  "version": "0.1.3",
   "description": "Totallylazy",
   "repository": "git@github.com:bodar/totallylazy.js.git",
   "author": "Daniel Worthington-Bodart <dan@bodar.com>",
   "license": "Apache-2.0",
   "private": false,
-  "main": "dist/es5-bundle.js",
-  "ts:main": "src/index.ts",
-  "typings": "src/index.ts",
+  "files": "src/*",
   "scripts": {
     "build": "ts-node build.ts"
   },

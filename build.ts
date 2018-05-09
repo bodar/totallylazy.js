@@ -1,5 +1,5 @@
 import {FuseBox, WebIndexPlugin} from 'fuse-box';
-import {src, task, tsc} from 'fuse-box/sparky';
+import {src, task, tsc, bumpVersion, npmPublish} from 'fuse-box/sparky';
 import * as Mocha from 'mocha';
 import {File} from './src/files';
 import {NodeServerHandler} from './src/http/node/server';
@@ -89,4 +89,9 @@ task('test-browser', async () => {
         await browser.close();
         await server.close();
     }
+});
+
+task('publish', async () => {
+    bumpVersion('package.json', { type: 'patch' });
+    await npmPublish({ path: '.' });
 });
