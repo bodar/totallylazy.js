@@ -2,6 +2,6 @@
 set -e
 
 source ${NVM_DIR}/nvm.sh
-nvm use
+nvm install
 yarn install
 yarn build $*

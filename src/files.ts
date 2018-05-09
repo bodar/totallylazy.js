@@ -4,20 +4,11 @@ import {promisify} from 'util';
 import {lazy} from './lazy';
 import {Stats} from "fs";
 
-export interface FileLike {
-    name: string,
-    parent: string,
-    absolutePath: string,
-    isDirectory: Promise<boolean>,
-
-    bytes(): Promise<Uint8Array>,
-}
-
 if (typeof Symbol.asyncIterator == 'undefined') {
     (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
 }
 
-export class File implements FileLike {
+export class File {
     constructor(public name: string, public parent: string = process.cwd()) {
 
     }
