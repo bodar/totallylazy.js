@@ -1,13 +1,13 @@
 {
   "name": "@bodar/totallylazy.js",
-  "version": "0.1.5",
+  "version": "0.1.10",
   "description": "Totallylazy",
   "repository": "git@github.com:bodar/totallylazy.js.git",
   "author": "Daniel Worthington-Bodart <dan@bodar.com>",
   "license": "Apache-2.0",
   "private": false,
   "files": [
-    "dist/*"
+    "src/*"
   ],
   "scripts": {
     "build": "ts-node build.ts"
