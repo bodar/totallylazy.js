@@ -1,6 +1,7 @@
 # TotallyLazy.js
 
 [![Build Status](https://semaphoreci.com/api/v1/danielbodart/totallylazy-js/branches/master/badge.svg)](https://semaphoreci.com/danielbodart/totallylazy-js)
+[![npm version](https://badge.fury.io/js/%40bodar%2Ftotallylazy.svg)](https://badge.fury.io/js/%40bodar%2Ftotallylazy)
 
 LOTS STILL MISSING!
 
