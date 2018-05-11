@@ -1,5 +1,7 @@
 # TotallyLazy.js
 
+[![Build Status](https://semaphoreci.com/api/v1/danielbodart/totallylazy-js/branches/master/badge.svg)](https://semaphoreci.com/danielbodart/totallylazy-js)
+
 LOTS STILL MISSING!
 
  * Written in Typescript
