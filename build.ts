@@ -102,6 +102,4 @@ task('package', async () => {
     for await (const source of src.descendants()) {
         await source.copy(dist);
     }
-
-    bumpVersion('package.json', { type: 'patch' });
 });
