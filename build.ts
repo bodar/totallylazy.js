@@ -12,10 +12,10 @@ const src = new File('src');
 const dist = new File("dist");
 
 task('default', ['clean', 'compile', 'test', 'bundle', 'test-browser']);
-task('release', ['default', 'package']);
 
 task('clean', async () => {
     await dist.delete();
+    await dist.mkdir();
     for await (const source of src.descendants()) {
         if (source.name.endsWith('.js') || source.name.endsWith('.js.map')) {
             source.delete();
@@ -96,6 +96,7 @@ task('test-browser', async () => {
 });
 
 task('package', async () => {
+    bumpVersion('package.json', {type: 'patch'});
     for await(const name of ['package.json', 'README.md', 'LICENSE']){
         await new File(name).copy(dist);
     }
@@ -103,3 +104,12 @@ task('package', async () => {
         await source.copy(dist);
     }
 });
+
+task('release', async () => {
+    //const npmrc = new File('.npmrc');
+    //npmrc.append(`//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`);
+    npmPublish({path: 'dist'});
+});
+
+task('ci', ['default', 'package', 'release']);
+

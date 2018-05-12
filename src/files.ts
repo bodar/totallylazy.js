@@ -3,6 +3,7 @@ import * as path from 'path';
 import {promisify} from 'util';
 import {lazy} from './lazy';
 import {Stats} from "fs";
+import {sequence, Sequence} from "./sequence";
 
 if (typeof Symbol.asyncIterator == 'undefined') {
     (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
@@ -67,11 +68,9 @@ export class File {
     }
 
     async delete(): Promise<void> {
-        if (await !this.exists) return Promise.resolve();
+        if (!await this.exists) return Promise.resolve();
         if (await this.isDirectory) {
-            for await (const descendant of this.descendants()) {
-                await descendant.delete();
-            }
+            for await (const descendant of this.descendants()) await descendant.delete();
             return await promisify(fs.rmdir)(this.absolutePath);
         }
         return await promisify(fs.unlink)(this.absolutePath);
@@ -81,14 +80,9 @@ export class File {
         destination = destination instanceof File ? destination : new File(destination);
         if(await this.isDirectory){
             const dest = await destination.child(this.name).mkdir();
-            for await (const descendant of this.descendants()) {
-                await descendant.copy(dest, flags);
-            }
+            for await (const descendant of this.descendants()) await descendant.copy(dest, flags);
         } else {
-            if(await destination.isDirectory) {
-                destination = destination.child(this.name);
-            }
-
+            if(await destination.isDirectory) destination = destination.child(this.name);
             return await promisify(fs.copyFile)(this.absolutePath, destination.absolutePath, flags);
         }
     }

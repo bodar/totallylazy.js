@@ -1,7 +1,8 @@
-.idea/workspace.xml
-node_modules
-*.log
 .fusebox
+.idea/workspace.xml
+.npmrc
 dist
+node_modules
 *.js
 *.js.map
+*.log

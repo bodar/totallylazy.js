@@ -21,6 +21,10 @@ describe("files", function () {
         assert(await new File('src').isDirectory);
     });
 
+    it('can tell if file exists', async () => {
+        assert(!await new File('some-random-file-that-does-not-exist').exists);
+    });
+
     it('can list descendants', async () => {
         for await (const child of new File('src').descendants()) {
             //TODO something sensible
