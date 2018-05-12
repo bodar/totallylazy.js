@@ -1,5 +1,5 @@
 import {FuseBox, WebIndexPlugin} from 'fuse-box';
-import {bumpVersion, npmPublish, src, task, tsc} from 'fuse-box/sparky';
+import {bumpVersion, npmPublish, task, tsc} from 'fuse-box/sparky';
 import * as Mocha from 'mocha';
 import {File} from './src/files';
 import {ServerHandler} from './src/http/node';
@@ -8,11 +8,15 @@ import * as puppeteer from 'puppeteer';
 import {ByteBody} from "./src/http/httpbin";
 
 
+const src = new File('src');
+const dist = new File("dist");
+
 task('default', ['clean', 'compile', 'test', 'bundle', 'test-browser']);
+task('release', ['default', 'package']);
 
 task('clean', async () => {
-    await src('./dist').clean('dist/').exec();
-    for await (const source of new File('src').descendants()) {
+    await dist.delete();
+    for await (const source of src.descendants()) {
         if (source.name.endsWith('.js') || source.name.endsWith('.js.map')) {
             source.delete();
         }
@@ -25,7 +29,7 @@ task('compile', async () => {
 
 task('test', async () => {
     const mocha = new Mocha();
-    for await (const source of new File('src').descendants()) {
+    for await (const source of src.descendants()) {
         if (source.name.endsWith('.test.js')) {
             mocha.addFile(source.absolutePath);
         }
@@ -92,5 +96,12 @@ task('test-browser', async () => {
 });
 
 task('package', async () => {
+    for await(const name of ['package.json', 'README.md', 'LICENSE']){
+        await new File(name).copy(dist);
+    }
+    for await (const source of src.descendants()) {
+        await source.copy(dist);
+    }
+
     bumpVersion('package.json', { type: 'patch' });
 });

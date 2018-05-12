@@ -21,27 +21,31 @@ export class File {
         return `file://${this.absolutePath}`;
     }
 
+    child(name:string){
+        return new File(name, this.absolutePath);
+    }
+
     async * children(): AsyncIterable<File> {
         const names: string[] = await promisify(fs.readdir)(this.absolutePath);
-        yield* names.map(name => new File(name, this.absolutePath));
+        yield* names.map(name => this.child(name));
     }
 
     get isDirectory(): Promise<boolean> {
-        return lazy(this, 'isDirectory', this.stats.then(stat => stat.isDirectory()));
+        return this.stats.then(stat => stat.isDirectory());
     }
 
     get exists(): Promise<boolean> {
-        return lazy(this, 'exists', this.stats.then(ignore => true, ignore => false));
+        return this.stats.then(ignore => true, ignore => false);
     }
 
     get stats(): Promise<Stats> {
-        return lazy(this, 'stats', promisify(fs.lstat)(this.absolutePath));
+        return promisify(fs.lstat)(this.absolutePath);
     }
 
     async * descendants(): AsyncIterable<File> {
         for await (const child of this.children()) {
-            yield child;
             if (await child.isDirectory) yield* child.descendants();
+            yield child;
         }
     }
 
@@ -57,20 +61,38 @@ export class File {
         return await promisify(fs.appendFile)(this.absolutePath, data, options)
     }
 
+    async mkdir(): Promise<File>{
+        if(!await this.exists) await promisify(fs.mkdir)(this.absolutePath);
+        return this;
+    }
+
     async delete(): Promise<void> {
         if (await !this.exists) return Promise.resolve();
-        if (await this.isDirectory) return await promisify(fs.rmdir)(this.absolutePath);
+        if (await this.isDirectory) {
+            for await (const descendant of this.descendants()) {
+                await descendant.delete();
+            }
+            return await promisify(fs.rmdir)(this.absolutePath);
+        }
         return await promisify(fs.unlink)(this.absolutePath);
     }
 
     async copy(destination: string | File, flags?: number): Promise<void> {
         destination = destination instanceof File ? destination : new File(destination);
-        if(await destination.isDirectory) {
-            destination = new File(this.name, destination.absolutePath);
-        }
+        if(await this.isDirectory){
+            const dest = await destination.child(this.name).mkdir();
+            for await (const descendant of this.descendants()) {
+                await descendant.copy(dest, flags);
+            }
+        } else {
+            if(await destination.isDirectory) {
+                destination = destination.child(this.name);
+            }
 
-        return await promisify(fs.copyFile)(this.absolutePath, destination.absolutePath, flags);
+            return await promisify(fs.copyFile)(this.absolutePath, destination.absolutePath, flags);
+        }
     }
+
 }
 
 export type FileOptions = { encoding?: string | null, mode?: string | number, flag?: string } | string
