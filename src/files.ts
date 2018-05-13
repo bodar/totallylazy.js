@@ -3,7 +3,6 @@ import * as path from 'path';
 import {promisify} from 'util';
 import {lazy} from './lazy';
 import {Stats} from "fs";
-import {sequence, Sequence} from "./sequence";
 
 if (typeof Symbol.asyncIterator == 'undefined') {
     (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");

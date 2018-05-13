@@ -106,8 +106,8 @@ task('package', async () => {
 });
 
 task('release', async () => {
-    //const npmrc = new File('.npmrc');
-    //npmrc.append(`//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`);
+    const npmrc = dist.child('.npmrc');
+    npmrc.append(`@bodar:registry=https://registry.npmjs.org\n//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`);
     npmPublish({path: 'dist'});
 });
 
