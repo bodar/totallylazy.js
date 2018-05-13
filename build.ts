@@ -14,7 +14,7 @@ const dist = new File("dist");
 const npm_token = process.env.NPM_TOKEN;
 const ci = process.env.CI === "true";
 const branch = process.env.BRANCH;
-const version = Number(process.env.VERSION);
+const version = process.env.VERSION;
 
 console.log(branch, version, process.env.CI, ci);
 
@@ -106,7 +106,6 @@ async function updateVersion() {
     const file = new File('package.json');
     const data = JSON.parse(await file.content());
     data.version = data.version + "." + version;
-    console.log(data.version);
     await dist.child('package.json').append(JSON.stringify(data));
 }
 

@@ -2,7 +2,7 @@
 set -e
 
 export BRANCH=${BRANCH_NAME-$(git rev-parse --abbrev-ref HEAD)}
-export BUILD_NUMBER=${SEMAPHORE_BUILD_NUMBER-dev-$(date +"%Y%m%d%H%M%S" -u)}
+export BUILD_NUMBER=${SEMAPHORE_BUILD_NUMBER-${USER}-$(date +"%Y%m%d%H%M%S" -u)}
 export COMMITS=$(git rev-list --count ${BRANCH})
 export VERSION=${COMMITS}.${BUILD_NUMBER}
 
