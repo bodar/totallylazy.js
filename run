@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
+export BRANCH=${BRANCH_NAME-$(git rev-parse --abbrev-ref HEAD)}
+export BUILD_NUMBER=${SEMAPHORE_BUILD_NUMBER-dev-$(date +"%Y%m%d%H%M%S" -u)}
+export COMMITS=$(git rev-list --count ${BRANCH})
+export VERSION=${COMMITS}.${BUILD_NUMBER}
+
 source ${NVM_DIR}/nvm.sh
 nvm install
 yarn install

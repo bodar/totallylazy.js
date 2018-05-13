@@ -1,5 +1,5 @@
 import {FuseBox, WebIndexPlugin} from 'fuse-box';
-import {bumpVersion, npmPublish, task, tsc} from 'fuse-box/sparky';
+import {npmPublish, task, tsc} from 'fuse-box/sparky';
 import * as Mocha from 'mocha';
 import {File} from './src/files';
 import {ServerHandler} from './src/http/node';
@@ -10,6 +10,13 @@ import {ByteBody} from "./src/http/httpbin";
 
 const src = new File('src');
 const dist = new File("dist");
+
+const npm_token = process.env.NPM_TOKEN;
+const ci = process.env.CI === "true";
+const branch = process.env.BRANCH;
+const version = Number(process.env.VERSION);
+
+console.log(branch, version, process.env.CI, ci);
 
 task('default', ['clean', 'compile', 'test', 'bundle', 'test-browser']);
 
@@ -95,9 +102,18 @@ task('test-browser', async () => {
     }
 });
 
+async function updateVersion() {
+    const file = new File('package.json');
+    const data = JSON.parse(await file.content());
+    data.version = data.version + "." + version;
+    console.log(data.version);
+    await dist.child('package.json').append(JSON.stringify(data));
+}
+
 task('package', async () => {
-    bumpVersion('package.json', {type: 'patch'});
-    for await(const name of ['package.json', 'README.md', 'LICENSE']){
+    await updateVersion();
+
+    for await(const name of ['README.md', 'LICENSE']) {
         await new File(name).copy(dist);
     }
     for await (const source of src.descendants()) {
@@ -106,9 +122,11 @@ task('package', async () => {
 });
 
 task('release', async () => {
-    const npmrc = dist.child('.npmrc');
-    npmrc.append(`@bodar:registry=https://registry.npmjs.org\n//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`);
-    npmPublish({path: 'dist'});
+    if (ci && branch === 'master') {
+        const npmrc = dist.child('.npmrc');
+        npmrc.append(`@bodar:registry=https://registry.npmjs.org\n//registry.npmjs.org/:_authToken=${npm_token}\n`);
+        npmPublish({path: 'dist'});
+    }
 });
 
 task('ci', ['default', 'package', 'release']);
