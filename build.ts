@@ -105,7 +105,7 @@ task('test-browser', async () => {
 async function updateVersion() {
     const file = new File('package.json');
     const data = JSON.parse(await file.content());
-    data.version = data.version + "." + version;
+    data.version = data.version + "-" + version;
     await dist.child('package.json').append(JSON.stringify(data));
 }
 
