@@ -13,6 +13,5 @@ LOTS STILL MISSING!
  * Minimal dependencies (just polyfills if needed)
  
  TODO
- * NPM Publishing directory ('remove src')
- * LINQ/SQL projections using the Transducers (think LazyRecords)
+ * SQL projections using the Transducers (think LINQ/LazyRecords)
  
