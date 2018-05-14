@@ -16,8 +16,6 @@ const ci = process.env.CI === "true";
 const branch = process.env.BRANCH;
 const version = process.env.VERSION;
 
-console.log(branch, version, process.env.CI, ci);
-
 task('default', ['clean', 'compile', 'test', 'bundle', 'test-browser']);
 
 task('clean', async () => {
@@ -105,7 +103,7 @@ task('test-browser', async () => {
 async function updateVersion() {
     const file = new File('package.json');
     const data = JSON.parse(await file.content());
-    data.version = data.version + "-" + version;
+    data.version = data.version + "." + version;
     await dist.child('package.json').append(JSON.stringify(data));
 }
 
@@ -121,10 +119,10 @@ task('package', async () => {
 });
 
 task('release', async () => {
-    if (ci && branch === 'master') {
+    if (branch === 'master') {
         const npmrc = dist.child('.npmrc');
         npmrc.append(`@bodar:registry=https://registry.npmjs.org\n//registry.npmjs.org/:_authToken=${npm_token}\n`);
-        npmPublish({path: 'dist'});
+        npmPublish({path: 'dist', tag: ci ? 'latest' : 'dev'});
     }
 });
 
