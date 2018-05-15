@@ -4,7 +4,7 @@ import * as Mocha from 'mocha';
 import {File} from './src/files';
 import {ServerHandler} from './src/http/node';
 import {notFound, ok} from "./src/http";
-import * as puppeteer from 'puppeteer';
+import {launch} from 'puppeteer';
 import {ByteBody} from "./src/http/httpbin";
 
 
@@ -73,15 +73,15 @@ task('test-browser', async () => {
         }
     });
 
-    const browser = await puppeteer.launch({headless: true});
+    const browser = await launch({headless: true});
 
     try {
         const page = await browser.newPage();
 
-        page.on("console", (message: any) => {
+        page.on("console", (message) => {
             (async () => {
                 const args = await Promise.all(message.args().map(a => a.jsonValue()));
-                console[message.type()](...args);
+                (console as any)[message.type()](...args);
             })();
         });
 
@@ -121,8 +121,8 @@ task('package', async () => {
 task('release', async () => {
     if (branch === 'master') {
         const npmrc = dist.child('.npmrc');
-        npmrc.append(`@bodar:registry=https://registry.npmjs.org\n//registry.npmjs.org/:_authToken=${npm_token}\n`);
-        npmPublish({path: 'dist', tag: ci ? 'latest' : 'dev'});
+        await npmrc.append(`@bodar:registry=https://registry.npmjs.org\n//registry.npmjs.org/:_authToken=${npm_token}\n`);
+        await npmPublish({path: 'dist', tag: ci ? 'latest' : 'dev'});
     }
 });
 
