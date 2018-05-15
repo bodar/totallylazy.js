@@ -12,8 +12,6 @@ const src = new File('src');
 const dist = new File("dist");
 
 const npm_token = process.env.NPM_TOKEN;
-const ci = process.env.CI === "true";
-const branch = process.env.BRANCH;
 const version = process.env.VERSION;
 const tag = process.env.TAG;
 
