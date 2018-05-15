@@ -1,6 +1,6 @@
 {
   "name": "@bodar/totallylazy",
-  "version": "0",
+  "version": "${VERSION}",
   "description": "Totallylazy",
   "repository": "git@github.com:bodar/totallylazy.js.git",
   "author": "Daniel Worthington-Bodart <dan@bodar.com>",
