@@ -15,6 +15,7 @@ const npm_token = process.env.NPM_TOKEN;
 const ci = process.env.CI === "true";
 const branch = process.env.BRANCH;
 const version = process.env.VERSION;
+const tag = process.env.TAG;
 
 task('default', ['clean', 'compile', 'test', 'bundle', 'test-browser']);
 
@@ -119,11 +120,8 @@ task('package', async () => {
 });
 
 task('release', async () => {
-    if (branch === 'master') {
-        const npmrc = dist.child('.npmrc');
-        await npmrc.append(`@bodar:registry=https://registry.npmjs.org\n//registry.npmjs.org/:_authToken=${npm_token}\n`);
-        await npmPublish({path: 'dist', tag: ci ? 'latest' : 'dev'});
-    }
+    await dist.child('.npmrc').append(`@bodar:registry=https://registry.npmjs.org\n//registry.npmjs.org/:_authToken=${npm_token}\n`);
+    await npmPublish({path: 'dist', tag});
 });
 
 task('ci', ['default', 'package', 'release']);
