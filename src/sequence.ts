@@ -7,12 +7,12 @@ import {
     isIterable,
     isPromiseLike,
     Mapper,
-    Predicate,
     Reducer,
     toAsyncIterable
 } from "./collections";
 import {identity, Transducable, Transducer} from "./transducers";
 import {add, increment, subtract} from "./numbers";
+import {Predicate} from "./predicates";
 
 export function iterate<T>(generator: (t: T) => T, value: T): Sequence<T> {
     return sequence(function* () {

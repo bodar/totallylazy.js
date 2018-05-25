@@ -1,9 +1,10 @@
 import {
     array,
     ascending,
-    Comparator, Contract, isAsyncIterable, isIterable, Mapper, Predicate,
+    Comparator, Contract, isAsyncIterable, isIterable, Mapper,
     Reducer
 } from "./collections";
+import {Predicate} from "./predicates";
 
 export abstract class Transducer<A, B> implements Contract<B> {
     abstract sync(iterable: Iterable<A>): Iterable<B>;

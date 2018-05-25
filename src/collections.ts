@@ -1,9 +1,10 @@
+import {Predicate} from "./predicates";
+
 if (typeof Symbol.asyncIterator == 'undefined') {
     (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
 }
 
 export type Mapper<A, B> = (a: A) => B;
-export type Predicate<A> = (a: A) => boolean;
 export type Comparator<A> = (a: A, b: A) => number;
 
 export interface Reducer<A, B> {
