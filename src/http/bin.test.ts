@@ -1,9 +1,9 @@
 import {assert} from 'chai';
 import {handlerContract} from "./handler.contract";
-import {HttpBinHandler} from "./httpbin";
+import {BinHandler} from "./bin";
 
 describe("HttpBinHandler", function () {
     handlerContract(async () => {
-        return new HttpBinHandler();
+        return new BinHandler();
     });
 });

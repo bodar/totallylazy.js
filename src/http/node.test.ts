@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import {handlerContract} from "./handler.contract";
 import {runningInNode} from "../node";
-import {HttpBinHandler} from "./httpbin";
+import {BinHandler} from "./bin";
 import {Server} from "./index";
 
 describe("ClientHandler", function () {
@@ -17,7 +17,7 @@ describe("ServerHandler", function () {
     const server = new Promise<Server>(async (resolve, reject) => {
         try {
             const {ServerHandler} = await import('./node');
-            resolve(new ServerHandler(new HttpBinHandler()));
+            resolve(new ServerHandler(new BinHandler()));
         } catch (e) {
             reject(e);
         }

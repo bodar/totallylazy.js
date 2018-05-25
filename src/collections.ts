@@ -1,5 +1,3 @@
-import {sort, Transducer} from "./transducers";
-
 if (typeof Symbol.asyncIterator == 'undefined') {
     (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
 }
@@ -102,11 +100,18 @@ export function toIterable<T>(...t: T[]): Iterable<T> {
     return t;
 }
 
-export function toArray<T>(iterable: Iterable<T>): T[] {
+export function array<T>(iterable: Iterable<T>) : T[]
+export function array<T>(iterable: AsyncIterable<T>) : Promise<T[]>
+export function array<T>(iterable: Iterable<T> | AsyncIterable<T>) : T[] | Promise<T[]> {
+   if(isIterable(iterable)) return toArray(iterable);
+   return toPromiseArray(iterable);
+}
+
+function toArray<T>(iterable: Iterable<T>): T[] {
     return [...iterable];
 }
 
-export async function toPromiseArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
+async function toPromiseArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
     const result: T[] = [];
     for await (const value of iterable) result.push(value);
     return result;

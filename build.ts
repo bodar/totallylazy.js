@@ -5,7 +5,7 @@ import {File} from './src/files';
 import {ServerHandler} from './src/http/node';
 import {notFound, ok} from "./src/http";
 import {launch} from 'puppeteer';
-import {ByteBody} from "./src/http/httpbin";
+import {ByteBody} from "./src/http/bin";
 
 
 const src = new File('src');

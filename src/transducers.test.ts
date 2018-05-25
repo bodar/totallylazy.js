@@ -52,6 +52,7 @@ describe("transducers", () => {
 
     it("can take", () => {
         assertSync(transducer<number>().take(4).transduce([0, 1, 2, 3, 4, 5, 6, 7, 8]), 0, 1, 2, 3);
+        assertSync(transducer<number>().take(4.5).transduce([0, 1, 2, 3, 4, 5, 6, 7, 8]), 0, 1, 2, 3);
     });
 
     it("can take while", async () => {

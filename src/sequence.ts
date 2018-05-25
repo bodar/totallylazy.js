@@ -1,5 +1,14 @@
 import {
-    AsyncCollection, Collection, Comparator, isAsyncIterable, isIterable, isPromiseLike, Mapper, Predicate, Reducer,
+    array,
+    AsyncCollection,
+    Collection,
+    Comparator,
+    isAsyncIterable,
+    isIterable,
+    isPromiseLike,
+    Mapper,
+    Predicate,
+    Reducer,
     toAsyncIterable
 } from "./collections";
 import {identity, Transducable, Transducer} from "./transducers";
@@ -95,6 +104,10 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
     sort(comparator?: Comparator<A>): Sequence<A> {
         return this.create(this.transducer.sort(comparator));
     }
+
+    toArray(): A[]{
+        return array(this);
+    }
 }
 
 export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection<A> {
@@ -158,6 +171,10 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
 
     sort(comparator?: Comparator<A>): AsyncSequence<A> {
         return this.create(this.transducer.sort(comparator));
+    }
+
+    toArray(): Promise<A[]>{
+        return array(this);
     }
 }
 

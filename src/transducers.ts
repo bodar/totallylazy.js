@@ -1,7 +1,8 @@
 import {
+    array,
     ascending,
-    Comparator, Contract, isAsyncIterable, isIterable, isPromiseLike, Mapper, Predicate,
-    Reducer, toArray, toPromiseArray
+    Comparator, Contract, isAsyncIterable, isIterable, Mapper, Predicate,
+    Reducer
 } from "./collections";
 
 export abstract class Transducer<A, B> implements Contract<B> {
@@ -144,7 +145,7 @@ export function transducer<A>(): IdentityTransducer<A> {
 }
 
 export class FirstTransducer<A> extends Transducer<A, A> {
-    async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
         for await (const a of iterable) {
             yield a;
             return;
@@ -164,7 +165,7 @@ export function first<A, B>(transducer: Transducer<A, B>): Transducer<A, B> {
 }
 
 export class LastTransducer<A> extends Transducer<A, A> {
-    async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
         let last;
         for await (last of iterable) ;
         if (last !== undefined) yield last;
@@ -186,7 +187,7 @@ export class MapTransducer<A, B> extends Transducer<A, B> {
         super();
     }
 
-    async * async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
         for await (const a of iterable) {
             yield this.mapper(a);
         }
@@ -208,7 +209,7 @@ export class FlatMapTransducer<A, B> extends Transducer<A, B> {
         super();
     }
 
-    async * async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
         for await (const a of iterable) {
             yield* this.mapper(a) as any as AsyncIterable<B>;
         }
@@ -230,7 +231,7 @@ export class FilterTransducer<A> extends Transducer<A, A> {
         super();
     }
 
-    async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
         for await (const a of iterable) {
             if (this.predicate(a)) yield a;
         }
@@ -301,7 +302,7 @@ export class ScanTransducer<A, B> extends Transducer<A, B> {
         super();
     }
 
-    async * async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
         for await (const a of iterable) {
             yield this.accumilator = this.reducer.call(this.accumilator, a);
         }
@@ -323,11 +324,14 @@ export function reduce<A, B, C>(reducer: Reducer<B, C>, transducer: Transducer<A
 }
 
 export class TakeTransducer<A> extends Transducer<A, A> {
-    constructor(public count: number) {
+    public count: number;
+
+    constructor(count: number) {
         super();
+        this.count = Math.floor(count);
     }
 
-    async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
         if (this.count == 0) return;
         for await (const a of iterable) {
             yield a;
@@ -354,7 +358,7 @@ export class TakeWhileTransducer<A> extends Transducer<A, A> {
         super();
     }
 
-    async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
         for await (const a of iterable) {
             if (this.predicate(a)) yield a;
             else return;
@@ -378,16 +382,16 @@ export class SortTransducer<A> extends Transducer<A, A> {
         super();
     }
 
-    async * async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
-        const array = await toPromiseArray(iterable);
-        array.sort(this.comparator);
-        yield* array;
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        const result = await array(iterable);
+        result.sort(this.comparator);
+        yield* result;
     }
 
     * sync(iterable: Iterable<A>): Iterable<A> {
-        const array = toArray(iterable);
-        array.sort(this.comparator);
-        yield* array;
+        const result = array(iterable);
+        result.sort(this.comparator);
+        yield* result;
     }
 }
 

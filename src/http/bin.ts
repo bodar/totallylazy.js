@@ -1,7 +1,8 @@
 import {Body, Chunk, get, Handler, isBody, notFound, ok, post, Request, Response} from ".";
 import {match, case_, default_, Matched, regex} from "../pattern";
+import {repeat} from "../sequence";
 
-export class HttpBinHandler implements Handler {
+export class BinHandler implements Handler {
     handle(request: Request): Promise<Response> {
         return match(request,
             case_(get('/get'), this.get),
@@ -33,11 +34,7 @@ export class HttpBinHandler implements Handler {
 
 
 function randomBytes(length: number) {
-    const sizeInFloats = length / 4;
-    const buffer: number[] = [];
-    for (let i = 0; i < sizeInFloats; i++) {
-        buffer[i] = Math.random();
-    }
+    const buffer = repeat(Math.random).take((length / 4) + 1).toArray();
 
     return new Uint8Array(Float32Array.from(buffer).buffer).slice(0, length);
 }
