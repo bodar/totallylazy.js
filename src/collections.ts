@@ -7,6 +7,14 @@ if (typeof Symbol.asyncIterator == 'undefined') {
 export type Mapper<A, B> = (a: A) => B;
 export type Comparator<A> = (a: A, b: A) => number;
 
+export interface Key<A, K extends keyof A> extends Mapper<A, A[K]> {
+    name: K
+}
+
+export function key<A, K extends keyof A>(name: K): Key<A, K> {
+    return Object.assign((a: A) => a[name], {name})
+}
+
 export interface Reducer<A, B> {
     call(accumilator: B, instance: A): B;
 
@@ -101,11 +109,11 @@ export function toIterable<T>(...t: T[]): Iterable<T> {
     return t;
 }
 
-export function array<T>(iterable: Iterable<T>) : T[]
-export function array<T>(iterable: AsyncIterable<T>) : Promise<T[]>
-export function array<T>(iterable: Iterable<T> | AsyncIterable<T>) : T[] | Promise<T[]> {
-   if(isIterable(iterable)) return toArray(iterable);
-   return toPromiseArray(iterable);
+export function array<T>(iterable: Iterable<T>): T[]
+export function array<T>(iterable: AsyncIterable<T>): Promise<T[]>
+export function array<T>(iterable: Iterable<T> | AsyncIterable<T>): T[] | Promise<T[]> {
+    if (isIterable(iterable)) return toArray(iterable);
+    return toPromiseArray(iterable);
 }
 
 function toArray<T>(iterable: Iterable<T>): T[] {

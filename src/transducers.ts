@@ -325,26 +325,23 @@ export function reduce<A, B, C>(reducer: Reducer<B, C>, transducer: Transducer<A
 }
 
 export class TakeTransducer<A> extends Transducer<A, A> {
-    public count: number;
-
-    constructor(count: number) {
+    constructor(public count: number) {
         super();
-        this.count = Math.floor(count);
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
-        if (this.count == 0) return;
+        if (this.count < 1) return;
         for await (const a of iterable) {
             yield a;
-            if ((--this.count) == 0) return;
+            if ((--this.count) < 1) return;
         }
     }
 
     * sync(iterable: Iterable<A>): Iterable<A> {
-        if (this.count == 0) return;
+        if (this.count < 1) return;
         for (const a of iterable) {
             yield a;
-            if ((--this.count) == 0) return;
+            if ((--this.count) < 1) return;
         }
     }
 }
