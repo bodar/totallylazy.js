@@ -15,7 +15,8 @@ const npm_token = process.env.NPM_TOKEN;
 const version = process.env.VERSION;
 const tag = process.env.TAG;
 
-task('default', ['clean', 'compile', 'test', 'bundle', 'test-browser']);
+task('default', ['clean', 'tests']);
+task('tests', ['&test', '&test-browser']);
 
 task('clean', async () => {
     await dist.delete();
@@ -31,7 +32,7 @@ task('compile', async () => {
     await tsc('.', {});
 });
 
-task('test', async () => {
+task('test', ['compile'], async () => {
     const mocha = new Mocha();
     for await (const source of src.descendants()) {
         if (source.name.endsWith('.test.js')) {
@@ -59,7 +60,7 @@ task('bundle', async () => {
     await fuse.run();
 });
 
-task('test-browser', async () => {
+task('test-browser', ['bundle'], async () => {
     const server = new ServerHandler({
         handle: async (request) => {
             const path = '.' + request.uri.path;
