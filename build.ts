@@ -16,6 +16,7 @@ const version = process.env.VERSION;
 const tag = process.env.TAG;
 
 task('default', ['clean', 'tests']);
+
 task('tests', ['&test', '&test-browser']);
 
 task('clean', async () => {
