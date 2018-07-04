@@ -6,5 +6,5 @@ source ./version.sh
 source ${NVM_DIR}/nvm.sh
 nvm install
 yarn install
-rm build.js build.js.map
+rm -f build.js build.js.map
 yarn build $*
