@@ -60,12 +60,24 @@ export function isPartial<T>(instance: T, partial: Partial<T>): boolean {
     });
 }
 
+function value<T>(instance: T, key:keyof T) {
+    const value = instance[key];
+    if(typeof value === 'undefined'){
+        const lower = key.toString().toLowerCase();
+        const keys = Object.keys(instance);
+        for (const k of keys) {
+            if(lower === k.toLowerCase()) return (instance as any)[k];
+        }
+    }
+    return value;
+}
+
 export function apply<T>(instance: T, pattern: Pattern<T>): Matched<T> | undefined {
     let clone: Matched<T> = Object.assign({}, instance);
     const keys = Object.keys(pattern);
     for (let i = 0; i < keys.length; i++) {
         let key = keys[i] as keyof T;
-        let actual = instance[key];
+        let actual = value(instance, key);
         let expected: any = pattern[key];
 
         if(typeof expected == 'undefined') continue;

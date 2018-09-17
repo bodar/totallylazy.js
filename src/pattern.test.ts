@@ -1,6 +1,6 @@
 import {assert} from 'chai';
-import {get, post, Request, Uri} from "./http";
-import {match, case_, isPartial, Pattern, regex, apply, Matched} from "./pattern";
+import {get, post, Request, StringBody, Uri} from "./http";
+import {apply, case_, isPartial, match, Matched, Pattern, regex} from "./pattern";
 
 describe('pattern matching', function () {
     it('can verify a partial objects values match', function () {
@@ -14,6 +14,16 @@ describe('pattern matching', function () {
             case_({uri: new Uri('/some/path')} as Partial<Request>, (request) => request.method)), "GET");
         assert.equal(match(post('/some/path'),
             case_({uri: new Uri('/some/path')} as Partial<Request>, (request) => request.method)), "POST");
+    });
+
+    it('is case insensitive when matching', function () {
+        const request = {
+            method: "GET",
+            uri: new Uri('/request/path'),
+            headers: {'content-type': 'text/plain'},
+        } as Request;
+        assert.equal(match(request,
+            case_({method: 'GET', headers: {'Content-Type': 'text/plain'}} as Partial<Request>, ({method}) => method)), "GET");
     });
 
     it('can destructure what was matched', function () {
