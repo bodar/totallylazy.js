@@ -20,7 +20,7 @@ export function default_<T, R>(handler: () => R): Matcher<any, R> {
 }
 
 export class CaseMatcher<T, R> implements Matcher<T, R> {
-    constructor(private pattern: Pattern<T>, private handler: (instance: Matched<T>) => R) {
+    constructor(private pattern: Pattern<T>, private handler: (instance: Matched<T>) => R,) {
     }
 
     matches(instance: T): R | undefined {

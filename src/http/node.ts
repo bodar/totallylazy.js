@@ -33,16 +33,22 @@ export class ClientHandler implements Handler {
     }
 }
 
+function headers(rawHeaders: string[]):Headers {
+    if(rawHeaders.length == 0) return {};
+    const [name, value, ...remainder] = rawHeaders;
+    return {[name]:value, ...headers(remainder)};
+}
+
 export const adapter = (handler:Handler) => (nodeRequest: IncomingMessage, nodeResponse: ServerResponse) => {
-    let req = request(nodeRequest.method || "",
+    const req = request(nodeRequest.method || "",
         nodeRequest.url || "",
-        nodeRequest.headers as Headers,
+        headers(nodeRequest.rawHeaders),
         new MessageBody(nodeRequest));
 
     (async () => {
         const response = await handler.handle(req);
         nodeResponse.statusCode = response.status;
-        for (let h in response.headers) {
+        for (const h in response.headers) {
             const name = h as Header;
             const value = response.headers[name];
             if (value) nodeResponse.setHeader(name, value);

@@ -1,26 +1,42 @@
-import {Body, Chunk, get, Handler, isBody, notFound, ok, post, Request, Response} from ".";
+import {Body, Chunk, delete_, get, Handler, isBody, notFound, ok, patch, post, put, Request, Response} from ".";
 import {match, case_, default_, Matched, regex} from "../pattern";
 import {repeat} from "../sequence";
 
 export class BinHandler implements Handler {
     handle(request: Request): Promise<Response> {
         return match(request,
-            case_(get('/get'), this.get),
-            case_(post('/post'), this.post),
+            case_(get('/get'), this.get.bind(this)),
+            case_(post('/post'), this.post.bind(this)),
+            case_(put('/put'), this.put.bind(this)),
+            case_(patch('/patch'), this.patch.bind(this)),
+            case_(delete_('/delete'), this.delete_.bind(this)),
             case_({method: 'GET', uri: regex(/\/stream-bytes\/(\d+)/)}, this.streamBytes),
             default_(this.notFound));
+    }
+
+    async responseBody({headers, body}: Matched<Request>): Promise<string> {
+        const data = isBody(body) ? await body.text() : "";
+        return JSON.stringify({data, headers});
     }
 
     async get(request: Matched<Request>) {
         return ok();
     }
 
-    async post({body}: Matched<Request>) {
-        if (isBody(body)) {
-            const data = await body.text();
-            return ok({}, JSON.stringify({data}));
-        }
-        return ok();
+    async post(request: Matched<Request>) {
+        return ok({}, await this.responseBody(request));
+    }
+
+    async put(request: Matched<Request>) {
+        return ok({}, await this.responseBody(request));
+    }
+
+    async patch(request: Matched<Request>) {
+        return ok({}, await this.responseBody(request));
+    }
+
+    async delete_(request: Matched<Request>) {
+        return ok({}, await this.responseBody(request));
     }
 
     async streamBytes({uri: [size]}: Matched<Request>) {
@@ -60,7 +76,7 @@ export class ByteBody implements Body {
         throw new Error("Unsupported operation error");
     }
 
-    async * [Symbol.asyncIterator](): AsyncIterator<Chunk> {
+    async* [Symbol.asyncIterator](): AsyncIterator<Chunk> {
         yield new ByteChunk(this.value);
     }
 }

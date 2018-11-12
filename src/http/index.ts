@@ -95,6 +95,18 @@ export function post(uri: Uri | string, headers?: Headers, body?: string | Body)
     return request("POST", uri, headers, body);
 }
 
+export function put(uri: Uri | string, headers?: Headers, body?: string | Body): Request {
+    return request("PUT", uri, headers, body);
+}
+
+export function patch(uri: Uri | string, headers?: Headers, body?: string | Body): Request {
+    return request("PATCH", uri, headers, body);
+}
+
+export function delete_(uri: Uri | string, headers?: Headers): Request {
+    return request("DELETE", uri, headers);
+}
+
 export interface Response extends Message {
     readonly status: number,
 }
