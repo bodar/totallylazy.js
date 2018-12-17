@@ -205,6 +205,34 @@ export function map<A, B, C>(mapper: Mapper<B, C>, transducer: Transducer<A, B>)
     return compose(new MapTransducer(mapper), transducer);
 }
 
+export class ZipTransducer<A, B> extends Transducer<A, [A, B]> {
+    constructor(public other: Iterable<B>|AsyncIterable<B>) {
+        super();
+    }
+
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<[A, B]> {
+        if(!isAsyncIterable(this.other)) throw new Error("Unsupported operation exception");
+        const iteratorA = iterable[Symbol.asyncIterator]();
+        const iteratorB = this.other[Symbol.asyncIterator]();
+        while (true) {
+            const [resultA, resultB] = await Promise.all([iteratorA.next(), iteratorB.next()]);
+            if (resultA.done || resultB.done) return;
+            yield [resultA.value, resultB.value];
+        }
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<[A, B]> {
+        if(!isIterable(this.other)) throw new Error("Unsupported operation exception");
+        const iteratorA = iterable[Symbol.iterator]();
+        const iteratorB = this.other[Symbol.iterator]();
+        while (true) {
+            const resultA = iteratorA.next(), resultB = iteratorB.next();
+            if (resultA.done || resultB.done) return;
+            yield [resultA.value, resultB.value];
+        }
+    }
+}
+
 export class FlatMapTransducer<A, B> extends Transducer<A, B> {
     constructor(public mapper: Mapper<A, Contract<B>>) {
         super();
