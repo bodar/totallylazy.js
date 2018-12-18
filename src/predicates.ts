@@ -2,6 +2,10 @@ import {Mapper} from "./collections";
 
 export type Predicate<A> = (a: A) => boolean;
 
+export function not<A>(predicate: Predicate<A>): Predicate<A> {
+    return (a: A) => !predicate(a);
+}
+
 export interface Where<A, B> extends Predicate<A> {
     mapper: Mapper<A,B>,
     predicate: Predicate<B>

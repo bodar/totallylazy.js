@@ -4,7 +4,7 @@ import {
     Comparator, Contract, isAsyncIterable, isIterable, Mapper,
     Reducer
 } from "./collections";
-import {Predicate} from "./predicates";
+import {not, Predicate} from "./predicates";
 
 export abstract class Transducer<A, B> implements Contract<B> {
     abstract sync(iterable: Iterable<A>): Iterable<B>;
@@ -36,6 +36,10 @@ export abstract class Transducer<A, B> implements Contract<B> {
 
     filter(predicate: Predicate<B>): Transducer<A, B> {
         return filter(predicate, this);
+    }
+
+    filterNot(predicate: Predicate<B>): Transducer<A, B> {
+        return filter(not(predicate), this);
     }
 
     find(predicate: Predicate<B>): Transducer<A, B> {

@@ -27,6 +27,10 @@ describe("transducers", () => {
         assertSync(transducer<number>().filter(n => n % 2 == 0).transduce([0, 1, 2, 3, 4]), 0, 2, 4);
     });
 
+    it("can filterNot", () => {
+        assertSync(transducer<number>().filterNot(n => n % 2 == 0).transduce([0, 1, 2, 3, 4]), 1, 3);
+    });
+
     it("supports first", () => {
         assertSync(transducer<number>().first().transduce([]));
         assertSync(transducer<number>().first().transduce([0, 1, 2, 3, 4]), 0);
