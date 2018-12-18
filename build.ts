@@ -7,7 +7,6 @@ import {notFound, ok} from "./src/http";
 import {launch} from 'puppeteer';
 import {ByteBody} from "./src/http/bin";
 
-
 const src = new File('src');
 const test = new File('test');
 const dist = new File("dist");
