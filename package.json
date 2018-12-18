@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@types/node": "^9.4.6",
-    "@types/text-encoding": "^0.0.32"
+    "@types/text-encoding": "^0.0.32",
+    "tslib": "^1.9.3"
   },
   "devDependencies": {
     "@types/chai": "^4.1.2",
