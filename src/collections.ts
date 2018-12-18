@@ -43,6 +43,8 @@ export interface Contract<A> {
     reduce<B>(reducer: Reducer<A, B>): Contract<B>;
 
     sort(comparator?: Comparator<A>): Contract<A>;
+
+    zip<B>(other: Iterable<B>|AsyncIterable<B>): Contract<[A, B]>;
 }
 
 export interface Collection<A> extends Contract<A>, Iterable<A> {
@@ -67,6 +69,8 @@ export interface Collection<A> extends Contract<A>, Iterable<A> {
     reduce<B>(reducer: Reducer<A, B>): Collection<B>;
 
     sort(comparator?: Comparator<A>): Collection<A>;
+
+    zip<B>(other: Iterable<B>): Collection<[A, B]>;
 }
 
 export interface AsyncCollection<A> extends Contract<A>, AsyncIterable<A> {
@@ -91,6 +95,9 @@ export interface AsyncCollection<A> extends Contract<A>, AsyncIterable<A> {
     reduce<B>(reducer: Reducer<A, B>): AsyncCollection<B>;
 
     sort(comparator?: Comparator<A>): AsyncCollection<A>;
+
+    zip<B>(other: AsyncIterable<B>): AsyncCollection<[A, B]>;
+
 }
 
 export function isIterable(instance: any): instance is Iterable<any> {

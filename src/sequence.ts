@@ -105,6 +105,10 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
         return this.create(this.transducer.sort(comparator));
     }
 
+    zip<B>(other: Iterable<B>): Sequence<[A, B]>{
+        return this.create(this.transducer.zip(other));
+    }
+
     toArray(): A[]{
         return array(this);
     }
@@ -171,6 +175,10 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
 
     sort(comparator?: Comparator<A>): AsyncSequence<A> {
         return this.create(this.transducer.sort(comparator));
+    }
+
+    zip<B>(other: AsyncIterable<B>): AsyncSequence<[A, B]>{
+        return this.create(this.transducer.zip(other));
     }
 
     toArray(): Promise<A[]>{
@@ -271,6 +279,10 @@ export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncC
     sort(comparator?: Comparator<A>): Single<A> {
         return this.create(this.transducer.sort(comparator));
     }
+
+    zip<B>(other: Iterable<B>|AsyncIterable<B>): Single<[A, B]>{
+        return this.create(this.transducer.zip(other));
+    }
 }
 
 export class Option<A> extends Transducable<A> implements Collection<A> {
@@ -341,6 +353,10 @@ export class Option<A> extends Transducable<A> implements Collection<A> {
 
     sort(comparator?: Comparator<A>): Option<A> {
         return this.create(this.transducer.sort(comparator));
+    }
+
+    zip<B>(other: Iterable<B>): Option<[A, B]>{
+        return this.create(this.transducer.zip(other));
     }
 }
 

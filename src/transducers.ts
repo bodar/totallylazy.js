@@ -128,6 +128,10 @@ export abstract class Transducable<A> implements Contract<A> {
     sort(comparator?: Comparator<A>): Transducable<A> {
         return this.create(this.transducer.sort(comparator));
     }
+
+    zip<B>(other: Iterable<B>|AsyncIterable<B>): Transducable<[A, B]>{
+        return this.create(this.transducer.zip(other));
+    }
 }
 
 export class IdentityTransducer<A> extends Transducer<A, A> {
