@@ -1,18 +1,17 @@
 import {assert} from 'chai';
 import {
-    compose, CompositeTransducer,
     FilterTransducer,
     IdentityTransducer,
     intoArray,
     MapTransducer,
     ScanTransducer,
     TakeTransducer,
-    transducer, zip, ZipTransducer
+    transducer
 } from "../src/transducers";
 import {repeat} from "../src/sequence";
 import {increment, sum} from "../src/numbers";
 import {assertSync} from "./collections.test";
-import {ascending, by, Comparator, descending} from "../src/collections";
+import {ascending, by, descending} from "../src/collections";
 
 
 describe("transducers", () => {
