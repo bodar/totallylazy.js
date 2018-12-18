@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {array} from "./collections";
+import {array} from "../src/collections";
 
 export function assertSync<T>(actual: Iterable<T>, ...expected: T[]) {
     assert.deepEqual(array(actual), expected);

@@ -1,6 +1,6 @@
 import {assert} from 'chai';
-import {File} from './files';
-import {runningInNode} from "./node";
+import {File} from '../src/files';
+import {runningInNode} from "../src/node";
 
 describe("files", function () {
     before(function() {

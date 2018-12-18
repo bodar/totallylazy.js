@@ -1,7 +1,7 @@
 import {assert} from 'chai';
-import {Option, range, sequence, Sequence, Single} from "./sequence";
+import {Option, range, sequence, Sequence, Single} from "../src/sequence";
 import {assertAsync, assertAsyncThrows, assertSync} from "./collections.test";
-import {FilterTransducer, FirstTransducer, FlatMapTransducer, IdentityTransducer} from "./transducers";
+import {FilterTransducer, FirstTransducer, FlatMapTransducer, IdentityTransducer} from "../src/transducers";
 
 describe("Sequence", () => {
     it("supports ranges", () => {

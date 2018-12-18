@@ -7,11 +7,11 @@ import {
     ScanTransducer,
     TakeTransducer,
     transducer
-} from "./transducers";
-import {repeat} from "./sequence";
-import {increment, sum} from "./numbers";
+} from "../src/transducers";
+import {repeat} from "../src/sequence";
+import {increment, sum} from "../src/numbers";
 import {assertSync} from "./collections.test";
-import {ascending, by, Comparator, descending} from "./collections";
+import {ascending, by, Comparator, descending} from "../src/collections";
 
 
 describe("transducers", () => {

@@ -9,6 +9,7 @@ import {ByteBody} from "./src/http/bin";
 
 
 const src = new File('src');
+const test = new File('test');
 const dist = new File("dist");
 
 const npm_token = process.env.NPM_TOKEN;
@@ -27,6 +28,11 @@ task('clean', async () => {
             source.delete();
         }
     }
+    for await (const source of test.descendants()) {
+        if (source.name.endsWith('.js') || source.name.endsWith('.js.map')) {
+            source.delete();
+        }
+    }
 });
 
 task('compile', async () => {
@@ -35,7 +41,7 @@ task('compile', async () => {
 
 task('test', ['compile'], async () => {
     const mocha = new Mocha();
-    for await (const source of src.descendants()) {
+    for await (const source of test.descendants()) {
         if (source.name.endsWith('.test.js')) {
             mocha.addFile(source.absolutePath);
         }
@@ -45,19 +51,19 @@ task('test', ['compile'], async () => {
 
 task('bundle', async () => {
     let fuse = FuseBox.init({
-        homeDir: 'src',
+        homeDir: '.',
         target: 'browser@es5',
         output: "dist/$name.js",
         sourceMaps: true,
         plugins: [
             WebIndexPlugin({
                 path: '.',
-                template: 'src/mocha.html',
+                template: 'test/mocha.html',
                 target: 'mocha.html'
             })
         ]
     });
-    fuse.bundle("tests", "> **/*.test.ts");
+    fuse.bundle("tests", "> test/**/*.test.ts");
     await fuse.run();
 });
 

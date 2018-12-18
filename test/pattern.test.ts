@@ -1,6 +1,6 @@
 import {assert} from 'chai';
-import {get, post, Request, StringBody, Uri} from "./http";
-import {apply, case_, isPartial, match, Matched, Pattern, regex} from "./pattern";
+import {get, post, Request, StringBody, Uri} from "../src/http";
+import {apply, case_, isPartial, match, Matched, Pattern, regex} from "../src/pattern";
 
 describe('pattern matching', function () {
     it('can verify a partial objects values match', function () {

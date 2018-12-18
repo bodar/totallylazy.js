@@ -1,4 +1,4 @@
-import {Uri} from '.';
+import {Uri} from '../../src/http';
 import {assert} from 'chai';
 
 describe('Uri', function() {

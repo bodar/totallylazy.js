@@ -5,7 +5,7 @@ describe("XmlHttpHandler", function () {
     handlerContract(async () => {
         if (typeof XMLHttpRequest == 'undefined') throw new Error("Unsupported");
 
-        const {XmlHttpHandler} = await import('./browser');
+        const {XmlHttpHandler} = await import('../../src/http/browser');
         return new XmlHttpHandler();
     });
 });
