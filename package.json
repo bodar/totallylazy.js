@@ -7,7 +7,8 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "build": "ts-node build.ts"
+    "build": "ts-node build.ts",
+    "test": "NODE_ENV=development yarn run mocha --require ts-node/register 'test/**/*.test.ts'"
   },
   "dependencies": {
     "@types/node": "^9.4.6",
