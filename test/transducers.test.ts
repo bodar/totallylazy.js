@@ -1,12 +1,13 @@
 import {assert} from 'chai';
 import {
+    compose, CompositeTransducer,
     FilterTransducer,
     IdentityTransducer,
     intoArray,
     MapTransducer,
     ScanTransducer,
     TakeTransducer,
-    transducer
+    transducer, zip, ZipTransducer
 } from "../src/transducers";
 import {repeat} from "../src/sequence";
 import {increment, sum} from "../src/numbers";
@@ -15,6 +16,10 @@ import {ascending, by, Comparator, descending} from "../src/collections";
 
 
 describe("transducers", () => {
+    it("can zip", () => {
+        assertSync(transducer<number>().zip(['a', 'b', 'c']).transduce([1, 2]), [1, 'a'], [2, 'b']);
+    });
+
     it("can map", () => {
         assertSync(transducer<number>().map(n => n.toString()).transduce([2]), "2");
     });
@@ -68,8 +73,9 @@ describe("transducers", () => {
     });
 
     it("can sort by property of object", async () => {
-        class Cat{
-            constructor(public name:string, public age:number){}
+        class Cat {
+            constructor(public name: string, public age: number) {
+            }
         }
 
         const freaky = new Cat('Freaky', 17);

@@ -69,6 +69,10 @@ export abstract class Transducer<A, B> implements Contract<B> {
     sort(comparator: Comparator<B> = ascending): Transducer<A, B> {
         return sort(comparator, this);
     }
+
+    zip<C>(other: Iterable<C> | AsyncIterable<C>): Transducer<A, [B, C]> {
+        return zip(other, this);
+    }
 }
 
 export abstract class Transducable<A> implements Contract<A> {
@@ -206,12 +210,12 @@ export function map<A, B, C>(mapper: Mapper<B, C>, transducer: Transducer<A, B>)
 }
 
 export class ZipTransducer<A, B> extends Transducer<A, [A, B]> {
-    constructor(public other: Iterable<B>|AsyncIterable<B>) {
+    constructor(public other: Iterable<B> | AsyncIterable<B>) {
         super();
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<[A, B]> {
-        if(!isAsyncIterable(this.other)) throw new Error("Unsupported operation exception");
+        if (!isAsyncIterable(this.other)) throw new Error("Unsupported operation exception");
         const iteratorA = iterable[Symbol.asyncIterator]();
         const iteratorB = this.other[Symbol.asyncIterator]();
         while (true) {
@@ -222,7 +226,7 @@ export class ZipTransducer<A, B> extends Transducer<A, [A, B]> {
     }
 
     * sync(iterable: Iterable<A>): Iterable<[A, B]> {
-        if(!isIterable(this.other)) throw new Error("Unsupported operation exception");
+        if (!isIterable(this.other)) throw new Error("Unsupported operation exception");
         const iteratorA = iterable[Symbol.iterator]();
         const iteratorB = this.other[Symbol.iterator]();
         while (true) {
@@ -231,6 +235,10 @@ export class ZipTransducer<A, B> extends Transducer<A, [A, B]> {
             yield [resultA.value, resultB.value];
         }
     }
+}
+
+export function zip<A, B, C>(other: Iterable<C> | AsyncIterable<C>, transducer: Transducer<A, B>): Transducer<A, [B, C]> {
+    return compose(new ZipTransducer(other), transducer);
 }
 
 export class FlatMapTransducer<A, B> extends Transducer<A, B> {
