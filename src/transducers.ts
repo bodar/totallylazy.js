@@ -1,9 +1,4 @@
-import {
-    array,
-    ascending,
-    Comparator, Contract, isAsyncIterable, isIterable, Mapper,
-    Reducer
-} from "./collections";
+import {array, ascending, Comparator, Contract, isAsyncIterable, isIterable, Mapper, Reducer} from "./collections";
 import {not, Predicate} from "./predicates";
 
 export abstract class Transducer<A, B> implements Contract<B> {
@@ -40,6 +35,14 @@ export abstract class Transducer<A, B> implements Contract<B> {
 
     filterNot(predicate: Predicate<B>): Transducer<A, B> {
         return filter(not(predicate), this);
+    }
+
+    chunk(size: number): Transducer<A, B> {
+        return chunk(size, this);
+    }
+
+    partitionBy(predicate: Predicate<A>): Transducer<A, B> {
+        return partitionBy(predicate, this);
     }
 
     find(predicate: Predicate<B>): Transducer<A, B> {
@@ -99,6 +102,10 @@ export abstract class Transducable<A> implements Contract<A> {
 
     filter(predicate: Predicate<A>): Transducable<A> {
         return this.create(this.transducer.filter(predicate));
+    }
+
+    filterNot(predicate: Predicate<A>): Transducable<A> {
+        return this.create(this.transducer.filterNot(predicate));
     }
 
     find(predicate: Predicate<A>): Transducable<A> {
@@ -291,6 +298,96 @@ export class FilterTransducer<A> extends Transducer<A, A> {
 
 export function filter<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {
     return compose(new FilterTransducer(predicate), transducer);
+}
+
+export class ChunkTransducer<A> extends Transducer<A, A> {
+    constructor(public size: number) {
+        super();
+    }
+
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        let counter = this.size;
+        let chunk: A[] = [];
+        for await (const a of iterable) {
+            if (--counter === 0) {
+                chunk.push(a);
+                yield chunk;
+                counter = this.size;
+                chunk = [];
+            } else {
+                chunk.push(a)
+            }
+        }
+        if (chunk.length > 0) yield chunk
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        let counter = this.size;
+        let chunk: A[] = [];
+        for (const a of iterable) {
+            if (--counter === 0) {
+                chunk.push(a);
+                yield chunk;
+                counter = this.size;
+                chunk = [];
+            } else {
+                chunk.push(a)
+            }
+        }
+        if (chunk.length > 0) yield chunk
+    }
+}
+
+export function chunk<A, B>(size: number, transducer: Transducer<A, B>): Transducer<A, B> {
+    return compose(new ChunkTransducer(size), transducer);
+}
+
+export class PartitionByTransducer<A> extends Transducer<A, A> {
+    constructor(public predicate: Predicate<A>) {
+        super();
+    }
+
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        let lastCheck: boolean = undefined;
+        let chunk: A[] = [];
+        for await (const a of iterable) {
+            const check = this.predicate(a);
+            if (lastCheck === undefined) lastCheck = check;
+            const newOutcome = check != lastCheck;
+            if (newOutcome) {
+                yield chunk;
+                chunk = [];
+                chunk.push(a);
+                lastCheck = check;
+            } else {
+                chunk.push(a)
+            }
+        }
+        if (chunk.length > 0) yield chunk;
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        let lastCheck: boolean = undefined;
+        let chunk: A[] = [];
+        for (const a of iterable) {
+            const check = this.predicate(a);
+            if (lastCheck === undefined) lastCheck = check;
+            const newOutcome = check != lastCheck;
+            if (newOutcome) {
+                yield chunk;
+                chunk = [];
+                chunk.push(a);
+                lastCheck = check;
+            } else {
+                chunk.push(a)
+            }
+        }
+        if (chunk.length > 0) yield chunk;
+    }
+}
+
+export function partitionBy<A, B>(predicate: Predicate<A>, transducer: Transducer<A, B>): Transducer<A, B> {
+    return compose(new PartitionByTransducer(predicate), transducer);
 }
 
 export function find<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {

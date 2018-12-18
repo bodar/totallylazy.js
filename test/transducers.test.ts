@@ -8,7 +8,7 @@ import {
     TakeTransducer,
     transducer
 } from "../src/transducers";
-import {repeat} from "../src/sequence";
+import {range, repeat, sequence} from "../src/sequence";
 import {increment, sum} from "../src/numbers";
 import {assertSync} from "./collections.test";
 import {ascending, by, descending} from "../src/collections";
@@ -56,6 +56,15 @@ describe("transducers", () => {
 
     it("can reduce to array", () => {
         assertSync(transducer<number>().reduce(intoArray<number>()).transduce([0, 2, 4]), [0, 2, 4]);
+    });
+
+    it("can chunk", () => {
+        assertSync(transducer<number>().chunk(3).transduce([0, 1, 2, 3, 4, 5, 6]), [0, 1, 2], [3, 4, 5], [6]);
+    });
+
+    it("can partition by", () => {
+        assertSync(transducer<number>().partitionBy((it) => it == 2).transduce([0, 1, 2, 2, 2, 4, 2, 6, 7]),
+            [0, 1], [2, 2, 2], [4], [2], [6, 7]);
     });
 
     it("can take", () => {
