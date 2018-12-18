@@ -80,7 +80,8 @@ export class ServerHandler implements Server {
         this.server.listen(port);
         this.uri = new Promise<Uri>((resolve) => {
             server.on('listening', () => {
-                resolve(new Uri(`http://localhost:${server.address().port}/`))
+                const address:string|any = server.address();
+                resolve(new Uri(`http://localhost:${typeof address === 'string' ? port : address.port}/`))
             })
         })
     }

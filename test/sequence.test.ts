@@ -32,12 +32,12 @@ describe("Sequence", () => {
 });
 
 describe("Single", () => {
-    it("is PromiseLike", () => {
-        return assertAsync(Single.of((resolve) => resolve(2)).map(n => n.toString()), '2');
+    it("is PromiseLike", async () => {
+        await assertAsync(Single.of((resolve) => resolve(2)).map(n => n.toString()), '2');
     });
 
-    it("is PromiseLike and can return an error", () => {
-        return assertAsyncThrows(Single.of((ignore, reject) => reject("Error")).map(n => n.toString()), 'Error');
+    it("is PromiseLike and can return an error", async () => {
+        await assertAsyncThrows(Single.of((ignore, reject) => reject("Error")).map(n => n.toString()), 'Error');
     });
 
 });
