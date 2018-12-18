@@ -10,8 +10,8 @@ import {
     Reducer,
     toAsyncIterable
 } from "./collections";
-import {identity, Transducable, Transducer} from "./transducers";
-import {add, increment, subtract} from "./numbers";
+import {identity, intoArray, Transducable, Transducer} from "./transducers";
+import {add, increment, subtract, sum} from "./numbers";
 import {Predicate} from "./predicates";
 
 export function iterate<T>(generator: (t: T) => T, value: T): Sequence<T> {
@@ -112,6 +112,11 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
     toArray(): A[]{
         return array(this);
     }
+
+    size(): number{
+        return this.toArray().length;
+    }
+
 }
 
 export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection<A> {
@@ -184,6 +189,11 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
     toArray(): Promise<A[]>{
         return array(this);
     }
+
+    async size(): Promise<number>{
+        return (await this.toArray()).length;
+    }
+
 }
 
 export type IterableGenerator<A> = () => IterableIterator<A>;

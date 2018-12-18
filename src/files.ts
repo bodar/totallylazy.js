@@ -10,16 +10,24 @@ if (typeof Symbol.asyncIterator == 'undefined') {
 }
 
 export class File {
-    constructor(public name: string, public parent: string = process.cwd()) {
+    public absolutePath:string;
 
+    constructor(pathOrName: string, parent:string = process.cwd()) {
+        if(pathOrName.charAt(0) === '/') {
+            this.absolutePath = pathOrName;
+        } else {
+            this.absolutePath = path.resolve(parent, pathOrName);
+        }
     }
 
-    get absolutePath(): string {
-        return lazy(this, 'absolutePath', path.resolve(this.parent, this.name));
+    static workingDirectory = new File(process.cwd());
+
+    get name(): string {
+        return lazy(this, 'name', path.basename(this.absolutePath));
     }
 
     get url(): string {
-        return `file://${this.absolutePath}`;
+        return lazy(this, 'url', `file://${this.absolutePath}`);
     }
 
     child(name: string) {

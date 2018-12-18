@@ -1,6 +1,7 @@
 import {assert} from 'chai';
 import {File} from '../src/files';
 import {runningInNode} from "../src/node";
+import {sequence} from "../src/sequence";
 
 describe("files", function () {
     before(function() {
@@ -8,13 +9,17 @@ describe("files", function () {
     });
 
     it('can return absolute path', function () {
-        assert(new File('src').absolutePath.endsWith("totallylazy.js/src"));
+        assert.strictEqual(new File('test/example/child.txt').absolutePath,
+            `${File.workingDirectory.absolutePath}/test/example/child.txt`);
+    });
+
+    it('can return name', function () {
+        assert.strictEqual(new File('test/example/child.txt').name, 'child.txt');
     });
 
     it('can list children', async () => {
-        for await (const child of new File('src').children()) {
-            //TODO something sensible
-        }
+        const size = await sequence(new File('test/example/').children()).size();
+        assert.strictEqual(size, 2);
     });
 
     it('can tell if directory', async () => {
@@ -26,9 +31,8 @@ describe("files", function () {
     });
 
     it('can list descendants', async () => {
-        for await (const child of new File('src').descendants()) {
-            //TODO something sensible
-        }
+        const size = await sequence(new File('test/example/').descendants()).size();
+        assert.strictEqual(size, 3);
     });
 
     it('can get file content as bytes', async () => {
