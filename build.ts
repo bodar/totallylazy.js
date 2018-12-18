@@ -17,7 +17,7 @@ const tag = process.env.TAG;
 
 task('default', ['clean', 'tests']);
 
-task('tests', ['&test', '&test-browser']);
+task('tests', ['&test']); // temp disable chrome tests, '&test-browser'
 
 task('clean', async () => {
     await dist.delete();
