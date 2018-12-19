@@ -45,7 +45,7 @@ function publish() {
 //registry.npmjs.org/:_authToken=${NPM_TOKEN}
 EOL
     pushd dist
-    npm publish --tag ${TAG}
+    npm publish --tag ${TAG} --access public
     popd
 }
 

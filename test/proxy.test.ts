@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {call, on} from "./proxy";
+import {call, on} from "../src/proxy";
 
 describe("proxy", () => {
     it("", () => {
