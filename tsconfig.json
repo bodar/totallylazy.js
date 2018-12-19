@@ -10,6 +10,7 @@
     "experimentalDecorators": true,
     "downlevelIteration": true,
     "sourceMap": true,
+    "outDir": "out",
     "lib": [
       "dom",
       "esnext"

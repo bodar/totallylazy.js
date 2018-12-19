@@ -7,12 +7,11 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "build": "ts-node build.ts",
+    "clean": "rm -rf dist out",
+    "build": "yarn run tsc",
     "test": "NODE_ENV=development yarn run mocha --require ts-node/register 'test/**/*.test.ts'"
   },
   "dependencies": {
-    "@types/node": "^9.4.6",
-    "@types/text-encoding": "^0.0.32",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
@@ -29,6 +28,8 @@
     "uglify-js": "^3.3.10"
   },
   "optionalDependencies": {
+    "@types/node": "^10.12.18",
+    "@types/text-encoding": "^0.0.35",
     "http-shutdown": "^1.2.0",
     "text-encoding": "^0.6.4"
   }

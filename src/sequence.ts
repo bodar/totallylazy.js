@@ -10,8 +10,8 @@ import {
     Reducer,
     toAsyncIterable
 } from "./collections";
-import {identity, intoArray, Transducable, Transducer} from "./transducers";
-import {add, increment, subtract, sum} from "./numbers";
+import {identity, Transducable, Transducer} from "./transducers";
+import {add, increment, subtract} from "./numbers";
 import {Predicate} from "./predicates";
 
 export function iterate<T>(generator: (t: T) => T, value: T): Sequence<T> {

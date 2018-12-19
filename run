@@ -23,6 +23,6 @@ if [[ ! $(command -v yarn) ]]; then
 fi
 
 yarn install
-
-rm -f build.js build.js.map
-yarn build $*
+yarn clean
+yarn build
+yarn test
