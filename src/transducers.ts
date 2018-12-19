@@ -80,6 +80,10 @@ export abstract class Transducer<A, B> implements Contract<B> {
     zip<C>(other: Iterable<C> | AsyncIterable<C>): Transducer<A, [B, C]> {
         return zip(other, this);
     }
+
+    reverse(): Transducer<A, A> {
+        return reverse(this);
+    }
 }
 
 export abstract class Transducable<A> implements Contract<A> {
@@ -254,6 +258,36 @@ export class ZipTransducer<A, B> extends Transducer<A, [A, B]> {
 
 export function zip<A, B, C>(other: Iterable<C> | AsyncIterable<C>, transducer: Transducer<A, B>): Transducer<A, [B, C]> {
     return compose(new ZipTransducer(other), transducer);
+}
+
+export class ReverseTransducer<A, B> extends Transducer<A, A> {
+    constructor() {
+        super();
+    }
+
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<[A, B]> {
+        const reverse = [];
+        for await (const a of iterable) {
+            reverse.unshift(a);
+        }
+        for await (const a of reverse) {
+            yield a;
+        }
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<[A, B]> {
+        const reverse = [];
+        for (const a of iterable) {
+            reverse.unshift(a);
+        }
+        for (const a of reverse) {
+            yield a;
+        }
+    }
+}
+
+export function reverse<A, B, C>(transducer: Transducer<A, B>): Transducer<A, [B, C]> {
+    return compose(new ReverseTransducer(), transducer);
 }
 
 export class FlatMapTransducer<A, B> extends Transducer<A, B> {

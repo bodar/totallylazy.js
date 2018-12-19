@@ -15,6 +15,10 @@ import {ascending, by, descending} from "../src/collections";
 
 
 describe("transducers", () => {
+    it("can reverse", () => {
+        assertSync(transducer<number>().reverse().transduce([1, 2, 3]), 3, 2, 1);
+    });
+
     it("can zip", () => {
         assertSync(transducer<number>().zip(['a', 'b', 'c']).transduce([1, 2]), [1, 'a'], [2, 'b']);
     });

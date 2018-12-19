@@ -125,8 +125,12 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
         return array(this);
     }
 
-    size(): number{
+    size(): number {
         return this.toArray().length;
+    }
+
+    reverse(): Sequence<A> {
+        return this.create(this.transducer.reverse());
     }
 
 }
@@ -216,6 +220,10 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
 
     async size(): Promise<number>{
         return (await this.toArray()).length;
+    }
+
+    reverse(): AsyncSequence<A> {
+        return this.create(this.transducer.reverse());
     }
 }
 
