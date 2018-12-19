@@ -233,17 +233,20 @@ export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncC
         return new Single<any>(value, transducer);
     }
 
-    async then<B, E>(onFulfilled?: ((value: A) => (PromiseLike<B> | B)) | null | undefined, onRejected?: ((reason: any) => (PromiseLike<E> | E)) | null | undefined): Promise<B | E> {
+    async then<B, E>(onFulfilled?: ((value: A) => (PromiseLike<B> | B)) | null | undefined,
+                     onRejected?: ((reason: any) => (PromiseLike<E> | E)) | null | undefined): Promise<B | E> {
         try {
-            const result = await (this.iterable[Symbol.asyncIterator]().next());
-            return Promise.resolve(result.value).then(onFulfilled, onRejected);
+            for await (const value of this) {
+                if (onFulfilled) return onFulfilled(value);
+            }
         } catch (e) {
-            return Promise.reject(e).then(onRejected);
+            if(onRejected) return onRejected(e);
         }
+        throw new Error("You must provide either a onFulfilled or onRejected handler");
     }
 
     [Symbol.asyncIterator](): AsyncIterator<A> {
-        return this.transducer.async_(toAsyncIterable(this))[Symbol.asyncIterator]()
+        return this.transducer.async_(this.iterable)[Symbol.asyncIterator]()
     }
 
     create<B>(transducer: Transducer<A, B>): Single<B> {
