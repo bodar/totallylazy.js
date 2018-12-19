@@ -44,7 +44,7 @@ function publish() {
 @bodar:registry=https://registry.npmjs.org
 //registry.npmjs.org/:_authToken=${NPM_TOKEN}
 EOL
-    npm publish dist --tag ${TAG} --dry-run
+    npm publish dist --tag ${TAG}
 }
 
 function ci() {
