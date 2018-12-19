@@ -61,6 +61,10 @@ export abstract class Transducer<A, B> implements Contract<B> {
         return drop(size, this);
     }
 
+    dropWhile(predicate: Predicate<B>): Transducer<A, B> {
+        return dropWhile(predicate, this);
+    }
+
     take(count: number): Transducer<A, B> {
         return take(count, this);
     }
@@ -549,6 +553,32 @@ export class DropTransducer<A> extends Transducer<A, A> {
 
 export function drop<A, B>(count: number, transducer: Transducer<A, B>): Transducer<A, B> {
     return compose(new DropTransducer(count), transducer);
+}
+
+export class DropWhileTransducer<A> extends Transducer<A, A> {
+    constructor(public predicate: Predicate<A>) {
+        super();
+    }
+
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        let shouldDrop = true;
+        for await (const a of iterable) {
+            if (shouldDrop) shouldDrop = this.predicate(a);
+            if (!shouldDrop) yield a;
+        }
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        let shouldDrop = true;
+        for (const a of iterable) {
+            if (shouldDrop) shouldDrop = this.predicate(a);
+            if (!shouldDrop) yield a;
+        }
+    }
+}
+
+export function dropWhile<A, B>(predicate: Predicate<A>, transducer: Transducer<A, B>): Transducer<A, B> {
+    return compose(new DropWhileTransducer(predicate), transducer);
 }
 
 
