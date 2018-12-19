@@ -73,8 +73,8 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
         return this.create(this.transducer.filter(predicate));
     }
 
-    filterNot(predicate: Predicate<A>): Sequence<A> {
-        return this.create(this.transducer.filterNot(predicate));
+    reject(predicate: Predicate<A>): Sequence<A> {
+        return this.create(this.transducer.reject(predicate));
     }
 
     find(predicate: Predicate<A>): Option<A> {
@@ -154,8 +154,8 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
         return this.create(this.transducer.filter(predicate));
     }
 
-    filterNot(predicate: Predicate<A>): AsyncSequence<A> {
-        return this.create(this.transducer.filterNot(predicate));
+    reject(predicate: Predicate<A>): AsyncSequence<A> {
+        return this.create(this.transducer.reject(predicate));
     }
 
     find(predicate: Predicate<A>): AsyncSequence<A> {
@@ -269,7 +269,7 @@ export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncC
         return this.create(this.transducer.filter(predicate));
     }
 
-    filterNot(predicate: Predicate<A>): Single<A> {
+    reject(predicate: Predicate<A>): Single<A> {
         return this.create(this.transducer.filter(predicate));
     }
 
@@ -348,8 +348,8 @@ export class Option<A> extends Transducable<A> implements Collection<A> {
         return this.create(this.transducer.filter(predicate));
     }
 
-    filterNot(predicate: Predicate<A>): Option<A> {
-        return this.create(this.transducer.filterNot(predicate));
+    reject(predicate: Predicate<A>): Option<A> {
+        return this.create(this.transducer.reject(predicate));
     }
 
     find(predicate: Predicate<A>): Option<A> {

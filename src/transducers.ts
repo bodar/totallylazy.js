@@ -33,7 +33,7 @@ export abstract class Transducer<A, B> implements Contract<B> {
         return filter(predicate, this);
     }
 
-    filterNot(predicate: Predicate<B>): Transducer<A, B> {
+    reject(predicate: Predicate<B>): Transducer<A, B> {
         return filter(not(predicate), this);
     }
 
@@ -104,8 +104,8 @@ export abstract class Transducable<A> implements Contract<A> {
         return this.create(this.transducer.filter(predicate));
     }
 
-    filterNot(predicate: Predicate<A>): Transducable<A> {
-        return this.create(this.transducer.filterNot(predicate));
+    reject(predicate: Predicate<A>): Transducable<A> {
+        return this.create(this.transducer.reject(predicate));
     }
 
     find(predicate: Predicate<A>): Transducable<A> {
