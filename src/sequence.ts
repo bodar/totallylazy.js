@@ -105,6 +105,14 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
         return this.create(this.transducer.reduce(reducer));
     }
 
+    chunk(size: number): Sequence<A> {
+        return this.create(this.transducer.chunk(size));
+    }
+
+    partitionBy(predicate: Predicate<A>): Sequence<A> {
+        return this.create(this.transducer.partitionBy(predicate));
+    }
+
     sort(comparator?: Comparator<A>): Sequence<A> {
         return this.create(this.transducer.sort(comparator));
     }
@@ -184,6 +192,14 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
 
     reduce<B>(reducer: Reducer<A, B>): AsyncSequence<B> {
         return this.create(this.transducer.reduce(reducer));
+    }
+
+    chunk(size: number): AsyncSequence<A> {
+        return this.create(this.transducer.chunk(size));
+    }
+
+    partitionBy(predicate: Predicate<A>): AsyncSequence<A> {
+        return this.create(this.transducer.partitionBy(predicate));
     }
 
     sort(comparator?: Comparator<A>): AsyncSequence<A> {
