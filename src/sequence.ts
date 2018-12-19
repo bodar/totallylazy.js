@@ -89,6 +89,10 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
         return Option.of(this.iterable, this.transducer.last());
     }
 
+    drop(count: number): Sequence<A> {
+        return this.create(this.transducer.drop(count));
+    }
+
     take(count: number): Sequence<A> {
         return this.create(this.transducer.take(count));
     }
@@ -180,6 +184,10 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
 
     last(): AsyncSequence<A> {
         return this.create(this.transducer.first());
+    }
+
+    drop(count: number): AsyncSequence<A> {
+        return this.create(this.transducer.drop(count));
     }
 
     take(count: number): AsyncSequence<A> {

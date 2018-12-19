@@ -57,6 +57,10 @@ export abstract class Transducer<A, B> implements Contract<B> {
         return last(this);
     }
 
+    drop(size: number): Transducer<A, B> {
+        return drop(size, this);
+    }
+
     take(count: number): Transducer<A, B> {
         return take(count, this);
     }
@@ -523,6 +527,28 @@ export class TakeTransducer<A> extends Transducer<A, A> {
 
 export function take<A, B>(count: number, transducer: Transducer<A, B>): Transducer<A, B> {
     return compose(new TakeTransducer(count), transducer);
+}
+
+export class DropTransducer<A> extends Transducer<A, A> {
+    constructor(public count: number) {
+        super();
+    }
+
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        for await (const a of iterable) {
+            if (--this.count < 0) yield a;
+        }
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        for (const a of iterable) {
+            if (--this.count < 0) yield a;
+        }
+    }
+}
+
+export function drop<A, B>(count: number, transducer: Transducer<A, B>): Transducer<A, B> {
+    return compose(new DropTransducer(count), transducer);
 }
 
 

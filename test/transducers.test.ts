@@ -8,13 +8,18 @@ import {
     TakeTransducer,
     transducer
 } from "../src/transducers";
-import {range, repeat, sequence} from "../src/sequence";
+import {repeat} from "../src/sequence";
 import {increment, sum} from "../src/numbers";
 import {assertSync} from "./collections.test";
 import {ascending, by, descending} from "../src/collections";
 
 
 describe("transducers", () => {
+    it("can drop", () => {
+        assertSync(transducer<number>().drop(2).transduce([1, 2, 3]), 3);
+        assertSync(transducer<number>().drop(4).transduce([1, 2, 3]), ...[]);
+    });
+
     it("can reverse", () => {
         assertSync(transducer<number>().reverse().transduce([1, 2, 3]), 3, 2, 1);
     });
