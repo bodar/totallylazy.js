@@ -36,12 +36,12 @@ describe("files", function () {
     });
 
     it('can get file content as bytes', async () => {
-        const bytes:Uint8Array = await new File('build.ts').bytes();
+        const bytes:Uint8Array = await new File('run').bytes();
         assert(bytes.length > 0);
     });
 
     it('can get file content as string', async () => {
-        const content:string = await new File('build.ts').content();
+        const content:string = await new File('run').content();
         assert(content.length > 0);
     });
 });
