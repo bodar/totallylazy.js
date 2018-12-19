@@ -8,8 +8,9 @@
   "private": false,
   "scripts": {
     "clean": "rm -rf dist out",
-    "build": "yarn run tsc",
-    "test": "NODE_ENV=development yarn run mocha --require ts-node/register 'test/**/*.test.ts'"
+    "build": "tsc",
+    "test": "NODE_ENV=development yarn run mocha --require ts-node/register 'test/**/*.test.ts'",
+    "test-browser": "ts-node test-browser.ts"
   },
   "dependencies": {
     "tslib": "^1.9.3"

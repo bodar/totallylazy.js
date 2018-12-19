@@ -26,3 +26,32 @@ yarn install
 yarn clean
 yarn build
 yarn test
+
+function package() {
+    if [[ ! $(command -v envsubst) ]]; then
+        sudo apt-get install gettext
+    fi
+
+    mkdir -p dist
+    envsubst < package.json > dist/package.json
+    cp -r src dist
+    cp README.md LICENSE dist
+}
+
+function publish() {
+    mkdir -p dist
+    cat >dist/.npmrc <<EOL
+@bodar:registry=https://registry.npmjs.org
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}
+EOL
+    npm publish dist --tag ${TAG} --dry-run
+}
+
+function ci() {
+    package
+    publish
+}
+
+if [[ -n "$1" ]]; then
+    "$1"
+fi
