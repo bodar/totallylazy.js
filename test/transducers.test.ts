@@ -1,17 +1,17 @@
-import {assert} from 'chai';
+import { assert } from 'chai';
 import {
-    FilterTransducer,
-    IdentityTransducer,
-    intoArray,
-    MapTransducer,
-    ScanTransducer,
-    TakeTransducer,
-    transducer
+  FilterTransducer,
+  IdentityTransducer,
+  intoArray,
+  MapTransducer,
+  ScanTransducer,
+  TakeTransducer,
+  transducer
 } from "../src/transducers";
-import {range, repeat} from "../src/sequence";
-import {increment, sum} from "../src/numbers";
-import {assertSync} from "./collections.test";
-import {ascending, by, descending} from "../src/collections";
+import { repeat } from "../src/sequence";
+import { increment, sum } from "../src/numbers";
+import { assertSync } from "./collections.test";
+import { ascending, by, descending } from "../src/collections";
 
 
 describe("transducers", () => {
@@ -23,10 +23,6 @@ describe("transducers", () => {
     it("can dropWhile", () => {
         assertSync(transducer<number>().dropWhile((a) => a <= 2).transduce([1, 2, 3, 2, 1]), 3, 2, 1);
         assertSync(transducer<number>().dropWhile((a) => a < 4).transduce([1, 2, 3, 2, 1]), ...[]);
-    });
-
-    it("can reverse", () => {
-        assertSync(transducer<number>().reverse().transduce([1, 2, 3]), 3, 2, 1);
     });
 
     it("can zip", () => {
@@ -70,15 +66,6 @@ describe("transducers", () => {
 
     it("can reduce to array", () => {
         assertSync(transducer<number>().reduce(intoArray<number>()).transduce([0, 2, 4]), [0, 2, 4]);
-    });
-
-    it("can chunk", () => {
-        assertSync(transducer<number>().chunk(3).transduce([0, 1, 2, 3, 4, 5, 6]), [0, 1, 2], [3, 4, 5], [6]);
-    });
-
-    it("can partition by", () => {
-        assertSync(transducer<number>().partitionBy((it) => it == 2).transduce([0, 1, 2, 2, 2, 4, 2, 6, 7]),
-            [0, 1], [2, 2, 2], [4], [2], [6, 7]);
     });
 
     it("can take", () => {

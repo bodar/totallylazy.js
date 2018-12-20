@@ -37,14 +37,6 @@ export abstract class Transducer<A, B> implements Contract<B> {
         return filter(not(predicate), this);
     }
 
-    chunk(size: number): Transducer<A, B> {
-        return chunk(size, this);
-    }
-
-    partitionBy(predicate: Predicate<A>): Transducer<A, B> {
-        return partitionBy(predicate, this);
-    }
-
     find(predicate: Predicate<B>): Transducer<A, B> {
         return find(predicate, this);
     }
@@ -87,10 +79,6 @@ export abstract class Transducer<A, B> implements Contract<B> {
 
     zip<C>(other: Iterable<C> | AsyncIterable<C>): Transducer<A, [B, C]> {
         return zip(other, this);
-    }
-
-    reverse(): Transducer<A, A> {
-        return reverse(this);
     }
 }
 
@@ -268,36 +256,6 @@ export function zip<A, B, C>(other: Iterable<C> | AsyncIterable<C>, transducer: 
     return compose(new ZipTransducer(other), transducer);
 }
 
-export class ReverseTransducer<A, B> extends Transducer<A, A> {
-    constructor() {
-        super();
-    }
-
-    async* async_(iterable: AsyncIterable<A>): AsyncIterable<[A, B]> {
-        const reverse = [];
-        for await (const a of iterable) {
-            reverse.unshift(a);
-        }
-        for await (const a of reverse) {
-            yield a;
-        }
-    }
-
-    * sync(iterable: Iterable<A>): Iterable<[A, B]> {
-        const reverse = [];
-        for (const a of iterable) {
-            reverse.unshift(a);
-        }
-        for (const a of reverse) {
-            yield a;
-        }
-    }
-}
-
-export function reverse<A, B, C>(transducer: Transducer<A, B>): Transducer<A, [B, C]> {
-    return compose(new ReverseTransducer(), transducer);
-}
-
 export class FlatMapTransducer<A, B> extends Transducer<A, B> {
     constructor(public mapper: Mapper<A, Contract<B>>) {
         super();
@@ -340,96 +298,6 @@ export class FilterTransducer<A> extends Transducer<A, A> {
 
 export function filter<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {
     return compose(new FilterTransducer(predicate), transducer);
-}
-
-export class ChunkTransducer<A> extends Transducer<A, A> {
-    constructor(public size: number) {
-        super();
-    }
-
-    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
-        let counter = this.size;
-        let chunk: A[] = [];
-        for await (const a of iterable) {
-            if (--counter === 0) {
-                chunk.push(a);
-                yield chunk;
-                counter = this.size;
-                chunk = [];
-            } else {
-                chunk.push(a)
-            }
-        }
-        if (chunk.length > 0) yield chunk
-    }
-
-    * sync(iterable: Iterable<A>): Iterable<A> {
-        let counter = this.size;
-        let chunk: A[] = [];
-        for (const a of iterable) {
-            if (--counter === 0) {
-                chunk.push(a);
-                yield chunk;
-                counter = this.size;
-                chunk = [];
-            } else {
-                chunk.push(a)
-            }
-        }
-        if (chunk.length > 0) yield chunk
-    }
-}
-
-export function chunk<A, B>(size: number, transducer: Transducer<A, B>): Transducer<A, B> {
-    return compose(new ChunkTransducer(size), transducer);
-}
-
-export class PartitionByTransducer<A> extends Transducer<A, A> {
-    constructor(public predicate: Predicate<A>) {
-        super();
-    }
-
-    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
-        let lastCheck: boolean = undefined;
-        let chunk: A[] = [];
-        for await (const a of iterable) {
-            const check = this.predicate(a);
-            if (lastCheck === undefined) lastCheck = check;
-            const newOutcome = check != lastCheck;
-            if (newOutcome) {
-                yield chunk;
-                chunk = [];
-                chunk.push(a);
-                lastCheck = check;
-            } else {
-                chunk.push(a)
-            }
-        }
-        if (chunk.length > 0) yield chunk;
-    }
-
-    * sync(iterable: Iterable<A>): Iterable<A> {
-        let lastCheck: boolean = undefined;
-        let chunk: A[] = [];
-        for (const a of iterable) {
-            const check = this.predicate(a);
-            if (lastCheck === undefined) lastCheck = check;
-            const newOutcome = check != lastCheck;
-            if (newOutcome) {
-                yield chunk;
-                chunk = [];
-                chunk.push(a);
-                lastCheck = check;
-            } else {
-                chunk.push(a)
-            }
-        }
-        if (chunk.length > 0) yield chunk;
-    }
-}
-
-export function partitionBy<A, B>(predicate: Predicate<A>, transducer: Transducer<A, B>): Transducer<A, B> {
-    return compose(new PartitionByTransducer(predicate), transducer);
 }
 
 export function find<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {
