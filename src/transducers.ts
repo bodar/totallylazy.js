@@ -1,10 +1,5 @@
-import {
-    array,
-    ascending,
-    Comparator, Contract, isAsyncIterable, isIterable, Mapper,
-    Reducer
-} from "./collections";
-import {Predicate} from "./predicates";
+import {array, ascending, Comparator, Contract, isAsyncIterable, isIterable, Mapper, Reducer} from "./collections";
+import {not, Predicate} from "./predicates";
 
 export abstract class Transducer<A, B> implements Contract<B> {
     abstract sync(iterable: Iterable<A>): Iterable<B>;
@@ -38,6 +33,10 @@ export abstract class Transducer<A, B> implements Contract<B> {
         return filter(predicate, this);
     }
 
+    reject(predicate: Predicate<B>): Transducer<A, B> {
+        return filter(not(predicate), this);
+    }
+
     find(predicate: Predicate<B>): Transducer<A, B> {
         return find(predicate, this);
     }
@@ -48,6 +47,14 @@ export abstract class Transducer<A, B> implements Contract<B> {
 
     last(): Transducer<A, B> {
         return last(this);
+    }
+
+    drop(size: number): Transducer<A, B> {
+        return drop(size, this);
+    }
+
+    dropWhile(predicate: Predicate<B>): Transducer<A, B> {
+        return dropWhile(predicate, this);
     }
 
     take(count: number): Transducer<A, B> {
@@ -95,6 +102,10 @@ export abstract class Transducable<A> implements Contract<A> {
 
     filter(predicate: Predicate<A>): Transducable<A> {
         return this.create(this.transducer.filter(predicate));
+    }
+
+    reject(predicate: Predicate<A>): Transducable<A> {
+        return this.create(this.transducer.reject(predicate));
     }
 
     find(predicate: Predicate<A>): Transducable<A> {
@@ -388,6 +399,54 @@ export class TakeTransducer<A> extends Transducer<A, A> {
 
 export function take<A, B>(count: number, transducer: Transducer<A, B>): Transducer<A, B> {
     return compose(new TakeTransducer(count), transducer);
+}
+
+export class DropTransducer<A> extends Transducer<A, A> {
+    constructor(public count: number) {
+        super();
+    }
+
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        for await (const a of iterable) {
+            if (--this.count < 0) yield a;
+        }
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        for (const a of iterable) {
+            if (--this.count < 0) yield a;
+        }
+    }
+}
+
+export function drop<A, B>(count: number, transducer: Transducer<A, B>): Transducer<A, B> {
+    return compose(new DropTransducer(count), transducer);
+}
+
+export class DropWhileTransducer<A> extends Transducer<A, A> {
+    constructor(public predicate: Predicate<A>) {
+        super();
+    }
+
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        let shouldDrop = true;
+        for await (const a of iterable) {
+            if (shouldDrop) shouldDrop = this.predicate(a);
+            if (!shouldDrop) yield a;
+        }
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        let shouldDrop = true;
+        for (const a of iterable) {
+            if (shouldDrop) shouldDrop = this.predicate(a);
+            if (!shouldDrop) yield a;
+        }
+    }
+}
+
+export function dropWhile<A, B>(predicate: Predicate<A>, transducer: Transducer<A, B>): Transducer<A, B> {
+    return compose(new DropWhileTransducer(predicate), transducer);
 }
 
 

@@ -1,20 +1,30 @@
-import {assert} from 'chai';
+import { assert } from 'chai';
 import {
-    FilterTransducer,
-    IdentityTransducer,
-    intoArray,
-    MapTransducer,
-    ScanTransducer,
-    TakeTransducer,
-    transducer
+  FilterTransducer,
+  IdentityTransducer,
+  intoArray,
+  MapTransducer,
+  ScanTransducer,
+  TakeTransducer,
+  transducer
 } from "../src/transducers";
-import {repeat} from "../src/sequence";
-import {increment, sum} from "../src/numbers";
-import {assertSync} from "./collections.test";
-import {ascending, by, descending} from "../src/collections";
+import { repeat } from "../src/sequence";
+import { increment, sum } from "../src/numbers";
+import { assertSync } from "./collections.test";
+import { ascending, by, descending } from "../src/collections";
 
 
 describe("transducers", () => {
+    it("can drop", () => {
+        assertSync(transducer<number>().drop(2).transduce([1, 2, 3]), 3);
+        assertSync(transducer<number>().drop(4).transduce([1, 2, 3]), ...[]);
+    });
+
+    it("can dropWhile", () => {
+        assertSync(transducer<number>().dropWhile((a) => a <= 2).transduce([1, 2, 3, 2, 1]), 3, 2, 1);
+        assertSync(transducer<number>().dropWhile((a) => a < 4).transduce([1, 2, 3, 2, 1]), ...[]);
+    });
+
     it("can zip", () => {
         assertSync(transducer<number>().zip(['a', 'b', 'c']).transduce([1, 2]), [1, 'a'], [2, 'b']);
     });
@@ -25,6 +35,10 @@ describe("transducers", () => {
 
     it("can filter", () => {
         assertSync(transducer<number>().filter(n => n % 2 == 0).transduce([0, 1, 2, 3, 4]), 0, 2, 4);
+    });
+
+    it("can reject", () => {
+        assertSync(transducer<number>().reject(n => n % 2 == 0).transduce([0, 1, 2, 3, 4]), 1, 3);
     });
 
     it("supports first", () => {

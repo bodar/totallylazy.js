@@ -73,6 +73,10 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
         return this.create(this.transducer.filter(predicate));
     }
 
+    reject(predicate: Predicate<A>): Sequence<A> {
+        return this.create(this.transducer.reject(predicate));
+    }
+
     find(predicate: Predicate<A>): Option<A> {
         return Option.of(this.iterable, this.transducer.find(predicate));
     }
@@ -83,6 +87,14 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
 
     last(): Option<A> {
         return Option.of(this.iterable, this.transducer.last());
+    }
+
+    drop(count: number): Sequence<A> {
+        return this.create(this.transducer.drop(count));
+    }
+
+    dropWhile(predicate: Predicate<A>): Sequence<A> {
+        return this.create(this.transducer.dropWhile(predicate));
     }
 
     take(count: number): Sequence<A> {
@@ -113,7 +125,7 @@ export class Sequence<A> extends Transducable<A> implements Collection<A> {
         return array(this);
     }
 
-    size(): number{
+    size(): number {
         return this.toArray().length;
     }
 
@@ -150,6 +162,10 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
         return this.create(this.transducer.filter(predicate));
     }
 
+    reject(predicate: Predicate<A>): AsyncSequence<A> {
+        return this.create(this.transducer.reject(predicate));
+    }
+
     find(predicate: Predicate<A>): AsyncSequence<A> {
         return this.create(this.transducer.find(predicate));
     }
@@ -160,6 +176,14 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
 
     last(): AsyncSequence<A> {
         return this.create(this.transducer.first());
+    }
+
+    drop(count: number): AsyncSequence<A> {
+        return this.create(this.transducer.drop(count));
+    }
+
+    dropWhile(predicate: Predicate<A>): AsyncSequence<A> {
+        return this.create(this.transducer.dropWhile(predicate));
     }
 
     take(count: number): AsyncSequence<A> {
@@ -193,7 +217,6 @@ export class AsyncSequence<A> extends Transducable<A> implements AsyncCollection
     async size(): Promise<number>{
         return (await this.toArray()).length;
     }
-
 }
 
 export type IterableGenerator<A> = () => IterableIterator<A>;
@@ -262,6 +285,10 @@ export class Single<A> extends Transducable<A> implements PromiseLike<A>, AsyncC
     }
 
     filter(predicate: Predicate<A>): Single<A> {
+        return this.create(this.transducer.filter(predicate));
+    }
+
+    reject(predicate: Predicate<A>): Single<A> {
         return this.create(this.transducer.filter(predicate));
     }
 
@@ -338,6 +365,10 @@ export class Option<A> extends Transducable<A> implements Collection<A> {
 
     filter(predicate: Predicate<A>): Option<A> {
         return this.create(this.transducer.filter(predicate));
+    }
+
+    reject(predicate: Predicate<A>): Option<A> {
+        return this.create(this.transducer.reject(predicate));
     }
 
     find(predicate: Predicate<A>): Option<A> {

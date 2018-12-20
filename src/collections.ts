@@ -28,6 +28,8 @@ export interface Contract<A> {
 
     filter(predicate: Predicate<A>): Contract<A>;
 
+    reject(predicate: Predicate<A>): Contract<A>;
+
     find(predicate: Predicate<A>): Contract<A>;
 
     first(): Contract<A>;
@@ -54,6 +56,8 @@ export interface Collection<A> extends Contract<A>, Iterable<A> {
 
     filter(predicate: Predicate<A>): Collection<A>;
 
+    reject(predicate: Predicate<A>): Collection<A>;
+
     find(predicate: Predicate<A>): Collection<A>;
 
     first(): Collection<A>;
@@ -79,6 +83,8 @@ export interface AsyncCollection<A> extends Contract<A>, AsyncIterable<A> {
     flatMap<B>(mapper: Mapper<A, AsyncCollection<B>>): AsyncCollection<B>;
 
     filter(predicate: Predicate<A>): AsyncCollection<A>;
+
+    reject(predicate: Predicate<A>): AsyncCollection<A>;
 
     find(predicate: Predicate<A>): AsyncCollection<A>;
 
