@@ -23,6 +23,10 @@ if [[ ! $(command -v yarn) ]]; then
 fi
 
 yarn install
+
+dist=build/artifacts/dist
+out=build/artifacts/out
+
 yarn clean
 yarn build
 yarn test
@@ -32,20 +36,20 @@ function package() {
         sudo apt-get install gettext
     fi
 
-    mkdir -p dist
-    envsubst < package.json > dist/package.json
-    cp -r src/* dist
-    cp -r out/src/* dist
-    cp README.md LICENSE dist
+    mkdir -p ${dist}
+    envsubst < package.json > ${dist}/package.json
+    cp -r src/* ${dist}
+    cp -r ${out}/src/* ${dist}
+    cp README.md LICENSE ${dist}
 }
 
 function publish() {
-    mkdir -p dist
-    cat >dist/.npmrc <<EOL
+    mkdir -p ${dist}
+    cat >${dist}/.npmrc <<EOL
 @bodar:registry=https://registry.npmjs.org
 //registry.npmjs.org/:_authToken=${NPM_TOKEN}
 EOL
-    pushd dist
+    pushd ${dist}
     npm publish --tag ${TAG} --access public
     popd
 }

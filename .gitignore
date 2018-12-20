@@ -2,8 +2,6 @@
 .idea/workspace.xml
 .idea/encodings.xml
 .npmrc
-dist
+build/artifacts
 node_modules
-*.js
-*.js.map
 *.log
