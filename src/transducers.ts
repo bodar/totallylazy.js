@@ -445,7 +445,7 @@ export class DropWhileTransducer<A> extends Transducer<A, A> {
     }
 }
 
-export function dropWhile<A, B>(predicate: Predicate<A>, transducer: Transducer<A, B>): Transducer<A, B> {
+export function dropWhile<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {
     return compose(new DropWhileTransducer(predicate), transducer);
 }
 
