@@ -17,12 +17,17 @@ export const defaultOptions: Options = {
     day: "numeric"
 };
 
-function formatter(locale?: string, options: Options = defaultOptions) {
-    return new Intl.DateTimeFormat(locale, options);
+export class Formatters {
+    static cache: { [key:string] : Intl.DateTimeFormat } = {};
+
+    static create(locale: string = 'default', options: Options = defaultOptions) {
+        const key = JSON.stringify({locale, options});
+        return Formatters.cache[key] = Formatters.cache[key] || new Intl.DateTimeFormat(locale, options);
+    }
 }
 
 export function format(value: Date, locale?: string, options: Options = defaultOptions): string {
-    return formatter(locale, options).format(value);
+    return Formatters.create(locale, options).format(value);
 }
 
 export function parse(value: string, locale?: string, options: Options = defaultOptions): Date {
@@ -30,7 +35,7 @@ export function parse(value: string, locale?: string, options: Options = default
 }
 
 export function localeParser(locale?: string, options: Options = defaultOptions): DateParser {
-    const f = formatter(locale, options);
+    const f = Formatters.create(locale, options);
     const d = date(3333, 11, 22); // Sunday
     const fd = f.format(d);
     const m = months(locale, options);
