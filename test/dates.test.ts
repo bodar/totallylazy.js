@@ -15,7 +15,7 @@ describe("dates", function () {
         assert.equal(date(2001, 2, 28).toISOString(), '2001-02-28T00:00:00.000Z');
     });
 
-    it('can format and parse a date to GB locale', function () {
+    it('can format and parse a date in many different locals', function () {
         const locales: string[] = ['en', 'de', 'fr', 'ja', 'nl', 'de-DE', 'en-US', 'en-GB', 'i-enochian', 'zh-Hant',
             'sr-Cyrl', 'sr-Latn', 'zh-cmn-Hans-CN', 'cmn-Hans-CN', 'zh-yue-HK', 'yue-HK',
             'sr-Latn-RS', 'sl-rozaj', 'sl-rozaj-biske', 'sl-nedis', 'de-CH-1901', 'sl-IT-nedis', 'hy-Latn-IT-arevela',
@@ -30,5 +30,22 @@ describe("dates", function () {
             const parsed = parse(formatted, locale, options);
             assert.equal(parsed.toISOString(), original.toISOString());
         }
+    });
+
+    function assertFormat(locale: string, options: Options, expected: string) {
+        const original = date(2019, 1, 25);
+        const formatted = format(original, locale, options);
+        assert.equal(formatted, expected);
+        const parsed = parse(formatted, locale, options);
+        assert.equal(parsed.toISOString(), original.toISOString());
+    }
+
+    it('can format and parse a specific date format', function () {
+        assertFormat('en-GB', {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'Fri, 25 Jan 2019');
+        assertFormat('en-GB', {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'Friday, 25/01/2019');
+        assertFormat('en-US', {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'Fri, Jan 25, 2019');
+        assertFormat('en-US', {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'Friday, 1/25/2019');
+        assertFormat('nl', {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'vr 25 jan. 2019');
+        assertFormat('es', {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'viernes, 25/1/2019');
     });
 });
