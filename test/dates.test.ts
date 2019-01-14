@@ -32,11 +32,10 @@ describe("dates", function () {
         }
     });
 
-    function assertFormat(locale: string, options: Options, expected: string) {
-        const original = date(2019, 1, 25);
+    function assertFormat(locale: string, options: Options, expected: string, original = date(2019, 1, 25)) {
         const formatted = format(original, locale, options);
         assert.equal(formatted, expected);
-        const parsed = parse(formatted, locale, options);
+        const parsed = parse(expected, locale, options);
         assert.equal(parsed.toISOString(), original.toISOString());
     }
 
@@ -46,6 +45,15 @@ describe("dates", function () {
         assertFormat('en-US', {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'Fri, Jan 25, 2019');
         assertFormat('en-US', {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'Friday, 1/25/2019');
         assertFormat('nl', {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'vr 25 jan. 2019');
+        assertFormat('nl', {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'vrijdag 25-1-2019');
         assertFormat('es', {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'viernes, 25/1/2019');
+
+
+        assertFormat('es-ES', {day: '2-digit', year: 'numeric', month: 'short'}, '31 ene. 2019', date(2019,1,31));
+        assertFormat('es-ES', {day: '2-digit', year: 'numeric', month: 'short'}, '01 feb. 2019', date(2019,2,1));
+
+        // Прибытие: 31 янв 2019 - Отъезд: 01 фев 2019 (Взрослые: 1)
+        // assertFormat('ru-RU', {day: '2-digit', year: 'numeric', month: 'short'}, '31 янв 2019', date(2019,1,31));
+        // assertFormat('ru-RU', {day: '2-digit', year: 'numeric', month: 'short'}, '01 фев 2019', date(2019,2,1));
     });
 });

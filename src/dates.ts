@@ -1,4 +1,5 @@
 import {range} from "./sequence";
+import {lazy} from "./lazy";
 
 export function date(year: number, month?: number, day?: number): Date {
     return new Date(year, month ? month - 1 : 1, day ? day : 1);
@@ -6,7 +7,7 @@ export function date(year: number, month?: number, day?: number): Date {
 
 export interface Options {
     year?: 'numeric' | '2-digit';
-    month?: 'numeric' | '2-digit' | 'narrow' | 'short' | 'long' ;
+    month?: 'numeric' | '2-digit' | 'narrow' | 'short' | 'long';
     day?: 'numeric' | '2-digit';
     weekday?: 'narrow' | 'short' | 'long';
 }
@@ -18,7 +19,7 @@ export const defaultOptions: Options = {
 };
 
 export class Formatters {
-    static cache: { [key:string] : Intl.DateTimeFormat } = {};
+    static cache: { [key: string]: Intl.DateTimeFormat } = {};
 
     static create(locale: string = 'default', options: Options = defaultOptions) {
         const key = JSON.stringify({locale, options});
@@ -34,38 +35,81 @@ export function parse(value: string, locale?: string, options: Options = default
     return localeParser(locale, options).parse(value);
 }
 
+
+export class ExampleDate {
+    constructor(private locale?: string,
+                private options: Options = defaultOptions,
+                private year = 3333,
+                private month = 11,
+                private day = 22,
+                private weekday = 7 /*Sunday*/) {
+    }
+
+    get date(): Date {
+        return lazy(this, 'date', date(this.year, this.month, this.day));
+    }
+
+    get formatted(): string {
+        return lazy(this, 'formatted', Formatters.create(this.locale, this.options).format(this.date));
+    }
+
+    get months(): string[] {
+        return lazy(this, 'months', months(this.locale, this.options));
+    }
+
+    get monthLiteral(): string {
+        return lazy(this, 'monthLiteral', this.months[this.month - 1]);
+    }
+
+    get weekdays(): string[] {
+        return lazy(this, 'weekdays', weekdays(this.locale, this.options));
+    }
+
+    get weekdayLiteral(): string {
+        return lazy(this, 'weekdayLiteral', this.weekdays[this.weekday - 1]);
+    }
+
+    get regex(): RegExp {
+        const pattern = this.formatted.
+        replace(this.year.toString(), '(\\d{4})').
+        replace(this.monthLiteral, `((?:\\d{1,2}|${this.months.join('|')}))`).
+        replace(this.weekdayLiteral, `((?:${this.weekdays.join('|')}))`).
+        replace(this.day.toString(), '(\\d{1,2})');
+        return lazy(this, 'regex', new RegExp(pattern));
+    }
+
+    get groups(): RegexGroups {
+        const match = this.formatted.match(this.regex);
+        if (!match) throw new Error();
+        const monthIndex = match.indexOf(this.monthLiteral);
+        const weekdayIndex = match.indexOf(this.weekdayLiteral);
+        const groups = {
+            year: numeric(match.indexOf(this.year.toString())),
+            month: this.monthLiteral === this.month.toString() ? numeric(monthIndex) : lookup(monthIndex, this.months),
+            day: numeric(match.indexOf(this.day.toString())),
+            weekday: lookup(weekdayIndex, this.weekdays),
+        };
+        return lazy(this, 'groups', groups);
+    }
+
+    toString() {
+        return this.regex.toString();
+    }
+
+
+}
+
 export function localeParser(locale?: string, options: Options = defaultOptions): DateParser {
-    const f = Formatters.create(locale, options);
-    const d = date(3333, 11, 22); // Sunday
-    const fd = f.format(d);
-    const m = months(locale, options);
-    const monthLiteral = m[11-1];
-    const w = weekdays(locale, options);
-    const weekdayLiteral = w[7-1];
-    const regex = new RegExp(fd.
-    replace('3333', '(\\d{4})').
-    replace(monthLiteral, `((?:\\d{1,2}|${m.join('|')}))`).
-    replace(weekdayLiteral, `((?:${w.join('|')}))`).
-    replace('22', '(\\d{1,2})'));
-    const match = fd.match(regex);
-    if (!match) throw new Error();
-    const monthIndex = match.indexOf(monthLiteral);
-    const weekdayIndex = match.indexOf(weekdayLiteral);
-    const groups = {
-        year: numeric(match.indexOf('3333')),
-        month: monthLiteral === '11' ? numeric(monthIndex) : lookup(monthIndex, m),
-        day: numeric(match.indexOf('22')),
-        weekday: lookup(weekdayIndex, w),
-    };
-    return new RegexParser(regex, groups);
+    const exampleDate = new ExampleDate(locale, options);
+    return new RegexParser(exampleDate.regex, exampleDate.groups);
 }
 
-export function months(locale?: string, options: Options = defaultOptions){
-    return range(1,12).map(i => format(date(2000, i, 1), locale, {month: options.month})).toArray();
+export function months(locale?: string, options: Options = defaultOptions): string[] {
+    return range(1, 12).map(i => format(date(2000, i, 1), locale, {month: options.month})).toArray();
 }
 
-export function weekdays(locale?: string, options: Options = defaultOptions){
-    return range(1,7).map(i => format(date(2000, 1, i + 2), locale, {weekday: options.weekday})).toArray();
+export function weekdays(locale?: string, options: Options = defaultOptions): string[] {
+    return range(1, 7).map(i => format(date(2000, 1, i + 2), locale, {weekday: options.weekday})).toArray();
 }
 
 export type OptionHandler = (match: RegExpMatchArray) => number;
@@ -74,7 +118,7 @@ export const numeric = (index: number): OptionHandler => (match: RegExpMatchArra
     return parseInt(match[index]);
 };
 
-export const lookup = (index: number, months:string[]): OptionHandler => (match: RegExpMatchArray): number => {
+export const lookup = (index: number, months: string[]): OptionHandler => (match: RegExpMatchArray): number => {
     return months.indexOf(match[index]) + 1;
 };
 

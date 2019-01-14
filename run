@@ -16,7 +16,7 @@ if [[ ! $(command -v nvm) ]]; then
   set -e
 fi
 
-nvm install
+#nvm install
 
 if [[ ! $(command -v yarn) ]]; then
     npm install -g yarn
