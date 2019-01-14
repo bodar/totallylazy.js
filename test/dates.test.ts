@@ -23,10 +23,9 @@ describe("dates", function () {
         const supported = Intl.DateTimeFormat.supportedLocalesOf(locales);
 
         for (const locale of supported) {
-            const options: Options = {day: 'numeric', year: 'numeric', month: 'long'};
+            const options: Options = {day: 'numeric', year: 'numeric', month: 'long', weekday:'long'};
             const original = date(2001, 6, 28);
             const formatted = format(original, locale, options);
-            console.log(locale, formatted);
             const parsed = parse(formatted, locale, options);
             assert.equal(parsed.toISOString(), original.toISOString());
         }
@@ -35,6 +34,10 @@ describe("dates", function () {
     function assertFormat(locale: string, options: Options, expected: string, original = date(2019, 1, 25)) {
         const formatted = format(original, locale, options);
         assert.equal(formatted, expected);
+        assertParse(locale, options, expected, original);
+    }
+
+    function assertParse(locale: string, options: Options, expected: string, original = date(2019, 1, 25)) {
         const parsed = parse(expected, locale, options);
         assert.equal(parsed.toISOString(), original.toISOString());
     }
@@ -52,8 +55,11 @@ describe("dates", function () {
         assertFormat('es-ES', {day: '2-digit', year: 'numeric', month: 'short'}, '31 ene. 2019', date(2019,1,31));
         assertFormat('es-ES', {day: '2-digit', year: 'numeric', month: 'short'}, '01 feb. 2019', date(2019,2,1));
 
-        // Прибытие: 31 янв 2019 - Отъезд: 01 фев 2019 (Взрослые: 1)
-        // assertFormat('ru-RU', {day: '2-digit', year: 'numeric', month: 'short'}, '31 янв 2019', date(2019,1,31));
-        // assertFormat('ru-RU', {day: '2-digit', year: 'numeric', month: 'short'}, '01 фев 2019', date(2019,2,1));
+        assertFormat('ru-RU', {day: '2-digit', year: 'numeric', month: 'short'}, '31 янв. 2019 г.', date(2019,1,31));
+        assertFormat('ru-RU', {day: '2-digit', year: 'numeric', month: 'short'}, '01 февр. 2019 г.', date(2019,2,1));
+    });
+
+    it('follows the robustness principle - so liberal in what it accepts', function () {
+        assertParse('ru-RU', {day: '2-digit', year: 'numeric', month: 'short'}, '31 янв 2019', date(2019,1,31));
     });
 });
