@@ -53,12 +53,19 @@ function replace(regex: RegExp, value: string, replacer: (match: RegExpExecArray
 
 
 export class ExampleDate {
-    constructor(private locale?: string,
+    private constructor(private locale?: string,
                 private options: Options = defaultOptions,
                 private year = 3333,
                 private month = 11,
                 private day = 22,
                 private weekday = 7 /*Sunday*/) {
+    }
+
+    static cache: { [key: string]: ExampleDate } = {};
+
+    static create(locale: string = 'default', options: Options = defaultOptions): ExampleDate {
+        const key = JSON.stringify({locale, options});
+        return ExampleDate.cache[key] = ExampleDate.cache[key] || new ExampleDate(locale, options);
     }
 
     get date(): Date {
@@ -91,7 +98,6 @@ export class ExampleDate {
         return lazy(this, 'literalRegex', literalRegex);
     }
 
-
     get regexParser(): RegexParser {
         let yearIndex = -1;
         let monthIndex = -1;
@@ -119,7 +125,6 @@ export class ExampleDate {
             }
             return '';
         }, noMatch => `[${noMatch}]*`);
-        console.log(pattern);
 
         const groups = {
             year: numeric(yearIndex),
@@ -128,7 +133,7 @@ export class ExampleDate {
             weekday: lookup(weekdayIndex, this.weekdays),
         };
 
-        return new RegexParser(new RegExp(pattern), groups);
+        return lazy(this, 'regexParser', new RegexParser(new RegExp(pattern), groups));
 
     }
 
@@ -136,7 +141,7 @@ export class ExampleDate {
 }
 
 export function localeParser(locale?: string, options: Options = defaultOptions): DateParser {
-    const exampleDate = new ExampleDate(locale, options);
+    const exampleDate = ExampleDate.create(locale, options);
     return exampleDate.regexParser;
 }
 
