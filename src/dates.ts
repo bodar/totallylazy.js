@@ -1,6 +1,13 @@
 import {range} from "./sequence";
 import {lazy} from "./lazy";
 
+declare global {
+    interface String {
+        toLocaleLowerCase(locale?:string): string;
+    }
+}
+
+
 export function date(year: number, month?: number, day?: number): Date {
     return new Date(year, month ? month - 1 : 1, day ? day : 1);
 }
@@ -73,7 +80,7 @@ export class ExampleDate {
     }
 
     get formatted(): string {
-        return lazy(this, 'formatted', Formatters.create(this.locale, this.options).format(this.date));
+        return lazy(this, 'formatted', Formatters.create(this.locale, this.options).format(this.date).toLocaleLowerCase(this.locale));
     }
 
     get months(): string[] {
@@ -93,7 +100,7 @@ export class ExampleDate {
     }
 
     get literalRegex(): RegExp {
-        const literals = [this.year, this.monthLiteral, this.day, this.weekdayLiteral];
+        const literals = [this.year, this.monthLiteral + '?', this.day, this.weekdayLiteral];
         const literalRegex = new RegExp(`(?:(${literals.join(')|(')}))`, 'g');
         return lazy(this, 'literalRegex', literalRegex);
     }
@@ -133,11 +140,9 @@ export class ExampleDate {
             weekday: lookup(weekdayIndex, this.weekdays),
         };
 
-        return lazy(this, 'regexParser', new RegexParser(new RegExp(pattern), groups));
+        return lazy(this, 'regexParser', new RegexParser(new RegExp(pattern), groups, this.locale));
 
     }
-
-
 }
 
 export function localeParser(locale?: string, options: Options = defaultOptions): DateParser {
@@ -149,12 +154,14 @@ export function months(locale?: string, options: Options = defaultOptions): stri
     return range(1, 12)
         .map(i => format(date(2000, i, 1), locale, {month: options.month}))
         .map(s => s.replace('.', ''))
+        .map(l => l.toLocaleLowerCase(locale))
         .toArray();
 }
 
 export function weekdays(locale?: string, options: Options = defaultOptions): string[] {
     return range(1, 7)
         .map(i => format(date(2000, 1, i + 2), locale, {weekday: options.weekday}))
+        .map(l => l.toLocaleLowerCase(locale))
         .toArray();
 }
 
@@ -180,11 +187,11 @@ export interface RegexGroups {
 }
 
 export class RegexParser implements DateParser {
-    constructor(private regex: RegExp, private groups: RegexGroups) {
+    constructor(private regex: RegExp, private groups: RegexGroups, private locale?:string) {
     }
 
     parse(value: string): Date {
-        const match = value.match(this.regex);
+        const match = value.toLocaleLowerCase(this.locale).match(this.regex);
         if (!match) throw new Error(this.regex + 'did not match ' + value);
         return date(this.groups.year(match), this.groups.month(match), this.groups.day(match));
     }

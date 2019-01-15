@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {runningInNode} from "../src/node";
-import {date, format, Options, parse} from "../src/dates";
+import {date, format, months, Options, parse} from "../src/dates";
 
 describe("dates", function () {
     before(function () {
@@ -27,39 +27,59 @@ describe("dates", function () {
             const original = date(2001, 6, 28);
             const formatted = format(original, locale, options);
             const parsed = parse(formatted, locale, options);
-            assert.equal(parsed.toISOString(), original.toISOString());
+            assert.equal(parsed.toISOString(), original.toISOString(), locale);
         }
     });
 
-    function assertFormat(locale: string, options: Options, expected: string, original = date(2019, 1, 25)) {
-        const formatted = format(original, locale, options);
+    function assertFormat(locale: string, date: Date, options: Options, expected: string) {
+        const formatted = format(date, locale, options);
         assert.equal(formatted, expected);
-        assertParse(locale, options, expected, original);
+        assertParse(locale, expected, options, date);
     }
 
-    function assertParse(locale: string, options: Options, expected: string, original = date(2019, 1, 25)) {
-        const parsed = parse(expected, locale, options);
-        assert.equal(parsed.toISOString(), original.toISOString());
+    function assertParse(locale: string, value: string, options: Options, expected: Date) {
+        const parsed = parse(value, locale, options);
+        assert.equal(parsed.toISOString(), expected.toISOString());
     }
 
     it('can format and parse a specific date format', function () {
-        assertFormat('en-GB', {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'Fri, 25 Jan 2019');
-        assertFormat('en-GB', {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'Friday, 25/01/2019');
-        assertFormat('en-US', {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'Fri, Jan 25, 2019');
-        assertFormat('en-US', {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'Friday, 1/25/2019');
-        assertFormat('nl', {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'vr 25 jan. 2019');
-        assertFormat('nl', {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'vrijdag 25-1-2019');
-        assertFormat('es', {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'viernes, 25/1/2019');
+        assertFormat('en-GB', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'Fri, 25 Jan 2019');
+        assertFormat('en-GB', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'Friday, 25/01/2019');
+        assertFormat('en-US', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'Fri, Jan 25, 2019');
+        assertFormat('en-US', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'Friday, 1/25/2019');
+        assertFormat('nl', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'vr 25 jan. 2019');
+        assertFormat('nl', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'vrijdag 25-1-2019');
+        assertFormat('es', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'viernes, 25/1/2019');
 
 
-        assertFormat('es-ES', {day: '2-digit', year: 'numeric', month: 'short'}, '31 ene. 2019', date(2019,1,31));
-        assertFormat('es-ES', {day: '2-digit', year: 'numeric', month: 'short'}, '01 feb. 2019', date(2019,2,1));
+        assertFormat('es-ES', date(2019, 1, 31), {day: '2-digit', year: 'numeric', month: 'short'}, '31 ene. 2019');
+        assertFormat('es-ES', date(2019, 2, 1), {day: '2-digit', year: 'numeric', month: 'short'}, '01 feb. 2019');
 
-        assertFormat('ru-RU', {day: '2-digit', year: 'numeric', month: 'short'}, '31 янв. 2019 г.', date(2019,1,31));
-        assertFormat('ru-RU', {day: '2-digit', year: 'numeric', month: 'short'}, '01 февр. 2019 г.', date(2019,2,1));
+        assertFormat('ru-RU', date(2019, 1, 31), {day: '2-digit', year: 'numeric', month: 'short'}, '31 янв. 2019 г.');
+        assertFormat('ru-RU', date(2019, 2, 1), {day: '2-digit', year: 'numeric', month: 'short'}, '01 февр. 2019 г.');
     });
 
-    it('follows the robustness principle - so liberal in what it accepts', function () {
-        assertParse('ru-RU', {day: '2-digit', year: 'numeric', month: 'short'}, '31 янв 2019', date(2019,1,31));
+    it("ignores case", () => {
+        assertParse('es-ES', 'Martes, 15  Enero  2019', {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'}, date(2019, 1, 15));
+        assertParse('es-MX', 'Martes, 15  Enero  2019', {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'}, date(2019, 1, 15));
+        assertParse('fr-FR', 'Mardi 15 Janvier 2019', {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'}, date(2019, 1, 15));
+        assertParse('it-IT', 'Martedì 15 Gennaio 2019', {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'}, date(2019, 1, 15));
+        assertParse('pt-PT', 'Terça-feira, 15  Janeiro  2019', {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'}, date(2019, 1, 15));
+    });
+
+    it('parsing is liberal in what it accepts', function () {
+        assertParse('ru-RU', '31 янв 2019', {day: '2-digit', year: 'numeric', month: 'short'}, date(2019, 1, 31));
+        assertParse('de-DE', 'Dienstag, 15. Januar 2019', {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'}, date(2019, 1, 15));
+        assertParse('en-GB', '16 January 2019', {day: 'numeric', year: 'numeric', month: 'long'}, date(2019, 1, 16));
+        assertParse('en-US', 'Tuesday, January 15, 2019', {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'}, date(2019, 1, 15));
+
+        assertParse('ko-KR', '2019년 1월 15일 화요일', {day: 'numeric', year: 'numeric', month: 'long', weekday:'long'}, date(2019, 1, 15));
+        assertParse('zh-TW', '2019年1月15日', {day: 'numeric', year: 'numeric', month: 'long'}, date(2019, 1, 15));
+        assertParse('ja-JP', '2019年1月15日', {day: 'numeric', year: 'numeric', month: 'long'}, date(2019, 1, 15));
+
+        // TODO Remove 'this.monthLiteral + '?' in literalRegex once we have better month diff support
+        assertParse('ru-RU', '15 январь 2019 г.', {day: 'numeric', year: 'numeric', month: 'long'}, date(2019, 1, 15));
+        // TODO Fix chinese
+        // assertParse('zh-CN', '2019年1月15日', {day: 'numeric', year: 'numeric', month: 'numeric'}, date(2019, 1, 15));
     });
 });
