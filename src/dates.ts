@@ -39,7 +39,7 @@ export function format(value: Date, locale?: string, options: Options = defaultO
     return Formatters.create(locale, options).format(value);
 }
 
-export function parse(value: string, locale?: string, options: Options = defaultOptions): Date {
+export function parse(value: string, locale?: string, options?: Options): Date {
     return localeParser(locale, options).parse(value);
 }
 
@@ -145,9 +145,19 @@ export class ExampleDate {
     }
 }
 
-export function localeParser(locale?: string, options: Options = defaultOptions): DateParser {
-    const exampleDate = ExampleDate.create(locale, options);
-    return exampleDate.regexParser;
+export const defaultParserOptions: Options[] = [
+    {day: 'numeric', year: 'numeric', month: 'numeric'},
+    {day: 'numeric', year: 'numeric', month: 'short'},
+    {day: 'numeric', year: 'numeric', month: 'short', weekday: 'short'},
+    {day: 'numeric', year: 'numeric', month: 'long'},
+    {day: 'numeric', year: 'numeric', month: 'long', weekday:"long"},
+];
+
+export function localeParser(locale?: string, options?: Options): DateParser {
+    if(!options) {
+        return parsers(...defaultParserOptions.map(o => localeParser(locale, o)))
+    }
+    return ExampleDate.create(locale, options).regexParser;
 }
 
 export function months(locale?: string, options: Options = defaultOptions): string[] {
@@ -177,6 +187,26 @@ export const lookup = (index: number, months: string[]): OptionHandler => (match
 
 export interface DateParser {
     parse(value: string): Date;
+}
+
+export class CompositeDateParser implements DateParser{
+    constructor(private readonly parsers: DateParser[]) {
+    }
+
+    parse(value: string): Date {
+        for (const parser of this.parsers) {
+            try {
+                const result = parser.parse(value);
+                if (result) return result;
+            } catch (ignore) {
+            }
+        }
+        throw new Error("Unable to parse date: " + value);
+    }
+}
+
+export function parsers(...parsers: DateParser[]): DateParser {
+    return new CompositeDateParser(parsers);
 }
 
 export interface RegexGroups {
