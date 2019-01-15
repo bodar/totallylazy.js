@@ -3,7 +3,7 @@ import {lazy} from "./lazy";
 
 declare global {
     interface String {
-        toLocaleLowerCase(locale?:string): string;
+        toLocaleLowerCase(locale?: string): string;
     }
 }
 
@@ -61,11 +61,11 @@ function replace(regex: RegExp, value: string, replacer: (match: RegExpExecArray
 
 export class ExampleDate {
     private constructor(private locale?: string,
-                private options: Options = defaultOptions,
-                private year = 3333,
-                private month = 11,
-                private day = 22,
-                private weekday = 7 /*Sunday*/) {
+                        private options: Options = defaultOptions,
+                        private year = 3333,
+                        private month = 11,
+                        private day = 22,
+                        private weekday = 7 /*Sunday*/) {
     }
 
     static cache: { [key: string]: ExampleDate } = {};
@@ -146,15 +146,15 @@ export class ExampleDate {
 }
 
 export const defaultParserOptions: Options[] = [
-    {day: 'numeric', year: 'numeric', month: 'numeric'},
-    {day: 'numeric', year: 'numeric', month: 'short'},
-    {day: 'numeric', year: 'numeric', month: 'short', weekday: 'short'},
-    {day: 'numeric', year: 'numeric', month: 'long'},
-    {day: 'numeric', year: 'numeric', month: 'long', weekday:"long"},
+    {year: 'numeric', month: 'long', day: 'numeric', weekday: "long"},
+    {year: 'numeric', month: 'short', day: 'numeric', weekday: 'short'},
+    {year: 'numeric', month: 'numeric', day: 'numeric'},
+    {year: 'numeric', month: 'short', day: 'numeric'},
+    {year: 'numeric', month: 'long', day: 'numeric'},
 ];
 
 export function localeParser(locale?: string, options?: Options): DateParser {
-    if(!options) {
+    if (!options) {
         return parsers(...defaultParserOptions.map(o => localeParser(locale, o)))
     }
     return ExampleDate.create(locale, options).regexParser;
@@ -189,7 +189,7 @@ export interface DateParser {
     parse(value: string): Date;
 }
 
-export class CompositeDateParser implements DateParser{
+export class CompositeDateParser implements DateParser {
     constructor(private readonly parsers: DateParser[]) {
     }
 
@@ -217,7 +217,7 @@ export interface RegexGroups {
 }
 
 export class RegexParser implements DateParser {
-    constructor(private regex: RegExp, private groups: RegexGroups, private locale?:string) {
+    constructor(private regex: RegExp, private groups: RegexGroups, private locale?: string) {
     }
 
     parse(value: string): Date {

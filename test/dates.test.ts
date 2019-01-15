@@ -50,6 +50,7 @@ describe("dates", function () {
         assertFormat('nl', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'vr 25 jan. 2019');
         assertFormat('nl', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'vrijdag 25-1-2019');
         assertFormat('es', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'numeric', weekday: "long"}, 'viernes, 25/1/2019');
+        assertFormat('de', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'long', weekday: "long"}, 'Freitag, 25. Januar 2019');
 
 
         assertFormat('es-ES', date(2019, 1, 31), {day: '2-digit', year: 'numeric', month: 'short'}, '31 ene. 2019');
@@ -84,6 +85,8 @@ describe("dates", function () {
     });
 
     it("can parse a date without specifying any options", () => {
+        assertParse('en-GB', '18/12/2018', date(2018, 12, 18));
+        assertParse('en-US', 'Monday, December 17, 2018', date(2018, 12, 17));
         assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15));
         assertParse('ru-RU', '31 янв 2019', date(2019, 1, 31));
         assertParse('ru-RU', 'пятница, 01 февр. 2019 г.', date(2019, 2, 1));
