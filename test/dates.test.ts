@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {runningInNode} from "../src/node";
-import {date, format, months, Options, parse} from "../src/dates";
+import {date, format, Options, parse} from "../src/dates";
 
 describe("dates", function () {
     before(function () {
@@ -92,4 +92,40 @@ describe("dates", function () {
         assertParse('ru-RU', 'пятница, 01 февр. 2019 г.', date(2019, 2, 1));
         assertParse('ru-RU', '01.2.2019', date(2019, 2, 1));
     });
+
+
+    it("find matching prefix", () => {
+        const a = '123-456-7890';
+        const b = '123-xxxxx-7890';
+        const charactersA = [...a];
+        const charactersB = [...b];
+
+        function prefix(charactersA:string[], charactersB:string[]): number{
+            for (let i = 0; i < charactersA.length; i++) {
+                const characterA = charactersA[i];
+                const characterB = charactersB[i];
+                if(characterA != characterB) return i;
+            }
+            return charactersA.length;
+        }
+
+        function suffix(charactersA:string[], charactersB:string[]): number {
+            return prefix([...charactersA].reverse(), [...charactersB].reverse());
+        }
+
+        function different(charactersA:string[], charactersB:string[]): string[] {
+            return [
+                charactersA.slice(prefix(charactersA, charactersB), -suffix(charactersA, charactersB)).join(''),
+                charactersB.slice(prefix(charactersB, charactersA), -suffix(charactersB, charactersA)).join('')
+            ];
+
+        }
+
+        assert.equal(prefix(charactersA,charactersB), 4);
+        assert.equal(suffix(charactersA,charactersB), 5);
+        assert.deepEqual(different(charactersA,charactersB), ['456', 'xxxxx']);
+
+
+    });
+
 });
