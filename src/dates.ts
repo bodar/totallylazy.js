@@ -103,6 +103,7 @@ export class ExampleDate {
 
     get literalRegex(): RegExp {
         const literals = [this.year, this.monthLiteral, this.day, this.weekdayLiteral];
+        if( literals.length != literals.filter(Boolean).length) throw Error('Unable to build regex due to missing literal: ' + JSON.stringify(literals));
         const literalRegex = new RegExp(`(?:(${literals.join(')|(')}))`, 'g');
         return lazy(this, 'literalRegex', literalRegex);
     }
