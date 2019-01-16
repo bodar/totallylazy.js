@@ -130,7 +130,9 @@ export function array<T>(iterable: Iterable<T> | AsyncIterable<T>): T[] | Promis
 }
 
 function toArray<T>(iterable: Iterable<T>): T[] {
-    return [...iterable];
+    const result = [];
+    for (const value of iterable) result.push(value);
+    return result;
 }
 
 async function toPromiseArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {

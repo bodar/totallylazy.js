@@ -86,6 +86,7 @@ describe("dates", function () {
     it("can parse a date without specifying any options", () => {
         assertParse('en-GB', '18/12/2018', date(2018, 12, 18));
         assertParse('en-US', 'Monday, December 17, 2018', date(2018, 12, 17));
+        assertParse('en-US', 'Sunday, January 20, 2019', date(2019, 1, 20));
         // TODO
         // assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15));
         assertParse('ru-RU', '31 янв 2019', date(2019, 1, 31));
