@@ -12,9 +12,11 @@ export function date(year: number, month?: number, day?: number): Date {
     return new Date(year, month ? month - 1 : 1, day ? day : 1);
 }
 
+export type MonthFormat = 'numeric' | '2-digit' | 'narrow' | 'short' | 'long';
+
 export interface Options {
     year?: 'numeric' | '2-digit';
-    month?: 'numeric' | '2-digit' | 'narrow' | 'short' | 'long';
+    month?: MonthFormat;
     day?: 'numeric' | '2-digit';
     weekday?: 'narrow' | 'short' | 'long';
 }
@@ -84,7 +86,7 @@ export class ExampleDate {
     }
 
     get months(): string[] {
-        return lazy(this, 'months', months(this.locale, this.options));
+        return lazy(this, 'months', months(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale)));
     }
 
     get monthLiteral(): string {
@@ -92,7 +94,7 @@ export class ExampleDate {
     }
 
     get weekdays(): string[] {
-        return lazy(this, 'weekdays', weekdays(this.locale, this.options));
+        return lazy(this, 'weekdays', weekdays(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale)));
     }
 
     get weekdayLiteral(): string {
@@ -100,7 +102,7 @@ export class ExampleDate {
     }
 
     get literalRegex(): RegExp {
-        const literals = [this.year, this.monthLiteral + '?', this.day, this.weekdayLiteral];
+        const literals = [this.year, this.monthLiteral, this.day, this.weekdayLiteral];
         const literalRegex = new RegExp(`(?:(${literals.join(')|(')}))`, 'g');
         return lazy(this, 'literalRegex', literalRegex);
     }
@@ -160,19 +162,48 @@ export function localeParser(locale?: string, options?: Options): DateParser {
     return ExampleDate.create(locale, options).regexParser;
 }
 
-export function months(locale?: string, options: Options = defaultOptions): string[] {
-    return range(1, 12)
-        .map(i => format(date(2000, i, 1), locale, {month: options.month}))
-        .map(s => s.replace('.', ''))
-        .map(l => l.toLocaleLowerCase(locale))
+export function months(locale?: string, monthFormat: MonthFormat | Options = 'long'): string[] {
+    const options: Options = typeof monthFormat == 'string' ? {month: monthFormat} : monthFormat;
+    delete options.weekday;
+    const raw = range(1, 12)
+        .map(i => format(date(2000, i, 1), locale, options))
+        .map(s => s.replace(/\./g, ''))
         .toArray();
+    return Object.keys(options).length  == 1 ? raw : different(raw);
 }
 
 export function weekdays(locale?: string, options: Options = defaultOptions): string[] {
     return range(1, 7)
         .map(i => format(date(2000, 1, i + 2), locale, {weekday: options.weekday}))
-        .map(l => l.toLocaleLowerCase(locale))
         .toArray();
+}
+
+export function prefix(charactersA:string[], charactersB:string[]): number{
+    for (let i = 0; i < charactersA.length; i++) {
+        const characterA = charactersA[i];
+        const characterB = charactersB[i];
+        if(characterA != characterB) return i;
+    }
+    return charactersA.length;
+}
+
+export function suffix(charactersA:string[], charactersB:string[]): number {
+    return prefix([...charactersA].reverse(), [...charactersB].reverse());
+}
+
+export function different(values:string[]): string[] {
+    const characters = values.map(v => [...v]);
+
+    const [smallestPrefix, smallestSuffix] = characters.reduce(([sp, ss], current, i) => {
+        const next = i < characters.length -1  ? characters[i + 1] : characters[0];
+        const p = prefix(current, next);
+        const s = suffix(current, next);
+        return [p < sp ? p : sp, s < ss ? s : ss];
+    }, [Number.MAX_VALUE, Number.MAX_VALUE]);
+
+    return characters.map((current) => {
+        return current.slice(smallestPrefix, -smallestSuffix).join('')
+    });
 }
 
 export type OptionHandler = (match: RegExpMatchArray) => number;
@@ -222,7 +253,7 @@ export class RegexParser implements DateParser {
 
     parse(value: string): Date {
         const match = value.toLocaleLowerCase(this.locale).match(this.regex);
-        if (!match) throw new Error(this.regex + 'did not match ' + value);
+        if (!match) throw new Error(`Locale: ${this.locale} ${this.regex} did not match ${value}`);
         return date(this.groups.year(match), this.groups.month(match), this.groups.day(match));
     }
 }

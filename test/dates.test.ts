@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {runningInNode} from "../src/node";
-import {date, format, Options, parse} from "../src/dates";
+import {date, different, format, months, Options, parse} from "../src/dates";
 
 describe("dates", function () {
     before(function () {
@@ -18,8 +18,8 @@ describe("dates", function () {
     it('can format and parse a date in many different locals', function () {
         const locales: string[] = ['en', 'de', 'fr', 'ja', 'nl', 'de-DE', 'en-US', 'en-GB', 'i-enochian', 'zh-Hant',
             'sr-Cyrl', 'sr-Latn', 'zh-cmn-Hans-CN', 'cmn-Hans-CN', 'zh-yue-HK', 'yue-HK',
-            'sr-Latn-RS', 'sl-rozaj', 'sl-rozaj-biske', 'sl-nedis', 'de-CH-1901', 'sl-IT-nedis', 'hy-Latn-IT-arevela',
-            'es-419'];//, 'zh-Hans',  'zh-Hans-CN'];
+            'sr-Latn-RS', 'sl-rozaj', 'sl-rozaj-biske', 'sl-nedis', 'de-CH-1901', 'sl-IT-nedis',
+            'es-419', 'zh-Hans',  'zh-Hans-CN']; // 'hy-Latn-IT-arevela'
         const supported = Intl.DateTimeFormat.supportedLocalesOf(locales);
 
         for (const locale of supported) {
@@ -78,53 +78,61 @@ describe("dates", function () {
         assertParse('zh-TW', '2019年1月15日', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
         assertParse('ja-JP', '2019年1月15日', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
 
-        // TODO Remove 'this.monthLiteral + '?' in literalRegex once we have better month diff support
-        assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
-        // TODO Fix chinese
-        // assertParse('zh-CN', '2019年1月15日', {day: 'numeric', year: 'numeric', month: 'numeric'}, date(2019, 1, 15));
+        // TODO
+        // assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
+        assertParse('zh-CN', '2019年1月15日', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
     });
 
     it("can parse a date without specifying any options", () => {
         assertParse('en-GB', '18/12/2018', date(2018, 12, 18));
         assertParse('en-US', 'Monday, December 17, 2018', date(2018, 12, 17));
-        assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15));
+        // TODO
+        // assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15));
         assertParse('ru-RU', '31 янв 2019', date(2019, 1, 31));
         assertParse('ru-RU', 'пятница, 01 февр. 2019 г.', date(2019, 2, 1));
         assertParse('ru-RU', '01.2.2019', date(2019, 2, 1));
     });
 
+    it("can get months for specific locals and formats", () => {
+        const englishMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        assert.deepEqual(months('en-GB'), englishMonths);
+        assert.deepEqual(months('en-GB', 'long'), englishMonths);
+        assert.deepEqual(months('en-GB', {month: 'long'}), englishMonths);
+        assert.deepEqual(months('en-GB', {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}), ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]);
 
-    it("find matching prefix", () => {
-        const a = '123-456-7890';
-        const b = '123-xxxxx-7890';
-        const charactersA = [...a];
-        const charactersB = [...b];
+        const standAloneRussianMonths: string[] = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"];
+        assert.deepEqual(months('ru'), standAloneRussianMonths);
+        assert.deepEqual(months('ru', 'long'), standAloneRussianMonths);
+        assert.deepEqual(months('ru', {month: 'long'}), standAloneRussianMonths);
 
-        function prefix(charactersA:string[], charactersB:string[]): number{
-            for (let i = 0; i < charactersA.length; i++) {
-                const characterA = charactersA[i];
-                const characterB = charactersB[i];
-                if(characterA != characterB) return i;
-            }
-            return charactersA.length;
-        }
+        const russianMonthsInContext: string[] = [  "января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+        assert.deepEqual(months('ru', {year: "numeric", month: 'long', day:'numeric'}), russianMonthsInContext);
+        assert.deepEqual(months('ru', {year: 'numeric', month: 'short', day: '2-digit'}),  ['янв','февр','мар','апр','мая','июн', 'июл', 'авг', 'сент', 'окт', 'нояб', 'дек']);
 
-        function suffix(charactersA:string[], charactersB:string[]): number {
-            return prefix([...charactersA].reverse(), [...charactersB].reverse());
-        }
 
-        function different(charactersA:string[], charactersB:string[]): string[] {
-            return [
-                charactersA.slice(prefix(charactersA, charactersB), -suffix(charactersA, charactersB)).join(''),
-                charactersB.slice(prefix(charactersB, charactersA), -suffix(charactersB, charactersA)).join('')
-            ];
+        const chineseMonths: string[] = [ "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+        assert.deepEqual(months('zh-CN'), chineseMonths);
+        assert.deepEqual(months('zh-CN', 'long'), chineseMonths);
+        assert.deepEqual(months('zh-CN', {month: 'long'}), chineseMonths);
+    });
 
-        }
+    it("formatting 2019/1/15 in zh-CN does not return the long month format but instead the numeric i.e 2019年1月15日", () => {
+        assert.deepEqual(months('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'}), ['1','2','3','4','5','6','7','8','9','10','11','12']);
+    });
 
-        assert.equal(prefix(charactersA,charactersB), 4);
-        assert.equal(suffix(charactersA,charactersB), 5);
-        assert.deepEqual(different(charactersA,charactersB), ['456', 'xxxxx']);
+    it("can find differences between string", () => {
+        const values =  ["2000年1月1日", "2000年2月1日", "2000年3月1日", "2000年4月1日", "2000年5月1日", "2000年6月1日", "2000年7月1日", "2000年8月1日", "2000年9月1日", "2000年10月1日", "2000年11月1日", "2000年12月1日"];
+        assert.deepEqual(different(values), ['1','2','3','4','5','6','7','8','9','10','11','12']);
 
+        const russianMonths = ['1 января 2000 г', '1 февраля 2000 г', '1 марта 2000 г', '1 апреля 2000 г', '1 мая 2000 г', '1 июня 2000 г', '1 июля 2000 г', '1 августа 2000 г', '1 сентября 2000 г', '1 октября 2000 г', '1 ноября 2000 г', '1 декабря 2000 г'];
+        assert.deepEqual(different(russianMonths), ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря']);
+
+        const shortRussian = [ '01 янв. 2000 г.', '01 февр. 2000 г.', '01 мар. 2000 г.', '01 апр. 2000 г.', '01 мая 2000 г.', '01 июн. 2000 г.', '01 июл. 2000 г.', '01 авг. 2000 г.', '01 сент. 2000 г.', '01 окт. 2000 г.', '01 нояб. 2000 г.', '01 дек. 2000 г.' ];
+        assert.deepEqual(different(shortRussian), ['янв.','февр.','мар.','апр.','мая','июн.', 'июл.', 'авг.', 'сент.', 'окт.', 'нояб.', 'дек.']);
+
+        // TODO
+        // const armenian = [ '01 հունվարի, 2000 թ', '01 փետրվարի, 2000 թ', '01 մարտի, 2000 թ', '01 ապրիլի, 2000 թ', '01 մայիսի, 2000 թ', '01 հունիսի, 2000 թ', '01 հուլիսի, 2000 թ', '01 օգոստոսի, 2000 թ', '01 սեպտեմբերի, 2000 թ', '01 հոկտեմբերի, 2000 թ', '01 նոյեմբերի, 2000 թ', '01 դեկտեմբերի, 2000 թ' ]
+        // assert.deepEqual(different(armenian), ['հունվարի','փետրվարի','մարտի','ապրիլի','մայիսի','հունիսի', 'հուլիսի', 'օգոստոսի', 'սեպտեմբերի', 'հոկտեմբերի', 'նոյեմբերի', 'դեկտեմբերի']);
 
     });
 
