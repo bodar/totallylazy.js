@@ -10,6 +10,8 @@
     "experimentalDecorators": true,
     "downlevelIteration": true,
     "sourceMap": true,
+    "declaration": true,
+    "noEmitOnError": true,
     "outDir": "build/artifacts/out",
     "lib": [
       "dom",
