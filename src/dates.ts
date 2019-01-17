@@ -1,4 +1,3 @@
-import {range} from "./sequence";
 import {lazy} from "./lazy";
 
 declare global {
@@ -166,17 +165,21 @@ export function localeParser(locale?: string, options?: Options): DateParser {
 export function months(locale?: string, monthFormat: MonthFormat | Options = 'long'): string[] {
     const options: Options = typeof monthFormat == 'string' ? {month: monthFormat} : monthFormat;
     delete options.weekday;
-    const raw = range(1, 12)
-        .map(i => format(date(2000, i, 1), locale, options))
-        .map(s => s.replace(/\./g, ''))
-        .toArray();
-    return Object.keys(options).length  == 1 ? raw : different(raw);
+    const result = [];
+
+    for (let i = 1; i <= 12; i++) {
+        result.push(format(date(2000, i, 1), locale, options)
+            .replace(/\./g, ''));
+    }
+    return Object.keys(options).length  == 1 ? result : different(result);
 }
 
 export function weekdays(locale?: string, options: Options = defaultOptions): string[] {
-    return range(1, 7)
-        .map(i => format(date(2000, 1, i + 2), locale, {weekday: options.weekday}))
-        .toArray();
+    const result = [];
+    for (let i = 1; i <= 7; i++) {
+        result.push(format(date(2000, 1, i + 2), locale, {weekday: options.weekday}));
+    }
+    return result;
 }
 
 export function prefix(charactersA:string[], charactersB:string[]): number{
