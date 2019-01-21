@@ -34,5 +34,11 @@
     "http-shutdown": "^1.2.0",
     "text-encoding": "^0.6.4",
     "full-icu": "^1.2.1"
-  }
+  },
+  "browserslist": [
+    "last 1 version",
+    "> 2%",
+    "IE 11",
+    "current node"
+  ]
 }
