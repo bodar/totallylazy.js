@@ -158,7 +158,15 @@ describe("dates", function () {
         // Using contextual month
         // assertParse('pt-PT', "06 abr 2019", date(2019, 4, 6),"dd MMM yyyy");
         // assertParse('cs-CZ', "06 úno 2019", date(2019, 2, 6),"dd MMM yyyy");
+    });
 
+    it('supports getting Months', () => {
+        // const months = Months.get('ru');
+        // assert.equal(months.parse('январь'), 1);
+        // assert.equal(months.parse('января'), 1);
+        // assert.equal(months.parse('январ'), 1);
+        // assert.equal(months.parse('янва'), 1);
+        // assert.equal(months.parse('янв'), 1);
     });
 
 });
