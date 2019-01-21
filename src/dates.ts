@@ -40,8 +40,8 @@ export function format(value: Date, locale?: string, options: Options = defaultO
     return Formatters.create(locale, options).format(value);
 }
 
-export function parse(value: string, locale?: string, options?: Options): Date {
-    return localeParser(locale, options).parse(value);
+export function parse(value: string, locale?: string, options?: string | Options): Date {
+    return parser(locale, options).parse(value);
 }
 
 function replace(regex: RegExp, value: string, replacer: (match: RegExpExecArray) => string, nonMatchedReplacer: (a: string) => string = (value) => value) {
@@ -147,6 +147,112 @@ export class ExampleDate {
     }
 }
 
+export class ParserBuilder {
+    private constructor(private locale: string,
+                        private format: string
+    ) {
+    }
+
+    static cache: { [key: string]: ParserBuilder } = {};
+
+    static create(locale: string = 'default', format: string): ParserBuilder {
+        const key = JSON.stringify({locale, format});
+        return ParserBuilder.cache[key] = ParserBuilder.cache[key] || new ParserBuilder(locale, format);
+    }
+
+    get options(): Options {
+        return lazy(this, 'options',{
+            year: 'numeric',
+            month: this.monthFormat,
+            day: 'numeric'
+        })
+    }
+
+    get months(): string[] {
+        return lazy(this, 'months', months(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale)));
+    }
+
+    get weekdays(): string[] {
+        return lazy(this, 'weekdays', weekdays(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale)));
+    }
+
+    extract(character:string, defaultValue: string): string {
+        const match = this.format.match(new RegExp(character + '+'));
+        if(!match) return defaultValue;
+        return match[0]
+    }
+
+    get weekday(): string {
+        return lazy(this, 'weekday', this.extract('E', 'EEEE'));
+    }
+
+    get day(): string {
+        return lazy(this, 'day', this.extract('d', 'dd'));
+    }
+
+    get month(): string {
+        return lazy(this, 'month', this.extract('M', 'MM'));
+    }
+
+    get monthFormat(): MonthFormat {
+        switch (this.month.length) {
+            case 2: return "numeric";
+            case 3: return "short";
+            default: return "long";
+        }
+    }
+
+    get year(): string {
+        return lazy(this, 'year', this.extract('y', 'yyyy'));
+    }
+
+    get literalRegex(): RegExp {
+        const literals = [this.year, this.month, this.day, this.weekday];
+        if( literals.length != literals.filter(Boolean).length) throw Error('Unable to build regex due to missing literal: ' + JSON.stringify(literals));
+        const literalRegex = new RegExp(`(?:(${literals.join(')|(')}))`, 'g');
+        return lazy(this, 'literalRegex', literalRegex);
+    }
+
+    get regexParser(): RegexParser {
+        let yearIndex = -1;
+        let monthIndex = -1;
+        let dayIndex = -1;
+        let weekdayIndex = -1;
+
+        let index = 0;
+        const pattern = replace(this.literalRegex, this.format, match => {
+            index++;
+            if (match[1]) {
+                yearIndex = index;
+                return '(\\d{4})';
+            }
+            if (match[2]) {
+                monthIndex = index;
+                return `((?:\\d{1,2}|${this.months.join('|')}))`;
+            }
+            if (match[3]) {
+                dayIndex = index;
+                return '(\\d{1,2})';
+            }
+            if (match[4]) {
+                weekdayIndex = index;
+                return `((?:${this.weekdays.join('|')}))`;
+            }
+            return '';
+        }, noMatch => `[${noMatch}]*`);
+
+        const groups = {
+            year: numeric(yearIndex),
+            month: this.monthFormat === "numeric" ? numeric(monthIndex) : lookup(monthIndex, this.months),
+            day: numeric(dayIndex),
+            weekday: lookup(weekdayIndex, this.weekdays),
+        };
+
+        return lazy(this, 'regexParser', new RegexParser(new RegExp(pattern), groups, this.locale));
+
+    }
+}
+
 export const defaultParserOptions: Options[] = [
     {year: 'numeric', month: 'long', day: 'numeric', weekday: "long"},
     {year: 'numeric', month: 'short', day: 'numeric', weekday: 'short'},
@@ -154,6 +260,18 @@ export const defaultParserOptions: Options[] = [
     {year: 'numeric', month: 'short', day: 'numeric'},
     {year: 'numeric', month: 'long', day: 'numeric'},
 ];
+
+export function parser(locale?: string, options?: string | Options): DateParser {
+    if(typeof options == 'string') {
+        return simpleParser(locale, options);
+    } else {
+        return localeParser(locale, options);
+    }
+}
+
+export function simpleParser(locale: string = 'default', format: string): DateParser {
+    return ParserBuilder.create(locale, format).regexParser;
+}
 
 export function localeParser(locale?: string, options?: Options): DateParser {
     if (!options) {

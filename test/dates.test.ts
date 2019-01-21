@@ -37,7 +37,7 @@ describe("dates", function () {
         assertParse(locale, expected, date, options);
     }
 
-    function assertParse(locale: string, value: string, expected: Date, options?: Options) {
+    function assertParse(locale: string, value: string, expected: Date, options?: string | Options) {
         const parsed = parse(value, locale, options);
         assert.equal(parsed.toISOString(), expected.toISOString());
     }
@@ -96,26 +96,37 @@ describe("dates", function () {
     });
 
     it("can get months for specific locals and formats", () => {
-        const englishMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        assert.deepEqual(months('en-GB'), englishMonths);
-        assert.deepEqual(months('en-GB', 'long'), englishMonths);
-        assert.deepEqual(months('en-GB', {month: 'long'}), englishMonths);
-        assert.deepEqual(months('en-GB', {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}), ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]);
+        assert.deepEqual(months('en-GB'),
+            ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
+        assert.deepEqual(months('en-GB', "short"),
+            ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]);
 
-        const standAloneRussianMonths: string[] = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"];
-        assert.deepEqual(months('ru'), standAloneRussianMonths);
-        assert.deepEqual(months('ru', 'long'), standAloneRussianMonths);
-        assert.deepEqual(months('ru', {month: 'long'}), standAloneRussianMonths);
+        assert.deepEqual(months('de'),
+            ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]);
+        assert.deepEqual(months('de', "short"),
+            ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]);
+        assert.deepEqual(months('de-AT', "short"),
+            ["Jän", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]);
 
-        const russianMonthsInContext: string[] = [  "января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
-        assert.deepEqual(months('ru', {year: "numeric", month: 'long', day:'numeric'}), russianMonthsInContext);
-        assert.deepEqual(months('ru', {year: 'numeric', month: 'short', day: '2-digit'}),  ['янв','февр','мар','апр','мая','июн', 'июл', 'авг', 'сент', 'окт', 'нояб', 'дек']);
+        assert.deepEqual(months('ru'),
+            ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"]);
+        assert.deepEqual(months('ru', {year: "numeric", month: 'long', day:'numeric'}),
+            ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"]);
+        assert.deepEqual(months('ru', {year: 'numeric', month: 'short', day: '2-digit'}),
+            ['янв','февр','мар','апр','мая','июн', 'июл', 'авг', 'сент', 'окт', 'нояб', 'дек']);
 
+        assert.deepEqual(months('zh-CN'),
+            ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]);
 
-        const chineseMonths: string[] = [ "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
-        assert.deepEqual(months('zh-CN'), chineseMonths);
-        assert.deepEqual(months('zh-CN', 'long'), chineseMonths);
-        assert.deepEqual(months('zh-CN', {month: 'long'}), chineseMonths);
+        assert.deepEqual(months('is-IS'),
+            ["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]);
+        assert.deepEqual(months('is-IS', 'short'),
+            ["jan", "feb", "mar", "apr", "maí", "jún", "júl", "ágú", "sep", "okt", "nóv", "des"]);
+
+        assert.deepEqual(months('cs-CZ', 'short'),
+            ["led", "úno", "bře", "dub", "kvě", "čvn", "čvc", "srp", "zář", "říj", "lis", "pro"]);
+        assert.deepEqual(months('pt-PT', 'short'),
+            ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]);
     });
 
     it("formatting 2019/1/15 in zh-CN does not return the long month format but instead the numeric i.e 2019年1月15日", () => {
@@ -135,6 +146,18 @@ describe("dates", function () {
         // TODO
         // const armenian = [ '01 հունվարի, 2000 թ', '01 փետրվարի, 2000 թ', '01 մարտի, 2000 թ', '01 ապրիլի, 2000 թ', '01 մայիսի, 2000 թ', '01 հունիսի, 2000 թ', '01 հուլիսի, 2000 թ', '01 օգոստոսի, 2000 թ', '01 սեպտեմբերի, 2000 թ', '01 հոկտեմբերի, 2000 թ', '01 նոյեմբերի, 2000 թ', '01 դեկտեմբերի, 2000 թ' ]
         // assert.deepEqual(different(armenian), ['հունվարի','փետրվարի','մարտի','ապրիլի','մայիսի','հունիսի', 'հուլիսի', 'օգոստոսի', 'սեպտեմբերի', 'հոկտեմբերի', 'նոյեմբերի', 'դեկտեմբերի']);
+    });
+
+    it("can use a simple format string", () => {
+        assertParse('en-GB', "06 Jan 2019", date(2019, 1, 6),"dd MMM yyyy");
+        assertParse('tr-TR', "06 Nis 2019", date(2019, 4, 6),"dd MMM yyyy");
+        assertParse('hr-HR', "06 ožu 2019", date(2019, 3, 6),"dd MMM yyyy");
+        // One letter shorter
+        // assertParse('ru-RU', "06 фев 2019", date(2019, 2, 6),"dd MMM yyyy");
+
+        // Using contextual month
+        // assertParse('pt-PT', "06 abr 2019", date(2019, 4, 6),"dd MMM yyyy");
+        // assertParse('cs-CZ', "06 úno 2019", date(2019, 2, 6),"dd MMM yyyy");
 
     });
 
