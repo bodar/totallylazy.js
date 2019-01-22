@@ -2,6 +2,17 @@ import {assert} from 'chai';
 import {runningInNode} from "../src/node";
 import {date, different, format, Months, months, Options, parse} from "../src/dates";
 
+function assertFormat(locale: string, date: Date, options: Options, expected: string) {
+    const formatted = format(date, locale, options);
+    assert.equal(formatted, expected);
+    assertParse(locale, expected, date, options);
+}
+
+function assertParse(locale: string, value: string, expected: Date, options?: string | Options) {
+    const parsed = parse(value, locale, options);
+    assert.equal(parsed.toISOString(), expected.toISOString());
+}
+
 describe("dates", function () {
     before(function () {
         if (runningInNode() && process.env.NODE_ICU_DATA != './node_modules/full-icu') {
@@ -30,17 +41,6 @@ describe("dates", function () {
             assert.equal(parsed.toISOString(), original.toISOString(), locale);
         }
     });
-
-    function assertFormat(locale: string, date: Date, options: Options, expected: string) {
-        const formatted = format(date, locale, options);
-        assert.equal(formatted, expected);
-        assertParse(locale, expected, date, options);
-    }
-
-    function assertParse(locale: string, value: string, expected: Date, options?: string | Options) {
-        const parsed = parse(value, locale, options);
-        assert.equal(parsed.toISOString(), expected.toISOString());
-    }
 
     it('can format and parse a specific date format', function () {
         assertFormat('en-GB', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'Fri, 25 Jan 2019');
@@ -157,8 +157,16 @@ describe("dates", function () {
         assertParse('cs-CZ', "06 úno 2019", date(2019, 2, 6),"dd MMM yyyy");
     });
 
+    it("can add additional data to help parsing", () => {
+        Months.set('de', Months.create('de', [{name: 'Mrz', number: 3}]));
+        assertParse('de', "06 Mrz 2019", date(2019, 3, 6),"dd MMM yyyy");
+    });
 
-
+    it("can override data to help parsing", () => {
+        Months.set('is-IS', new Months('is-IS', [["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]
+            .map((m, i) => ({name: m, number: i+1}))]));
+        assertParse('is-IS', "06 jún 2019", date(2019, 6, 6),"dd MMM yyyy");
+    });
 });
 
 describe("Months", function () {
@@ -183,6 +191,11 @@ describe("Months", function () {
         const months = Months.get('ru');
         assert.deepEqual(months.parse('январь'.toLocaleUpperCase('ru')), {name: 'январь', number: 1});
         assert.deepEqual(months.parse('января'.toLocaleLowerCase('ru')), {name: 'январь', number: 1});
+    });
+
+    it('can add additional data as needed', () => {
+        const months = Months.get('de', [{name: 'Mrz', number: 3}]);
+        assert.deepEqual(months.parse('Mrz'), {name: 'März', number: 3});
     });
 
 });

@@ -324,9 +324,20 @@ export class Months {
     static formats: Options[] = [{month: "long"}, {month: "short"}, {year: 'numeric', month: "long", day: 'numeric'}];
     static cache: { [key: string]: Months } = {};
 
-    static get(locale: string = 'default'): Months {
-        const result = Months.formats.map(f => months(locale, f).map((m, i) => ({name: m, number: i + 1})));
-        return Months.cache[locale] = Months.cache[locale] || new Months(locale, result);
+    static get(locale: string = 'default', additionalData: Month[] = []): Months {
+        return Months.cache[locale] = Months.cache[locale] || Months.create(locale, additionalData);
+    }
+
+    static set(locale: string = 'default', months:Months): Months {
+        return Months.cache[locale] = months;
+    }
+
+    static create(locale: string = 'default', additionalData: Month[] = []): Months {
+        return new Months(locale, [...Months.generateData(locale), additionalData]);
+    }
+
+    static generateData(locale: string = 'default'): Month[][] {
+        return Months.formats.map(f => months(locale, f).map((m, i) => ({name: m, number: i + 1})));
     }
 
     private readonly index: Month[];
