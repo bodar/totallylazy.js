@@ -1,6 +1,7 @@
 import {lazy} from "./lazy";
 import {PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
+import DateTimeFormatPart = Intl.DateTimeFormatPart;
 
 declare global {
     interface String {
@@ -41,6 +42,10 @@ export class Formatters {
 
 export function format(value: Date, locale?: string, options: Options = defaultOptions): string {
     return Formatters.create(locale, options).format(value);
+}
+
+export function formatData(value: Date, locale?: string, options: Options = defaultOptions): DateTimeFormatPart[] {
+    return Formatters.create(locale, options).formatToParts(value);
 }
 
 export function parse(value: string, locale?: string, options?: string | Options): Date {
@@ -246,7 +251,7 @@ export class ParserBuilder {
                 return `((?:${this.weekdays.join('|')}))`;
             }
             return '';
-        }, noMatch => `[${noMatch}]*?`);
+        }, noMatch => noMatch ? `[${noMatch}]*?` : '');
 
         const groups = {
             year: numeric(yearIndex),

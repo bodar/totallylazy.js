@@ -39,6 +39,6 @@
     "last 1 version",
     "> 2%",
     "IE 11",
-    "current node"
+    "node 8"
   ]
 }
