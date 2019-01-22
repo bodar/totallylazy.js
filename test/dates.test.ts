@@ -111,7 +111,10 @@ describe("dates", function () {
         assert.deepEqual(months('ru', {year: "numeric", month: 'long', day:'numeric'}),
             ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"]);
         assert.deepEqual(months('ru', {year: 'numeric', month: 'short', day: '2-digit'}),
-            ['янв','февр','мар','апр','мая','июн', 'июл', 'авг', 'сент', 'окт', 'нояб', 'дек']);
+            [ "янв.", "февр.", "мар.", "апр.", "мая", "июн.", "июл.", "авг.", "сент.", "окт.", "нояб.", "дек."]);
+
+        assert.deepEqual(months('de', {year: 'numeric', month: 'short', day: '2-digit'}),
+            ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."]);
 
         assert.deepEqual(months('zh-CN'),
             ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]);
@@ -119,7 +122,7 @@ describe("dates", function () {
         assert.deepEqual(months('is-IS'),
             ["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]);
         assert.deepEqual(months('is-IS', 'short'),
-            ["jan", "feb", "mar", "apr", "maí", "jún", "júl", "ágú", "sep", "okt", "nóv", "des"]);
+            ["jan.", "feb.", "mar.", "apr.", "maí", "jún.", "júl.", "ágú.", "sep.", "okt.", "nóv.", "des."]);
 
         assert.deepEqual(months('cs-CZ', 'short'),
             ["led", "úno", "bře", "dub", "kvě", "čvn", "čvc", "srp", "zář", "říj", "lis", "pro"]);
@@ -155,6 +158,7 @@ describe("dates", function () {
         // Using contextual month
         assertParse('pt-PT', "06 abr 2019", date(2019, 4, 6),"dd MMM yyyy");
         assertParse('cs-CZ', "06 úno 2019", date(2019, 2, 6),"dd MMM yyyy");
+        assertParse('de-DE', "01 feb. 2019", date(2019, 2, 1),"dd MMM yyyy");
     });
 
     it("can add additional data to help parsing", () => {
@@ -171,14 +175,18 @@ describe("dates", function () {
 
 describe("Months", function () {
     it('is flexible in parsing as long as there is a unique match', () => {
-        const months = Months.get('ru');
-        assert.deepEqual(months.parse('январь'), {name: 'январь', number: 1});
-        assert.deepEqual(months.parse('января'), {name: 'январь', number: 1});
-        assert.deepEqual(months.parse('январ'), {name: 'январь', number: 1});
-        assert.deepEqual(months.parse('янва'), {name: 'январь', number: 1});
-        assert.deepEqual(months.parse('янв'), {name: 'январь', number: 1});
-        // assert.deepEqual(months.parse('янв.'), {name: 'январь', number: 1});
-        assert.deepEqual(months.parse('фев'), {name: 'февраль', number: 2});
+        const ru = Months.get('ru');
+        assert.deepEqual(ru.parse('январь'), {name: 'январь', number: 1});
+        assert.deepEqual(ru.parse('января'), {name: 'январь', number: 1});
+        assert.deepEqual(ru.parse('январ'), {name: 'январь', number: 1});
+        assert.deepEqual(ru.parse('янва'), {name: 'январь', number: 1});
+        assert.deepEqual(ru.parse('янв'), {name: 'январь', number: 1});
+        assert.deepEqual(ru.parse('янв.'), {name: 'январь', number: 1});
+        assert.deepEqual(ru.parse('фев'), {name: 'февраль', number: 2});
+
+        const de = Months.get('de');
+        assert.deepEqual(de.parse('Feb.'), {name: 'Februar', number: 2});
+
     });
 
     it('can also parse numbers', () => {
@@ -194,7 +202,7 @@ describe("Months", function () {
     });
 
     it('can add additional data as needed', () => {
-        const months = Months.get('de', [{name: 'Mrz', number: 3}]);
+        const months = Months.set('de', Months.create("de", [{name: 'Mrz', number: 3}]));
         assert.deepEqual(months.parse('Mrz'), {name: 'März', number: 3});
     });
 

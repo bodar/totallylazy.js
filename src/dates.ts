@@ -246,7 +246,7 @@ export class ParserBuilder {
                 return `((?:${this.weekdays.join('|')}))`;
             }
             return '';
-        }, noMatch => `[${noMatch}]*`);
+        }, noMatch => `[${noMatch}]*?`);
 
         const groups = {
             year: numeric(yearIndex),
@@ -307,8 +307,7 @@ export function months(locale?: string, monthFormat: MonthFormat | Options = 'lo
     const result = [];
 
     for (let i = 1; i <= 12; i++) {
-        result.push(format(date(2000, i, 1), locale, options)
-            .replace(/\./g, '')); // TODO Remove
+        result.push(format(date(2000, i, 1), locale, options));
     }
     return Object.keys(options).length == 1 ? result : different(result);
 }
@@ -321,7 +320,7 @@ export interface Month {
 
 
 export class Months {
-    static formats: Options[] = [{month: "long"}, {month: "short"}, {year: 'numeric', month: "long", day: 'numeric'}];
+    static formats: Options[] = [{month: "long"}, {month: "short"}, {year: 'numeric', month: "long", day: 'numeric'}, {year: 'numeric', month: 'short', day: '2-digit'}];
     static cache: { [key: string]: Months } = {};
 
     static get(locale: string = 'default', additionalData: Month[] = []): Months {
