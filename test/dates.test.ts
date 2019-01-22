@@ -79,8 +79,7 @@ describe("dates", function () {
         assertParse('zh-TW', '2019年1月15日', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
         assertParse('ja-JP', '2019年1月15日', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
 
-        // TODO
-        // assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
+        assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
         assertParse('zh-CN', '2019年1月15日', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
     });
 
@@ -88,8 +87,7 @@ describe("dates", function () {
         assertParse('en-GB', '18/12/2018', date(2018, 12, 18));
         assertParse('en-US', 'Monday, December 17, 2018', date(2018, 12, 17));
         assertParse('en-US', 'Sunday, January 20, 2019', date(2019, 1, 20));
-        // TODO
-        // assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15));
+        assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15));
         assertParse('ru-RU', '31 янв 2019', date(2019, 1, 31));
         assertParse('ru-RU', 'пятница, 01 февр. 2019 г.', date(2019, 2, 1));
         assertParse('ru-RU', '01.2.2019', date(2019, 2, 1));
@@ -180,4 +178,11 @@ describe("Months", function () {
         assert.deepEqual(months.parse('1'), {name: 'январь', number: 1});
         assert.deepEqual(months.parse('01'), {name: 'январь', number: 1});
     });
+
+    it('ignores case', () => {
+        const months = Months.get('ru');
+        assert.deepEqual(months.parse('январь'.toLocaleUpperCase('ru')), {name: 'январь', number: 1});
+        assert.deepEqual(months.parse('января'.toLocaleLowerCase('ru')), {name: 'январь', number: 1});
+    });
+
 });

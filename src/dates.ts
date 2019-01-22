@@ -5,6 +5,7 @@ import {flatten, unique} from "./arrays";
 declare global {
     interface String {
         toLocaleLowerCase(locale?: string): string;
+        toLocaleUpperCase(locale?: string): string;
     }
 }
 
@@ -114,6 +115,7 @@ export class ExampleDate {
         let monthIndex = -1;
         let dayIndex = -1;
         let weekdayIndex = -1;
+        const m = Months.get(this.locale);
 
         let index = 0;
         const pattern = replace(this.literalRegex, this.formatted, match => {
@@ -124,7 +126,7 @@ export class ExampleDate {
             }
             if (match[2]) {
                 monthIndex = index;
-                return `((?:\\d{1,2}|${this.months.join('|')}))`;
+                return `((?:\\d{1,2}|[${m.characters()}]+))`;
             }
             if (match[3]) {
                 dayIndex = index;
@@ -135,11 +137,11 @@ export class ExampleDate {
                 return `((?:${this.weekdays.join('|')}))`;
             }
             return '';
-        }, noMatch => `[${noMatch}]*`);
+        }, noMatch => `[${noMatch}]*?`);
 
         const groups = {
             year: numeric(yearIndex),
-            month: this.monthLiteral === this.month.toString() ? numeric(monthIndex) : lookup(monthIndex, this.months),
+            month: parseMonth(monthIndex, m),
             day: numeric(dayIndex),
             weekday: lookup(weekdayIndex, this.weekdays),
         };
@@ -341,7 +343,7 @@ export class Months {
         const number = parseInt(value);
         if (!isNaN(number)) return this.get(number);
 
-        const months = unique(this.prefixTree.match(value));
+        const months = unique(this.prefixTree.match(value.toLocaleLowerCase(this.locale)));
         if (months.length != 1) throw new Error(`Unable to parse: ${value} matched months: ${JSON.stringify(months)}`);
         const [month] = months;
         return this.get(month);
