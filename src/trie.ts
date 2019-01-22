@@ -1,4 +1,5 @@
 import {flatten, unique} from "./arrays";
+import {lazy} from "./lazy";
 
 export class Trie<K, V> {
     constructor(public readonly value?: V,
@@ -9,7 +10,7 @@ export class Trie<K, V> {
         return !!this.lookup(key);
     }
 
-    isEmpty(): boolean {
+    @lazy get isEmpty(): boolean {
         return !this.value && Object.keys(this.children).length == 0;
     }
 
@@ -40,8 +41,8 @@ export class Trie<K, V> {
         return this.insert(key, undefined as any);
     }
 
-    keys():string[]{
-        return unique(flatten(Object.keys(this.children).map(k => ([k, ...this.children[k].keys()]))));
+    @lazy get keys():string[]{
+        return unique(flatten(Object.keys(this.children).map(k => ([k, ...this.children[k].keys]))));
     }
 
     private childFor(head: K): Trie<K, V> | undefined {
@@ -58,8 +59,8 @@ export class PrefixTree<V = string> {
         return !!this.lookup(value);
     }
 
-    isEmpty(): boolean {
-        return this.trie.isEmpty();
+    @lazy get isEmpty(): boolean {
+        return this.trie.isEmpty;
     }
 
     match(key: string): V[] {
@@ -79,8 +80,8 @@ export class PrefixTree<V = string> {
         return new PrefixTree(this.converter, this.trie.insert(this.converter(value), undefined as any));
     }
 
-    keys():string[]{
-        return this.trie.keys();
+    @lazy get keys():string[]{
+        return this.trie.keys;
     }
 }
 

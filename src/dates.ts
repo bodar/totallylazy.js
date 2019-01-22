@@ -6,6 +6,7 @@ import DateTimeFormatPart = Intl.DateTimeFormatPart;
 declare global {
     interface String {
         toLocaleLowerCase(locale?: string): string;
+
         toLocaleUpperCase(locale?: string): string;
     }
 }
@@ -84,37 +85,45 @@ export class ExampleDate {
         return ExampleDate.cache[key] = ExampleDate.cache[key] || new ExampleDate(locale, options);
     }
 
+    @lazy
     get date(): Date {
-        return lazy(this, 'date', date(this.year, this.month, this.day));
+        return date(this.year, this.month, this.day);
     }
 
+    @lazy
     get formatted(): string {
-        return lazy(this, 'formatted', Formatters.create(this.locale, this.options).format(this.date).toLocaleLowerCase(this.locale));
+        return Formatters.create(this.locale, this.options).format(this.date).toLocaleLowerCase(this.locale);
     }
 
+    @lazy
     get months(): string[] {
-        return lazy(this, 'months', months(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale)));
+        return months(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale));
     }
 
+    @lazy
     get monthLiteral(): string {
-        return lazy(this, 'monthLiteral', this.months[this.month - 1]);
+        return this.months[this.month - 1];
     }
 
+    @lazy
     get weekdays(): string[] {
-        return lazy(this, 'weekdays', weekdays(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale)));
+        return weekdays(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale));
     }
 
+    @lazy
     get weekdayLiteral(): string {
-        return lazy(this, 'weekdayLiteral', this.weekdays.length ? this.weekdays[this.weekday - 1] : 'Unknown');
+        return this.weekdays.length ? this.weekdays[this.weekday - 1] : 'Unknown';
     }
 
+    @lazy
     get literalRegex(): RegExp {
         const literals = [this.year, this.monthLiteral, this.day, this.weekdayLiteral];
         if (literals.length != literals.filter(Boolean).length) throw Error('Unable to build regex due to missing literal: ' + JSON.stringify(literals));
         const literalRegex = new RegExp(`(?:(${literals.join(')|(')}))`, 'g');
-        return lazy(this, 'literalRegex', literalRegex);
+        return literalRegex;
     }
 
+    @lazy
     get regexParser(): RegexParser {
         let yearIndex = -1;
         let monthIndex = -1;
@@ -151,7 +160,7 @@ export class ExampleDate {
             weekday: lookup(weekdayIndex, this.weekdays),
         };
 
-        return lazy(this, 'regexParser', new RegexParser(new RegExp(pattern), groups, this.locale));
+        return new RegexParser(new RegExp(pattern), groups, this.locale);
 
     }
 }
@@ -169,20 +178,20 @@ export class ParserBuilder {
         return ParserBuilder.cache[key] = ParserBuilder.cache[key] || new ParserBuilder(locale, format);
     }
 
-    get options(): Options {
-        return lazy(this, 'options', {
+    @lazy get options(): Options {
+        return {
             year: 'numeric',
             month: this.monthFormat,
             day: 'numeric'
-        })
+        };
     }
 
-    get months(): Months {
-        return lazy(this, 'months', Months.get(this.locale));
+    @lazy get months(): Months {
+        return Months.get(this.locale);
     }
 
-    get weekdays(): string[] {
-        return lazy(this, 'weekdays', weekdays(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale)));
+    @lazy get weekdays(): string[] {
+        return weekdays(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale));
     }
 
     extract(character: string, defaultValue: string): string {
@@ -191,19 +200,19 @@ export class ParserBuilder {
         return match[0]
     }
 
-    get weekday(): string {
-        return lazy(this, 'weekday', this.extract('E', 'EEEE'));
+    @lazy get weekday(): string {
+        return this.extract('E', 'EEEE');
     }
 
-    get day(): string {
-        return lazy(this, 'day', this.extract('d', 'dd'));
+    @lazy get day(): string {
+        return this.extract('d', 'dd');
     }
 
-    get month(): string {
-        return lazy(this, 'month', this.extract('M', 'MM'));
+    @lazy get month(): string {
+        return this.extract('M', 'MM');
     }
 
-    get monthFormat(): MonthFormat {
+    @lazy get monthFormat(): MonthFormat {
         switch (this.month.length) {
             case 2:
                 return "numeric";
@@ -214,18 +223,17 @@ export class ParserBuilder {
         }
     }
 
-    get year(): string {
-        return lazy(this, 'year', this.extract('y', 'yyyy'));
+    @lazy get year(): string {
+        return this.extract('y', 'yyyy');
     }
 
-    get literalRegex(): RegExp {
+    @lazy get literalRegex(): RegExp {
         const literals = [this.year, this.month, this.day, this.weekday];
         if (literals.length != literals.filter(Boolean).length) throw Error('Unable to build regex due to missing literal: ' + JSON.stringify(literals));
-        const literalRegex = new RegExp(`(?:(${literals.join(')|(')}))`, 'g');
-        return lazy(this, 'literalRegex', literalRegex);
+        return new RegExp(`(?:(${literals.join(')|(')}))`, 'g');
     }
 
-    get regexParser(): RegexParser {
+    @lazy get regexParser(): RegexParser {
         let yearIndex = -1;
         let monthIndex = -1;
         let dayIndex = -1;
@@ -260,7 +268,7 @@ export class ParserBuilder {
             weekday: lookup(weekdayIndex, this.weekdays),
         };
 
-        return lazy(this, 'regexParser', new RegexParser(new RegExp(pattern), groups, this.locale));
+        return new RegexParser(new RegExp(pattern), groups, this.locale);
 
     }
 }
@@ -323,16 +331,19 @@ export interface Month {
 }
 
 
-
 export class Months {
-    static formats: Options[] = [{month: "long"}, {month: "short"}, {year: 'numeric', month: "long", day: 'numeric'}, {year: 'numeric', month: 'short', day: '2-digit'}];
+    static formats: Options[] = [{month: "long"}, {month: "short"}, {
+        year: 'numeric',
+        month: "long",
+        day: 'numeric'
+    }, {year: 'numeric', month: 'short', day: '2-digit'}];
     static cache: { [key: string]: Months } = {};
 
     static get(locale: string = 'default', additionalData: Month[] = []): Months {
         return Months.cache[locale] = Months.cache[locale] || Months.create(locale, additionalData);
     }
 
-    static set(locale: string = 'default', months:Months): Months {
+    static set(locale: string = 'default', months: Months): Months {
         return Months.cache[locale] = months;
     }
 
@@ -365,12 +376,12 @@ export class Months {
     }
 
     get(number: number): Month {
-        if(number > 0 && number <= 12) return this.index[number - 1];
+        if (number > 0 && number <= 12) return this.index[number - 1];
         throw new Error("Illegal argument: month number must be between 1 and 12 but was: " + number);
     }
 
-    characters(): string{
-        return this.prefixTree.keys().join("");
+    characters(): string {
+        return this.prefixTree.keys.join("");
     }
 }
 
@@ -409,7 +420,6 @@ export function different(values: string[]): string[] {
         return current.slice(smallestPrefix, -smallestSuffix).join('')
     });
 }
-
 
 
 export interface DateParser {

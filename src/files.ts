@@ -22,12 +22,12 @@ export class File {
 
     static workingDirectory = new File(process.cwd());
 
-    get name(): string {
-        return lazy(this, 'name', path.basename(this.absolutePath));
+    @lazy get name(): string {
+        return path.basename(this.absolutePath);
     }
 
-    get url(): string {
-        return lazy(this, 'url', `file://${this.absolutePath}`);
+    @lazy get url(): string {
+        return `file://${this.absolutePath}`;
     }
 
     child(name: string) {

@@ -3,8 +3,8 @@ import {PrefixTree, Trie} from "../src/trie";
 
 describe("Trie", function () {
     it('supports isEmpty', function () {
-        assert.equal(new Trie().isEmpty(), true);
-        assert.equal(new Trie().insert(['a'], 'value').isEmpty(), false);
+        assert.equal(new Trie().isEmpty, true);
+        assert.equal(new Trie().insert(['a'], 'value').isEmpty, false);
     });
 
     it('supports contains', function () {
@@ -46,14 +46,14 @@ describe("Trie", function () {
 
     it('supports keys', function () {
         const trie = new Trie().insert(['a'], 'valueA').insert(['a', 'b'], 'valueB').insert(['c', 'a', 'd'], 'valueB');
-        assert.deepEqual(trie.keys(), ['a','b', 'c', 'd']);
+        assert.deepEqual(trie.keys, ['a','b', 'c', 'd']);
     });
 });
 
 describe("PrefixTree", function () {
     it('supports isEmpty', function () {
-        assert.equal(new PrefixTree().isEmpty(), true);
-        assert.equal(new PrefixTree().insert('value').isEmpty(), false);
+        assert.equal(new PrefixTree().isEmpty, true);
+        assert.equal(new PrefixTree().insert('value').isEmpty, false);
     });
 
     it('supports contains', function () {
@@ -103,7 +103,7 @@ describe("PrefixTree", function () {
             .insert("января", 1)
             .insert("янв.", 1);
 
-        assert.deepEqual(trie.keys(), [ 'я', 'н', 'в', 'а', 'р', 'ь', '.' ]);
+        assert.deepEqual(trie.keys, [ 'я', 'н', 'в', 'а', 'р', 'ь', '.' ]);
     });
 
 });
