@@ -43,6 +43,11 @@ describe("Trie", function () {
         assert.deepEqual(trie.delete(keyB).match([]), [valueA]);
         assert.deepEqual(trie.delete(keyA).delete(keyB).match([]), []);
     });
+
+    it('supports keys', function () {
+        const trie = new Trie().insert(['a'], 'valueA').insert(['a', 'b'], 'valueB').insert(['c', 'a', 'd'], 'valueB');
+        assert.deepEqual(trie.keys(), ['a','b', 'c', 'd']);
+    });
 });
 
 describe("PrefixTree", function () {
@@ -90,6 +95,15 @@ describe("PrefixTree", function () {
 
         assert.deepEqual(trie.match('янва'), [1, 1]);
         assert.deepEqual(trie.match('янв'), [1, 1, 1]);
+    });
+
+    it('can get characters', function () {
+        const trie = new PrefixTree<number>()
+            .insert("январь", 1)
+            .insert("января", 1)
+            .insert("янв.", 1);
+
+        assert.deepEqual(trie.keys(), [ 'я', 'н', 'в', 'а', 'р', 'ь', '.' ]);
     });
 
 });

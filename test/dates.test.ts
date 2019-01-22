@@ -153,11 +153,10 @@ describe("dates", function () {
         assertParse('tr-TR', "06 Nis 2019", date(2019, 4, 6),"dd MMM yyyy");
         assertParse('hr-HR', "06 ožu 2019", date(2019, 3, 6),"dd MMM yyyy");
         // One letter shorter
-        // assertParse('ru-RU', "06 фев 2019", date(2019, 2, 6),"dd MMM yyyy");
-
+        assertParse('ru-RU', "06 фев 2019", date(2019, 2, 6),"dd MMM yyyy");
         // Using contextual month
-        // assertParse('pt-PT', "06 abr 2019", date(2019, 4, 6),"dd MMM yyyy");
-        // assertParse('cs-CZ', "06 úno 2019", date(2019, 2, 6),"dd MMM yyyy");
+        assertParse('pt-PT', "06 abr 2019", date(2019, 4, 6),"dd MMM yyyy");
+        assertParse('cs-CZ', "06 úno 2019", date(2019, 2, 6),"dd MMM yyyy");
     });
 
 

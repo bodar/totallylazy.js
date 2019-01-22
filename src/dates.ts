@@ -1,5 +1,6 @@
 import {lazy} from "./lazy";
 import {PrefixTree} from "./trie";
+import {flatten, unique} from "./arrays";
 
 declare global {
     interface String {
@@ -169,8 +170,8 @@ export class ParserBuilder {
         })
     }
 
-    get months(): string[] {
-        return lazy(this, 'months', months(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale)));
+    get months(): Months {
+        return lazy(this, 'months', Months.get(this.locale));
     }
 
     get weekdays(): string[] {
@@ -232,7 +233,7 @@ export class ParserBuilder {
             }
             if (match[2]) {
                 monthIndex = index;
-                return `((?:\\d{1,2}|${this.months.join('|')}))`;
+                return `((?:\\d{1,2}|[${this.months.characters()}]+))`;
             }
             if (match[3]) {
                 dayIndex = index;
@@ -247,7 +248,7 @@ export class ParserBuilder {
 
         const groups = {
             year: numeric(yearIndex),
-            month: this.monthFormat === "numeric" ? numeric(monthIndex) : lookup(monthIndex, this.months),
+            month: parseMonth(monthIndex, this.months),
             day: numeric(dayIndex),
             weekday: lookup(weekdayIndex, this.weekdays),
         };
@@ -256,6 +257,20 @@ export class ParserBuilder {
 
     }
 }
+
+export type OptionHandler = (match: RegExpMatchArray) => number;
+
+export const numeric = (index: number): OptionHandler => (match: RegExpMatchArray): number => {
+    return parseInt(match[index]);
+};
+
+export const lookup = (index: number, months: string[]): OptionHandler => (match: RegExpMatchArray): number => {
+    return months.indexOf(match[index]) + 1;
+};
+
+export const parseMonth = (index: number, months: Months): OptionHandler => (match: RegExpMatchArray): number => {
+    return months.parse(match[index]).number;
+};
 
 export const defaultParserOptions: Options[] = [
     {year: 'numeric', month: 'long', day: 'numeric', weekday: "long"},
@@ -301,21 +316,7 @@ export interface Month {
     name: string;
 }
 
-function flatten<T>(values: T[][]): T[] {
-    return values.reduce((a, ms) => a.concat(ms), []);
-}
 
-function unique<T>(a: T[]): T[] {
-    if (typeof Array.from === 'function' && typeof Set === 'function') return Array.from(new Set(a));
-
-    const result = [];
-    for (const item of a) {
-        if (result.indexOf(item) < 0) {
-            result.push(item);
-        }
-    }
-    return result;
-}
 
 export class Months {
     static formats: Options[] = [{month: "long"}, {month: "short"}, {year: 'numeric', month: "long", day: 'numeric'}];
@@ -349,6 +350,10 @@ export class Months {
     get(number: number): Month {
         if(number > 0 && number <= 12) return this.index[number - 1];
         throw new Error("Illegal argument: month number must be between 1 and 12 but was: " + number);
+    }
+
+    characters(): string{
+        return this.prefixTree.keys().join("");
     }
 }
 
@@ -388,15 +393,7 @@ export function different(values: string[]): string[] {
     });
 }
 
-export type OptionHandler = (match: RegExpMatchArray) => number;
 
-export const numeric = (index: number): OptionHandler => (match: RegExpMatchArray): number => {
-    return parseInt(match[index]);
-};
-
-export const lookup = (index: number, months: string[]): OptionHandler => (match: RegExpMatchArray): number => {
-    return months.indexOf(match[index]) + 1;
-};
 
 export interface DateParser {
     parse(value: string): Date;

@@ -1,3 +1,5 @@
+import {flatten, unique} from "./arrays";
+
 export class Trie<K, V> {
     constructor(public readonly value?: V,
                 private readonly children: { [key: string]: Trie<K, V> } = {}) {
@@ -38,6 +40,10 @@ export class Trie<K, V> {
         return this.insert(key, undefined as any);
     }
 
+    keys():string[]{
+        return unique(flatten(Object.keys(this.children).map(k => ([k, ...this.children[k].keys()]))));
+    }
+
     private childFor(head: K): Trie<K, V> | undefined {
         return this.children[head.toString()];
     }
@@ -71,6 +77,10 @@ export class PrefixTree<V = string> {
 
     delete(value: string): PrefixTree<V>  {
         return new PrefixTree(this.converter, this.trie.insert(this.converter(value), undefined as any));
+    }
+
+    keys():string[]{
+        return this.trie.keys();
     }
 }
 
