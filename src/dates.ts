@@ -85,46 +85,38 @@ export class ExampleDate {
         return ExampleDate.cache[key] = ExampleDate.cache[key] || new ExampleDate(locale, options);
     }
 
-    @lazy
-    get date(): Date {
+    @lazy get date(): Date {
         return date(this.year, this.month, this.day);
     }
 
-    @lazy
-    get formatted(): string {
+    @lazy get formatted(): string {
         return Formatters.create(this.locale, this.options).format(this.date).toLocaleLowerCase(this.locale);
     }
 
-    @lazy
-    get months(): string[] {
+    @lazy get months(): string[] {
         return months(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale));
     }
 
-    @lazy
-    get monthLiteral(): string {
+    @lazy get monthLiteral(): string {
         return this.months[this.month - 1];
     }
 
-    @lazy
-    get weekdays(): string[] {
+    @lazy get weekdays(): string[] {
         return weekdays(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale));
     }
 
-    @lazy
-    get weekdayLiteral(): string {
+    @lazy get weekdayLiteral(): string {
         return this.weekdays.length ? this.weekdays[this.weekday - 1] : 'Unknown';
     }
 
-    @lazy
-    get literalRegex(): RegExp {
+    @lazy get literalRegex(): RegExp {
         const literals = [this.year, this.monthLiteral, this.day, this.weekdayLiteral];
         if (literals.length != literals.filter(Boolean).length) throw Error('Unable to build regex due to missing literal: ' + JSON.stringify(literals));
         const literalRegex = new RegExp(`(?:(${literals.join(')|(')}))`, 'g');
         return literalRegex;
     }
 
-    @lazy
-    get regexParser(): RegexParser {
+    @lazy get regexParser(): RegexParser {
         let yearIndex = -1;
         let monthIndex = -1;
         let dayIndex = -1;
