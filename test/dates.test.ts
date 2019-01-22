@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {runningInNode} from "../src/node";
-import {date, different, format, months, Options, parse} from "../src/dates";
+import {date, different, format, Months, months, Options, parse} from "../src/dates";
 
 describe("dates", function () {
     before(function () {
@@ -160,13 +160,25 @@ describe("dates", function () {
         // assertParse('cs-CZ', "06 úno 2019", date(2019, 2, 6),"dd MMM yyyy");
     });
 
-    it('supports getting Months', () => {
-        // const months = Months.get('ru');
-        // assert.equal(months.parse('январь'), 1);
-        // assert.equal(months.parse('января'), 1);
-        // assert.equal(months.parse('январ'), 1);
-        // assert.equal(months.parse('янва'), 1);
-        // assert.equal(months.parse('янв'), 1);
+
+
+});
+
+describe("Months", function () {
+    it('is flexible in parsing as long as there is a unique match', () => {
+        const months = Months.get('ru');
+        assert.deepEqual(months.parse('январь'), {name: 'январь', number: 1});
+        assert.deepEqual(months.parse('января'), {name: 'январь', number: 1});
+        assert.deepEqual(months.parse('январ'), {name: 'январь', number: 1});
+        assert.deepEqual(months.parse('янва'), {name: 'январь', number: 1});
+        assert.deepEqual(months.parse('янв'), {name: 'январь', number: 1});
+        // assert.deepEqual(months.parse('янв.'), {name: 'январь', number: 1});
+        assert.deepEqual(months.parse('фев'), {name: 'февраль', number: 2});
     });
 
+    it('can also parse numbers', () => {
+        const months = Months.get('ru');
+        assert.deepEqual(months.parse('1'), {name: 'январь', number: 1});
+        assert.deepEqual(months.parse('01'), {name: 'январь', number: 1});
+    });
 });

@@ -1,4 +1,5 @@
 import {lazy} from "./lazy";
+import {PrefixTree} from "./trie";
 
 declare global {
     interface String {
@@ -102,7 +103,7 @@ export class ExampleDate {
 
     get literalRegex(): RegExp {
         const literals = [this.year, this.monthLiteral, this.day, this.weekdayLiteral];
-        if( literals.length != literals.filter(Boolean).length) throw Error('Unable to build regex due to missing literal: ' + JSON.stringify(literals));
+        if (literals.length != literals.filter(Boolean).length) throw Error('Unable to build regex due to missing literal: ' + JSON.stringify(literals));
         const literalRegex = new RegExp(`(?:(${literals.join(')|(')}))`, 'g');
         return lazy(this, 'literalRegex', literalRegex);
     }
@@ -161,7 +162,7 @@ export class ParserBuilder {
     }
 
     get options(): Options {
-        return lazy(this, 'options',{
+        return lazy(this, 'options', {
             year: 'numeric',
             month: this.monthFormat,
             day: 'numeric'
@@ -176,9 +177,9 @@ export class ParserBuilder {
         return lazy(this, 'weekdays', weekdays(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale)));
     }
 
-    extract(character:string, defaultValue: string): string {
+    extract(character: string, defaultValue: string): string {
         const match = this.format.match(new RegExp(character + '+'));
-        if(!match) return defaultValue;
+        if (!match) return defaultValue;
         return match[0]
     }
 
@@ -196,9 +197,12 @@ export class ParserBuilder {
 
     get monthFormat(): MonthFormat {
         switch (this.month.length) {
-            case 2: return "numeric";
-            case 3: return "short";
-            default: return "long";
+            case 2:
+                return "numeric";
+            case 3:
+                return "short";
+            default:
+                return "long";
         }
     }
 
@@ -208,7 +212,7 @@ export class ParserBuilder {
 
     get literalRegex(): RegExp {
         const literals = [this.year, this.month, this.day, this.weekday];
-        if( literals.length != literals.filter(Boolean).length) throw Error('Unable to build regex due to missing literal: ' + JSON.stringify(literals));
+        if (literals.length != literals.filter(Boolean).length) throw Error('Unable to build regex due to missing literal: ' + JSON.stringify(literals));
         const literalRegex = new RegExp(`(?:(${literals.join(')|(')}))`, 'g');
         return lazy(this, 'literalRegex', literalRegex);
     }
@@ -262,7 +266,7 @@ export const defaultParserOptions: Options[] = [
 ];
 
 export function parser(locale?: string, options?: string | Options): DateParser {
-    if(typeof options == 'string') {
+    if (typeof options == 'string') {
         return simpleParser(locale, options);
     } else {
         return localeParser(locale, options);
@@ -287,9 +291,65 @@ export function months(locale?: string, monthFormat: MonthFormat | Options = 'lo
 
     for (let i = 1; i <= 12; i++) {
         result.push(format(date(2000, i, 1), locale, options)
-            .replace(/\./g, ''));
+            .replace(/\./g, '')); // TODO Remove
     }
-    return Object.keys(options).length  == 1 ? result : different(result);
+    return Object.keys(options).length == 1 ? result : different(result);
+}
+
+export interface Month {
+    number: number;
+    name: string;
+}
+
+function flatten<T>(values: T[][]): T[] {
+    return values.reduce((a, ms) => a.concat(ms), []);
+}
+
+function unique<T>(a: T[]): T[] {
+    if (typeof Array.from === 'function' && typeof Set === 'function') return Array.from(new Set(a));
+
+    const result = [];
+    for (const item of a) {
+        if (result.indexOf(item) < 0) {
+            result.push(item);
+        }
+    }
+    return result;
+}
+
+export class Months {
+    static formats: Options[] = [{month: "long"}, {month: "short"}, {year: 'numeric', month: "long", day: 'numeric'}];
+    static cache: { [key: string]: Months } = {};
+
+    static get(locale: string = 'default'): Months {
+        const result = Months.formats.map(f => months(locale, f).map((m, i) => ({name: m, number: i + 1})));
+        return Months.cache[locale] = Months.cache[locale] || new Months(locale, result);
+    }
+
+    private readonly index: Month[];
+    private readonly prefixTree: PrefixTree<number>;
+
+    constructor(public locale: string, data: Month[][]) {
+        this.prefixTree = flatten(data).reduce((t, m) => {
+            return t.insert(m.name.toLocaleLowerCase(this.locale), m.number);
+        }, new PrefixTree<number>());
+        ([this.index] = data);
+    }
+
+    parse(value: string): Month {
+        const number = parseInt(value);
+        if (!isNaN(number)) return this.get(number);
+
+        const months = unique(this.prefixTree.match(value));
+        if (months.length != 1) throw new Error(`Unable to parse: ${value} matched months: ${JSON.stringify(months)}`);
+        const [month] = months;
+        return this.get(month);
+    }
+
+    get(number: number): Month {
+        if(number > 0 && number <= 12) return this.index[number - 1];
+        throw new Error("Illegal argument: month number must be between 1 and 12 but was: " + number);
+    }
 }
 
 export function weekdays(locale?: string, options: Options = defaultOptions): string[] {
@@ -300,24 +360,24 @@ export function weekdays(locale?: string, options: Options = defaultOptions): st
     return result;
 }
 
-export function prefix(charactersA:string[], charactersB:string[]): number{
+export function prefix(charactersA: string[], charactersB: string[]): number {
     for (let i = 0; i < charactersA.length; i++) {
         const characterA = charactersA[i];
         const characterB = charactersB[i];
-        if(characterA != characterB) return i;
+        if (characterA != characterB) return i;
     }
     return charactersA.length;
 }
 
-export function suffix(charactersA:string[], charactersB:string[]): number {
+export function suffix(charactersA: string[], charactersB: string[]): number {
     return prefix([...charactersA].reverse(), [...charactersB].reverse());
 }
 
-export function different(values:string[]): string[] {
+export function different(values: string[]): string[] {
     const characters = values.map(v => [...v]);
 
     const [smallestPrefix, smallestSuffix] = characters.reduce(([sp, ss], current, i) => {
-        const next = i < characters.length -1  ? characters[i + 1] : characters[0];
+        const next = i < characters.length - 1 ? characters[i + 1] : characters[0];
         const p = prefix(current, next);
         const s = suffix(current, next);
         return [p < sp ? p : sp, s < ss ? s : ss];
