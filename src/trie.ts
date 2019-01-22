@@ -43,9 +43,9 @@ export class Trie<K, V> {
     }
 }
 
-export class PrefixTree {
+export class PrefixTree<V = string> {
     constructor(private converter = (v:string) => [...v],
-                private trie = new Trie<string, string>()) {
+                private trie = new Trie<string, V>()) {
     }
 
     contains(value: string): boolean {
@@ -56,19 +56,20 @@ export class PrefixTree {
         return this.trie.isEmpty();
     }
 
-    match(key: string): string[] {
+    match(key: string): V[] {
         return this.trie.match(this.converter(key));
     }
 
-    lookup(key: string): string | undefined {
+    lookup(key: string): V | undefined {
         return this.trie.lookup(this.converter(key));
     }
 
-    insert(value: string): PrefixTree {
-        return new PrefixTree(this.converter, this.trie.insert(this.converter(value), value));
+    // @ts-ignore
+    insert(key: string, value: V = key): PrefixTree<V> {
+        return new PrefixTree(this.converter, this.trie.insert(this.converter(key), value));
     }
 
-    delete(value: string): PrefixTree {
+    delete(value: string): PrefixTree<V>  {
         return new PrefixTree(this.converter, this.trie.insert(this.converter(value), undefined as any));
     }
 }

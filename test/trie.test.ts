@@ -60,9 +60,9 @@ describe("PrefixTree", function () {
     it('supports lookup', function () {
         const valueA = 'valueA';
         const valueB = 'valueB';
-        // assert.equal(new PrefixTree().lookup(valueA), undefined);
+        assert.equal(new PrefixTree().lookup(valueA), undefined);
         assert.equal(new PrefixTree().insert(valueA).lookup(valueA), valueA);
-        // assert.equal(new PrefixTree().insert(valueA).insert(valueB).lookup(valueB), valueB);
+        assert.equal(new PrefixTree().insert(valueA).insert(valueB).lookup(valueB), valueB);
     });
 
     it('supports match', function () {
@@ -81,18 +81,15 @@ describe("PrefixTree", function () {
         assert.deepEqual(trie.delete(valueB).match(""), [valueA]);
         assert.deepEqual(trie.delete(valueA).delete(valueB).match(""), []);
     });
-    
-    
-    it('supports match', function () {
-        const trie = new PrefixTree()
-            .insert("to")
-            .insert("tea")
-            .insert("ted")
-            .insert("ten")
-            .insert("A")
-            .insert("inn");
 
-        assert.deepEqual(trie.match('te'), ['tea', 'ted', 'ten'])
+    it('value can be a different type', function () {
+        const trie = new PrefixTree<number>()
+            .insert("январь", 1)
+            .insert("января", 1)
+            .insert("янв.", 1);
+
+        assert.deepEqual(trie.match('янва'), [1, 1]);
+        assert.deepEqual(trie.match('янв'), [1, 1, 1]);
     });
 
 });
