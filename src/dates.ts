@@ -251,28 +251,23 @@ function typeFrom(value:string): DateTimeFormatPartTypes {
 }
 
 function formatFrom(type:DateTimeFormatPartTypes, length:number): string {
-    switch (type) {
-        case "year" : switch (length) {
-            case 4: return "numeric";
-            case 2: return "2-digit";
-        }
-            break;
-        case "month" : switch (length) {
-            case 4: return "long";
-            case 3: return "short";
-            case 2: return "2-digit";
-            case 1: return "numeric";
-        }
-            break;
-        case "day" :switch (length) {
-            case 2: return "2-digit";
-            case 1: return "numeric";
-        }
-            break;
-        case "weekday":switch (length) {
-            case 4: return "long";
-            case 3: return "short";
-        }
+    if(type === 'year'){
+        if(length === 4) return "numeric";
+        if(length === 2) return "2-digit";
+    }
+    if(type === 'month') {
+        if( length === 4) return "long";
+        if( length === 3) return "short";
+        if( length === 2) return "2-digit";
+        if( length === 1) return "numeric";
+    }
+    if(type === 'day'){
+        if(length === 2) return "2-digit";
+        if(length === 1) return "numeric";
+    }
+    if(type === 'weekday'){
+        if( length === 4) return "long";
+        if( length === 3) return "short";
     }
     throw new Error(`Illegal Argument: ${type} ${length}`);
 }
