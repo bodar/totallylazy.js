@@ -3,6 +3,7 @@ import {PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
+import DateTimeFormat = Intl.DateTimeFormat;
 
 declare global {
     interface String {
@@ -47,8 +48,10 @@ export function format(value: Date, locale?: string, options: Options = defaultO
     return Formatters.create(locale, options).format(value);
 }
 
-export function formatData(value: Date, locale?: string, options: Options = defaultOptions): DateTimeFormatPart[] {
-    return Formatters.create(locale, options).formatToParts(value);
+export function formatData(value: Date, locale: string = 'default', options: Options = defaultOptions): DateTimeFormatPart[] {
+    const formatter = Formatters.create(locale, options);
+    if(typeof formatter.formatToParts == "function") return formatter.formatToParts(value);
+    return FormatToParts.create(locale, options).formatToParts(value);
 }
 
 export function parse(value: string, locale?: string, options?: string | Options): Date {
@@ -68,6 +71,121 @@ function replace(regex: RegExp, value: string, replacer: (match: RegExpExecArray
     result.push(nonMatchedReplacer(value.substring(position)));
 
     return result.join("");
+}
+
+export class FormatToParts {
+    private constructor(private locale: string,
+                        private options: Options = defaultOptions,
+                        private year = 3333,
+                        private monthValue = 11,
+                        private day = 22,
+                        private weekdayValue = 7 /*Sunday*/) {
+    }
+
+    static cache: { [key: string]: FormatToParts } = {};
+
+    static create(locale: string, options: Options = defaultOptions): FormatToParts {
+        const key = JSON.stringify({locale, options});
+        return FormatToParts.cache[key] = FormatToParts.cache[key] || new FormatToParts(locale, options);
+    }
+
+    @lazy
+    get formatter(): DateTimeFormat {
+        return Formatters.create(this.locale, this.options);
+    }
+
+    @lazy
+    get formatted(): string {
+        return this.formatter.format(date(this.year, this.monthValue, this.day)).toLocaleLowerCase(this.locale);
+    }
+
+    @lazy
+    get months(): Months {
+        return new Months(this.locale, [Months.dataFor(this.locale, this.options)]);
+    }
+
+    @lazy
+    get month(): string {
+        return this.months.get(this.monthValue).name.toLocaleLowerCase(this.locale);
+    }
+
+    @lazy
+    get weekdays(): Weekdays {
+        return new Weekdays(this.locale, [Weekdays.dataFor(this.locale, this.options)]);
+    }
+
+    @lazy
+    get weekday(): string {
+        return this.weekdays.get(this.weekdayValue).name.toLocaleLowerCase(this.locale);
+    }
+
+    @lazy
+    get learningNamesPattern(): NamedGroups {
+        if(!this.month) throw new Error("Unable to detect months");
+        if(!this.weekday) throw new Error("Unable to detect weekday");
+        const namedPattern = `(?:${Object.keys(this.options).map(key => `(?<${key}>${(this as any)[key]})`).join("|")})`;
+        return namedGroups(namedPattern);
+    }
+
+    @lazy
+    get actualNamesPattern():NamedGroups {
+        const {names: learningNames, pattern: learningPattern} = this.learningNamesPattern;
+        const learningRegex = new RegExp(learningPattern, 'g');
+
+        const result: string[] = [];
+        let count = 0;
+        replace(learningRegex, this.formatted, match => {
+            const [type] = Object.keys(this.options).map(k => match[learningNames[k]] ? k : undefined).filter(Boolean);
+            if(!type) throw new Error();
+            switch(type) {
+                case "year": {
+                    result.push('(?<year>\\d{4})');
+                    break;
+                }
+                case "month": {
+                    result.push( `(?<month>(?:\\d{1,2}|${this.months.pattern()}))`);
+                    break;
+                }
+                case "day": {
+                    result.push( '(?<day>\\d{1,2})');
+                    break;
+                }
+                case "weekday": {
+                    result.push(`(?<weekday>${this.weekdays.pattern()})`);
+                    break;
+                }
+            }
+            return "";
+        }, noMatch => {
+            if(noMatch) {
+                result.push(`(?<literal-${count++}>[${noMatch}]+?)`);
+            }
+            return "";
+        });
+
+        return namedGroups("^" + result.join("") + "$");
+    }
+
+    formatToParts(date: Date): DateTimeFormatPart[] {
+        const {names, pattern} = this.actualNamesPattern;
+
+        const actualResult = this.formatter.format(date).toLocaleLowerCase(this.locale);
+        const regex = new RegExp(pattern);
+
+        const parts: DateTimeFormatPart[] = [];
+        const match = actualResult.match(regex);
+        if(!match) {
+            throw new Error(`${pattern} did not match ${actualResult}` );
+        }
+        Object.entries(names).map(([type, index]) => {
+            let value = match[index];
+            if(type === 'month') value = this.months.parse(value).name;
+            if(type === 'weekday') value = this.weekdays.parse(value).name;
+            parts.push({type: (type as any).split('-')[0], value});
+        });
+
+        return parts;
+    }
 }
 
 export class RegexBuilder {
@@ -104,7 +222,7 @@ export class RegexBuilder {
                 case "month": return `(?<month>(?:\\d{1,2}|${this.months.pattern()}))`;
                 case "day": return '(?<day>\\d{1,2})';
                 case "weekday": return `(?<weekday>${this.weekdays.pattern()})`;
-                default: return `[${part.value}]*?`;
+                default: return `[${unique(['.',...part.value]).join('')}]*?`;
             }
         }).join("");
 
@@ -139,7 +257,7 @@ export function namedGroups(originalPattern:string): NamedGroups{
         names[match[1]] = ++index;
         return '(';
     });
-    return {names, pattern};
+    return {names: names, pattern};
 }
 
 const formatRegex = /(?:(y+)|(M+)|(d+)|(E+))/g;
@@ -158,16 +276,19 @@ function formatFrom(type:DateTimeFormatPartTypes, length:number): string {
             case 4: return "numeric";
             case 2: return "2-digit";
         }
+            break;
         case "month" : switch (length) {
             case 4: return "long";
             case 3: return "short";
             case 2: return "2-digit";
             case 1: return "numeric";
         }
+            break;
         case "day" :switch (length) {
             case 2: return "2-digit";
             case 1: return "numeric";
         }
+            break;
         case "weekday":switch (length) {
             case 4: return "long";
             case 3: return "short";
@@ -201,10 +322,6 @@ export type OptionHandler = (match: RegExpMatchArray) => number;
 
 export const numeric = (index: number): OptionHandler => (match: RegExpMatchArray): number => {
     return parseInt(match[index]);
-};
-
-export const lookup = (index: number, months: string[]): OptionHandler => (match: RegExpMatchArray): number => {
-    return months.indexOf(match[index]) + 1;
 };
 
 export const parseMonth = (index: number, months: Months): OptionHandler => (match: RegExpMatchArray): number => {
@@ -243,7 +360,7 @@ export function localeParser(locale?: string, options?: Options): DateParser {
 }
 
 export function months(locale?: string, monthFormat: MonthFormat | Options = 'long'): string[] {
-    const options: Options = typeof monthFormat == 'string' ? {month: monthFormat} : monthFormat;
+    const options: Options = {...typeof monthFormat == 'string' ? {month: monthFormat} : monthFormat};
     delete options.weekday;
     const result = [];
 
@@ -323,7 +440,11 @@ export class Months extends DatumLookup<Month>{
     }
 
     static generateData(locale: string = 'default'): Month[][] {
-        return Months.formats.map(f => months(locale, f).map((m, i) => ({name: m, number: i + 1})));
+        return Months.formats.map(f => Months.dataFor(locale, f));
+    }
+
+    static dataFor(locale: string, options:Options): Month[] {
+        return months(locale, options).map((m, i) => ({name: m, number: i + 1}));
     }
 }
 
@@ -350,12 +471,16 @@ export class Weekdays extends DatumLookup<Weekday>{
     }
 
     static generateData(locale: string = 'default'): Weekday[][] {
-        return Weekdays.formats.map(f => weekdays(locale, f).map((m, i) => ({name: m, number: i + 1})));
+        return Weekdays.formats.map(f => Weekdays.dataFor(locale, f));
+    }
+
+    static dataFor(locale: string, options:Options): Weekday[] {
+        return weekdays(locale, options).map((m, i) => ({name: m, number: i + 1}));
     }
 }
 
 export function weekdays(locale?: string, weekdayFormat: WeekdayFormat | Options = 'long'): string[] {
-    const options: Options = typeof weekdayFormat == 'string' ? {weekday: weekdayFormat} : weekdayFormat;
+    const options: Options = {...typeof weekdayFormat == 'string' ? {weekday: weekdayFormat} : weekdayFormat};
     delete options.day;
     const result = [];
 

@@ -1,6 +1,16 @@
 import {assert} from 'chai';
 import {runningInNode} from "../src/node";
-import {date, different, format, Months, months, Options, parse, Weekdays} from "../src/dates";
+import {
+    date,
+    different,
+    format,
+    Formatters, FormatToParts,
+    Months,
+    months,
+    Options,
+    parse, weekdays,
+    Weekdays
+} from "../src/dates";
 
 function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
@@ -12,6 +22,19 @@ function assertParse(locale: string, value: string, expected: Date, options?: st
     const parsed = parse(value, locale, options);
     assert.equal(parsed.toISOString(), expected.toISOString());
 }
+
+const locales: string[] = ['en', 'de', 'fr', 'ja', 'nl', 'de-DE', 'en-US', 'en-GB', 'i-enochian', 'zh-Hant',
+    'sr-Cyrl', 'sr-Latn', 'zh-cmn-Hans-CN', 'cmn-Hans-CN', 'zh-yue-HK', 'yue-HK',
+    'sr-Latn-RS', 'sl-rozaj', 'sl-rozaj-biske', 'sl-nedis', 'de-CH-1901', 'sl-IT-nedis',
+    'es-419', 'zh-Hans',  'zh-Hans-CN', 'hy-Latn-IT-arevela'];
+const supported = Intl.DateTimeFormat.supportedLocalesOf(locales);
+
+const options: Options[] = [
+        {day: 'numeric', year: 'numeric', month: 'long', weekday:'long'},
+        {day: 'numeric', year: 'numeric', month: 'short', weekday:'long'},
+        {day: 'numeric', year: 'numeric', month: 'long', weekday:'short'},
+        {day: 'numeric', year: 'numeric', month: 'short', weekday:'short'},
+];
 
 describe("dates", function () {
     before(function () {
@@ -27,18 +50,13 @@ describe("dates", function () {
     });
 
     it('can format and parse a date in many different locals', function () {
-        const locales: string[] = ['en', 'de', 'fr', 'ja', 'nl', 'de-DE', 'en-US', 'en-GB', 'i-enochian', 'zh-Hant',
-            'sr-Cyrl', 'sr-Latn', 'zh-cmn-Hans-CN', 'cmn-Hans-CN', 'zh-yue-HK', 'yue-HK',
-            'sr-Latn-RS', 'sl-rozaj', 'sl-rozaj-biske', 'sl-nedis', 'de-CH-1901', 'sl-IT-nedis',
-            'es-419', 'zh-Hans',  'zh-Hans-CN', 'hy-Latn-IT-arevela'];
-        const supported = Intl.DateTimeFormat.supportedLocalesOf(locales);
-
+        const original = date(2001, 6, 28);
         for (const locale of supported) {
-            const options: Options = {day: 'numeric', year: 'numeric', month: 'long', weekday:'long'};
-            const original = date(2001, 6, 28);
-            const formatted = format(original, locale, options);
-            const parsed = parse(formatted, locale, options);
-            assert.equal(parsed.toISOString(), original.toISOString(), locale);
+            for (const option of options) {
+                const formatted = format(original, locale, option);
+                const parsed = parse(formatted, locale, option);
+                assert.equal(parsed.toISOString(), original.toISOString(), locale);
+            }
         }
     });
 
@@ -209,26 +227,46 @@ describe("Months", function () {
 });
 
 describe("Weekdays", function () {
-    const weekdays = Weekdays.get('ru');
+    const ru = Weekdays.get('ru');
 
     it('is flexible in parsing as long as there is a unique match', () => {
-        assert.deepEqual(weekdays.parse('понедельник'), {name: 'понедельник', number: 1});
-        assert.deepEqual(weekdays.parse('понеде'), {name: 'понедельник', number: 1});
-        assert.deepEqual(weekdays.parse('пн'), {name: 'понедельник', number: 1});
+        assert.deepEqual(ru.parse('понедельник'), {name: 'понедельник', number: 1});
+        assert.deepEqual(ru.parse('понеде'), {name: 'понедельник', number: 1});
+        assert.deepEqual(ru.parse('пн'), {name: 'понедельник', number: 1});
     });
 
     it('can get pattern', () => {
-        assert.deepEqual(weekdays.pattern(), '[понедльикятцаврсубчг]+');
+        assert.deepEqual(ru.pattern(), '[понедльикятцаврсубчг]+');
     });
 
     it('can also parse numbers', () => {
-        assert.deepEqual(weekdays.parse('1'), {name: 'понедельник', number: 1});
-        assert.deepEqual(weekdays.parse('01'), {name: 'понедельник', number: 1});
+        assert.deepEqual(ru.parse('1'), {name: 'понедельник', number: 1});
+        assert.deepEqual(ru.parse('01'), {name: 'понедельник', number: 1});
     });
 
     it('ignores case', () => {
-        assert.deepEqual(weekdays.parse('понедельник'.toLocaleLowerCase('ru')), {name: 'понедельник', number: 1});
-        assert.deepEqual(weekdays.parse('понедельник'.toLocaleUpperCase('ru')), {name: 'понедельник', number: 1});
+        assert.deepEqual(ru.parse('понедельник'.toLocaleLowerCase('ru')), {name: 'понедельник', number: 1});
+        assert.deepEqual(ru.parse('понедельник'.toLocaleUpperCase('ru')), {name: 'понедельник', number: 1});
     });
 
+});
+
+describe("formatToParts", function () {
+    it.skip('matches native implementation', () => {
+        const original = date(2001, 6, 28);
+        for (const locale of supported) {
+            for (const option of options) {
+                const formatter = Formatters.create(locale, option);
+                const expected = formatter.formatToParts(original);
+
+                try {
+                    const actual = FormatToParts.create(locale, option).formatToParts(original);
+                    console.log(expected, actual);
+                } catch (e) {
+                    console.log(e);
+                }
+                // assert.deepEqual(expected, actual)
+            }
+        }
+    });
 });
