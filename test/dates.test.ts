@@ -252,20 +252,14 @@ describe("Weekdays", function () {
 });
 
 describe("formatToParts", function () {
-    it.skip('matches native implementation', () => {
+    it('matches native implementation', () => {
         const original = date(2001, 6, 28);
-        for (const locale of supported) {
+        for (const locale of ['en', 'ru', 'fr']) {//'de'
             for (const option of options) {
                 const formatter = Formatters.create(locale, option);
                 const expected = formatter.formatToParts(original);
-
-                try {
-                    const actual = FormatToParts.create(locale, option).formatToParts(original);
-                    console.log(expected, actual);
-                } catch (e) {
-                    console.log(e);
-                }
-                // assert.deepEqual(expected, actual)
+                const actual = FormatToParts.create(locale, option).formatToParts(original);
+                assert.deepEqual(expected, actual)
             }
         }
     });
