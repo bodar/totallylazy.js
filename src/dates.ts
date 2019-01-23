@@ -1,5 +1,5 @@
 import {lazy} from "./lazy";
-import {PrefixTree} from "./trie";
+import {characters, PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
@@ -489,16 +489,16 @@ export function suffix(charactersA: string[], charactersB: string[]): number {
 }
 
 export function different(values: string[]): string[] {
-    const characters = values.map(v => [...v]);
+    const chars = values.map(characters);
 
-    const [smallestPrefix, smallestSuffix] = characters.reduce(([sp, ss], current, i) => {
-        const next = i < characters.length - 1 ? characters[i + 1] : characters[0];
+    const [smallestPrefix, smallestSuffix] = chars.reduce(([sp, ss], current, i) => {
+        const next = i < chars.length - 1 ? chars[i + 1] : chars[0];
         const p = prefix(current, next);
         const s = suffix(current, next);
         return [p < sp ? p : sp, s < ss ? s : ss];
     }, [Number.MAX_VALUE, Number.MAX_VALUE]);
 
-    return characters.map((current) => {
+    return chars.map((current) => {
         return current.slice(smallestPrefix, -smallestSuffix).join('')
     });
 }
