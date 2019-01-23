@@ -18,12 +18,13 @@ export function date(year: number, month?: number, day?: number): Date {
 }
 
 export type MonthFormat = 'numeric' | '2-digit' | 'short' | 'long';
+export type WeekdayFormat = 'short' | 'long';
 
 export interface Options {
     year?: 'numeric' | '2-digit';
     month?: MonthFormat;
     day?: 'numeric' | '2-digit';
-    weekday?: 'short' | 'long';
+    weekday?: WeekdayFormat;
 }
 
 export const defaultOptions: Options = {
@@ -92,17 +93,17 @@ export class RegexBuilder {
         return Months.get(this.locale);
     }
 
-    @lazy get weekdays(): string[] {
-        return weekdays(this.locale, this.options).map(l => l.toLocaleLowerCase(this.locale));
+    @lazy get weekdays(): Weekdays {
+        return Weekdays.get(this.locale);
     }
 
     @lazy get regexParser(): RegexParser {
         const namedPattern = this.formatted.map(part => {
             switch (part.type) {
                 case "year": return '(?<year>\\d{4})';
-                case "month": return `(?<month>(?:\\d{1,2}|[${this.months.characters()}]+))`;
+                case "month": return `(?<month>(?:\\d{1,2}|${this.months.pattern()}))`;
                 case "day": return '(?<day>\\d{1,2})';
-                case "weekday": return `(?<weekday>(?:${this.weekdays.join('|')}))`;
+                case "weekday": return `(?<weekday>${this.weekdays.pattern()})`;
                 default: return `[${part.value}]*?`;
             }
         }).join("");
@@ -113,7 +114,7 @@ export class RegexBuilder {
             year: numeric(names['year']),
             month: parseMonth(names['month'], this.months),
             day: numeric(names['day']),
-            weekday: lookup(names['weekday'], this.weekdays),
+            weekday: parseWeekday(names['weekday'], this.weekdays),
         };
 
         return new RegexParser(new RegExp(pattern), groups, this.locale);
@@ -210,6 +211,10 @@ export const parseMonth = (index: number, months: Months): OptionHandler => (mat
     return months.parse(match[index]).number;
 };
 
+export const parseWeekday = (index: number, weekdays: Weekdays): OptionHandler => (match: RegExpMatchArray): number => {
+    return weekdays.parse(match[index]).number;
+};
+
 export const defaultParserOptions: Options[] = [
     {year: 'numeric', month: 'long', day: 'numeric', weekday: "long"},
     {year: 'numeric', month: 'short', day: 'numeric', weekday: 'short'},
@@ -257,18 +262,52 @@ export function months(locale?: string, monthFormat: MonthFormat | Options = 'lo
     return exact ? result : different(result);
 }
 
-export interface Month {
+export interface Datum {
     number: number;
     name: string;
 }
 
+export class DatumLookup<T extends Datum> {
+    private readonly index: T[];
+    private readonly prefixTree: PrefixTree<number>;
 
-export class Months {
+    constructor(public locale: string, data: T[][]) {
+        this.prefixTree = flatten(data).reduce((t, m) => {
+            return t.insert(m.name.toLocaleLowerCase(this.locale), m.number);
+        }, new PrefixTree<number>());
+        ([this.index] = data);
+    }
+
+    parse(value: string): Month {
+        const number = parseInt(value);
+        if (!isNaN(number)) return this.get(number);
+
+        const months = unique(this.prefixTree.match(value.toLocaleLowerCase(this.locale)));
+        if (months.length != 1) throw new Error(`${this.constructor.name} - Unable to parse: ${value} matched : ${JSON.stringify(months)}`);
+        const [month] = months;
+        return this.get(month);
+    }
+
+    get(number: number): Month {
+        const result = this.index[number - 1];
+        if(!result) throw new Error(`${this.constructor.name} - Illegal argument: number was out of range : ${number}`);
+        return result;
+    }
+
+    pattern(): string {
+        return '[' + this.prefixTree.keys.join("") + ']+';
+    }
+}
+
+export type Month = Datum;
+
+export class Months extends DatumLookup<Month>{
     static formats: Options[] = [
         {month: "long"}, {month: "short"},
         {year: 'numeric', month: "long", day: 'numeric'},
         {year: 'numeric', month: 'short', day: '2-digit'}
-        ];
+    ];
+
     static cache: { [key: string]: Months } = {};
 
     static get(locale: string = 'default', additionalData: Month[] = []): Months {
@@ -286,43 +325,54 @@ export class Months {
     static generateData(locale: string = 'default'): Month[][] {
         return Months.formats.map(f => months(locale, f).map((m, i) => ({name: m, number: i + 1})));
     }
+}
 
-    private readonly index: Month[];
-    private readonly prefixTree: PrefixTree<number>;
+export type Weekday = Datum;
 
-    constructor(public locale: string, data: Month[][]) {
-        this.prefixTree = flatten(data).reduce((t, m) => {
-            return t.insert(m.name.toLocaleLowerCase(this.locale), m.number);
-        }, new PrefixTree<number>());
-        ([this.index] = data);
+export class Weekdays extends DatumLookup<Weekday>{
+    static formats: Options[] = [
+        {weekday: "long"}, {weekday: "short"},
+        {year: 'numeric', month: "numeric", weekday: 'long'},
+        {year: 'numeric', month: 'numeric', weekday: 'short'}
+    ];
+    static cache: { [key: string]: Weekdays } = {};
+
+    static get(locale: string = 'default', additionalData: Weekday[] = []): Weekdays {
+        return Weekdays.cache[locale] = Weekdays.cache[locale] || Weekdays.create(locale, additionalData);
     }
 
-    parse(value: string): Month {
-        const number = parseInt(value);
-        if (!isNaN(number)) return this.get(number);
-
-        const months = unique(this.prefixTree.match(value.toLocaleLowerCase(this.locale)));
-        if (months.length != 1) throw new Error(`Unable to parse: ${value} matched months: ${JSON.stringify(months)}`);
-        const [month] = months;
-        return this.get(month);
+    static set(locale: string = 'default', weekdays: Weekdays): Weekdays {
+        return Weekdays.cache[locale] = weekdays;
     }
 
-    get(number: number): Month {
-        if (number > 0 && number <= 12) return this.index[number - 1];
-        throw new Error("Illegal argument: month number must be between 1 and 12 but was: " + number);
+    static create(locale: string = 'default', additionalData: Weekday[] = []): Weekdays {
+        return new Weekdays(locale, [...Weekdays.generateData(locale), additionalData]);
     }
 
-    characters(): string {
-        return this.prefixTree.keys.join("");
+    static generateData(locale: string = 'default'): Weekday[][] {
+        return Weekdays.formats.map(f => weekdays(locale, f).map((m, i) => ({name: m, number: i + 1})));
     }
 }
 
-export function weekdays(locale?: string, options: Options = defaultOptions): string[] {
+export function weekdays(locale?: string, weekdayFormat: WeekdayFormat | Options = 'long'): string[] {
+    const options: Options = typeof weekdayFormat == 'string' ? {weekday: weekdayFormat} : weekdayFormat;
+    delete options.day;
     const result = [];
+
+    const formatter = Formatters.create(locale, options);
+    const native = typeof formatter.formatToParts == 'function';
+    const exact = Object.keys(options).length == 1 || native;
+
     for (let i = 1; i <= 7; i++) {
-        result.push(format(date(2000, 1, i + 2), locale, {weekday: options.weekday}));
+        const day = date(2000, 1, i + 2);
+        if(native) {
+            result.push(formatter.formatToParts(day).filter(p => p.type === 'weekday').map(p => p.value).join(""));
+        } else {
+            result.push(formatter.format(day));
+        }
     }
-    return result;
+
+    return exact ? result : different(result);
 }
 
 export function prefix(charactersA: string[], charactersB: string[]): number {

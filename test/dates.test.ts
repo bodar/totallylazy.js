@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {runningInNode} from "../src/node";
-import {date, different, format, Months, months, Options, parse} from "../src/dates";
+import {date, different, format, Months, months, Options, parse, Weekdays} from "../src/dates";
 
 function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
@@ -185,9 +185,9 @@ describe("Months", function () {
 
     });
 
-    it('can get all characters used', () => {
+    it('can get pattern', () => {
         const months = Months.get('ru');
-        assert.deepEqual(months.characters(), "январь.фелмтйпгусиюбокд");
+        assert.deepEqual(months.pattern(), "[январь.фелмтйпгусиюбокд]+");
     });
 
     it('can also parse numbers', () => {
@@ -205,6 +205,30 @@ describe("Months", function () {
     it('can add additional data as needed', () => {
         const months = Months.set('de', Months.create("de", [{name: 'Mrz', number: 3}]));
         assert.deepEqual(months.parse('Mrz'), {name: 'März', number: 3});
+    });
+});
+
+describe("Weekdays", function () {
+    const weekdays = Weekdays.get('ru');
+
+    it('is flexible in parsing as long as there is a unique match', () => {
+        assert.deepEqual(weekdays.parse('понедельник'), {name: 'понедельник', number: 1});
+        assert.deepEqual(weekdays.parse('понеде'), {name: 'понедельник', number: 1});
+        assert.deepEqual(weekdays.parse('пн'), {name: 'понедельник', number: 1});
+    });
+
+    it('can get pattern', () => {
+        assert.deepEqual(weekdays.pattern(), '[понедльикятцаврсубчг]+');
+    });
+
+    it('can also parse numbers', () => {
+        assert.deepEqual(weekdays.parse('1'), {name: 'понедельник', number: 1});
+        assert.deepEqual(weekdays.parse('01'), {name: 'понедельник', number: 1});
+    });
+
+    it('ignores case', () => {
+        assert.deepEqual(weekdays.parse('понедельник'.toLocaleLowerCase('ru')), {name: 'понедельник', number: 1});
+        assert.deepEqual(weekdays.parse('понедельник'.toLocaleUpperCase('ru')), {name: 'понедельник', number: 1});
     });
 
 });
