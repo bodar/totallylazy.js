@@ -242,10 +242,19 @@ export function months(locale?: string, monthFormat: MonthFormat | Options = 'lo
     delete options.weekday;
     const result = [];
 
+    const formatter = Formatters.create(locale, options);
+    const native = typeof formatter.formatToParts == 'function';
+    const exact = Object.keys(options).length == 1 || native;
+
     for (let i = 1; i <= 12; i++) {
-        result.push(format(date(2000, i, 1), locale, options));
+        if(native) {
+            result.push(formatter.formatToParts(date(2000, i, 1)).filter(p => p.type === 'month').map(p => p.value).join(""));
+        } else {
+            result.push(formatter.format(date(2000, i, 1)));
+        }
     }
-    return Object.keys(options).length == 1 ? result : different(result);
+
+    return exact ? result : different(result);
 }
 
 export interface Month {
@@ -255,11 +264,11 @@ export interface Month {
 
 
 export class Months {
-    static formats: Options[] = [{month: "long"}, {month: "short"}, {
-        year: 'numeric',
-        month: "long",
-        day: 'numeric'
-    }, {year: 'numeric', month: 'short', day: '2-digit'}];
+    static formats: Options[] = [
+        {month: "long"}, {month: "short"},
+        {year: 'numeric', month: "long", day: 'numeric'},
+        {year: 'numeric', month: 'short', day: '2-digit'}
+        ];
     static cache: { [key: string]: Months } = {};
 
     static get(locale: string = 'default', additionalData: Month[] = []): Months {

@@ -30,7 +30,7 @@ describe("dates", function () {
         const locales: string[] = ['en', 'de', 'fr', 'ja', 'nl', 'de-DE', 'en-US', 'en-GB', 'i-enochian', 'zh-Hant',
             'sr-Cyrl', 'sr-Latn', 'zh-cmn-Hans-CN', 'cmn-Hans-CN', 'zh-yue-HK', 'yue-HK',
             'sr-Latn-RS', 'sl-rozaj', 'sl-rozaj-biske', 'sl-nedis', 'de-CH-1901', 'sl-IT-nedis',
-            'es-419', 'zh-Hans',  'zh-Hans-CN']; // 'hy-Latn-IT-arevela'
+            'es-419', 'zh-Hans',  'zh-Hans-CN', 'hy-Latn-IT-arevela'];
         const supported = Intl.DateTimeFormat.supportedLocalesOf(locales);
 
         for (const locale of supported) {
@@ -118,6 +118,10 @@ describe("dates", function () {
 
         assert.deepEqual(months('zh-CN'),
             ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]);
+        assert.deepEqual(months('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'}),
+            ['1','2','3','4','5','6','7','8','9','10','11','12']);
+        assert.deepEqual(months('zh-CN', {year: 'numeric', month: 'short', day: '2-digit'}),
+            ['1','2','3','4','5','6','7','8','9','10','11','12']);
 
         assert.deepEqual(months('is-IS'),
             ["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]);
@@ -128,10 +132,6 @@ describe("dates", function () {
             ["led", "úno", "bře", "dub", "kvě", "čvn", "čvc", "srp", "zář", "říj", "lis", "pro"]);
         assert.deepEqual(months('pt-PT', 'short'),
             ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]);
-    });
-
-    it("formatting 2019/1/15 in zh-CN does not return the long month format but instead the numeric i.e 2019年1月15日", () => {
-        assert.deepEqual(months('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'}), ['1','2','3','4','5','6','7','8','9','10','11','12']);
     });
 
     it("can find differences between string", () => {
