@@ -1,8 +1,8 @@
 import {PrefixTree} from "../trie";
 import {flatten, unique} from "../arrays";
 import {date, MonthFormat, Options, WeekdayFormat} from "./core";
-import {Formatters} from "./formatting";
-import {different} from "../characters";
+import {Formatters, hasNativeFormatToParts} from "./formatting";
+import {characters, different} from "../characters";
 
 export interface Datum {
     number: number;
@@ -10,14 +10,12 @@ export interface Datum {
 }
 
 export class DatumLookup<T extends Datum> {
-    private readonly index: T[];
     private readonly prefixTree: PrefixTree<number>;
 
-    constructor(public locale: string, data: T[][]) {
+    constructor(public locale: string, private data: T[][]) {
         this.prefixTree = flatten(data).reduce((t, m) => {
             return t.insert(m.name.toLocaleLowerCase(this.locale), m.number);
         }, new PrefixTree<number>());
-        ([this.index] = data);
     }
 
     parse(value: string): T {
@@ -31,13 +29,15 @@ export class DatumLookup<T extends Datum> {
     }
 
     get(number: number): T {
-        const result = this.index[number - 1];
+        const result = this.data[0][number - 1];
         if(!result) throw new Error(`${this.constructor.name} - Illegal argument: number was out of range : ${number}`);
         return result;
     }
 
-    pattern(): string {
-        return '[' + this.prefixTree.keys.join("") + ']+';
+    get pattern(): string {
+        const a = flatten(flatten(this.data).map(d => d.name).map(characters));
+        const b = unique(a);
+        return '[' + b.join("") + ']+';
     }
 }
 
@@ -79,14 +79,14 @@ export function months(locale?: string, monthFormat: MonthFormat | Options = 'lo
     const result = [];
 
     const formatter = Formatters.create(locale, options);
-    const native = typeof formatter.formatToParts == 'function';
-    const exact = Object.keys(options).length == 1 || native;
+    const exact = Object.keys(options).length == 1 || hasNativeFormatToParts;
 
     for (let i = 1; i <= 12; i++) {
-        if(native) {
-            result.push(formatter.formatToParts(date(2000, i, 1)).filter(p => p.type === 'month').map(p => p.value).join(""));
+        const d = date(2000, i, 1);
+        if(hasNativeFormatToParts) {
+            result.push(formatter.formatToParts(d).filter(p => p.type === 'month').map(p => p.value).join(""));
         } else {
-            result.push(formatter.format(date(2000, i, 1)));
+            result.push(formatter.format(d));
         }
     }
 
@@ -130,12 +130,11 @@ export function weekdays(locale?: string, weekdayFormat: WeekdayFormat | Options
     const result = [];
 
     const formatter = Formatters.create(locale, options);
-    const native = typeof formatter.formatToParts == 'function';
-    const exact = Object.keys(options).length == 1 || native;
+    const exact = Object.keys(options).length == 1 || hasNativeFormatToParts;
 
     for (let i = 1; i <= 7; i++) {
         const day = date(2000, 1, i + 2);
-        if(native) {
+        if(hasNativeFormatToParts) {
             result.push(formatter.formatToParts(day).filter(p => p.type === 'weekday').map(p => p.value).join(""));
         } else {
             result.push(formatter.format(day));

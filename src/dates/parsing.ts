@@ -44,9 +44,9 @@ export class RegexBuilder {
         const namedPattern = this.formatted.map(part => {
             switch (part.type) {
                 case "year": return '(?<year>\\d{4})';
-                case "month": return `(?<month>(?:\\d{1,2}|${this.months.pattern()}))`;
+                case "month": return `(?<month>(?:\\d{1,2}|${this.months.pattern.toLocaleLowerCase(this.locale)}))`;
                 case "day": return '(?<day>\\d{1,2})';
-                case "weekday": return `(?<weekday>${this.weekdays.pattern()})`;
+                case "weekday": return `(?<weekday>${this.weekdays.pattern.toLocaleLowerCase(this.locale)})`;
                 default: return `[${unique(['.',...part.value]).join('')}]*?`;
             }
         }).join("");

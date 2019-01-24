@@ -9,7 +9,13 @@ export class Formatters {
 
     static create(locale: string = 'default', options: Options = defaultOptions) {
         const key = JSON.stringify({locale, options});
-        return Formatters.cache[key] = Formatters.cache[key] || new Intl.DateTimeFormat(locale, options);
+        return Formatters.cache[key] = Formatters.cache[key] || (() => {
+            const clone = {...options};
+            const keys = Object.keys(clone).length;
+            const formatter = new Intl.DateTimeFormat(locale, clone);
+            if(Object.keys(clone).length != keys) throw new Error(`Unsupported options provided: ${JSON.stringify(options)}`);
+            return formatter;
+        })();
     }
 }
 
@@ -17,10 +23,11 @@ export function format(value: Date, locale?: string, options: Options = defaultO
     return Formatters.create(locale, options).format(value);
 }
 
+export const hasNativeFormatToParts = typeof Intl.DateTimeFormat.prototype.formatToParts == 'function';
 
 export function formatData(value: Date, locale: string = 'default', options: Options = defaultOptions): DateTimeFormatPart[] {
     const formatter = Formatters.create(locale, options);
-    if(typeof formatter.formatToParts == "function") return formatter.formatToParts(value);
+    if(hasNativeFormatToParts) return formatter.formatToParts(value);
     return FormatToParts.create(locale, options).formatToParts(value);
 }
 
@@ -45,7 +52,7 @@ export class FormatToParts {
     }
 
     @lazy get formatted(): string {
-        return this.formatter.format(date(this.year, this.monthValue, this.day)).toLocaleLowerCase(this.locale);
+        return this.formatter.format(date(this.year, this.monthValue, this.day));
     }
 
     @lazy get months(): Months {
@@ -53,7 +60,7 @@ export class FormatToParts {
     }
 
     @lazy get month(): string {
-        return this.months.get(this.monthValue).name.toLocaleLowerCase(this.locale);
+        return this.months.get(this.monthValue).name;
     }
 
     @lazy get weekdays(): Weekdays {
@@ -61,7 +68,7 @@ export class FormatToParts {
     }
 
     @lazy get weekday(): string {
-        return this.weekdays.get(this.weekdayValue).name.toLocaleLowerCase(this.locale);
+        return this.weekdays.get(this.weekdayValue).name;
     }
 
     @lazy get learningNamesPattern(): NamedGroups {
@@ -81,9 +88,9 @@ export class FormatToParts {
             const [type] = Object.keys(this.options).map(k => match[learningNames[k]] ? k : undefined).filter(Boolean);
             if(!type) throw new Error();
             if(type == 'year') result.push('(?<year>\\d{4})');
-            if(type == "month") result.push( `(?<month>(?:\\d{1,2}|${this.months.pattern()}))`);
+            if(type == "month") result.push( `(?<month>(?:\\d{1,2}|${this.months.pattern}))`);
             if(type == "day") result.push( '(?<day>\\d{1,2})');
-            if(type == "weekday") result.push(`(?<weekday>${this.weekdays.pattern()})`);
+            if(type == "weekday") result.push(`(?<weekday>${this.weekdays.pattern})`);
             return "";
         }, noMatch => {
             if(noMatch) {
@@ -98,7 +105,7 @@ export class FormatToParts {
     formatToParts(date: Date): DateTimeFormatPart[] {
         const {names, pattern} = this.actualNamesPattern;
 
-        const actualResult = this.formatter.format(date).toLocaleLowerCase(this.locale);
+        const actualResult = this.formatter.format(date);
         const regex = new RegExp(pattern);
 
         const parts: DateTimeFormatPart[] = [];
@@ -109,9 +116,6 @@ export class FormatToParts {
         Object.entries(names).map(([type, index]) => {
             let value = match[index];
             if(type.indexOf('literal') != -1) type = 'literal';
-            // Restore case
-            if(type === 'month') value = this.months.parse(value).name;
-            if(type === 'weekday') value = this.weekdays.parse(value).name;
             parts.push({type: (type as any), value});
         });
 
