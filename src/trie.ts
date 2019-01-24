@@ -1,5 +1,6 @@
 import {flatten, unique} from "./arrays";
 import {lazy} from "./lazy";
+import {characters} from "./characters";
 
 export class Trie<K, V> {
     constructor(public readonly value?: V,
@@ -48,11 +49,6 @@ export class Trie<K, V> {
     private childFor(head: K): Trie<K, V> | undefined {
         return this.children[head.toString()];
     }
-}
-
-export function characters(value:string):string[] {
-    if(typeof Symbol === "function" && value[Symbol.iterator]) return [...value];
-    return value.split(/(?=(?:[\0-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))/).filter(Boolean);
 }
 
 export class PrefixTree<V = string> {
