@@ -106,4 +106,12 @@ describe("PrefixTree", function () {
         assert.deepEqual(trie.keys, [ 'я', 'н', 'в', 'а', 'р', 'ь', '.' ]);
     });
 
+    it('can get height', function () {
+        assert.deepEqual(new PrefixTree<number>().height, 0);
+        assert.deepEqual(new PrefixTree<number>().insert("1", 1).height, 1);
+        assert.deepEqual(new PrefixTree<number>().insert("12", 1).height, 2);
+        assert.deepEqual(new PrefixTree<number>().insert("123", 1).height, 3);
+        assert.deepEqual(new PrefixTree<number>().insert("1234", 1).height, 4);
+    });
+
 });

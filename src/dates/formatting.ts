@@ -16,7 +16,7 @@ export class Formatters {
             const clone = {...options};
             const keys = Object.keys(clone).length;
             const formatter = new Intl.DateTimeFormat(locale, clone);
-            if(Object.keys(clone).length != keys) throw new Error(`Unsupported DateTimeFormat options provided: ${JSON.stringify(options)}`);
+            if (Object.keys(clone).length != keys) throw new Error(`Unsupported DateTimeFormat options provided: ${JSON.stringify(options)}`);
             return formatter;
         })();
     }
@@ -26,11 +26,11 @@ export function format(value: Date, locale?: string, options: Options = defaultO
     return Formatters.create(locale, options).format(value);
 }
 
-export const hasNativeFormatToParts = false; //typeof Intl.DateTimeFormat.prototype.formatToParts == 'function';
+export const hasNativeFormatToParts = typeof Intl.DateTimeFormat.prototype.formatToParts == 'function';
 
 export function formatData(value: Date, locale: string = 'default', options: Options = defaultOptions): DateTimeFormatPart[] {
     const formatter = Formatters.create(locale, options);
-    if(hasNativeFormatToParts) return formatter.formatToParts(value);
+    if (hasNativeFormatToParts) return formatter.formatToParts(value);
     return FormatToParts.create(locale, options).formatToParts(value);
 }
 
@@ -59,7 +59,11 @@ export class FormatToParts {
     }
 
     @lazy get months(): Months {
-        return Months.get(this.locale, Months.dataFor(this.locale, this.options));
+        return new Months(this.locale, [Months.dataFor(this.locale, this.options), ...Months.generateData(this.locale)]);
+    }
+
+    @lazy get month(): string {
+        return this.months.pattern;
     }
 
     @lazy get monthOrWeekday(): string {
@@ -68,47 +72,48 @@ export class FormatToParts {
     }
 
     @lazy get weekdays(): Weekdays {
-        return Weekdays.get(this.locale, Weekdays.dataFor(this.locale, this.options));
+        return new Weekdays(this.locale, [Weekdays.dataFor(this.locale, this.options), ...Weekdays.generateData(this.locale)]);
+    }
+
+    @lazy get weekday(): string {
+        return this.weekdays.pattern;
     }
 
     @lazy get learningNamesPattern(): NamedGroups {
-        if(!this.months.get(1).name) throw new Error("Unable to detect months");
-        if(!this.weekdays.get(1).name) throw new Error("Unable to detect weekday");
-        const template = (key:string) => `(?<${key}>${(this as any)[key]})`;
+        if (!this.months.get(1).name) throw new Error("Unable to detect months");
+        if (!this.weekdays.get(1).name) throw new Error("Unable to detect weekday");
+        const template = (key: string) => `(?<${key}>${(this as any)[key]})`;
         const patterns = [];
-        if(this.options.year) patterns.push(template('year'));
-        if(this.options.month || this.options.weekday) patterns.push(template('monthOrWeekday'));
-        if(this.options.day) patterns.push(template('day'));
+        if (this.options.year) patterns.push(template('year'));
+        if (this.options.month) patterns.push(template('month'));
+        if (this.options.weekday) patterns.push(template('weekday'));
+        if (this.options.day) patterns.push(template('day'));
         const namedPattern = `(?:${patterns.join("|")})`;
         return namedGroups(namedPattern);
     }
 
-    @lazy get actualNamesPattern():NamedGroups {
+    @lazy get actualNamesPattern(): NamedGroups {
         const {names: learningNames, pattern: learningPattern} = this.learningNamesPattern;
         const learningRegex = new RegExp(learningPattern, 'g');
 
         const result: string[] = [];
         let count = 0;
-        const literalHandler = (value:string) => {
-            if(value) {
+        const literalHandler = (value: string) => {
+            if (value) {
                 result.push(`(?<literal-${count++}>[${value}]+?)`);
             }
         };
         replace(learningRegex, this.formatted, match => {
-            const [type] = Object.keys(learningNames).map(k => match[learningNames[k]] ? k : undefined).filter(Boolean);
-            if(!type) throw new Error();
+            let [type] = Object.keys(learningNames).map(k => match[learningNames[k]] ? k : undefined).filter(Boolean);
+            if (!type) throw new Error();
             const value = match[learningNames[type]];
+            type = this.getType(type, value);
 
-            if(type == 'year') result.push('(?<year>\\d{4})');
-            if(type == "day") result.push( '(?<day>\\d{1,2})');
-            if(type == "monthOrWeekday") {
-                const parsed = [this.months, this.weekdays].filter(s => this.parsable(s, value));
-                if(parsed.length){
-                    result.push( `(?<monthOrWeekday-${count++}>${this.monthOrWeekday})`);
-                } else {
-                    literalHandler(value);
-                }
-            }
+            if (type == 'year') result.push('(?<year>\\d{4})');
+            else if (type == "day") result.push('(?<day>\\d{1,2})');
+            else if (type == "month") result.push(`(?<month>(?:\\d{1,2}|${this.months.pattern}))`);
+            else if (type == "weekday") result.push(`(?<weekday>${this.weekdays.pattern})`);
+            else literalHandler(value);
             return "";
         }, value => {
             literalHandler(value);
@@ -126,8 +131,8 @@ export class FormatToParts {
 
         const parts: DateTimeFormatPart[] = [];
         const match = actualResult.match(regex);
-        if(!match) {
-            throw new Error(`${pattern} did not match ${actualResult}` );
+        if (!match) {
+            throw new Error(`${pattern} did not match ${actualResult}`);
         }
         Object.entries(names).map(([type, index]) => {
             let value = match[index];
@@ -141,9 +146,9 @@ export class FormatToParts {
     private collapseLiterals(parts: DateTimeFormatPart[]): DateTimeFormatPart[] {
         for (let i = 0; i < parts.length; i++) {
             const current = parts[i];
-            if(current.type === "literal") {
+            if (current.type === "literal") {
                 let position = i + 1;
-                while(true){
+                while (true) {
                     const next = parts[position];
                     if (!(next && next.type === "literal")) break;
                     current.value = current.value + next.value;
@@ -156,15 +161,15 @@ export class FormatToParts {
 
     private getType(type: string, value: string): DateTimeFormatPartTypes {
         type = type.split('-')[0];
-        if(type === 'monthOrWeekday') {
-            if(this.parsable(this.months, value)) return "month";
-            if(this.parsable(this.weekdays, value)) return "weekday";
-            throw new Error("Unable to parse value: " + value);
+        if (type === 'month' || type === 'weekday') {
+            if (this.parsable(this.months, value)) return "month";
+            if (this.parsable(this.weekdays, value)) return "weekday";
+            return 'literal';
         }
         return type as any;
     }
 
-    private parsable(lookup: DatumLookup, value:string){
+    private parsable(lookup: DatumLookup, value: string) {
         try {
             return Boolean(lookup.parse(value));
         } catch (e) {

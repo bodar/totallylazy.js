@@ -1,4 +1,4 @@
-import {date, months, Months, Weekdays} from "../../src/dates";
+import {date, months, Months, Options, Weekdays} from "../../src/dates";
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
 import {assertParse} from "./dates.test";
@@ -80,8 +80,11 @@ describe("Months", function () {
     });
 
     it('can get pattern', () => {
-        const months = Months.get('ru');
-        assert.deepEqual(months.pattern, "[январьфелмтпйиюгусбокд.]+");
+        const ru = Months.get('ru');
+        assert.deepEqual(ru.pattern, "[январьфелмтпйиюгусбокд.]{1,8}");
+        assert.deepEqual(new RegExp(ru.pattern).test('январь'), true);
+        assert.deepEqual(new RegExp(ru.pattern).test('января'), true);
+        assert.deepEqual(new RegExp(ru.pattern).test('янв.'), true);
     });
 
     it('can also parse numbers', () => {
@@ -121,7 +124,8 @@ describe("Weekdays", function () {
     });
 
     it('can get pattern', () => {
-        assert.deepEqual(ru.pattern, '[понедльиквтрсачгяцуб]+');
+        assert.deepEqual(ru.pattern, '[понедльиквтрсачгяцуб]{1,11}');
+        assert.deepEqual(new RegExp(ru.pattern).test('понедельник'), true);
     });
 
     it('can also parse numbers', () => {

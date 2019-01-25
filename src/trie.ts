@@ -46,6 +46,10 @@ export class Trie<K, V> {
         return unique(flatten(Object.keys(this.children).map(k => ([k, ...this.children[k].keys]))));
     }
 
+    @lazy get height():number{
+        return Object.values(this.children).reduce((a,c) => Math.max(a, c.height + 1), 0);
+    }
+
     private childFor(head: K): Trie<K, V> | undefined {
         return this.children[head.toString()];
     }
@@ -84,5 +88,10 @@ export class PrefixTree<V = string> {
     @lazy get keys():string[]{
         return this.trie.keys;
     }
+
+    @lazy get height():number{
+        return this.trie.height;
+    }
+
 }
 
