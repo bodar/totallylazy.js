@@ -97,8 +97,10 @@ describe("Months", function () {
     });
 
     it('can add additional data as needed', () => {
+        const original = Months.get('de');
         const months = Months.set('de', Months.create("de", [{name: 'Mrz', number: 3}]));
         assert.deepEqual(months.parse('Mrz'), {name: 'März', number: 3});
+        Months.set('def', original);
     });
 });
 
@@ -130,6 +132,11 @@ describe("Weekdays", function () {
     it('ignores case', () => {
         assert.deepEqual(ru.parse('понедельник'.toLocaleLowerCase('ru')), {name: 'понедельник', number: 1});
         assert.deepEqual(ru.parse('понедельник'.toLocaleUpperCase('ru')), {name: 'понедельник', number: 1});
+    });
+
+    it('ignores .', () => {
+        const weekdays = Weekdays.get('de');
+        assert.deepEqual(weekdays.parse('So.'), {name: 'Sonntag', number: 7});
     });
 
 });

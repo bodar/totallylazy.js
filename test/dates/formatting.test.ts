@@ -1,6 +1,6 @@
-import {date, Formatters, FormatToParts} from "../../src/dates";
+import {date, Formatters, FormatToParts, Options} from "../../src/dates";
 import {assert} from 'chai';
-import {options} from "./dates.test";
+import {options, supported} from "./dates.test";
 import {runningInNode} from "../../src/node";
 
 describe("FormatToParts", function () {
@@ -11,15 +11,26 @@ describe("FormatToParts", function () {
         }
     });
 
+    const d = date(2001, 6, 28);
+
+    function assertPartsMatch(locale: string, option: Options, original: Date) {
+        const formatter = Formatters.create(locale, option);
+        const expected = formatter.formatToParts(original);
+        const actual = FormatToParts.create(locale, option).formatToParts(original);
+        assert.deepEqual(expected, actual, `${locale} ${JSON.stringify(option)}`)
+    }
+
     it('matches native implementation', () => {
-        const original = date(2001, 6, 28);
-        for (const locale of ['en', 'ru', 'fr']) {//'de'
+        for (const locale of supported) {
             for (const option of options) {
-                const formatter = Formatters.create(locale, option);
-                const expected = formatter.formatToParts(original);
-                const actual = FormatToParts.create(locale, option).formatToParts(original);
-                assert.deepEqual(expected, actual)
+                assertPartsMatch(locale, option, d);
             }
         }
+    });
+
+    it("specific options work", () => {
+        assertPartsMatch('ja', {day: "numeric", year: "numeric", month: "long", weekday: "long"}, d);
+        assertPartsMatch('de', {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'}, d);
+        assertPartsMatch('de', {day: 'numeric', year: 'numeric', month: 'long', weekday: 'short'}, d);
     });
 });

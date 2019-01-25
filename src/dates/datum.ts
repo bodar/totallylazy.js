@@ -9,7 +9,7 @@ export interface Datum {
     name: string;
 }
 
-export class DatumLookup<T extends Datum> {
+export class DatumLookup<T extends Datum = Datum> {
     private readonly prefixTree: PrefixTree<number>;
 
     constructor(public locale: string, private data: T[][]) {
@@ -22,7 +22,7 @@ export class DatumLookup<T extends Datum> {
         const number = parseInt(value);
         if (!isNaN(number)) return this.get(number);
 
-        const months = unique(this.prefixTree.match(value.toLocaleLowerCase(this.locale)));
+        const months = unique(this.prefixTree.match(value.toLocaleLowerCase(this.locale).replace('.', '')));
         if (months.length != 1) throw new Error(`${this.constructor.name} - Unable to parse: ${value} matched : ${JSON.stringify(months)}`);
         const [month] = months;
         return this.get(month);
@@ -35,9 +35,11 @@ export class DatumLookup<T extends Datum> {
     }
 
     get pattern(): string {
-        const a = flatten(flatten(this.data).map(d => d.name).map(characters));
-        const b = unique(a);
-        return '[' + b.join("") + ']+';
+        return `[${this.characters.join('')}]+`;
+    }
+
+    get characters(): string[] {
+        return unique(flatten(flatten(this.data).map(d => d.name).map(characters)));
     }
 }
 

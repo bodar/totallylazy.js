@@ -59,7 +59,7 @@ export function different(values: string[]): string[] {
     }, [Number.MAX_VALUE, Number.MAX_VALUE]);
 
     return chars.map((current) => {
-        return current.slice(smallestPrefix, -smallestSuffix).join('')
+        return current.slice(smallestPrefix, smallestSuffix ? -smallestSuffix : undefined).join('')
     });
 }
 

@@ -36,9 +36,13 @@ describe("dates", function () {
 
     it('can format and parse a date in many different locals', function () {
         const original = date(2001, 6, 28);
-        for (const locale of supported) {
-            for (const option of options) {
+        for (const locale of ['de']) {
+            for (const option of [{ day: 'numeric',
+                year: 'numeric',
+                month: 'long',
+                weekday: 'short' }] as any[]) {
                 const formatted = format(original, locale, option);
+                console.log(locale, formatted, option);
                 const parsed = parse(formatted, locale, option);
                 assert.equal(parsed.toISOString(), original.toISOString(), locale);
             }
