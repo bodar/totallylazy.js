@@ -1,9 +1,9 @@
-import {date, Datum, DatumLookup, defaultOptions, Months, Options, Weekdays} from "./index";
+import {date, DatumLookup, defaultOptions, Months, Options, Weekdays} from "./index";
 import {lazy} from "../lazy";
 import {namedGroups, NamedGroups, replace} from "../characters";
+import {unique} from "../arrays";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormat = Intl.DateTimeFormat;
-import {unique} from "../arrays";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
 export class Formatters {
@@ -59,7 +59,7 @@ export class FormatToParts {
     }
 
     @lazy get months(): Months {
-        return new Months(this.locale, [Months.dataFor(this.locale, this.options), ...Months.generateData(this.locale)]);
+        return new Months(this.locale, [Months.dataFor(this.locale, this.options)]);
     }
 
     @lazy get month(): string {
@@ -72,7 +72,7 @@ export class FormatToParts {
     }
 
     @lazy get weekdays(): Weekdays {
-        return new Weekdays(this.locale, [Weekdays.dataFor(this.locale, this.options), ...Weekdays.generateData(this.locale)]);
+        return new Weekdays(this.locale, [Weekdays.dataFor(this.locale, this.options)]);
     }
 
     @lazy get weekday(): string {
@@ -85,9 +85,16 @@ export class FormatToParts {
         const template = (key: string) => `(?<${key}>${(this as any)[key]})`;
         const patterns = [];
         if (this.options.year) patterns.push(template('year'));
-        if (this.options.month) patterns.push(template('month'));
-        if (this.options.weekday) patterns.push(template('weekday'));
+        if (this.options.month) {
+            const literal = this.monthValue.toString();
+            if(new RegExp(this.month).test(literal)) {
+                patterns.push(`(?<month>${literal})`);
+            } else {
+                patterns.push(template('month'));
+            }
+        }
         if (this.options.day) patterns.push(template('day'));
+        if (this.options.weekday) patterns.push(template('weekday'));
         const namedPattern = `(?:${patterns.join("|")})`;
         return namedGroups(namedPattern);
     }
