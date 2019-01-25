@@ -73,7 +73,7 @@ export class Months extends DatumLookup<Month>{
     }
 
     static dataFor(locale: string, options:Options): Month[] {
-        return months(locale, options).map((m, i) => ({name: m, number: i + 1}));
+        return months(locale, options, hasNativeFormatToParts).map((m, i) => ({name: m, number: i + 1}));
     }
 }
 
@@ -86,7 +86,7 @@ function range(start:number, end:number):number[]{
     return result;
 }
 
-export function months(locale?: string, monthFormat: MonthFormat | Options = 'long'): string[] {
+export function months(locale?: string, monthFormat: MonthFormat | Options = 'long', native = hasNativeFormatToParts): string[] {
     const options: Options = {...typeof monthFormat == 'string' ? {month: monthFormat} : monthFormat};
     delete options.weekday;
 
@@ -94,7 +94,7 @@ export function months(locale?: string, monthFormat: MonthFormat | Options = 'lo
     const dates = range(1,12).map(i => date(2000, i, 1));
     const exact = Object.keys(options).length == 1;
 
-    if(hasNativeFormatToParts) return monthsByParts(dates, formatter);
+    if(native) return monthsByParts(dates, formatter);
     if(exact) return monthsByFormatted(dates, formatter);
     return monthsByDiff(dates, formatter);
 }
@@ -142,7 +142,7 @@ export class Weekdays extends DatumLookup<Weekday>{
     }
 }
 
-export function weekdays(locale?: string, weekdayFormat: WeekdayFormat | Options = 'long'): string[] {
+export function weekdays(locale?: string, weekdayFormat: WeekdayFormat | Options = 'long', native=hasNativeFormatToParts): string[] {
     const options: Options = {...typeof weekdayFormat == 'string' ? {weekday: weekdayFormat} : weekdayFormat};
     delete options.day;
 
@@ -150,7 +150,7 @@ export function weekdays(locale?: string, weekdayFormat: WeekdayFormat | Options
     const dates = range(1,7).map(i => date(2000, 1, i + 2));
     const exact = Object.keys(options).length == 1;
 
-    if(hasNativeFormatToParts) return weekdaysByParts(dates, formatter);
+    if(native) return weekdaysByParts(dates, formatter);
     if(exact) return weekdaysByFormatted(dates, formatter);
     return weekdaysByDiff(dates, formatter);
 }
@@ -160,7 +160,12 @@ export function weekdaysByParts(dates:Date[], formatter:DateTimeFormat): string[
 }
 
 export function weekdaysByDiff(dates:Date[], formatter:DateTimeFormat): string[] {
-    return different(weekdaysByFormatted(dates, formatter));
+    const values = dates.map(d => {
+        const formatted = formatter.format(d);
+        console.log(formatted);
+        return formatted;
+    });
+    return different(values);
 }
 
 export function weekdaysByFormatted(dates:Date[], formatter:DateTimeFormat): string[] {

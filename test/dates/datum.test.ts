@@ -1,4 +1,4 @@
-import {date, months, Months, Options, Weekdays} from "../../src/dates";
+import {date, hasNativeFormatToParts, months, Months, Options, weekdays, Weekdays} from "../../src/dates";
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
 import {assertParse} from "./dates.test";
@@ -14,41 +14,41 @@ describe("Months", function () {
     it("can get months for specific locals and formats", () => {
         assert.deepEqual(months('en-GB'),
             ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
-        assert.deepEqual(months('en-GB', "short"),
+        assert.deepEqual(months('en-GB', "short", hasNativeFormatToParts),
             ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]);
 
         assert.deepEqual(months('de'),
             ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]);
-        assert.deepEqual(months('de', "short"),
+        assert.deepEqual(months('de', "short", hasNativeFormatToParts),
             ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]);
-        assert.deepEqual(months('de-AT', "short"),
+        assert.deepEqual(months('de-AT', "short", hasNativeFormatToParts),
             ["Jän", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]);
 
         assert.deepEqual(months('ru'),
             ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"]);
-        assert.deepEqual(months('ru', {year: "numeric", month: 'long', day:'numeric'}),
+        assert.deepEqual(months('ru', {year: "numeric", month: 'long', day: 'numeric'}, hasNativeFormatToParts),
             ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"]);
-        assert.deepEqual(months('ru', {year: 'numeric', month: 'short', day: '2-digit'}),
+        assert.deepEqual(months('ru', {year: 'numeric', month: 'short', day: '2-digit'}, hasNativeFormatToParts),
             [ "янв.", "февр.", "мар.", "апр.", "мая", "июн.", "июл.", "авг.", "сент.", "окт.", "нояб.", "дек."]);
 
-        assert.deepEqual(months('de', {year: 'numeric', month: 'short', day: '2-digit'}),
+        assert.deepEqual(months('de', {year: 'numeric', month: 'short', day: '2-digit'}, hasNativeFormatToParts),
             ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."]);
 
         assert.deepEqual(months('zh-CN'),
             ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]);
-        assert.deepEqual(months('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'}),
+        assert.deepEqual(months('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'}, hasNativeFormatToParts),
             ['1','2','3','4','5','6','7','8','9','10','11','12']);
-        assert.deepEqual(months('zh-CN', {year: 'numeric', month: 'short', day: '2-digit'}),
+        assert.deepEqual(months('zh-CN', {year: 'numeric', month: 'short', day: '2-digit'}, hasNativeFormatToParts),
             ['1','2','3','4','5','6','7','8','9','10','11','12']);
 
         assert.deepEqual(months('is-IS'),
             ["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]);
-        assert.deepEqual(months('is-IS', 'short'),
+        assert.deepEqual(months('is-IS', 'short', hasNativeFormatToParts),
             ["jan.", "feb.", "mar.", "apr.", "maí", "jún.", "júl.", "ágú.", "sep.", "okt.", "nóv.", "des."]);
 
-        assert.deepEqual(months('cs-CZ', 'short'),
+        assert.deepEqual(months('cs-CZ', 'short', hasNativeFormatToParts),
             ["led", "úno", "bře", "dub", "kvě", "čvn", "čvc", "srp", "zář", "říj", "lis", "pro"]);
-        assert.deepEqual(months('pt-PT', 'short'),
+        assert.deepEqual(months('pt-PT', 'short', hasNativeFormatToParts),
             ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]);
     });
 
@@ -137,5 +137,23 @@ describe("Weekdays", function () {
         assert.deepEqual(ru.parse('понедельник'.toLocaleLowerCase('ru')), {name: 'понедельник', number: 1});
         assert.deepEqual(ru.parse('понедельник'.toLocaleUpperCase('ru')), {name: 'понедельник', number: 1});
     });
+});
 
+describe("weekdays and months", function () {
+    before(function () {
+        if (runningInNode() && process.env.NODE_ICU_DATA != './node_modules/full-icu') {
+            console.log("To run these tests you must set 'NODE_ICU_DATA=./node_modules/full-icu'");
+            this.skip();
+        }
+    });
+
+    it("non native version can still extract months from format string", () => {
+        const options:Options = {year: 'numeric', month: "long", day:'numeric', weekday: 'long'};
+        assert.deepEqual(months('en-GB', options, false), months('en-GB', options, true));
+    });
+
+    it("non native version can still extract weekdays from format string", () => {
+        const options:Options = {year: 'numeric', month: "long", day:'numeric', weekday: 'long'};
+        assert.deepEqual(weekdays('de', options, false), weekdays('de', options, true));
+    });
 });
