@@ -1,4 +1,4 @@
-import {lazy} from "../lazy";
+import {cache, lazy} from "../lazy";
 import {unique} from "../arrays";
 import {namedGroups, replace} from "../characters";
 import {
@@ -19,17 +19,12 @@ export class RegexBuilder {
                 private formatted: DateTimeFormatPart[]) {
     }
 
-    static cache: { [key: string]: RegexBuilder } = {};
-
-    static create(locale: string = 'default', options: string | Options = defaultOptions): RegexBuilder {
-        const key = JSON.stringify({locale, options});
-        return RegexBuilder.cache[key] = RegexBuilder.cache[key] || (() => {
-            if(typeof options == 'string'){
-                return formatBuilder(locale, options);
-            } else {
-                return new RegexBuilder(locale, options, formatData(new Date(), locale, options));
-            }
-        })();
+    @cache static create(locale: string = 'default', options: string | Options = defaultOptions): RegexBuilder {
+        if(typeof options == 'string'){
+            return formatBuilder(locale, options);
+        } else {
+            return new RegexBuilder(locale, options, formatData(new Date(), locale, options));
+        }
     }
 
     @lazy get months(): Months {

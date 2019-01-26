@@ -1,23 +1,18 @@
 import {date, DatumLookup, defaultOptions, months, Months, Options, weekdays, Weekdays} from "./index";
-import {lazy} from "../lazy";
+import {lazy, cache} from "../lazy";
 import {namedGroups, NamedGroups, replace} from "../characters";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
 export class Formatters {
-    static cache: { [key: string]: Intl.DateTimeFormat } = {};
-
-    static create(locale: string = 'default', options: Options = defaultOptions) {
-        const key = JSON.stringify({locale, options});
-        return Formatters.cache[key] = Formatters.cache[key] || (() => {
+    @cache static create(locale: string = 'default', options: Options = defaultOptions) {
             // Detect IE 11 bug
             const clone = {...options};
             const keys = Object.keys(clone).length;
             const formatter = new Intl.DateTimeFormat(locale, clone);
             if (Object.keys(clone).length != keys) throw new Error(`Unsupported DateTimeFormat options provided: ${JSON.stringify(options)}`);
             return formatter;
-        })();
     }
 }
 
@@ -42,11 +37,8 @@ export class FormatToParts {
                         private weekdayValue = 5 /*Friday*/) {
     }
 
-    static cache: { [key: string]: FormatToParts } = {};
-
-    static create(locale: string, options: Options = defaultOptions): FormatToParts {
-        const key = JSON.stringify({locale, options});
-        return FormatToParts.cache[key] = FormatToParts.cache[key] || new FormatToParts(locale, options);
+    @cache static create(locale: string, options: Options = defaultOptions): FormatToParts {
+        return new FormatToParts(locale, options);
     }
 
     @lazy get formatter(): DateTimeFormat {

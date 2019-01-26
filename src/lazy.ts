@@ -2,13 +2,28 @@ export function replace<T extends {}, K extends keyof T>(object: T, key: K, valu
     return Object.defineProperty(object, key, {value});
 }
 
-export function lazy(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+export function lazy(target: any, name: string, descriptor: PropertyDescriptor) {
     if (typeof descriptor.get == 'undefined') throw new Error("@lazy can only decorate getter methods");
-    return Object.defineProperty(target, propertyKey, {
+    return Object.defineProperty(target, name, {
         ...descriptor,
         get(): any {
             // @ts-ignore
-            return replace(this, propertyKey, descriptor.get.call(this))[propertyKey]
+            return replace(this, name, descriptor.get.call(this))[name]
+        }
+    });
+}
+
+export function cache(target: any, name: string, descriptor: PropertyDescriptor) {
+    if (typeof descriptor.value != 'function') throw new Error("@cache can only decorate methods");
+
+    const cache: { [key: string]: any } = {};
+
+    return Object.defineProperty(target, name, {
+        ...descriptor,
+        value: (...args:any[]) => {
+            const key = JSON.stringify(args);
+            // @ts-ignore
+            return cache[key] = cache[key] || descriptor.value.call(target, ...args);
         }
     });
 }
