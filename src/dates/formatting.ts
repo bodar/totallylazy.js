@@ -1,4 +1,4 @@
-import {date, DatumLookup, defaultOptions, Months, Options, Weekdays} from "./index";
+import {date, DatumLookup, defaultOptions, months, Months, Options, weekdays, Weekdays} from "./index";
 import {lazy} from "../lazy";
 import {namedGroups, NamedGroups, replace} from "../characters";
 import {unique} from "../arrays";
@@ -63,12 +63,7 @@ export class FormatToParts {
     }
 
     @lazy get month(): string {
-        return this.months.pattern;
-    }
-
-    @lazy get monthOrWeekday(): string {
-        const all = unique([...this.months.characters, ...this.weekdays.characters]).join('');
-        return `[${all}]+`;
+        return months(this.locale, this.options)[this.monthValue - 1];
     }
 
     @lazy get weekdays(): Weekdays {
@@ -76,25 +71,13 @@ export class FormatToParts {
     }
 
     @lazy get weekday(): string {
-        return this.weekdays.pattern;
+        const w = weekdays(this.locale, this.options);
+        return w[this.weekdayValue - 1];
     }
 
     @lazy get learningNamesPattern(): NamedGroups {
-        if (!this.months.get(1).name) throw new Error("Unable to detect months");
-        if (!this.weekdays.get(1).name) throw new Error("Unable to detect weekday");
         const template = (key: string) => `(?<${key}>${(this as any)[key]})`;
-        const patterns = [];
-        if (this.options.year) patterns.push(template('year'));
-        if (this.options.month) {
-            const literal = this.monthValue.toString();
-            if(new RegExp(this.month).test(literal)) {
-                patterns.push(`(?<month>${literal})`);
-            } else {
-                patterns.push(template('month'));
-            }
-        }
-        if (this.options.day) patterns.push(template('day'));
-        if (this.options.weekday) patterns.push(template('weekday'));
+        const patterns = Object.keys(this.options).map(k => template(k));
         const namedPattern = `(?:${patterns.join("|")})`;
         return namedGroups(namedPattern);
     }
@@ -113,14 +96,10 @@ export class FormatToParts {
         replace(learningRegex, this.formatted, match => {
             let [type] = Object.keys(learningNames).map(k => match[learningNames[k]] ? k : undefined).filter(Boolean);
             if (!type) throw new Error();
-            const value = match[learningNames[type]];
-            type = this.getType(type, value);
-
             if (type == 'year') result.push('(?<year>\\d{4})');
             else if (type == "day") result.push('(?<day>\\d{1,2})');
             else if (type == "month") result.push(`(?<month>(?:\\d{1,2}|${this.months.pattern}))`);
             else if (type == "weekday") result.push(`(?<weekday>${this.weekdays.pattern})`);
-            else literalHandler(value);
             return "";
         }, value => {
             literalHandler(value);

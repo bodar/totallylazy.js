@@ -3,7 +3,6 @@ import {flatten, unique} from "../arrays";
 import {date, MonthFormat, Options, WeekdayFormat} from "./core";
 import {Formatters, hasNativeFormatToParts} from "./formatting";
 import {characters, different} from "../characters";
-import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
 export interface Datum {
@@ -89,12 +88,11 @@ function range(start:number, end:number):number[]{
 
 export function months(locale: string = 'default', monthFormat: MonthFormat | Options = 'long', native = hasNativeFormatToParts): string[] {
     const options: Options = {...typeof monthFormat == 'string' ? {month: monthFormat} : monthFormat};
-    delete options.weekday;
 
     const dates = range(1,12).map(i => date(2000, i, 1));
 
     if(native) return new NativeDataExtractor(locale, options, dates, 'month').extract();
-    return new FromFormatStringDataExtractor(locale, options, dates, 'month').extract();
+    return new FromFormatStringMonthExtractor(locale, options, dates).extract();
 }
 
 
@@ -136,7 +134,7 @@ export function weekdays(locale: string = 'default', weekdayFormat: WeekdayForma
     const dates = range(1,7).map(i => date(2000, 1, i + 2));
 
     if(native) return new NativeDataExtractor(locale, options, dates, 'weekday').extract();
-    return new FromFormatStringDataExtractor(locale, options, dates, 'weekday').extract();
+    return new FromFormatStringWeekdayExtractor(locale, options, dates).extract();
 }
 
 export function exactFormat(locale: string, options:Options,  dates:Date[]): string[] {
@@ -163,32 +161,70 @@ export class NativeDataExtractor extends BaseDataExtractor implements DataExtrac
     }
 }
 
-export class FromFormatStringDataExtractor extends BaseDataExtractor implements DataExtractor {
+export abstract class FromFormatStringDataExtractor extends BaseDataExtractor implements DataExtractor {
     extract(): string[] {
         const exact = Object.keys(this.options).length == 1;
-        const fullFormat = exactFormat(this.locale, this.options, this.dates);
-        if(exact) return fullFormat;
-
-        if(this.partType == "weekday"){
-            // Make the day of the week the same
-            const day = this.dates[0].getDate();
-            for (let i = 0; i < fullFormat.length; i++) {
-                const f = fullFormat[i];
-                const r = f.replace(this.dates[i].getDate().toString(), day.toString());
-                fullFormat[i] = r;
-            }
-        }
-
-        const simpleFormat = exactFormat(this.locale, {[this.partType]: (this.options as any)[this.partType]}, this.dates);
-        const diff = different(fullFormat);
+        const fullFormats = exactFormat(this.locale, this.options, this.dates);
+        if(exact) return fullFormats;
+        const simpleFormats = exactFormat(this.locale, {[this.partType]: (this.options as any)[this.partType]}, this.dates);
+        const diffs = this.diff(fullFormats);
         const result = [];
-        for (let i = 0; i < simpleFormat.length; i++) {
-            const s = simpleFormat[i];
-            const d = diff[i];
-            result.push(d.length >= s.length ? d : s);
+        for (let i = 0; i < simpleFormats.length; i++) {
+            const full = fullFormats[i];
+            const simple = simpleFormats[i];
+            const diff = diffs[i];
+            result.push(full.indexOf(simple) != -1 && simple.length > diff.length ? simple : diff);
         }
 
         return result;
+    }
+
+    diff(data:string[]):string[] {
+        return different(data);
+    }
+}
+
+export class FromFormatStringMonthExtractor extends FromFormatStringDataExtractor{
+    constructor(locale: string, options: Options, dates: Date[]) {
+        super(locale, options, dates, 'month');
+    }
+
+    diff(data:string[]):string[] {
+        if(!this.options.weekday) return super.diff(data);
+        const result:string[] = [];
+        const days = weekdays(this.locale, this.options);
+        const weekday = days[this.day(this.dates[0])];
+        for (let i = 0; i < data.length; i++) {
+            const f = data[i];
+            const replace = days[this.day(this.dates[i])];
+            const r = f.replace(replace, weekday);
+            result[i] = r;
+        }
+        return super.diff(result);
+    }
+
+    private day(date: Date) {
+        const day = date.getDay();
+        if(day == 0) return 6;
+        return day - 1;
+    }
+}
+
+export class FromFormatStringWeekdayExtractor extends FromFormatStringDataExtractor{
+    constructor(locale: string, options: Options, dates: Date[]) {
+        super(locale, options, dates, 'weekday');
+    }
+
+    diff(data:string[]):string[] {
+        if(!this.options.day) return super.diff(data);
+        const result:string[] = [];
+        const day = this.dates[0].getDate().toString();
+        for (let i = 0; i < data.length; i++) {
+            const f = data[i];
+            const r = f.replace(this.dates[i].getDate().toString(), day);
+            result[i] = r;
+        }
+        return super.diff(result);
     }
 }
 

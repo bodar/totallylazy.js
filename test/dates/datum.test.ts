@@ -1,7 +1,7 @@
 import {date, hasNativeFormatToParts, months, Months, Options, weekdays, Weekdays} from "../../src/dates";
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {assertParse} from "./dates.test";
+import {assertFormat, assertParse} from "./dates.test";
 
 describe("Months", function () {
     before(function () {
@@ -157,16 +157,21 @@ describe("weekdays and months", function () {
             [ "янв.", "февр.", "мар.", "апр.", "мая", "июн.", "июл.", "авг.", "сент.", "окт.", "нояб.", "дек."]);
         assert.deepEqual(months('ru', {year: "numeric", month: 'long', day: 'numeric'}, false),
             ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"]);
-        // assert.deepEqual(months('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'}, false),
-        //     months('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'}, true));
+        assert.deepEqual(months('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'}, false),
+            months('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'}, true));
+        // assert.deepEqual(months('zh-CN', {year: 'numeric', month: 'short', day: '2-digit'}, false),
+        //     months('zh-CN', {year: 'numeric', month: 'short', day: '2-digit'}, true));
     });
 
     it("non native version can still extract weeks from single long format", () => {
         assert.deepEqual(weekdays('en-GB', 'long', false), weekdays('en-GB', 'long', true));
     });
 
-    it("non native version can still extract weekdays from contextual long format even if the values all end in the same characters Sun(day) Mon(day)", () => {
+    it("non native version can still extract weekdays from contextual long format", () => {
         const options:Options = {year: 'numeric', month: "long", day:'numeric', weekday: 'long'};
         assert.deepEqual(weekdays('en-GB', options, false), weekdays('en-GB', options, true));
+        assert.deepEqual(weekdays('es-ES', {day: '2-digit', year: 'numeric', month: 'short'}, false),
+            weekdays('es-ES', {day: '2-digit', year: 'numeric', month: 'short'}, true));
+
     });
 });
