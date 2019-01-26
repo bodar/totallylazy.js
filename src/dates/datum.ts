@@ -132,7 +132,6 @@ export class Weekdays extends DatumLookup<Weekday>{
 
 export function weekdays(locale: string = 'default', weekdayFormat: WeekdayFormat | Options = 'long', native=hasNativeFormatToParts): string[] {
     const options: Options = {...typeof weekdayFormat == 'string' ? {weekday: weekdayFormat} : weekdayFormat};
-    delete options.day;
 
     const dates = range(1,7).map(i => date(2000, 1, i + 2));
 
@@ -169,9 +168,27 @@ export class FromFormatStringDataExtractor extends BaseDataExtractor implements 
         const exact = Object.keys(this.options).length == 1;
         const fullFormat = exactFormat(this.locale, this.options, this.dates);
         if(exact) return fullFormat;
+
+        if(this.partType == "weekday"){
+            // Make the day of the week the same
+            const day = this.dates[0].getDate();
+            for (let i = 0; i < fullFormat.length; i++) {
+                const f = fullFormat[i];
+                const r = f.replace(this.dates[i].getDate().toString(), day.toString());
+                fullFormat[i] = r;
+            }
+        }
+
         const simpleFormat = exactFormat(this.locale, {[this.partType]: (this.options as any)[this.partType]}, this.dates);
-        if(fullFormat[0].indexOf(simpleFormat[0]) != -1) return simpleFormat;
-        return different(fullFormat);
+        const diff = different(fullFormat);
+        const result = [];
+        for (let i = 0; i < simpleFormat.length; i++) {
+            const s = simpleFormat[i];
+            const d = diff[i];
+            result.push(d.length >= s.length ? d : s);
+        }
+
+        return result;
     }
 }
 
