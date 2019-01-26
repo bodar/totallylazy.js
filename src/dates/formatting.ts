@@ -38,8 +38,8 @@ export class FormatToParts {
                         private options: Options = defaultOptions,
                         private year = 3333,
                         private monthValue = 11,
-                        private day = 21,
-                        private weekdayValue = 6 /*Saturday*/) {
+                        private day = 20,
+                        private weekdayValue = 5 /*Friday*/) {
     }
 
     static cache: { [key: string]: FormatToParts } = {};

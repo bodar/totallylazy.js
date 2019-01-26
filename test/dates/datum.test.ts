@@ -1,7 +1,7 @@
-import {date, hasNativeFormatToParts, months, Months, Options, weekdays, Weekdays} from "../../src/dates";
+import {date, months, Months, Options, weekdays, Weekdays} from "../../src/dates";
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {assertFormat, assertParse} from "./dates.test";
+import {assertParse, options, supported} from "./dates.test";
 
 describe("Months", function () {
     before(function () {
@@ -15,7 +15,7 @@ describe("Months", function () {
         assert.deepEqual(months('en-GB'),
             ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
         assert.deepEqual(months('en-GB', "short"),
-            ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]);
+            ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]);
 
         assert.deepEqual(months('de'),
             ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]);
@@ -34,9 +34,9 @@ describe("Months", function () {
         assert.deepEqual(months('zh-CN'),
             ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]);
         assert.deepEqual(months('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'}),
-            ['1','2','3','4','5','6','7','8','9','10','11','12']);
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']);
         assert.deepEqual(months('zh-CN', {year: 'numeric', month: 'short', day: '2-digit'}),
-            ['1','2','3','4','5','6','7','8','9','10','11','12']);
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']);
 
         assert.deepEqual(months('is-IS'),
             ["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]);
@@ -51,13 +51,13 @@ describe("Months", function () {
 
     it("can add additional data to help parsing", () => {
         Months.set('de', Months.create('de', [{name: 'Mrz', number: 3}]));
-        assertParse('de', "06 Mrz 2019", date(2019, 3, 6),"dd MMM yyyy");
+        assertParse('de', "06 Mrz 2019", date(2019, 3, 6), "dd MMM yyyy");
     });
 
     it("can override data to help parsing", () => {
         Months.set('is-IS', new Months('is-IS', [["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]
-            .map((m, i) => ({name: m, number: i+1}))]));
-        assertParse('is-IS', "06 jún 2019", date(2019, 6, 6),"dd MMM yyyy");
+            .map((m, i) => ({name: m, number: i + 1}))]));
+        assertParse('is-IS', "06 jún 2019", date(2019, 6, 6), "dd MMM yyyy");
     });
 
 
@@ -151,16 +151,16 @@ describe("weekdays and months", function () {
     });
 
     it("non native version can still extract months from contextual long format", () => {
-        assert.deepEqual(months('en-GB', {year: 'numeric', month: "long", day: 'numeric', weekday: 'long'}, false),
-            ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
-        assert.deepEqual(months('ru', {year: 'numeric', month: 'short', day: '2-digit'}, false),
-            [ "янв.", "февр.", "мар.", "апр.", "мая", "июн.", "июл.", "авг.", "сент.", "окт.", "нояб.", "дек."]);
-        assert.deepEqual(months('ru', {year: "numeric", month: 'long', day: 'numeric'}, false),
-            ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"]);
-        assert.deepEqual(months('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'}, false),
-            months('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'}, true));
-        // assert.deepEqual(months('zh-CN', {year: 'numeric', month: 'short', day: '2-digit'}, false),
-        //     months('zh-CN', {year: 'numeric', month: 'short', day: '2-digit'}, true));
+        assertNativeMonthsMatches('en-GB', {year: 'numeric', month: "long", day: 'numeric', weekday: 'long'});
+        assertNativeMonthsMatches('ru', {year: 'numeric', month: 'short', day: '2-digit'});
+        assertNativeMonthsMatches('ru', {year: "numeric", month: 'long', day: 'numeric'});
+        assertNativeMonthsMatches('zh-CN', {day: 'numeric', year: 'numeric', month: 'long'});
+
+        assertNativeMonthsMatches('zh-CN', {year: 'numeric', month: 'short', day: '2-digit'});
+        assertNativeMonthsMatches('ja', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
+        assertNativeMonthsMatches('ja', {day: "numeric", year: "numeric", month: "long", weekday: "short"});
+        // assertNativeMonthsMatches('hy-Latn-IT-arevela', {day:"numeric",year:"numeric",month:"long",weekday:"long"});
+
     });
 
     it("non native version can still extract weeks from single long format", () => {
@@ -168,10 +168,36 @@ describe("weekdays and months", function () {
     });
 
     it("non native version can still extract weekdays from contextual long format", () => {
-        const options:Options = {year: 'numeric', month: "long", day:'numeric', weekday: 'long'};
-        assert.deepEqual(weekdays('en-GB', options, false), weekdays('en-GB', options, true));
-        assert.deepEqual(weekdays('es-ES', {day: '2-digit', year: 'numeric', month: 'short'}, false),
-            weekdays('es-ES', {day: '2-digit', year: 'numeric', month: 'short'}, true));
+        assertNativeWeekdaysMatches('en-GB', {year: 'numeric', month: "long", day: 'numeric', weekday: 'long'});
+        assertNativeWeekdaysMatches('es-ES', {day: '2-digit', year: 'numeric', month: 'short'});
+        assertNativeWeekdaysMatches('ja', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
+    });
 
+    function assertNativeWeekdaysMatches(locale: string, option: Options) {
+        assert.deepEqual(cleanse(weekdays(locale, option, false)), cleanse(weekdays(locale, option, true)), `weekdays dont match '${locale}', ${JSON.stringify(option)}`);
+    }
+
+    function assertNativeMonthsMatches(locale: string, option: Options) {
+        assert.deepEqual(cleanse(months(locale, option, false)), cleanse(months(locale, option, true)), `months dont match '${locale}', ${JSON.stringify(option)}`);
+    }
+
+    function cleanse(values: string[]):string[] {
+        return values.map(v => v.replace(/(?<!^)[\\.月]$/g, ''));
+    }
+
+    it('weekdays matches native implementation', () => {
+        for (const locale of supported) {
+            for (const option of options) {
+                assertNativeWeekdaysMatches(locale, option);
+            }
+        }
+    });
+
+    it('months matches native implementation', () => {
+        for (const locale of supported.filter(l => l != 'hy-Latn-IT-arevela')) {
+            for (const option of options) {
+                assertNativeMonthsMatches(locale, option);
+            }
+        }
     });
 });

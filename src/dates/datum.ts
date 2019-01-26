@@ -96,7 +96,6 @@ export function months(locale: string = 'default', monthFormat: MonthFormat | Op
 }
 
 
-
 export type Weekday = Datum;
 
 export class Weekdays extends DatumLookup<Weekday>{
@@ -127,6 +126,8 @@ export class Weekdays extends DatumLookup<Weekday>{
         return weekdays(locale, options).map((m, i) => ({name: m, number: i + 1}));
     }
 }
+
+
 
 export function weekdays(locale: string = 'default', weekdayFormat: WeekdayFormat | Options = 'long', native=hasNativeFormatToParts): string[] {
     const options: Options = {...typeof weekdayFormat == 'string' ? {weekday: weekdayFormat} : weekdayFormat};
@@ -193,9 +194,10 @@ export class FromFormatStringMonthExtractor extends FromFormatStringDataExtracto
         if(!this.options.weekday) return super.diff(data);
         const result:string[] = [];
         const days = weekdays(this.locale, this.options);
-        const weekday = days[this.day(this.dates[0])];
+        const weekday = days[this.day(this.dates[8])];
         for (let i = 0; i < data.length; i++) {
-            const f = data[i];
+            // the characters for year,month,day are also the same for Saturday,Sunday,Monday
+            const f = data[i].replace(/(?<=\d)[年月日]/g, '-');
             const replace = days[this.day(this.dates[i])];
             const r = f.replace(replace, weekday);
             result[i] = r;
