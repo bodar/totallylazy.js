@@ -20,7 +20,7 @@ describe("FormatToParts", function () {
         assert.deepEqual(actual, expected, `${locale} ${JSON.stringify(option)}`)
     }
 
-    it.skip('matches native implementation', () => {
+    it('matches native implementation', () => {
         for (const locale of supported) {
             for (const option of options) {
                 assertPartsMatch(locale, option, d);
@@ -29,6 +29,7 @@ describe("FormatToParts", function () {
     });
 
     it("specific options work", () => {
+        assertPartsMatch('ja', {day: "numeric", year: "numeric", month: "long", weekday: "short"}, d);
         assertPartsMatch('ja', {day: "numeric", year: "numeric", month: "long", weekday: "long"}, d);
         assertPartsMatch('en', {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'}, d);
         assertPartsMatch('de', {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'}, d);

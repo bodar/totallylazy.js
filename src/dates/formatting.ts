@@ -1,7 +1,6 @@
 import {date, DatumLookup, defaultOptions, months, Months, Options, weekdays, Weekdays} from "./index";
 import {lazy} from "../lazy";
 import {namedGroups, NamedGroups, replace} from "../characters";
-import {unique} from "../arrays";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
@@ -39,8 +38,8 @@ export class FormatToParts {
                         private options: Options = defaultOptions,
                         private year = 3333,
                         private monthValue = 11,
-                        private day = 22,
-                        private weekdayValue = 7 /*Sunday*/) {
+                        private day = 21,
+                        private weekdayValue = 6 /*Saturday*/) {
     }
 
     static cache: { [key: string]: FormatToParts } = {};
