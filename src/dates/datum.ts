@@ -1,7 +1,7 @@
 import {PrefixTree} from "../trie";
 import {flatten, unique} from "../arrays";
 import {date, MonthFormat, Options, WeekdayFormat} from "./core";
-import {format, Formatters, hasNativeFormatToParts} from "./formatting";
+import {Formatters, hasNativeFormatToParts} from "./formatting";
 import {characters, different} from "../characters";
 import DateTimeFormat = Intl.DateTimeFormat;
 
@@ -142,33 +142,32 @@ export class Weekdays extends DatumLookup<Weekday>{
     }
 }
 
-export function weekdays(locale?: string, weekdayFormat: WeekdayFormat | Options = 'long', native=hasNativeFormatToParts): string[] {
+export function weekdays(locale: string = 'default', weekdayFormat: WeekdayFormat | Options = 'long', native=hasNativeFormatToParts): string[] {
     const options: Options = {...typeof weekdayFormat == 'string' ? {weekday: weekdayFormat} : weekdayFormat};
     delete options.day;
 
-    const formatter = Formatters.create(locale, options);
     const dates = range(1,7).map(i => date(2000, 1, i + 2));
+
+    if(native) return extractFromParts(locale, options, dates);
+    return extractFromFormatString(locale, options, dates);
+}
+
+export function extractFromParts(locale: string, options:Options,  dates:Date[]): string[] {
+    const formatter = Formatters.create(locale, options);
+    return dates.map(d => formatter.formatToParts(d).filter(p => p.type === 'weekday').map(p => p.value).join(''));
+}
+
+export function extractFromFormatString(locale: string, options:Options,  dates:Date[]): string[] {
     const exact = Object.keys(options).length == 1;
-
-    if(native) return weekdaysByParts(dates, formatter);
-    if(exact) return weekdaysByFormatted(dates, formatter);
-    return weekdaysByDiff(dates, formatter);
+    const fullFormat = exactFormat(locale, options, dates);
+    if(exact) return fullFormat;
+    const simpleFormat = exactFormat(locale, {weekday: options.weekday}, dates);
+    if(fullFormat[0].indexOf(simpleFormat[0]) != -1) return simpleFormat;
+    return different(fullFormat);
 }
 
-export function weekdaysByParts(dates:Date[], formatter:DateTimeFormat): string[] {
-    return dates.map(d => formatter.formatToParts(d).filter(p => p.type === 'weekday').map(p => p.value).join(""));
-}
-
-export function weekdaysByDiff(dates:Date[], formatter:DateTimeFormat): string[] {
-    const values = dates.map(d => {
-        const formatted = formatter.format(d);
-        console.log(formatted);
-        return formatted;
-    });
-    return different(values);
-}
-
-export function weekdaysByFormatted(dates:Date[], formatter:DateTimeFormat): string[] {
+export function exactFormat(locale: string, options:Options,  dates:Date[]): string[] {
+    const formatter = Formatters.create(locale, options);
     return dates.map(d => formatter.format(d));
 }
 

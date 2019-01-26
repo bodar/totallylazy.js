@@ -147,13 +147,21 @@ describe("weekdays and months", function () {
         }
     });
 
-    it("non native version can still extract months from format string", () => {
-        const options:Options = {year: 'numeric', month: "long", day:'numeric', weekday: 'long'};
-        assert.deepEqual(months('en-GB', options, false), months('en-GB', options, true));
+    it("non native version can still extract months from simple long format", () => {
+        assert.deepEqual(months('en-GB', 'long', false), ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
     });
 
-    it("non native version can still extract weekdays from format string", () => {
+    it("non native version can still extract months from contextual long format", () => {
         const options:Options = {year: 'numeric', month: "long", day:'numeric', weekday: 'long'};
-        assert.deepEqual(weekdays('de', options, false), weekdays('de', options, true));
+        assert.deepEqual(months('en-GB', options, false), ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
+    });
+
+    it("non native version can still extract weeks from single long format", () => {
+        assert.deepEqual(weekdays('en-GB', 'long', false), weekdays('en-GB', 'long', true));
+    });
+
+    it("non native version can still extract weekdays from contextual long format even if the values all end in the same characters Sun(day) Mon(day)", () => {
+        const options:Options = {year: 'numeric', month: "long", day:'numeric', weekday: 'long'};
+        assert.deepEqual(weekdays('en-GB', options, false), weekdays('en-GB', options, true));
     });
 });
