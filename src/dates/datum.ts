@@ -23,10 +23,10 @@ export class DatumLookup<T extends Datum = Datum> {
         const number = parseInt(value);
         if (!isNaN(number)) return this.get(number);
 
-        const months = unique(this.prefixTree.match(value.toLocaleLowerCase(this.locale)));
-        if (months.length != 1) throw new Error(`${this.constructor.name} - Unable to parse: ${value} matched : ${JSON.stringify(months)}`);
-        const [month] = months;
-        return this.get(month);
+        const data = unique(this.prefixTree.match(value.toLocaleLowerCase(this.locale)));
+        if (data.length != 1) throw new Error(`${this.constructor.name} - Unable to parse: ${value} matched : ${JSON.stringify(data)}`);
+        const [datum] = data;
+        return this.get(datum);
     }
 
     get(number: number): T {
