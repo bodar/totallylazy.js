@@ -4,6 +4,7 @@ import {date, MonthFormat, Options, WeekdayFormat} from "./core";
 import {Formatters, hasNativeFormatToParts} from "./formatting";
 import {characters, different} from "../characters";
 import DateTimeFormat = Intl.DateTimeFormat;
+import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
 export interface Datum {
     number: number;
@@ -86,30 +87,17 @@ function range(start:number, end:number):number[]{
     return result;
 }
 
-export function months(locale?: string, monthFormat: MonthFormat | Options = 'long', native = hasNativeFormatToParts): string[] {
+export function months(locale: string = 'default', monthFormat: MonthFormat | Options = 'long', native = hasNativeFormatToParts): string[] {
     const options: Options = {...typeof monthFormat == 'string' ? {month: monthFormat} : monthFormat};
     delete options.weekday;
 
-    const formatter = Formatters.create(locale, options);
     const dates = range(1,12).map(i => date(2000, i, 1));
-    const exact = Object.keys(options).length == 1;
 
-    if(native) return monthsByParts(dates, formatter);
-    if(exact) return monthsByFormatted(dates, formatter);
-    return monthsByDiff(dates, formatter);
+    if(native) return new NativeDataExtractor(locale, options, dates, 'month').extract();
+    return new FromFormatStringDataExtractor(locale, options, dates, 'month').extract();
 }
 
-export function monthsByParts(dates:Date[], formatter:DateTimeFormat): string[] {
-    return dates.map(d => formatter.formatToParts(d).filter(p => p.type === 'month').map(p => p.value).join(""));
-}
 
-export function monthsByDiff(dates:Date[], formatter:DateTimeFormat): string[] {
-    return different(monthsByFormatted(dates, formatter));
-}
-
-export function monthsByFormatted(dates:Date[], formatter:DateTimeFormat): string[] {
-    return dates.map(d => formatter.format(d));
-}
 
 export type Weekday = Datum;
 
@@ -148,26 +136,42 @@ export function weekdays(locale: string = 'default', weekdayFormat: WeekdayForma
 
     const dates = range(1,7).map(i => date(2000, 1, i + 2));
 
-    if(native) return extractFromParts(locale, options, dates);
-    return extractFromFormatString(locale, options, dates);
-}
-
-export function extractFromParts(locale: string, options:Options,  dates:Date[]): string[] {
-    const formatter = Formatters.create(locale, options);
-    return dates.map(d => formatter.formatToParts(d).filter(p => p.type === 'weekday').map(p => p.value).join(''));
-}
-
-export function extractFromFormatString(locale: string, options:Options,  dates:Date[]): string[] {
-    const exact = Object.keys(options).length == 1;
-    const fullFormat = exactFormat(locale, options, dates);
-    if(exact) return fullFormat;
-    const simpleFormat = exactFormat(locale, {weekday: options.weekday}, dates);
-    if(fullFormat[0].indexOf(simpleFormat[0]) != -1) return simpleFormat;
-    return different(fullFormat);
+    if(native) return new NativeDataExtractor(locale, options, dates, 'weekday').extract();
+    return new FromFormatStringDataExtractor(locale, options, dates, 'weekday').extract();
 }
 
 export function exactFormat(locale: string, options:Options,  dates:Date[]): string[] {
     const formatter = Formatters.create(locale, options);
     return dates.map(d => formatter.format(d));
+}
+
+export interface DataExtractor {
+    extract(): string[];
+}
+
+export class BaseDataExtractor{
+    constructor(protected locale:string,
+                protected options:Options,
+                protected dates:Date[],
+                protected partType:DateTimeFormatPartTypes){
+    }
+}
+
+export class NativeDataExtractor extends BaseDataExtractor implements DataExtractor {
+    extract(): string[] {
+        const formatter = Formatters.create(this.locale, this.options);
+        return this.dates.map(d => formatter.formatToParts(d).filter(p => p.type === this.partType).map(p => p.value).join(''));
+    }
+}
+
+export class FromFormatStringDataExtractor extends BaseDataExtractor implements DataExtractor {
+    extract(): string[] {
+        const exact = Object.keys(this.options).length == 1;
+        const fullFormat = exactFormat(this.locale, this.options, this.dates);
+        if(exact) return fullFormat;
+        const simpleFormat = exactFormat(this.locale, {[this.partType]: (this.options as any)[this.partType]}, this.dates);
+        if(fullFormat[0].indexOf(simpleFormat[0]) != -1) return simpleFormat;
+        return different(fullFormat);
+    }
 }
 
