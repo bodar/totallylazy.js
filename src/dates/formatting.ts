@@ -1,5 +1,5 @@
 import {date, DatumLookup, defaultOptions, months, Months, Options, weekdays, Weekdays} from "./index";
-import {lazy, cache} from "../lazy";
+import {cache, lazy} from "../lazy";
 import {namedGroups, NamedGroups, replace} from "../characters";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormat = Intl.DateTimeFormat;
@@ -50,20 +50,19 @@ export class FormatToParts {
     }
 
     @lazy get months(): Months {
-        return new Months(this.locale, [Months.dataFor(this.locale, this.options)]);
+        return new Months(this.locale, [Months.dataFor(this.locale, this.options, false)]);
     }
 
     @lazy get month(): string {
-        return months(this.locale, this.options)[this.monthValue - 1];
+        return months(this.locale, this.options, false)[this.monthValue - 1];
     }
 
     @lazy get weekdays(): Weekdays {
-        return new Weekdays(this.locale, [Weekdays.dataFor(this.locale, this.options)]);
+        return new Weekdays(this.locale, [Weekdays.dataFor(this.locale, this.options, false)]);
     }
 
     @lazy get weekday(): string {
-        const w = weekdays(this.locale, this.options);
-        return w[this.weekdayValue - 1];
+        return weekdays(this.locale, this.options, false)[this.weekdayValue - 1];
     }
 
     @lazy get learningNamesPattern(): NamedGroups {

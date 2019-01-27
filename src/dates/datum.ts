@@ -72,8 +72,8 @@ export class Months extends DatumLookup<Month> {
         return Months.formats.map(f => Months.dataFor(locale, f));
     }
 
-    static dataFor(locale: string, options: Options): Month[] {
-        return months(locale, options, hasNativeFormatToParts).map((m, i) => ({name: m, number: i + 1}));
+    static dataFor(locale: string, options: Options, native = hasNativeFormatToParts): Month[] {
+        return months(locale, options, native).map((m, i) => ({name: m, number: i + 1}));
     }
 }
 
@@ -127,8 +127,8 @@ export class Weekdays extends DatumLookup<Weekday> {
         return Weekdays.formats.map(f => Weekdays.dataFor(locale, f));
     }
 
-    static dataFor(locale: string, options: Options): Weekday[] {
-        return weekdays(locale, options).map((m, i) => ({name: m, number: i + 1}));
+    static dataFor(locale: string, options: Options, native = hasNativeFormatToParts): Weekday[] {
+        return weekdays(locale, options, native).map((m, i) => ({name: m, number: i + 1}));
     }
 }
 
@@ -182,7 +182,7 @@ export abstract class FromFormatStringDataExtractor extends BaseDataExtractor im
             const full = fullFormats[i];
             const simple = simpleFormats[i];
             const diff = diffs[i];
-            result.push(full.indexOf(simple) != -1 && simple.length > diff.length ? simple : diff);
+            result.push(full.indexOf(simple) != -1 && simple.length > diff.length && isNaN(parseInt(diff))? simple : diff);
         }
 
         return result;
@@ -201,13 +201,13 @@ export class FromFormatStringMonthExtractor extends FromFormatStringDataExtracto
     diff(data: string[]): string[] {
         if (!this.options.weekday) return super.diff(data);
         const result: string[] = [];
-        const days = weekdays(this.locale, this.options);
+        const days = weekdays(this.locale, this.options, false);
         const weekday = days[this.day(this.dates[8])];
         for (let i = 0; i < data.length; i++) {
             // the characters for year,month,day are also the same for Saturday,Sunday,Monday
-            const f = data[i].replace(/(?<=\d)[年月日]/g, '-');
+            const f = data[i].replace(/(?<=\d)[年]/, 'year').replace(/(?<=\d)[月]/, 'month').replace(/(?<=\d)[日]/, 'day');
             const replace = days[this.day(this.dates[i])];
-            const r = f.replace(replace, weekday);
+            const r = f.replace(replace, weekday).replace(/year/, '年').replace(/month/, '月').replace(/day/, '日');
             result[i] = r;
         }
         return super.diff(result);
