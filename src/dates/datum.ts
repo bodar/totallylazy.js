@@ -182,7 +182,7 @@ export abstract class FromFormatStringDataExtractor extends BaseDataExtractor im
             const full = fullFormats[i];
             const simple = simpleFormats[i];
             const diff = diffs[i];
-            result.push(full.indexOf(simple) != -1 && simple.length > diff.length && isNaN(parseInt(diff))? simple : diff);
+            result.push(full.indexOf(simple) != -1 && simple.length > diff.length && isNaN(parseInt(diff)) ? simple : diff);
         }
 
         return result;
@@ -204,13 +204,30 @@ export class FromFormatStringMonthExtractor extends FromFormatStringDataExtracto
         const days = weekdays(this.locale, this.options, false);
         const weekday = days[this.day(this.dates[8])];
         for (let i = 0; i < data.length; i++) {
-            // the characters for year,month,day are also the same for Saturday,Sunday,Monday
-            const f = data[i].replace(/(?<=\d)[年]/, 'year').replace(/(?<=\d)[月]/, 'month').replace(/(?<=\d)[日]/, 'day');
-            const replace = days[this.day(this.dates[i])];
-            const r = f.replace(replace, weekday).replace(/year/, '年').replace(/month/, '月').replace(/day/, '日');
-            result[i] = r;
+            // the characters for year,month,day are also the same for Saturday,Sunday,Monday so we temp replace them
+            const format = this.replaceYearMonthDay(data[i]);
+            // then make all the weekdays the same so only the months are different
+            const replaced = format.replace(this.weekday(days, i), weekday);
+            // then restore the original year month day symbols afterwards
+            result[i] = this.restoreYearMonthDay(replaced);
         }
         return super.diff(result);
+    }
+
+    private weekday(days: string[], i: number) {
+        return days[this.day(this.dates[i])];
+    }
+
+    private replaceYearMonthDay(a: string) {
+        return a.replace(/(?<=\d)[年]/, 'year')
+            .replace(/(?<=\d)[月]/, 'month')
+            .replace(/(?<=\d)[日]/, 'day');
+    }
+
+    private restoreYearMonthDay(never: string) {
+        return never.replace(/year/, '年')
+            .replace(/month/, '月')
+            .replace(/day/, '日');
     }
 
     private day(date: Date) {
