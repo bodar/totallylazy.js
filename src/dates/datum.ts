@@ -3,10 +3,8 @@ import {flatten, unique} from "../arrays";
 import {date, MonthFormat, Options, WeekdayFormat} from "./core";
 import {Formatters, hasNativeFormatToParts} from "./formatting";
 import {characters, different, replace} from "../characters";
-import {valueFromParts} from "./datum";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
-import DateTimeFormat = Intl.DateTimeFormat;
 
 export interface Datum {
     number: number;
