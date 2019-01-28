@@ -1,18 +1,39 @@
 import {date, DatumLookup, defaultOptions, months, Months, Options, weekdays, Weekdays} from "./index";
 import {cache, lazy} from "../lazy";
-import {namedGroups, NamedGroups, replace} from "../characters";
+import {characters, namedGroups, NamedGroups, replace} from "../characters";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
 export class Formatters {
-    @cache static create(locale: string = 'default', options: Options = defaultOptions) {
+    @cache static create(locale: string = 'default', options: Options = defaultOptions):DateTimeFormat {
             // Detect IE 11 bug
             const clone = {...options};
             const keys = Object.keys(clone).length;
-            const formatter = new Intl.DateTimeFormat(locale, clone);
+            const formatter = new ImprovedDateTimeFormat(locale, clone);
             if (Object.keys(clone).length != keys) throw new Error(`Unsupported DateTimeFormat options provided: ${JSON.stringify(options)}`);
             return formatter;
+    }
+}
+
+export class ImprovedDateTimeFormat implements DateTimeFormat{
+    constructor(private locale: string, private options: Options, private delegate:DateTimeFormat = new Intl.DateTimeFormat(locale, options)) {
+    }
+
+    format(date?: Date | number): string {
+        return characters(this.delegate.format(date)).join("");
+    }
+
+    formatToParts(date: Date | number = new Date()): Intl.DateTimeFormatPart[] {
+        if (typeof this.delegate.formatToParts == "function") {
+            return this.delegate.formatToParts(date);
+        } else {
+            return FormatToParts.create(this.locale, this.options).formatToParts(typeof date === "number" ? new Date(date) : date);
+        }
+    }
+
+    resolvedOptions(): Intl.ResolvedDateTimeFormatOptions {
+        return this.delegate.resolvedOptions();
     }
 }
 

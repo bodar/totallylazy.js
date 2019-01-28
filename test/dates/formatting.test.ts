@@ -1,7 +1,8 @@
-import {date, Formatters, FormatToParts, Options} from "../../src/dates";
+import {date, Formatters, FormatToParts, ImprovedDateTimeFormat, Options} from "../../src/dates";
 import {assert} from 'chai';
 import {options, supported} from "./dates.test";
 import {runningInNode} from "../../src/node";
+import {characters} from "../../src/characters";
 
 describe("FormatToParts", function () {
     before(function () {
@@ -42,4 +43,27 @@ describe("FormatToParts", function () {
     it("works even when no weekday format is asked for", () => {
         assertPartsMatch('en', {day: 'numeric', year: 'numeric', month: 'long'}, d);
     });
+});
+
+describe("ImprovedDateTimeFormat", function () {
+    it("strips RTL unicode markers from formatted date", () => {
+        const containsLeadingRtlMarker = "‎Friday‎, ‎November‎ ‎20‎, ‎3333";
+        assert.equal(containsLeadingRtlMarker.length, 32);
+        assert.equal(characters(containsLeadingRtlMarker).length, 25);
+
+        const result = new ImprovedDateTimeFormat('ignored', {}, {format(date?: Date | number): string {
+            return containsLeadingRtlMarker;
+            }} as any).format(new Date());
+        assert.equal(result.length, 25);
+    });
+
+    it("adds formatToParts when missing ", () => {
+        const locale = 'en';
+        const options:any = {month:'long'};
+        const formatter = new Intl.DateTimeFormat(locale, options);
+        delete formatter.formatToParts;
+        const result = new ImprovedDateTimeFormat(locale, options, formatter).formatToParts(new Date());
+        assert.deepEqual(result, [{type: "month", value: "January"}]);
+    });
+
 });
