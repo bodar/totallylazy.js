@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {date, format, Options, parse} from "../../src/dates";
+import {date, format, hasNativeFormatToParts, numeric, Options, parse} from "../../src/dates";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
@@ -8,8 +8,8 @@ export function assertFormat(locale: string, date: Date, options: Options, expec
     assertParse(locale, expected, date, options);
 }
 
-export function assertParse(locale: string, value: string, expected: Date, options?: string | Options) {
-    const parsed = parse(value, locale, options);
+export function assertParse(locale: string, value: string, expected: Date, options?: string | Options, native = hasNativeFormatToParts) {
+    const parsed = parse(value, locale, options, native);
     assert.equal(parsed.toISOString(), expected.toISOString());
 }
 
@@ -106,6 +106,11 @@ describe("dates", function () {
         assertParse('pt-PT', "06 abr 2019", date(2019, 4, 6),"dd MMM yyyy");
         assertParse('cs-CZ', "06 úno 2019", date(2019, 2, 6),"dd MMM yyyy");
         assertParse('de-DE', "01 feb. 2019", date(2019, 2, 1),"dd MMM yyyy");
+    });
+
+    it("can parse using non native implementation", () => {
+        assertParse('en-US', 'Monday, January 28, 2019', date(2019, 1, 28),
+            {weekday:'long', month: 'long', day: 'numeric', year: 'numeric'}, false);
     });
 
 });

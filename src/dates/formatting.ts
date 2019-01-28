@@ -22,9 +22,9 @@ export function format(value: Date, locale?: string, options: Options = defaultO
 
 export const hasNativeFormatToParts = typeof Intl.DateTimeFormat.prototype.formatToParts == 'function';
 
-export function formatData(value: Date, locale: string = 'default', options: Options = defaultOptions): DateTimeFormatPart[] {
+export function formatData(value: Date, locale: string = 'default', options: Options = defaultOptions, native = hasNativeFormatToParts): DateTimeFormatPart[] {
     const formatter = Formatters.create(locale, options);
-    if (hasNativeFormatToParts) return formatter.formatToParts(value);
+    if (native) return formatter.formatToParts(value);
     return FormatToParts.create(locale, options).formatToParts(value);
 }
 
