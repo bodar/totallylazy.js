@@ -23,7 +23,7 @@ export class Trie<K, V> {
     }
 
     match(key: K[]): V[] {
-        if (key.length == 0) return Object.values(this.children).reduce((a, t) => {
+        if (key.length == 0) return Object.keys(this.children).map(k => this.children[k]).reduce((a, t) => {
             return a.concat(t.match(key));
         }, this.value ? [this.value] : []);
         const [head, ...tail] = key;
@@ -47,7 +47,7 @@ export class Trie<K, V> {
     }
 
     @lazy get height():number{
-        return Object.values(this.children).reduce((a,c) => Math.max(a, c.height + 1), 0);
+        return Object.keys(this.children).map(k => this.children[k]).reduce((a,c) => Math.max(a, c.height + 1), 0);
     }
 
     private childFor(head: K): Trie<K, V> | undefined {
