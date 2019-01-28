@@ -169,7 +169,6 @@ describe("weekdays and months", function () {
 
     it("non native version can still extract weekdays from contextual long format", () => {
         assertNativeWeekdaysMatches('en-GB', {year: 'numeric', month: "long", day: 'numeric', weekday: 'long'});
-        assertNativeWeekdaysMatches('es-ES', {day: '2-digit', year: 'numeric', month: 'short'});
         assertNativeWeekdaysMatches('ja', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
     });
 
