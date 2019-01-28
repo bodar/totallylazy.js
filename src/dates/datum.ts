@@ -36,7 +36,7 @@ export class DatumLookup<T extends Datum = Datum> {
     }
 
     get pattern(): string {
-        const min = flatten(this.data).reduce((a, l) => Math.min(a, l.name.length), Number.MAX_VALUE);
+        const min = flatten(this.data).reduce((a, l) => Math.min(a, characters(l.name).length), Number.MAX_VALUE);
         return `[${this.characters.join('')}]{${min},${this.prefixTree.height}}`;
     }
 

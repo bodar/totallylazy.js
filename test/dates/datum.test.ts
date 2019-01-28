@@ -136,6 +136,14 @@ describe("Weekdays", function () {
         assert.deepEqual(ru.parse('понедельник'.toLocaleLowerCase('ru')), {name: 'понедельник', number: 1});
         assert.deepEqual(ru.parse('понедельник'.toLocaleUpperCase('ru')), {name: 'понедельник', number: 1});
     });
+
+    it('length of pattern is determined by valid unicode characters - exclude RTL marker', () => {
+        const containsLeadingRtlMarker = "‎Jan";
+        assert.equal(containsLeadingRtlMarker.length, 4);
+        const weekdays = new Weekdays('en-GB', [[{name:containsLeadingRtlMarker, number: 1}]]);
+        assert.deepEqual(weekdays.pattern, '[Jan]{3,3}');
+        assert.deepEqual(new RegExp(weekdays.pattern).test(containsLeadingRtlMarker), true);
+    });
 });
 
 describe("weekdays and months", function () {

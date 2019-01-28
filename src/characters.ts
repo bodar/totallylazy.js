@@ -63,7 +63,16 @@ export function different(values: string[]): string[] {
     });
 }
 
+export function charactersByRegex(value: string) {
+    return value.split(/(?=(?:[\0-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))/)
+        .filter(removeUnneededUnicodeCharacters);
+}
+
+export function removeUnneededUnicodeCharacters(char:string):boolean{
+    return char.charCodeAt(0) != 8206;
+}
+
 export function characters(value:string):string[] {
-    if(typeof Symbol === "function" && value[Symbol.iterator]) return [...value];
-    return value.split(/(?=(?:[\0-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))/);
+    if(typeof Symbol === "function" && value[Symbol.iterator]) return [...value].filter(removeUnneededUnicodeCharacters);
+    return charactersByRegex(value);
 }

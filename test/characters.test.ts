@@ -1,4 +1,4 @@
-import {different} from "../src/characters";
+import {characters, charactersByRegex, different} from "../src/characters";
 import {assert} from 'chai';
 
 describe("difference", function () {
@@ -21,5 +21,15 @@ describe("difference", function () {
     it("can find difference when at start of string", () => {
         const input = ["Mon Jan 2000","Tue Jan 2000","Wed Jan 2000","Thu Jan 2000","Fri Jan 2000","Sat Jan 2000","Sun Jan 2000"];
         assert.deepEqual(different(input), ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
+    });
+});
+
+
+describe("characters", function() {
+    it("ignores RTL unicode marker", () => {
+        const containsLeadingRtlMarker = "‎Jan";
+        assert.equal(containsLeadingRtlMarker.length, 4);
+        assert.equal(characters(containsLeadingRtlMarker).length, 3);
+        assert.equal(charactersByRegex(containsLeadingRtlMarker).length, 3);
     });
 });
