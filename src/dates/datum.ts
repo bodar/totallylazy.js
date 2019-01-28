@@ -2,7 +2,7 @@ import {PrefixTree} from "../trie";
 import {flatten, unique} from "../arrays";
 import {date, MonthFormat, Options, WeekdayFormat} from "./core";
 import {Formatters, hasNativeFormatToParts} from "./formatting";
-import {characters, different} from "../characters";
+import {characters, different, replace} from "../characters";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
 export interface Datum {
@@ -218,16 +218,27 @@ export class FromFormatStringMonthExtractor extends FromFormatStringDataExtracto
         return days[this.day(this.dates[i])];
     }
 
-    private replaceYearMonthDay(a: string) {
-        return a.replace(/(?<=\d)[年]/, 'year')
-            .replace(/(?<=\d)[月]/, 'month')
-            .replace(/(?<=\d)[日]/, 'day');
+    static readonly replaceYMD = /(\d)([年月日])/g;
+    private replaceYearMonthDay(value: string) {
+        return replace(FromFormatStringMonthExtractor.replaceYMD, value, matcher => {
+            const number = matcher[1];
+            const delimiter = matcher[2];
+            if(delimiter === '年') return `${number}year`;
+            if(delimiter === '月') return `${number}month`;
+            if(delimiter === '日') return `${number}day`;
+            throw new Error(`Unknown delimiter ${delimiter}`)
+        });
     }
 
-    private restoreYearMonthDay(never: string) {
-        return never.replace(/year/, '年')
-            .replace(/month/, '月')
-            .replace(/day/, '日');
+    static readonly restoreYMD = /(year|month|day)/g;
+    private restoreYearMonthDay(value: string) {
+        return replace(FromFormatStringMonthExtractor.restoreYMD, value, matcher => {
+            const delimiter = matcher[1];
+            if(delimiter === 'year') return '年';
+            if(delimiter === 'month') return '月';
+            if(delimiter === 'day') return '日';
+            throw new Error(`Unknown delimiter ${delimiter}`)
+        });
     }
 
     private day(date: Date) {
