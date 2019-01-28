@@ -3,7 +3,10 @@ import {flatten, unique} from "../arrays";
 import {date, MonthFormat, Options, WeekdayFormat} from "./core";
 import {Formatters, hasNativeFormatToParts} from "./formatting";
 import {characters, different, replace} from "../characters";
+import {valueFromParts} from "./datum";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
+import DateTimeFormatPart = Intl.DateTimeFormatPart;
+import DateTimeFormat = Intl.DateTimeFormat;
 
 export interface Datum {
     number: number;
@@ -168,10 +171,14 @@ export class BaseDataExtractor {
     }
 }
 
+export function valueFromParts(parts:DateTimeFormatPart[], partType: Intl.DateTimeFormatPartTypes) {
+    return parts.filter(p => p.type === partType).map(p => p.value).join('');
+}
+
 export class NativeDataExtractor extends BaseDataExtractor implements DataExtractor {
     extract(): string[] {
         const formatter = Formatters.create(this.locale, this.options);
-        return this.dates.map(d => formatter.formatToParts(d).filter(p => p.type === this.partType).map(p => p.value).join(''));
+        return this.dates.map(d => valueFromParts(formatter.formatToParts(d), this.partType));
     }
 }
 

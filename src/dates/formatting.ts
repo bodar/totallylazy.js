@@ -1,4 +1,16 @@
-import {date, DatumLookup, defaultOptions, months, Months, Options, weekdays, Weekdays} from "./index";
+import {
+    date,
+    DatumLookup,
+    defaultOptions,
+    months,
+    Months,
+    Options,
+    optionsFrom,
+    partsFrom,
+    valueFromParts,
+    weekdays,
+    Weekdays
+} from "./index";
 import {cache, lazy} from "../lazy";
 import {characters, namedGroups, NamedGroups, replace} from "../characters";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
@@ -6,18 +18,23 @@ import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
 export class Formatters {
-    @cache static create(locale: string = 'default', options: Options = defaultOptions):DateTimeFormat {
-            // Detect IE 11 bug
-            const clone = {...options};
-            const keys = Object.keys(clone).length;
-            const formatter = new ImprovedDateTimeFormat(locale, clone);
-            if (Object.keys(clone).length != keys) throw new Error(`Unsupported DateTimeFormat options provided: ${JSON.stringify(options)}`);
-            return formatter;
+    @cache static create(locale: string = 'default', options: string|Options = defaultOptions):DateTimeFormat {
+        if(typeof options === "string") return new SimpleFormat(locale, options);
+        return new ImprovedDateTimeFormat(locale, options);
     }
 }
 
 export class ImprovedDateTimeFormat implements DateTimeFormat{
-    constructor(private locale: string, private options: Options, private delegate:DateTimeFormat = new Intl.DateTimeFormat(locale, options)) {
+    constructor(private locale: string, private options: Options, private delegate:DateTimeFormat = ImprovedDateTimeFormat.create(locale, options)) {
+    }
+
+    private static create(locale: string, options: Options){
+        // Detect IE 11 bug
+        const clone = {...options};
+        const keys = Object.keys(clone).length;
+        const result = new Intl.DateTimeFormat(locale, clone);
+        if (Object.keys(clone).length != keys) throw new Error(`Unsupported DateTimeFormat options provided: ${JSON.stringify(options)}`);
+        return result;
     }
 
     format(date?: Date | number): string {
@@ -37,8 +54,37 @@ export class ImprovedDateTimeFormat implements DateTimeFormat{
     }
 }
 
-export function format(value: Date, locale?: string, options: Options = defaultOptions): string {
+export function format(value: Date, locale?: string, options: string|Options = defaultOptions): string {
     return Formatters.create(locale, options).format(value);
+}
+
+export class SimpleFormat implements DateTimeFormat {
+    private partsInOrder: DateTimeFormatPart[];
+    private options: Options;
+
+    constructor(private locale: string, private value: string) {
+        this.partsInOrder = partsFrom(value);
+        this.options = optionsFrom(this.partsInOrder);
+    }
+
+    format(date?: Date | number): string {
+        return this.formatToParts(date).map(p => p.value).join("");
+    }
+
+    formatToParts(raw: Date | number = new Date()): Intl.DateTimeFormatPart[] {
+        const date = typeof raw === "number" ? new Date(raw) : raw;
+        const partsWithValues = FormatToParts.create(this.locale, this.options).formatToParts(date);
+        return this.partsInOrder.map(p => ({type: p.type, value: this.valueFor(partsWithValues, p.type, p.value)}));
+    }
+
+    private valueFor(partsWithValues:Intl.DateTimeFormatPart[], type:DateTimeFormatPartTypes, value:string): string {
+        if(type==='literal') return value;
+        return valueFromParts(partsWithValues, type);
+    }
+
+    resolvedOptions(): Intl.ResolvedDateTimeFormatOptions {
+        return {...this.options, locale: this.locale} as Intl.ResolvedDateTimeFormatOptions;
+    }
 }
 
 export const hasNativeFormatToParts = typeof Intl.DateTimeFormat.prototype.formatToParts == 'function';

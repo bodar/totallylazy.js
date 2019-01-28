@@ -3,8 +3,12 @@ import {unique} from "../arrays";
 import {namedGroups, replace} from "../characters";
 import {
     date,
-    defaultOptions, formatData, hasNativeFormatToParts, Months,
-    Options, Weekdays,
+    defaultOptions,
+    formatData,
+    hasNativeFormatToParts,
+    Months,
+    Options,
+    Weekdays,
 } from "./index";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
@@ -102,9 +106,9 @@ export class RegexParser implements DateParser {
 }
 
 
-const formatRegex = /(?:(y+)|(M+)|(d+)|(E+))/g;
+export const formatRegex = /(?:(y+)|(M+)|(d+)|(E+))/g;
 
-function typeFrom(value:string): DateTimeFormatPartTypes {
+export function typeFrom(value:string): DateTimeFormatPartTypes {
     if(value.indexOf('y') != -1) return 'year';
     if(value.indexOf('M') != -1) return 'month';
     if(value.indexOf('d') != -1) return 'day';
@@ -112,7 +116,7 @@ function typeFrom(value:string): DateTimeFormatPartTypes {
     throw new Error(`Illegal Argument: ${value}`);
 }
 
-function formatFrom(type:DateTimeFormatPartTypes, length:number): string {
+export function formatFrom(type:DateTimeFormatPartTypes, length:number): string {
     if(type === 'year'){
         if(length === 4) return "numeric";
         if(length === 2) return "2-digit";
@@ -134,7 +138,7 @@ function formatFrom(type:DateTimeFormatPartTypes, length:number): string {
     throw new Error(`Illegal Argument: ${type} ${length}`);
 }
 
-export function formatBuilder(locale:string, format:string): RegexBuilder{
+export function partsFrom(format: string):DateTimeFormatPart[] {
     const parts: DateTimeFormatPart[] = [];
     replace(formatRegex, format, match => {
         const type = typeFrom(match[0]);
@@ -142,17 +146,25 @@ export function formatBuilder(locale:string, format:string): RegexBuilder{
         parts.push({type, value});
         return "";
     }, a => {
-        if(a) parts.push({type:"literal", value:a});
+        if (a) parts.push({type: "literal", value: a});
         return "";
     });
+    return parts;
+}
 
+export function optionsFrom(formatOrParts:string|DateTimeFormatPart[]):Options {
+    const parts = typeof formatOrParts === "string"? partsFrom(formatOrParts) : formatOrParts;
     const keys = ['year', 'month', 'day', 'weekday'];
-    const options: Options = parts.filter(p => keys.indexOf(p.type) != -1).reduce((a,p) => {
+    return parts.filter(p => keys.indexOf(p.type) != -1).reduce((a, p) => {
         a[p.type] = p.value;
         return a;
     }, {} as any);
+}
 
-    return new RegexBuilder(locale, options, parts)
+export function formatBuilder(locale:string, format:string): RegexBuilder{
+    const parts = partsFrom(format);
+
+    return new RegexBuilder(locale, optionsFrom(parts), parts)
 }
 
 export type OptionHandler = (match: RegExpMatchArray) => number;

@@ -1,4 +1,4 @@
-import {date, Formatters, FormatToParts, ImprovedDateTimeFormat, Options} from "../../src/dates";
+import {date, format, Formatters, FormatToParts, ImprovedDateTimeFormat, Options} from "../../src/dates";
 import {assert} from 'chai';
 import {options, supported} from "./dates.test";
 import {runningInNode} from "../../src/node";
@@ -51,19 +51,42 @@ describe("ImprovedDateTimeFormat", function () {
         assert.equal(containsLeadingRtlMarker.length, 32);
         assert.equal(characters(containsLeadingRtlMarker).length, 25);
 
-        const result = new ImprovedDateTimeFormat('ignored', {}, {format(date?: Date | number): string {
-            return containsLeadingRtlMarker;
-            }} as any).format(new Date());
+        const result = new ImprovedDateTimeFormat('ignored', {}, {
+            format(date?: Date | number): string {
+                return containsLeadingRtlMarker;
+            }
+        } as any).format(new Date());
         assert.equal(result.length, 25);
     });
 
     it("adds formatToParts when missing ", () => {
         const locale = 'en';
-        const options:any = {month:'long'};
+        const options: any = {month: 'long'};
         const formatter = new Intl.DateTimeFormat(locale, options);
         delete formatter.formatToParts;
         const result = new ImprovedDateTimeFormat(locale, options, formatter).formatToParts(new Date());
         assert.deepEqual(result, [{type: "month", value: "January"}]);
     });
 
+});
+
+
+describe("format", function () {
+    it("can format to string", () => {
+        const formatter = Formatters.create('en-GB', "yyyy-MM-dd");
+        assert.equal(formatter.format(date(2001, 6, 9)), "2001-06-09");
+        assert.deepEqual(formatter.formatToParts(date(2001, 6, 9)), [
+            {type: "year", value: "2001"},
+            {type: "literal", value: "-"},
+            {type: "month", value: "06"},
+            {type: "literal", value: "-"},
+            {type: "day", value: "09"}
+        ]);
+        assert.deepEqual(formatter.resolvedOptions(), {
+            day: "2-digit",
+            locale: "en-GB",
+            month: "2-digit",
+            year: "numeric"
+        } as any);
+    });
 });
