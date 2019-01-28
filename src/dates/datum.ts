@@ -51,7 +51,7 @@ export class Months extends DatumLookup<Month> {
     static formats: Options[] = [
         {month: "long"}, {month: "short"},
         {year: 'numeric', month: "long", day: 'numeric'},
-        {year: 'numeric', month: 'short', day: '2-digit'}
+        {year: 'numeric', month: 'short', day: 'numeric'}
     ];
 
     static cache: { [key: string]: Months } = {};
@@ -106,8 +106,8 @@ export type Weekday = Datum;
 export class Weekdays extends DatumLookup<Weekday> {
     static formats: Options[] = [
         {weekday: "long"}, {weekday: "short"},
-        {year: 'numeric', month: "numeric", weekday: 'long'},
-        {year: 'numeric', month: 'numeric', weekday: 'short'}
+        {year: 'numeric', month: "numeric", day:'numeric', weekday: 'long'},
+        {year: 'numeric', month: 'numeric', day:'numeric', weekday: 'short'}
     ];
     static cache: { [key: string]: Weekdays } = {};
 
