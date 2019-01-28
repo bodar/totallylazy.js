@@ -172,6 +172,11 @@ describe("weekdays and months", function () {
         assertNativeWeekdaysMatches('ja', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
     });
 
+    it("returns no data when no format is asked for", () => {
+        assert.deepEqual(weekdays('en-GB', {}, false),[]);
+        assert.deepEqual(months('en-GB', {}, false),[]);
+    });
+
     function assertNativeWeekdaysMatches(locale: string, option: Options) {
         assert.deepEqual(cleanse(weekdays(locale, option, false)), cleanse(weekdays(locale, option, true)), `weekdays dont match '${locale}', ${JSON.stringify(option)}`);
     }
