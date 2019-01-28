@@ -92,7 +92,7 @@ export function months(locale: string = 'default', monthFormat: MonthFormat | Op
     const key = JSON.stringify({locale, monthFormat, native});
     return months_cache[key] = months_cache[key] || (() => {
         const options: Options = {...typeof monthFormat == 'string' ? {month: monthFormat} : monthFormat};
-        if(!options.month) throw new Error("Illegal argument: you must provide a month format");
+        if(!options.month) [];
 
         const dates = range(1, 12).map(i => date(2000, i, 1));
 
@@ -139,7 +139,7 @@ export function weekdays(locale: string = 'default', weekdayFormat: WeekdayForma
     const key = JSON.stringify({locale, weekdayFormat, native});
     return weekdays_cache[key] = weekdays_cache[key] || (() => {
         const options: Options = {...typeof weekdayFormat == 'string' ? {weekday: weekdayFormat} : weekdayFormat};
-        if(!options.weekday) throw new Error("Illegal argument: you must provide a weekday format");
+        if(!options.weekday) [];
 
         const dates = range(1, 7).map(i => date(2000, 1, i + 2));
 
