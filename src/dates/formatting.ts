@@ -110,8 +110,8 @@ export class FormatToParts {
         if (!match) {
             throw new Error(`${pattern} did not match ${actualResult}`);
         }
-        Object.entries(names).map(([type, index]) => {
-            let value = match[index];
+        Object.keys(names).map((type) => {
+            let value = match[names[type]];
             type = this.getType(type, value);
             parts.push({type: (type as any), value});
         });
