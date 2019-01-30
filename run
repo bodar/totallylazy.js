@@ -38,7 +38,7 @@ function package() {
 
     mkdir -p ${dist}
     envsubst < package.json > ${dist}/package.json
-    cp -r ${out}/src/* ${dist}
+    cp -r src/* ${dist}
     cp README.md LICENSE ${dist}
 }
 
