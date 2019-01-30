@@ -46,7 +46,7 @@ export class RegexBuilder {
                 case "month": return `(?<month>(?:\\d{1,2}|${this.months.pattern.toLocaleLowerCase(this.locale)}))`;
                 case "day": return '(?<day>\\d{1,2})';
                 case "weekday": return `(?<weekday>${this.weekdays.pattern.toLocaleLowerCase(this.locale)})`;
-                default: return `[${unique(['.',...part.value]).join('')}]*?`;
+                default: return `[${unique([...part.value]).join('')}]+?`;
             }
         }).join("");
 
@@ -181,12 +181,13 @@ export const parseWeekday = (index: number, weekdays: Weekdays): OptionHandler =
     return weekdays.parse(match[index]).number;
 };
 
-export const defaultParserOptions: Options[] = [
+export const defaultParserOptions: (string|Options)[] = [
     {year: 'numeric', month: 'long', day: 'numeric', weekday: "long"},
     {year: 'numeric', month: 'short', day: 'numeric', weekday: 'short'},
     {year: 'numeric', month: 'numeric', day: 'numeric'},
     {year: 'numeric', month: 'short', day: 'numeric'},
     {year: 'numeric', month: 'long', day: 'numeric'},
+    "dd MMM yyyy",
 ];
 
 export function parser(locale?: string, options?: string | Options, native = hasNativeFormatToParts): DateParser {
@@ -201,7 +202,7 @@ export function simpleParser(locale: string = 'default', format: string, native 
     return RegexBuilder.create(locale, format, native).regexParser;
 }
 
-export function localeParser(locale?: string, options?: Options, native = hasNativeFormatToParts): DateParser {
+export function localeParser(locale?: string, options?: string|Options, native = hasNativeFormatToParts): DateParser {
     if (!options) {
         return parsers(...defaultParserOptions.map(o => localeParser(locale, o, native)))
     }

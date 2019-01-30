@@ -72,7 +72,6 @@ describe("dates", function () {
     });
 
     it('parsing is liberal in what it accepts', function () {
-        assertParse('ru-RU', '31 янв 2019', date(2019, 1, 31), {day: '2-digit', year: 'numeric', month: 'short'});
         assertParse('de-DE', 'Dienstag, 15. Januar 2019', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'});
         assertParse('en-GB', '16 January 2019', date(2019, 1, 16), {day: 'numeric', year: 'numeric', month: 'long'});
         assertParse('en-US', 'Tuesday, January 15, 2019', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'});
@@ -87,6 +86,7 @@ describe("dates", function () {
     });
 
     it("can parse a date without specifying any options", () => {
+        assertParse('en-US', 'August 16, 2019', date(2019, 8, 16));
         assertParse('en-GB', '18/12/2018', date(2018, 12, 18));
         assertParse('en-US', 'Monday, December 17, 2018', date(2018, 12, 17));
         assertParse('en-US', 'Sunday, January 20, 2019', date(2019, 1, 20));
@@ -112,7 +112,6 @@ describe("dates", function () {
         assertParse('en-US', 'Monday, January 28, 2019', date(2019, 1, 28),
             {weekday:'long', month: 'long', day: 'numeric', year: 'numeric'}, false);
     });
-
 });
 
 
