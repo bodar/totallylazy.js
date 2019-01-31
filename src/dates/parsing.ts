@@ -1,5 +1,5 @@
 import {cache, lazy} from "../lazy";
-import {unique} from "../arrays";
+import {flatten, unique} from "../arrays";
 import {characters, namedGroups, replace} from "../characters";
 import {
     date,
@@ -23,8 +23,9 @@ export class RegexBuilder {
                 private formatted: DateTimeFormatPart[]) {
     }
 
-    @cache static create(locale: string = 'default', options: string | Options = defaultOptions, native = hasNativeFormatToParts): RegexBuilder {
-        if(typeof options == 'string'){
+    @cache
+    static create(locale: string = 'default', options: string | Options = defaultOptions, native = hasNativeFormatToParts): RegexBuilder {
+        if (typeof options == 'string') {
             return formatBuilder(locale, options);
         } else {
             return new RegexBuilder(locale, options, formatData(new Date(), locale, options, native));
@@ -42,10 +43,14 @@ export class RegexBuilder {
     @lazy get regexParser(): RegexParser {
         const namedPattern = this.formatted.map(part => {
             switch (part.type) {
-                case "year": return '(?<year>\\d{4})';
-                case "month": return `(?<month>(?:\\d{1,2}|${this.months.pattern.toLocaleLowerCase(this.locale)}))`;
-                case "day": return '(?<day>\\d{1,2})';
-                case "weekday": return `(?<weekday>${this.weekdays.pattern.toLocaleLowerCase(this.locale)})`;
+                case "year":
+                    return '(?<year>\\d{4})';
+                case "month":
+                    return `(?<month>(?:\\d{1,2}|${this.months.pattern.toLocaleLowerCase(this.locale)}))`;
+                case "day":
+                    return '(?<day>\\d{1,2})';
+                case "weekday":
+                    return `(?<weekday>${this.weekdays.pattern.toLocaleLowerCase(this.locale)})`;
                 default: {
                     const chars = unique(characters(part.value)).join('').replace(' ', '\\s');
                     return `[${chars}]+?`;
@@ -68,6 +73,8 @@ export class RegexBuilder {
 
 export interface DateParser {
     parse(value: string): Date;
+
+    parseAll(value: string): Date[];
 }
 
 export class CompositeDateParser implements DateParser {
@@ -83,6 +90,10 @@ export class CompositeDateParser implements DateParser {
             }
         }
         throw new Error("Unable to parse date: " + value);
+    }
+
+    parseAll(value: string): Date[] {
+        return flatten(this.parsers.map( p => p.parseAll(value)));
     }
 }
 
@@ -107,42 +118,54 @@ export class RegexParser implements DateParser {
         if (!match) throw new Error(`Locale "${this.locale}" generated regex ${this.regex} did not match "${lower}" `);
         return date(this.groups.year(match), this.groups.month(match), this.groups.day(match));
     }
+
+    parseAll(value: string): Date[] {
+        const regex = new RegExp(this.regex.source, 'g');
+        const lower = value.toLocaleLowerCase(this.locale);
+        const result: Date[] = [];
+        while (true) {
+            const match = regex.exec(lower);
+            if(!match) break;
+            result.push(date(this.groups.year(match), this.groups.month(match), this.groups.day(match)));
+        }
+        return result;
+    }
 }
 
 
 export const formatRegex = /(?:(y+)|(M+)|(d+)|(E+))/g;
 
-export function typeFrom(value:string): DateTimeFormatPartTypes {
-    if(value.indexOf('y') != -1) return 'year';
-    if(value.indexOf('M') != -1) return 'month';
-    if(value.indexOf('d') != -1) return 'day';
-    if(value.indexOf('E') != -1) return 'weekday';
+export function typeFrom(value: string): DateTimeFormatPartTypes {
+    if (value.indexOf('y') != -1) return 'year';
+    if (value.indexOf('M') != -1) return 'month';
+    if (value.indexOf('d') != -1) return 'day';
+    if (value.indexOf('E') != -1) return 'weekday';
     throw new Error(`Illegal Argument: ${value}`);
 }
 
-export function formatFrom(type:DateTimeFormatPartTypes, length:number): string {
-    if(type === 'year'){
-        if(length === 4) return "numeric";
-        if(length === 2) return "2-digit";
+export function formatFrom(type: DateTimeFormatPartTypes, length: number): string {
+    if (type === 'year') {
+        if (length === 4) return "numeric";
+        if (length === 2) return "2-digit";
     }
-    if(type === 'month') {
-        if( length === 4) return "long";
-        if( length === 3) return "short";
-        if( length === 2) return "2-digit";
-        if( length === 1) return "numeric";
+    if (type === 'month') {
+        if (length === 4) return "long";
+        if (length === 3) return "short";
+        if (length === 2) return "2-digit";
+        if (length === 1) return "numeric";
     }
-    if(type === 'day'){
-        if(length === 2) return "2-digit";
-        if(length === 1) return "numeric";
+    if (type === 'day') {
+        if (length === 2) return "2-digit";
+        if (length === 1) return "numeric";
     }
-    if(type === 'weekday'){
-        if( length === 4) return "long";
-        if( length === 3) return "short";
+    if (type === 'weekday') {
+        if (length === 4) return "long";
+        if (length === 3) return "short";
     }
     throw new Error(`Illegal Argument: ${type} ${length}`);
 }
 
-export function partsFrom(format: string):DateTimeFormatPart[] {
+export function partsFrom(format: string): DateTimeFormatPart[] {
     const parts: DateTimeFormatPart[] = [];
     replace(formatRegex, format, match => {
         const type = typeFrom(match[0]);
@@ -156,8 +179,8 @@ export function partsFrom(format: string):DateTimeFormatPart[] {
     return parts;
 }
 
-export function optionsFrom(formatOrParts:string|DateTimeFormatPart[]):Options {
-    const parts = typeof formatOrParts === "string"? partsFrom(formatOrParts) : formatOrParts;
+export function optionsFrom(formatOrParts: string | DateTimeFormatPart[]): Options {
+    const parts = typeof formatOrParts === "string" ? partsFrom(formatOrParts) : formatOrParts;
     const keys = ['year', 'month', 'day', 'weekday'];
     return parts.filter(p => keys.indexOf(p.type) != -1).reduce((a, p) => {
         a[p.type] = p.value;
@@ -165,7 +188,7 @@ export function optionsFrom(formatOrParts:string|DateTimeFormatPart[]):Options {
     }, {} as any);
 }
 
-export function formatBuilder(locale:string, format:string): RegexBuilder{
+export function formatBuilder(locale: string, format: string): RegexBuilder {
     const parts = partsFrom(format);
 
     return new RegexBuilder(locale, optionsFrom(parts), parts)
@@ -185,7 +208,7 @@ export const parseWeekday = (index: number, weekdays: Weekdays): OptionHandler =
     return weekdays.parse(match[index]).number;
 };
 
-export const defaultParserOptions: (string|Options)[] = [
+export const defaultParserOptions: (string | Options)[] = [
     {year: 'numeric', month: 'long', day: 'numeric', weekday: "long"},
     {year: 'numeric', month: 'short', day: 'numeric', weekday: 'short'},
     {year: 'numeric', month: 'numeric', day: 'numeric'},
@@ -206,7 +229,7 @@ export function simpleParser(locale: string = 'default', format: string, native 
     return RegexBuilder.create(locale, format, native).regexParser;
 }
 
-export function localeParser(locale?: string, options?: string|Options, native = hasNativeFormatToParts): DateParser {
+export function localeParser(locale?: string, options?: string | Options, native = hasNativeFormatToParts): DateParser {
     if (!options) {
         return parsers(...defaultParserOptions.map(o => localeParser(locale, o, native)))
     }

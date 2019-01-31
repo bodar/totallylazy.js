@@ -1,6 +1,7 @@
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {date, format, hasNativeFormatToParts, numeric, Options, parse} from "../../src/dates";
+import {date, format, hasNativeFormatToParts, numeric, Options, parse, parser, parsers} from "../../src/dates";
+import {sequence} from "../../src/sequence";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
@@ -8,9 +9,13 @@ export function assertFormat(locale: string, date: Date, options: Options, expec
     assertParse(locale, expected, date, options);
 }
 
+export function assertDates(parsed: Date, expected: Date) {
+    assert.equal(parsed.toISOString(), expected.toISOString());
+}
+
 export function assertParse(locale: string, value: string, expected: Date, options?: string | Options, native = hasNativeFormatToParts) {
     const parsed = parse(value, locale, options, native);
-    assert.equal(parsed.toISOString(), expected.toISOString());
+    assertDates(parsed, expected);
 }
 
 const locales: string[] = ['en', 'de', 'fr', 'ja', 'nl', 'de-DE', 'en-US', 'en-GB', 'i-enochian', 'zh-Hant',
@@ -84,6 +89,8 @@ describe("dates", function () {
 
         assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
         assertParse('zh-CN', '2019年1月15日', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
+
+        // assertParse('es', 'mar 07, 2019', date(2019, 3, 7), {year: 'numeric', month: 'short', day: '2-digit'});
     });
 
     it('can parse dates with non breaking space', function () {
@@ -118,6 +125,25 @@ describe("dates", function () {
     it("can parse using non native implementation", () => {
         assertParse('en-US', 'Monday, January 28, 2019', date(2019, 1, 28),
             {weekday:'long', month: 'long', day: 'numeric', year: 'numeric'}, false);
+    });
+
+    it("can extract multiple dates from the same text", () => {
+        const text = {
+            "en": 'Availability:  Mar 07, 2019 to Mar 08, 2019',
+            "fr": 'Disponibilités:  07 mar, 2019 jusqu\'au 08 mar, 2019',
+            // "es": 'Disponibilidad:  mar 07, 2019 to mar 08, 2019',
+            // "de": 'Verfügbarkeit: Mar 07, 2019 bis Mar 08, 2019',
+        };
+
+        const factory = (locale:string) => parsers(parser(locale, "MMM dd, yyyy"), parser(locale, "dd MMM, yyyy"));
+
+        Object.entries(text).map(([locale, text]) => {
+            const p = factory(locale);
+            const [checkin, checkout] = p.parseAll(text);
+            if(!checkin || !checkout ) throw new Error(`Locale "${locale}" failed to parse "${text}"`);
+            assertDates(checkin, date(2019, 3, 7));
+            assertDates(checkout, date(2019, 3, 8));
+        });
     });
 });
 
