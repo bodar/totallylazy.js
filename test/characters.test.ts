@@ -1,4 +1,4 @@
-import {characters, charactersByRegex, different} from "../src/characters";
+import {characters, splitByRegex, different} from "../src/characters";
 import {assert} from 'chai';
 
 describe("difference", function () {
@@ -26,10 +26,14 @@ describe("difference", function () {
 
 
 describe("characters", function() {
+    it("can split by regex for IE 11", () => {
+        const characters = splitByRegex("Foo bar");
+        assert.equal(characters.length, 7);
+    });
+
     it("ignores RTL unicode marker", () => {
         const containsLeadingRtlMarker = "‎Jan";
         assert.equal(containsLeadingRtlMarker.length, 4);
         assert.equal(characters(containsLeadingRtlMarker).length, 3);
-        assert.equal(charactersByRegex(containsLeadingRtlMarker).length, 3);
     });
 });

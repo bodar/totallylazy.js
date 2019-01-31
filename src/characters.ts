@@ -63,16 +63,21 @@ export function different(values: string[]): string[] {
     });
 }
 
-export function charactersByRegex(value: string) {
-    return value.split(/(?=(?:[\0-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))/)
-        .filter(removeUnneededUnicodeCharacters);
-}
 
 export function removeUnneededUnicodeCharacters(char:string):boolean{
     return char.charCodeAt(0) != 8206;
 }
 
 export function characters(value:string):string[] {
-    if(typeof Symbol === "function" && value[Symbol.iterator]) return [...value].filter(removeUnneededUnicodeCharacters);
-    return charactersByRegex(value);
+    return split(value).filter(removeUnneededUnicodeCharacters);
+}
+
+function split(value:string):string[] {
+    if(typeof Symbol === "function" && value[Symbol.iterator]) return [...value];
+    return splitByRegex(value);
+}
+
+const splitter = /(?=(?:[\0-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))/;
+export function splitByRegex(value: string):string[] {
+    return value.split(splitter)
 }

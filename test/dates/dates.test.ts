@@ -72,6 +72,7 @@ describe("dates", function () {
     });
 
     it('parsing is liberal in what it accepts', function () {
+        assertParse('en-US', 'Mar 07, 2019', date(2019, 3, 7), {year: 'numeric', month: 'short', day: '2-digit'});
         assertParse('de-DE', 'Dienstag, 15. Januar 2019', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'});
         assertParse('en-GB', '16 January 2019', date(2019, 1, 16), {day: 'numeric', year: 'numeric', month: 'long'});
         assertParse('en-US', 'Tuesday, January 15, 2019', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long', weekday: 'long'});
@@ -83,6 +84,12 @@ describe("dates", function () {
 
         assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
         assertParse('zh-CN', '2019年1月15日', date(2019, 1, 15), {day: 'numeric', year: 'numeric', month: 'long'});
+    });
+
+    it('can parse dates with non breaking space', function () {
+        const value = 'Jan 20, 2019';
+        assert.equal(value.charCodeAt(3), 160);
+        assertParse('en-US', value, date(2019, 1, 20), {year: 'numeric', month: 'short', day: '2-digit'});
     });
 
     it("can parse a date without specifying any options", () => {

@@ -1,6 +1,6 @@
 import {cache, lazy} from "../lazy";
 import {unique} from "../arrays";
-import {namedGroups, replace} from "../characters";
+import {characters, namedGroups, replace} from "../characters";
 import {
     date,
     defaultOptions,
@@ -46,7 +46,10 @@ export class RegexBuilder {
                 case "month": return `(?<month>(?:\\d{1,2}|${this.months.pattern.toLocaleLowerCase(this.locale)}))`;
                 case "day": return '(?<day>\\d{1,2})';
                 case "weekday": return `(?<weekday>${this.weekdays.pattern.toLocaleLowerCase(this.locale)})`;
-                default: return `[${unique([...part.value]).join('')}]+?`;
+                default: {
+                    const chars = unique(characters(part.value)).join('').replace(' ', '\\s');
+                    return `[${chars}]+?`;
+                }
             }
         }).join("");
 
@@ -99,8 +102,9 @@ export class RegexParser implements DateParser {
     }
 
     parse(value: string): Date {
-        const match = value.toLocaleLowerCase(this.locale).match(this.regex);
-        if (!match) throw new Error(`Locale: ${this.locale} ${this.regex} did not match ${value}`);
+        const lower = value.toLocaleLowerCase(this.locale);
+        const match = lower.match(this.regex);
+        if (!match) throw new Error(`Locale "${this.locale}" generated regex ${this.regex} did not match "${lower}" `);
         return date(this.groups.year(match), this.groups.month(match), this.groups.day(match));
     }
 }
