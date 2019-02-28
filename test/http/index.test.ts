@@ -3,6 +3,11 @@ import {assert} from 'chai';
 
 describe('Uri', function() {
     describe('implements RFC 3986 https://tools.ietf.org/html/rfc3986', function() {
+        it('when converting to JSON return the string', function() {
+            const uri = new Uri('http://www.ics.uci.edu/pub/ietf/uri/#Related');
+            assert.equal(JSON.stringify(uri), '"http://www.ics.uci.edu/pub/ietf/uri/#Related"');
+        });
+
         it('can parse example from #appendix-B', function() {
             const uri = new Uri('http://www.ics.uci.edu/pub/ietf/uri/#Related');
             assert.equal(uri.scheme, 'http');

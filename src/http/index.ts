@@ -195,11 +195,11 @@ export class HostHandler implements Handler {
 export class Uri {
     /** {@link https://tools.ietf.org/html/rfc3986#appendix-B } */
     static RFC_3986 = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
-    scheme: string | undefined;
-    authority: string | undefined;
+    scheme?: string;
+    authority?: string;
     path: string;
-    query: string | undefined;
-    fragment: string | undefined;
+    query?: string;
+    fragment?: string;
 
     constructor(value: string) {
         const match = Uri.RFC_3986.exec(value);
@@ -222,5 +222,9 @@ export class Uri {
         if (typeof this.query != 'undefined') result.push("?", this.query);
         if (typeof this.fragment != 'undefined') result.push("#", this.fragment);
         return result.join('');
+    }
+
+    toJSON(){
+        return this.toString();
     }
 }

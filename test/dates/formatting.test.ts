@@ -55,7 +55,7 @@ describe("ImprovedDateTimeFormat", function () {
             format(date?: Date | number): string {
                 return containsLeadingRtlMarker;
             }
-        } as any).format(new Date());
+        } as any).format(date(2019, 1, 2));
         assert.equal(result.length, 25);
     });
 
@@ -64,7 +64,7 @@ describe("ImprovedDateTimeFormat", function () {
         const options: any = {month: 'long'};
         const formatter = new Intl.DateTimeFormat(locale, options);
         delete formatter.formatToParts;
-        const result = new ImprovedDateTimeFormat(locale, options, formatter).formatToParts(new Date());
+        const result = new ImprovedDateTimeFormat(locale, options, formatter).formatToParts(date(2019, 1, 2));
         assert.deepEqual(result, [{type: "month", value: "January"}]);
     });
 
