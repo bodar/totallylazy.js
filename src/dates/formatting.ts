@@ -27,8 +27,12 @@ export class Formatters {
     // Slightly older versions of Safari implement the method but return an empty array!
     @cache
     static isNativelySupported(locale: string = 'default', options: Options = defaultOptions): boolean {
-        const formatter = new Intl.DateTimeFormat(locale, options);
+        const formatter = this.dateTimeFormat(locale, options);
         return typeof formatter.formatToParts == 'function' && formatter.formatToParts(new Date()).length > 0;
+    }
+
+    static dateTimeFormat(locale: string, options: Options) {
+        return new Intl.DateTimeFormat(locale, {...options, timeZone: 'UTC'});
     }
 }
 
@@ -40,11 +44,10 @@ export class ImprovedDateTimeFormat implements DateTimeFormat {
         // Detect IE 11 bug
         const clone = {...options};
         const keys = Object.keys(clone).length;
-        const result = new Intl.DateTimeFormat(locale, clone);
+        const result = Formatters.dateTimeFormat(locale, clone);
         if (Object.keys(clone).length != keys) throw new Error(`Unsupported DateTimeFormat options provided: ${JSON.stringify(options)}`);
         return result;
     }
-
 
     format(date?: Date | number): string {
         return characters(this.delegate.format(date)).join("");

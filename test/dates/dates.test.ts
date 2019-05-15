@@ -1,7 +1,6 @@
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
 import {date, format, hasNativeFormatToParts, numeric, Options, parse, parser, parsers} from "../../src/dates";
-import {sequence} from "../../src/sequence";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
@@ -40,7 +39,7 @@ describe("dates", function () {
     });
 
     it('can format and parse a date in many different locals', function () {
-        const original = date(2001, 6, 28);
+        const original = date(2001, 6, 3);
         for (const locale of supported) {
             for (const option of options) {
                 const formatted = format(original, locale, option);

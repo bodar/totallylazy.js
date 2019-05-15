@@ -252,7 +252,7 @@ export class FromFormatStringMonthExtractor extends FromFormatStringDataExtracto
     }
 
     private day(date: Date) {
-        const day = date.getDay();
+        const day = date.getUTCDay();
         if (day == 0) return 6;
         return day - 1;
     }
@@ -266,10 +266,10 @@ export class FromFormatStringWeekdayExtractor extends FromFormatStringDataExtrac
     diff(data: string[]): string[] {
         if (!this.options.day) return super.diff(data);
         const result: string[] = [];
-        const day = this.dates[0].getDate().toString();
+        const day = this.dates[0].getUTCDate().toString();
         for (let i = 0; i < data.length; i++) {
             const f = data[i];
-            const r = f.replace(this.dates[i].getDate().toString(), day);
+            const r = f.replace(this.dates[i].getUTCDate().toString(), day);
             result[i] = r;
         }
         return super.diff(result);
