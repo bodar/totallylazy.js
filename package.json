@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rm -rf build/artifacts",
     "build": "tsc",
-    "test": "NODE_ENV=development NODE_ICU_DATA=./node_modules/full-icu yarn run mocha --require ts-node/register 'test/**/*.test.ts'",
+    "test": "NODE_ENV=development NODE_ICU_DATA=./node_modules/full-icu TZ='America/Los_Angeles' yarn run mocha --require ts-node/register 'test/**/*.test.ts'",
     "test-browser": "ts-node test-browser.ts"
   },
   "dependencies": {
