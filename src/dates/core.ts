@@ -7,7 +7,7 @@ declare global {
 }
 
 export function date(year: number, month?: number, day?: number): Date {
-    return new Date(year, month ? month - 1 : 1, day ? day : 1);
+    return new Date(Date.UTC(year, month ? month - 1 : 0, day ? day : 1));
 }
 
 export type MonthFormat = 'numeric' | '2-digit' | 'short' | 'long';
