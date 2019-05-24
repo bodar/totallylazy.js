@@ -114,4 +114,17 @@ describe("PrefixTree", function () {
         assert.deepEqual(new PrefixTree<number>().insert("1234", 1).height, 4);
     });
 
+    it('can search with levenshtein distance', function () {
+        // @ts-ignore
+        const trie = new PrefixTree()
+            .insert("Hotel A")
+            .insert("Hotel AB")
+            .insert("Some Hotel");
+
+        const search = 'Hotel C';
+        const [a, b] = trie.search(search, search.length * .75);
+        assert.deepEqual(a, {value: 'Hotel A', distance: 1});
+        assert.deepEqual(b, {value: 'Hotel AB', distance: 2});
+    });
+
 });
