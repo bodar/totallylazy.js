@@ -134,8 +134,8 @@ describe("Row", function () {
     it('matches the wikipedia example for kitten vs sitting', function () {
         /*
         https://en.wikipedia.org/wiki/Levenshtein_distance
-        k	i	t	t	e	n
-    0	1	2	3	4	5	6
+		k	i	t	t	e	n
+	0	1	2	3	4	5	6
 s	1	1	2	3	4	5	6
 i	2	2	1	2	3	4	5
 t	3	3	2	1	2	3	4
