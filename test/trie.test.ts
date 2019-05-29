@@ -1,5 +1,6 @@
 import {assert} from 'chai';
-import {PrefixTree, Trie} from "../src/trie";
+import {PrefixTree, Row, Trie} from "../src/trie";
+import {characters} from "../src/characters";
 
 describe("Trie", function () {
     it('supports isEmpty', function () {
@@ -46,7 +47,7 @@ describe("Trie", function () {
 
     it('supports keys', function () {
         const trie = new Trie().insert(['a'], 'valueA').insert(['a', 'b'], 'valueB').insert(['c', 'a', 'd'], 'valueB');
-        assert.deepEqual(trie.keys, ['a','b', 'c', 'd']);
+        assert.deepEqual(trie.keys, ['a', 'b', 'c', 'd']);
     });
 });
 
@@ -103,7 +104,7 @@ describe("PrefixTree", function () {
             .insert("января", 1)
             .insert("янв.", 1);
 
-        assert.deepEqual(trie.keys, [ 'я', 'н', 'в', 'а', 'р', 'ь', '.' ]);
+        assert.deepEqual(trie.keys, ['я', 'н', 'в', 'а', 'р', 'ь', '.']);
     });
 
     it('can get height', function () {
@@ -126,5 +127,40 @@ describe("PrefixTree", function () {
         assert.deepEqual(a, {value: 'Hotel A', distance: 1});
         assert.deepEqual(b, {value: 'Hotel AB', distance: 2});
     });
+
+});
+
+describe("Row", function () {
+    it('matches the wikipedia example for kitten vs sitting', function () {
+        /*
+        https://en.wikipedia.org/wiki/Levenshtein_distance
+        k	i	t	t	e	n
+    0	1	2	3	4	5	6
+s	1	1	2	3	4	5	6
+i	2	2	1	2	3	4	5
+t	3	3	2	1	2	3	4
+t	4	4	3	2	1	2	3
+i	5	5	4	3	2	2	3
+n	6	6	5	4	3	3	2
+g	7	7	6	5	4	4	3
+         */
+        let row = Row.create(characters('kitten'));
+        assert.deepEqual(row.values, [0, 1, 2, 3, 4, 5, 6]);
+        row = row.next('s');
+        assert.deepEqual(row.values, [1, 1, 2, 3, 4, 5, 6]);
+        row = row.next('i');
+        assert.deepEqual(row.values, [2, 2, 1, 2, 3, 4, 5]);
+        row = row.next('t');
+        assert.deepEqual(row.values, [3, 3, 2, 1, 2, 3, 4]);
+        row = row.next('t');
+        assert.deepEqual(row.values, [4, 4, 3, 2, 1, 2, 3]);
+        row = row.next('i');
+        assert.deepEqual(row.values, [5, 5, 4, 3, 2, 2, 3]);
+        row = row.next('n');
+        assert.deepEqual(row.values, [6, 6, 5, 4, 3, 3, 2]);
+        row = row.next('g');
+        assert.deepEqual(row.values, [7, 7, 6, 5, 4, 4, 3]);
+    });
+
 
 });

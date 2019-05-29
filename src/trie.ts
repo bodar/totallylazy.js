@@ -122,7 +122,7 @@ function recurse<V>(trie: Trie<string, V>, letter: string, previousRow: Row, max
 
 
 export class Row<K = string> {
-    private constructor(private keys: K[], private values: number[]) {
+    private constructor(public keys: K[], public values: number[]) {
     }
 
     static create<K>(keys: K[]): Row<K> {
