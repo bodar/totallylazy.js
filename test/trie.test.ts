@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {PrefixTree, Row, Trie} from "../src/trie";
+import {DEFAULT_COMPARATOR, PrefixTree, Row, Trie} from "../src/trie";
 import {characters} from "../src/characters";
 
 describe("Trie", function () {
@@ -127,6 +127,20 @@ describe("PrefixTree", function () {
         assert.deepEqual(a, {value: 'Hotel A', distance: 1});
         assert.deepEqual(b, {value: 'Hotel AB', distance: 2});
     });
+   it('the default search ignores case and language specific accents', function () {
+       /*
+       https://github.com/hiddentao/fast-levenshtein/issues/7
+        */
+        // @ts-ignore
+        const trie = new PrefixTree()
+            .insert("Mikhaïlovitch")
+            .insert("Vikhaklovitch");
+
+        const search = 'mikailovitch';
+        const [a, b] = trie.search(search, 3);
+        assert.deepEqual(a, {value: 'Mikhaïlovitch', distance: 1});
+        assert.deepEqual(b, {value: 'Vikhaklovitch', distance: 3});
+    });
 
 });
 
@@ -144,7 +158,7 @@ i	5	5	4	3	2	2	3
 n	6	6	5	4	3	3	2
 g	7	7	6	5	4	4	3
          */
-        let row = Row.create(characters('kitten'));
+        let row = Row.create(characters('kitten'), DEFAULT_COMPARATOR);
         assert.deepEqual(row.values, [0, 1, 2, 3, 4, 5, 6]);
         row = row.next('s');
         assert.deepEqual(row.values, [1, 1, 2, 3, 4, 5, 6]);

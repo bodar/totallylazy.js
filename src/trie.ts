@@ -1,6 +1,7 @@
 import {flatten, unique} from "./arrays";
 import {lazy} from "./lazy";
 import {characters} from "./characters";
+import {Comparator} from "./collections";
 
 export class Trie<K, V> {
     constructor(public readonly value?: V,
@@ -55,8 +56,12 @@ export class Trie<K, V> {
     }
 }
 
+
+export const DEFAULT_COMPARATOR = new Intl.Collator(undefined, {usage: 'search', sensitivity: 'base'}).compare;
+
 export class PrefixTree<V = string> {
     constructor(private converter = characters,
+                private comparator: Comparator<string> = DEFAULT_COMPARATOR,
                 private trie = new Trie<string, V>()) {
     }
 
@@ -78,11 +83,11 @@ export class PrefixTree<V = string> {
 
     // @ts-ignore
     insert(key: string, value: V = key): PrefixTree<V> {
-        return new PrefixTree(this.converter, this.trie.insert(this.converter(key), value));
+        return new PrefixTree(this.converter, this.comparator, this.trie.insert(this.converter(key), value));
     }
 
     delete(value: string): PrefixTree<V> {
-        return new PrefixTree(this.converter, this.trie.insert(this.converter(value), undefined as any));
+        return new PrefixTree(this.converter, this.comparator, this.trie.insert(this.converter(value), undefined as any));
     }
 
     @lazy get keys(): string[] {
@@ -94,7 +99,7 @@ export class PrefixTree<V = string> {
     }
 
     search(key: string, maxDist: number): Result<V>[] {
-        const empty = Row.create(this.converter(key));
+        const empty = Row.create(this.converter(key), this.comparator);
 
         return Object.keys(this.trie.children).reduce((a: Result<V>[], letter: string) => {
             return a.concat(recurse(this.trie.children[letter], letter, empty, maxDist));
@@ -122,26 +127,26 @@ function recurse<V>(trie: Trie<string, V>, letter: string, previousRow: Row, max
 
 
 export class Row<K = string> {
-    private constructor(public keys: K[], public values: number[]) {
+    private constructor(public keys: K[], public values: number[], private comparator: Comparator<K>) {
     }
 
-    static create<K>(keys: K[]): Row<K> {
+    static create<K>(keys: K[], comparator: Comparator<K>): Row<K> {
         const result: number[] = [];
         for (let i = 0; i <= keys.length; i++) {
             result[i] = i;
         }
-        return new Row(keys, result);
+        return new Row(keys, result, comparator);
     }
 
     next(key: K): Row<K> {
         const values = this.keys.reduce((result, search, column) => {
-            result[column + 1] = search === key ?
+            result[column + 1] = this.comparator(search, key) === 0 ?
                 this.values[column] :
                 1 + Math.min(result[column], this.values[column], this.values[column + 1]);
             return result;
         }, [this.values[0] + 1]);
 
-        return new Row(this.keys, values);
+        return new Row(this.keys, values, this.comparator);
     }
 
     get distance(): number {
