@@ -116,7 +116,6 @@ describe("PrefixTree", function () {
     });
 
     it('can search with levenshtein distance', function () {
-        // @ts-ignore
         const trie = new PrefixTree()
             .insert("Hotel A")
             .insert("Hotel AB")
@@ -127,11 +126,9 @@ describe("PrefixTree", function () {
         assert.deepEqual(a, {value: 'Hotel A', distance: 1});
         assert.deepEqual(b, {value: 'Hotel AB', distance: 2});
     });
-   it('the default search ignores case and language specific accents', function () {
-       /*
-       https://github.com/hiddentao/fast-levenshtein/issues/7
-        */
-        // @ts-ignore
+
+    it('the default search ignores case and language specific accents', function () {
+        // https://github.com/hiddentao/fast-levenshtein/issues/7
         const trie = new PrefixTree()
             .insert("Mikhaïlovitch")
             .insert("Vikhaklovitch");
