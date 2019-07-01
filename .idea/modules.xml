@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/http4js.iml" filepath="$PROJECT_DIR$/.idea/http4js.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/totallylazyjs.iml" filepath="$PROJECT_DIR$/.idea/totallylazyjs.iml" />
     </modules>
   </component>
 </project>
