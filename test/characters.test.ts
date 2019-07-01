@@ -1,5 +1,6 @@
 import {characters, splitByRegex, different} from "../src/characters";
 import {assert} from 'chai';
+import {array} from "../src/collections";
 
 describe("difference", function () {
     it("can find differences between string", () => {
@@ -14,18 +15,18 @@ describe("difference", function () {
     });
 
     it("can find difference when at end of string", () => {
-        const input = ["Jan 2000 Mon","Jan 2000 Tue","Jan 2000 Wed","Jan 2000 Thu","Jan 2000 Fri","Jan 2000 Sat","Jan 2000 Sun"];
+        const input = ["Jan 2000 Mon", "Jan 2000 Tue", "Jan 2000 Wed", "Jan 2000 Thu", "Jan 2000 Fri", "Jan 2000 Sat", "Jan 2000 Sun"];
         assert.deepEqual(different(input), ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
     });
 
     it("can find difference when at start of string", () => {
-        const input = ["Mon Jan 2000","Tue Jan 2000","Wed Jan 2000","Thu Jan 2000","Fri Jan 2000","Sat Jan 2000","Sun Jan 2000"];
+        const input = ["Mon Jan 2000", "Tue Jan 2000", "Wed Jan 2000", "Thu Jan 2000", "Fri Jan 2000", "Sat Jan 2000", "Sun Jan 2000"];
         assert.deepEqual(different(input), ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
     });
 });
 
 
-describe("characters", function() {
+describe("characters", function () {
     it("can split by regex for IE 11", () => {
         const characters = splitByRegex("Foo bar");
         assert.equal(characters.length, 7);
@@ -36,4 +37,50 @@ describe("characters", function() {
         assert.equal(containsLeadingRtlMarker.length, 4);
         assert.equal(characters(containsLeadingRtlMarker).length, 3);
     });
+});
+
+
+function map<T, R>(mapper: (t: T) => R): (i: Iterable<T>) => Iterable<R> {
+    return function* (i: Iterable<T>) {
+        for (const t of i) {
+            yield mapper(t);
+        }
+    }
+}
+
+function filter<T>(predicate: (t: T) => boolean): (i: Iterable<T>) => Iterable<T> {
+    return function* (i: Iterable<T>) {
+        for (const t of i) {
+            if (predicate(t)) yield t;
+        }
+    }
+}
+
+function flatMap<T, R>(mapper: (t: T) => Iterable<R>): (i: Iterable<T>) => Iterable<R> {
+    return function* (i: Iterable<T>) {
+        for (const t of i) {
+            yield* mapper(t);
+        }
+    }
+}
+
+
+function pipe<A, B>(a: Iterable<A>, b: (i: Iterable<A>) => Iterable<B>): Iterable<B>;
+function pipe<A, B, C>(a: Iterable<A>, b: (i: Iterable<A>) => Iterable<B>, c: (i: Iterable<B>) => Iterable<C>): Iterable<C>;
+function pipe<A, B, C, D>(a: Iterable<A>, b: (i: Iterable<A>) => Iterable<B>, c: (i: Iterable<B>) => Iterable<C>, d: (i: Iterable<C>) => Iterable<D>): Iterable<D>;
+function pipe<A, B, C, D, E>(a: Iterable<A>, b: (i: Iterable<A>) => Iterable<B>, c: (i: Iterable<B>) => Iterable<C>, d: (i: Iterable<C>) => Iterable<D>, e: (i: Iterable<D>) => Iterable<E>): Iterable<E>;
+function pipe(a: Iterable<any>, ...args: ((i: Iterable<any>) => Iterable<any>)[]): Iterable<any> {
+    return args.reduce((r, v) => v(r), a);
+}
+
+describe("foo", function () {
+    it("bar", () => {
+        const result: Iterable<string> = pipe([1, 2, 30],
+            flatMap(n => [n, n * 2]),
+            map(n => n.toString()),
+            filter(n => n.length > 1));
+
+        assert.deepEqual(array(result), ['30', '60']);
+    });
+
 });
