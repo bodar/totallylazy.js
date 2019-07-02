@@ -1,11 +1,12 @@
 import {flatten, unique} from "./arrays";
 import {lazy} from "./lazy";
 import {characters} from "./characters";
-import {Comparator} from "./collections";
+import {array, Comparator} from "./collections";
+import {AVLTree} from "./avltree";
 
 export class Trie<K, V> {
     constructor(public readonly value?: V,
-                public readonly children: { [key: string]: Trie<K, V> } = {}) {
+                public readonly children: AVLTree<K, Trie<K, V>> = AVLTree.empty()) {
     }
 
     contains(key: K[]): boolean {
@@ -13,7 +14,7 @@ export class Trie<K, V> {
     }
 
     @lazy get isEmpty(): boolean {
-        return !this.value && Object.keys(this.children).length == 0;
+        return !this.value && this.children.isEmpty;
     }
 
     lookup(key: K[]): V | undefined {
@@ -24,7 +25,7 @@ export class Trie<K, V> {
     }
 
     match(key: K[]): V[] {
-        if (key.length == 0) return Object.keys(this.children).map(k => this.children[k]).reduce((a, t) => {
+        if (key.length == 0) return array(this.children.values()).reduce((a, t) => {
             return a.concat(t.match(key));
         }, this.value ? [this.value] : []);
         const [head, ...tail] = key;
@@ -36,23 +37,23 @@ export class Trie<K, V> {
         if (key.length == 0) return new Trie(value, this.children);
         const [head, ...tail] = key;
         const child: Trie<K, V> = (this.childFor(head) || new Trie<K, V>()).insert(tail, value);
-        return new Trie(this.value, {...this.children, [head.toString()]: child});
+        return new Trie(this.value, this.children.insert(head, child));
     }
 
     delete(key: K[]): Trie<K, V> {
         return this.insert(key, undefined as any);
     }
 
-    @lazy get keys(): string[] {
-        return unique(flatten(Object.keys(this.children).map(k => ([k, ...this.children[k].keys]))));
+    @lazy get keys(): K[] {
+        return unique(flatten(array(this.children.entries()).map(([k, v]) => ([k, ...v.keys]))));
     }
 
     @lazy get height(): number {
-        return Object.keys(this.children).map(k => this.children[k]).reduce((a, c) => Math.max(a, c.height + 1), 0);
+        return array(this.children.values()).reduce((a, c) => Math.max(a, c.height + 1), 0);
     }
 
     private childFor(head: K): Trie<K, V> | undefined {
-        return this.children[head.toString()];
+        return this.children.lookup(head);
     }
 }
 
@@ -101,8 +102,8 @@ export class PrefixTree<V = string> {
     search(key: string, maxDist: number): Result<V>[] {
         const empty = Row.create(this.converter(key), this.comparator);
 
-        return Object.keys(this.trie.children).reduce((a: Result<V>[], letter: string) => {
-            return a.concat(recurse(this.trie.children[letter], letter, empty, maxDist));
+        return array(this.trie.children.entries()).reduce((a: Result<V>[], [letter, value]) => {
+            return a.concat(recurse(value, letter, empty, maxDist));
         }, [] as Result<V>[]);
     };
 }
@@ -117,8 +118,8 @@ function recurse<V>(trie: Trie<string, V>, letter: string, previousRow: Row, max
     }
 
     if (currentRow.minimal <= maxDist) {
-        return Object.keys(trie.children).reduce((a, letter) => {
-            return a.concat(recurse(trie.children[letter], letter, currentRow, maxDist));
+        return array(trie.children.entries()).reduce((a, [letter, value]) => {
+            return a.concat(recurse(value, letter, currentRow, maxDist));
         }, result);
     }
 
