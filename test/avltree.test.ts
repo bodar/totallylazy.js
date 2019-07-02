@@ -1,6 +1,5 @@
 import {assert} from 'chai';
 import {AVLTree} from "../src/avltree";
-import {Trie} from "../src/trie";
 
 describe("AVLTree", function () {
     const tree = AVLTree.empty<string, string>();
