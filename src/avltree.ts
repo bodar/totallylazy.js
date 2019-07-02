@@ -8,7 +8,7 @@ export interface Result<K, V> {
 }
 
 export abstract class AVLTree<K, V> {
-    protected constructor(protected comparator: Comparator<K>) {
+    protected constructor(public comparator: Comparator<K>) {
     }
 
     static empty<K, V>(comparator: Comparator<K> = ascending): AVLTree<K, V> {
@@ -33,9 +33,12 @@ export abstract class AVLTree<K, V> {
 
     abstract removeLast(): Result<K, V>;
 
+    abstract toString(): string;
+
     abstract readonly height: number;
 
     abstract readonly balance: number;
+
 }
 
 class Empty<K, V> extends AVLTree<K, V> {
@@ -70,14 +73,18 @@ class Empty<K, V> extends AVLTree<K, V> {
     removeLast(): Result<K, V> {
         return {tree: this};
     }
+
+    toString(): string {
+        return '';
+    }
 }
 
 class Node<K, V> extends AVLTree<K, V> {
-    constructor(protected comparator: Comparator<K>,
-                protected key: K,
-                protected value: V,
-                protected left: AVLTree<K, V>,
-                protected right: AVLTree<K, V>) {
+    constructor(comparator: Comparator<K>,
+                public key: K,
+                public value: V,
+                public left: AVLTree<K, V>,
+                public right: AVLTree<K, V>) {
         super(comparator);
     }
 
@@ -86,8 +93,8 @@ class Node<K, V> extends AVLTree<K, V> {
     insert(key: K, value: V): AVLTree<K, V> {
         const difference: number = this.comparator(key, this.key);
         if (difference == 0) return new Node(this.comparator, key, value, this.left, this.right);
-        if (difference < 0) return new Node(this.comparator, this.key, this.value, this.left.insert(key, value), this.right);
-        return new Node(this.comparator, this.key, this.value, this.left, this.right.insert(key, value));
+        if (difference < 0) return this.replaceLeft(this.left.insert(key, value));
+        return this.replaceRight(this.right.insert(key, value));
     }
 
     contains(key: K): boolean {
@@ -111,7 +118,7 @@ class Node<K, V> extends AVLTree<K, V> {
             if (this.right.isEmpty) return {tree: this.left, key: this.key, value: this.value};
             const {tree, key, value} = this.left.removeLast();
             return {
-                tree: new Node(this.comparator, key!, value!, tree, this.right),
+                tree: balance(new Node(this.comparator, key!, value!, tree, this.right)),
                 key: this.key,
                 value: this.value
             };
@@ -119,14 +126,14 @@ class Node<K, V> extends AVLTree<K, V> {
         if (difference < 0) {
             const {tree, key: deletedKey, value: deletedValue} = this.left.delete(key);
             return {
-                tree: new Node(this.comparator, this.key, this.value, tree, this.right),
+                tree: this.replaceLeft(tree),
                 key: deletedKey,
                 value: deletedValue
             };
         }
         const {tree, key: deletedKey, value: deletedValue} = this.right.delete(key);
         return {
-            tree: new Node(this.comparator, this.key, this.value, tree, this.left),
+            tree: this.replaceRight(tree),
             key: deletedKey,
             value: deletedValue
         };
@@ -136,7 +143,7 @@ class Node<K, V> extends AVLTree<K, V> {
         if (this.left.isEmpty) return {tree: this.right, key: this.key, value: this.value};
         const {tree, key, value} = this.left.removeFirst();
         return {
-            tree: new Node(this.comparator, this.key, this.value, this.right, tree),
+            tree: this.replaceLeft(tree),
             key,
             value
         };
@@ -146,10 +153,22 @@ class Node<K, V> extends AVLTree<K, V> {
         if (this.right.isEmpty) return {tree: this.left, key: this.key, value: this.value};
         const {tree, key, value} = this.right.removeLast();
         return {
-            tree: new Node(this.comparator, this.key, this.value, this.left, tree),
+            tree: this.replaceRight(tree),
             key,
             value
         };
+    }
+
+    replaceLeft(newLeft: AVLTree<K, V>): Node<K, V> {
+        return balance(new Node<K, V>(this.comparator, this.key, this.value, newLeft, this.right));
+    }
+
+    replaceRight(newRight: AVLTree<K, V>): Node<K, V> {
+        return balance(new Node<K, V>(this.comparator, this.key, this.value, this.left, newRight));
+    }
+
+    toString(): string {
+        return `(${this.left} ${this.key}=${this.value} ${this.right})`;
     }
 
     @lazy get balance(): number {
@@ -159,4 +178,58 @@ class Node<K, V> extends AVLTree<K, V> {
     @lazy get height(): number {
         return Math.max(this.left.height, this.right.height) + 1;
     }
+}
+
+// http://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/AVL_Tree_Rebalancing.svg/350px-AVL_Tree_Rebalancing.svg.png
+function balance<K, V>(node: Node<K, V>): Node<K, V> {
+    const balance = node.balance;
+    if (balance == -2) return balanceRight(node);
+    if (balance == 2) return balanceLeft(node);
+    return node;
+}
+
+function balanceLeft<K, V>(node: Node<K, V>): Node<K, V> {
+    const balance = node.left.balance;
+    if (balance == -1) return balanceLeftRight(node);
+    if (balance == 1) return balanceLeftLeft(node);
+    return node;
+}
+
+function balanceRight<K, V>(node: Node<K, V>): Node<K, V> {
+    const balance = node.right.balance;
+    if (balance == 1) return balanceRightLeft(node);
+    if (balance == -1) return balanceRightRight(node);
+    return node;
+}
+
+function balanceLeftLeft<K, V>(node: Node<K, V>): Node<K, V> {
+    return rotateRight(node);
+}
+
+function balanceLeftRight<K, V>(node: Node<K, V>): Node<K, V> {
+    const four = rotateLeft(node.left as Node<K, V>);
+    return balanceLeftLeft(node.replaceLeft(four));
+}
+
+function balanceRightRight<K, V>(node: Node<K, V>): Node<K, V> {
+    return rotateLeft(node);
+}
+
+function balanceRightLeft<K, V>(node: Node<K, V>): Node<K, V> {
+    const four = rotateRight(node.right as Node<K, V>);
+    return balanceRightRight(node.replaceRight(four));
+}
+
+function rotateLeft<K, V>(node: Node<K, V>): Node<K, V> {
+    const right = node.right as Node<K, V>;
+    const b = right.left;
+    const three = node.replaceRight(b);
+    return right.replaceLeft(three);
+}
+
+function rotateRight<K, V>(node: Node<K, V>): Node<K, V> {
+    const left = node.left as Node<K, V>;
+    const c = left.right;
+    const five = node.replaceLeft(c);
+    return left.replaceRight(five);
 }

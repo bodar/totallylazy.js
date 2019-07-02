@@ -36,4 +36,31 @@ describe("AVLTree", function () {
         assert.isTrue(t.delete(keyB).tree.contains('a'));
         assert.isFalse(t.delete(keyA).tree.delete(keyB).tree.contains('a'));
     });
+
+    it('balances right right case', function () {
+        const tree = AVLTree.empty<number, null>();
+        assert.equal(tree.insert(3, null).insert(4, null).insert(5, null).toString(), "(( 3=null ) 4=null ( 5=null ))");
+    });
+
+    it('balances right left case', function () {
+        const tree = AVLTree.empty<number, null>();
+        assert.equal(tree.insert(3, null).insert(5, null).insert(4, null).toString(), "(( 3=null ) 4=null ( 5=null ))");
+    });
+
+    it('balances left left case', function () {
+        const tree = AVLTree.empty<number, null>();
+        assert.equal(tree.insert(5, null).insert(4, null).insert(3, null).toString(), "(( 3=null ) 4=null ( 5=null ))");
+    });
+
+    it('balances left right case', function () {
+        const tree = AVLTree.empty<number, null>();
+        assert.equal(tree.insert(5, null).insert(3, null).insert(4, null).toString(), "(( 3=null ) 4=null ( 5=null ))");
+    });
+
+    it('balances deletion', function () {
+        const tree = AVLTree.empty<number, null>();
+        assert.equal(tree.insert(0, null).insert(1, null).insert(2, null)
+            .insert(3, null).insert(4, null).insert(5, null).insert(6, null)
+            .delete(3).tree.toString(), "((( 0=null ) 1=null ) 2=null (( 4=null ) 5=null ( 6=null )))");
+    });
 });
