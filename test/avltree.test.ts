@@ -1,5 +1,6 @@
 import {assert} from 'chai';
 import {AVLTree} from "../src/avltree";
+import {array} from "../src/collections";
 
 describe("AVLTree", function () {
     const tree = AVLTree.empty<string, string>();
@@ -62,5 +63,21 @@ describe("AVLTree", function () {
         assert.equal(tree.insert(0, null).insert(1, null).insert(2, null)
             .insert(3, null).insert(4, null).insert(5, null).insert(6, null)
             .delete(3).tree.toString(), "((( 0=null ) 1=null ) 2=null (( 4=null ) 5=null ( 6=null )))");
+    });
+
+    it('can iterate over keys', function () {
+        const tree = AVLTree.empty<number, null>().insert(0, null).insert(1, null).insert(2, null)
+            .insert(3, null).insert(4, null).insert(5, null).insert(6, null);
+        assert.deepEqual(array(tree.keys()), [0, 1, 2, 3, 4, 5, 6]);
+    });
+
+    it('can iterate over values', function () {
+        const tree = AVLTree.empty<number, string>().insert(0, 'a').insert(1, 'b').insert(2, 'c');
+        assert.deepEqual(array(tree.values()), ['a', 'b', 'c']);
+    });
+
+    it('can iterate over entries', function () {
+        const tree = AVLTree.empty<number, string>().insert(0, 'a').insert(1, 'b').insert(2, 'c');
+        assert.deepEqual(array(tree.entries()), [[0,'a'], [1,'b'], [2,'c']]);
     });
 });

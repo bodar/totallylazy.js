@@ -39,6 +39,12 @@ export abstract class AVLTree<K, V> {
 
     abstract readonly balance: number;
 
+    abstract keys(): Iterable<K>;
+
+    abstract values(): Iterable<V>;
+
+    abstract entries(): Iterable<[K,V]>;
+
 }
 
 class Empty<K, V> extends AVLTree<K, V> {
@@ -76,6 +82,18 @@ class Empty<K, V> extends AVLTree<K, V> {
 
     toString(): string {
         return '';
+    }
+
+    * keys(): Iterable<K> {
+        return;
+    }
+
+    * values(): Iterable<V> {
+        return;
+    }
+
+    * entries(): Iterable<[K,V]> {
+        return [];
     }
 }
 
@@ -177,6 +195,24 @@ class Node<K, V> extends AVLTree<K, V> {
 
     @lazy get height(): number {
         return Math.max(this.left.height, this.right.height) + 1;
+    }
+
+    * keys(): Iterable<K> {
+        yield * this.left.keys();
+        yield this.key;
+        yield * this.right.keys();
+    }
+
+    * values(): Iterable<V> {
+        yield * this.left.values();
+        yield this.value;
+        yield * this.right.values();
+    }
+
+    * entries(): Iterable<[K,V]> {
+        yield * this.left.entries();
+        yield [this.key, this.value];
+        yield * this.right.entries();
     }
 }
 
