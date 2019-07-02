@@ -104,7 +104,7 @@ describe("PrefixTree", function () {
             .insert("января", 1)
             .insert("янв.", 1);
 
-        assert.deepEqual(trie.keys, ['я', 'н', 'в', 'а', 'р', 'ь', '.']);
+        assert.includeMembers(trie.keys, ['я', 'н', 'в', 'а', 'р', 'ь', '.']);
     });
 
     it('can get height', function () {
