@@ -7,6 +7,18 @@ if (typeof Symbol.asyncIterator == 'undefined') {
 export type Mapper<A, B> = (a: A) => B;
 export type Comparator<A> = (a: A, b: A) => number;
 
+export function ascending<T>(a: T, b: T) {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+}
+
+export function descending<T>(a: T, b: T): number {
+    if (a < b) return 1;
+    if (a > b) return -1;
+    return 0;
+}
+
 export interface Key<A, K extends keyof A> extends Mapper<A, A[K]> {
     name: K
 }
@@ -46,7 +58,7 @@ export interface Contract<A> {
 
     sort(comparator?: Comparator<A>): Contract<A>;
 
-    zip<B>(other: Iterable<B>|AsyncIterable<B>): Contract<[A, B]>;
+    zip<B>(other: Iterable<B> | AsyncIterable<B>): Contract<[A, B]>;
 }
 
 export interface Collection<A> extends Contract<A>, Iterable<A> {
@@ -145,17 +157,6 @@ export async function* toAsyncIterable<A>(promise: PromiseLike<A>): AsyncIterabl
     yield promise;
 }
 
-export const ascending = (a: any, b: any) => {
-    if (a < b) return -1;
-    if (a > b) return 1;
-    return 0;
-};
-
-export const descending = (a: any, b: any) => {
-    if (a < b) return 1;
-    if (a > b) return -1;
-    return 0;
-};
 
 export function by<A, K extends keyof A>(key: K, comparator: Comparator<A[K]> = ascending): Comparator<A> {
     return (a: A, b: A) => {
