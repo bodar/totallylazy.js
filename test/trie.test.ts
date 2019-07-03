@@ -139,6 +139,14 @@ describe("PrefixTree", function () {
         assert.deepEqual(b, {value: 'Vikhaklovitch', distance: 3});
     });
 
+    it('the default match also ignores case and language specific accents', function () {
+        const trie = new PrefixTree()
+            .insert("Mikhaïlovitch")
+            .insert("Vikhaklovitch");
+
+        assert.deepEqual(trie.match('mikhail'), ['Mikhaïlovitch']);
+    });
+
 });
 
 describe("Row", function () {

@@ -1,12 +1,13 @@
 import {flatten, unique} from "./arrays";
 import {lazy} from "./lazy";
 import {characters} from "./characters";
-import {array, Comparator} from "./collections";
+import {array, ascending, Comparator} from "./collections";
 import {AVLTree} from "./avltree";
 
 export class Trie<K, V> {
-    constructor(public readonly value?: V,
-                public readonly children: AVLTree<K, Trie<K, V>> = AVLTree.empty()) {
+    constructor(public readonly comparator: Comparator<K> = ascending,
+                public readonly value?: V,
+                public readonly children: AVLTree<K, Trie<K, V>> = AVLTree.empty(comparator)) {
     }
 
     contains(key: K[]): boolean {
@@ -20,7 +21,7 @@ export class Trie<K, V> {
     lookup(key: K[]): V | undefined {
         if (key.length == 0) return this.value;
         const [head, ...tail] = key;
-        const child = this.childFor(head);
+        const child = this.children.lookup(head);
         return child && child.lookup(tail);
     }
 
@@ -29,15 +30,15 @@ export class Trie<K, V> {
             return a.concat(t.match(key));
         }, this.value ? [this.value] : []);
         const [head, ...tail] = key;
-        const child = this.childFor(head);
+        const child = this.children.lookup(head);
         return child ? child.match(tail) : [];
     }
 
     insert(key: K[], value: V): Trie<K, V> {
-        if (key.length == 0) return new Trie(value, this.children);
+        if (key.length == 0) return new Trie(this.comparator, value, this.children);
         const [head, ...tail] = key;
-        const child: Trie<K, V> = (this.childFor(head) || new Trie<K, V>()).insert(tail, value);
-        return new Trie(this.value, this.children.insert(head, child));
+        const child: Trie<K, V> = (this.children.lookup(head) || new Trie<K, V>(this.comparator)).insert(tail, value);
+        return new Trie(this.comparator, this.value, this.children.insert(head, child));
     }
 
     delete(key: K[]): Trie<K, V> {
@@ -51,10 +52,6 @@ export class Trie<K, V> {
     @lazy get height(): number {
         return array(this.children.values()).reduce((a, c) => Math.max(a, c.height + 1), 0);
     }
-
-    private childFor(head: K): Trie<K, V> | undefined {
-        return this.children.lookup(head);
-    }
 }
 
 
@@ -63,7 +60,7 @@ export const DEFAULT_COMPARATOR = new Intl.Collator(undefined, {usage: 'search',
 export class PrefixTree<V = string> {
     constructor(private converter = characters,
                 private comparator: Comparator<string> = DEFAULT_COMPARATOR,
-                private trie = new Trie<string, V>()) {
+                private trie = new Trie<string, V>(comparator)) {
     }
 
     contains(value: string): boolean {
