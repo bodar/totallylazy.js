@@ -109,29 +109,29 @@ class Node<K, V> extends AVLTree<K, V> {
     readonly isEmpty = false;
 
     insert(key: K, value: V): AVLTree<K, V> {
-        const difference: number = this.comparator(key, this.key);
-        if (difference == 0) return new Node(this.comparator, key, value, this.left, this.right);
+        const difference = this.comparator(key, this.key);
+        if (difference === 0) return new Node(this.comparator, key, value, this.left, this.right);
         if (difference < 0) return this.replaceLeft(this.left.insert(key, value));
         return this.replaceRight(this.right.insert(key, value));
     }
 
     contains(key: K): boolean {
-        const difference: number = this.comparator(key, this.key);
-        if (difference == 0) return true;
+        const difference = this.comparator(key, this.key);
+        if (difference === 0) return true;
         if (difference < 0) return this.left.contains(key);
         return this.right.contains(key);
     }
 
     lookup(key: K): V | undefined {
-        const difference: number = this.comparator(key, this.key);
-        if (difference == 0) return this.value;
+        const difference = this.comparator(key, this.key);
+        if (difference === 0) return this.value;
         if (difference < 0) return this.left.lookup(key);
         return this.right.lookup(key);
     }
 
     delete(key: K): Result<K, V> {
-        const difference: number = this.comparator(key, this.key);
-        if (difference == 0) {
+        const difference = this.comparator(key, this.key);
+        if (difference === 0) {
             if (this.left.isEmpty) return {tree: this.right, key: this.key, value: this.value};
             if (this.right.isEmpty) return {tree: this.left, key: this.key, value: this.value};
             const {tree, key, value} = this.left.removeLast();
