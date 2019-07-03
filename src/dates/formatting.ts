@@ -130,7 +130,7 @@ export class FormatToParts {
     }
 
     @lazy get months(): Months {
-        return new Months(this.locale, [Months.dataFor(this.locale, this.options, false)]);
+        return new Months([Months.dataFor(this.locale, this.options, false)]);
     }
 
     @lazy get month(): string {
@@ -138,7 +138,7 @@ export class FormatToParts {
     }
 
     @lazy get weekdays(): Weekdays {
-        return new Weekdays(this.locale, [Weekdays.dataFor(this.locale, this.options, false)]);
+        return new Weekdays([Weekdays.dataFor(this.locale, this.options, false)]);
     }
 
     @lazy get weekday(): string {

@@ -14,9 +14,9 @@ export interface Datum {
 export class DatumLookup<T extends Datum = Datum> {
     private readonly prefixTree: PrefixTree<number>;
 
-    constructor(public locale: string, private data: T[][]) {
+    constructor(private data: T[][]) {
         this.prefixTree = flatten(this.data).reduce((t, m) => {
-            return t.insert(m.name.toLocaleLowerCase(this.locale), m.number);
+            return t.insert(m.name, m.number);
         }, new PrefixTree<number>());
     }
 
@@ -24,7 +24,7 @@ export class DatumLookup<T extends Datum = Datum> {
         const number = parseInt(value);
         if (!isNaN(number)) return this.get(number);
 
-        const data = unique(this.prefixTree.match(value.toLocaleLowerCase(this.locale)));
+        const data = unique(this.prefixTree.match(value));
         if (data.length != 1) throw new Error(`${this.constructor.name} - Unable to parse: ${value} matched : ${JSON.stringify(data)}`);
         const [datum] = data;
         return this.get(datum);
@@ -69,7 +69,7 @@ export class Months extends DatumLookup<Month> {
     }
 
     static create(locale: string = 'default', additionalData: Month[] = []): Months {
-        return new Months(locale, [...Months.generateData(locale), additionalData]);
+        return new Months([...Months.generateData(locale), additionalData]);
     }
 
     static generateData(locale: string = 'default'): Month[][] {
@@ -125,7 +125,7 @@ export class Weekdays extends DatumLookup<Weekday> {
     }
 
     static create(locale: string = 'default', additionalData: Weekday[] = []): Weekdays {
-        return new Weekdays(locale, [...Weekdays.generateData(locale), additionalData]);
+        return new Weekdays([...Weekdays.generateData(locale), additionalData]);
     }
 
     static generateData(locale: string = 'default'): Weekday[][] {

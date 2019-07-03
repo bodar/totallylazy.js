@@ -55,7 +55,7 @@ describe("Months", function () {
     });
 
     it("can override data to help parsing", () => {
-        Months.set('is-IS', new Months('is-IS', [["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]
+        Months.set('is-IS', new Months([["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]
             .map((m, i) => ({name: m, number: i + 1}))]));
         assertParse('is-IS', "06 jún 2019", date(2019, 6, 6), "dd MMM yyyy");
     });
@@ -140,7 +140,7 @@ describe("Weekdays", function () {
     it('length of pattern is determined by valid unicode characters - exclude RTL marker', () => {
         const containsLeadingRtlMarker = "‎Jan";
         assert.equal(containsLeadingRtlMarker.length, 4);
-        const weekdays = new Weekdays('en-GB', [[{name:containsLeadingRtlMarker, number: 1}]]);
+        const weekdays = new Weekdays([[{name:containsLeadingRtlMarker, number: 1}]]);
         assert.deepEqual(weekdays.pattern, '[Jan]{3,3}');
         assert.deepEqual(new RegExp(weekdays.pattern).test(containsLeadingRtlMarker), true);
     });
