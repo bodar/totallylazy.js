@@ -1,151 +1,13 @@
-import {array, ascending, Comparator, Contract, isAsyncIterable, isIterable, Mapper, Reducer} from "./collections";
-import {not, Predicate} from "./predicates";
+import {array, ascending, Comparator, isAsyncIterable, isIterable, Mapper, Reducer} from "./collections";
+import {Predicate} from "./predicates";
 
-export abstract class Transducer<A, B> implements Contract<B> {
-    abstract sync(iterable: Iterable<A>): Iterable<B>;
+export interface Transducer<A, B> {
+    sync(iterable: Iterable<A>): Iterable<B>;
 
-    abstract async_(iterable: AsyncIterable<A>): AsyncIterable<B>;
-
-    transduce(iterable: Iterable<A>): Iterable<B>;
-    transduce(iterable: AsyncIterable<A>): AsyncIterable<B>;
-    transduce(iterable: any) {
-        if (isIterable(iterable)) return this.sync(iterable);
-        if (isAsyncIterable(iterable)) return this.async_(iterable);
-    }
-
-    compose<C>(other: Transducer<B, C>): Transducer<A, C> {
-        return compose(other, this);
-    }
-
-    decompose(): Iterable<Transducer<any, any>> {
-        return decompose(this);
-    }
-
-    map<C>(mapper: Mapper<B, C>): Transducer<A, C> {
-        return map(mapper, this);
-    }
-
-    flatMap<C>(mapper: Mapper<B, Contract<C>>): Transducer<A, C> {
-        return flatMap(mapper, this);
-    }
-
-    filter(predicate: Predicate<B>): Transducer<A, B> {
-        return filter(predicate, this);
-    }
-
-    reject(predicate: Predicate<B>): Transducer<A, B> {
-        return filter(not(predicate), this);
-    }
-
-    find(predicate: Predicate<B>): Transducer<A, B> {
-        return find(predicate, this);
-    }
-
-    first(): Transducer<A, B> {
-        return first(this);
-    }
-
-    last(): Transducer<A, B> {
-        return last(this);
-    }
-
-    drop(size: number): Transducer<A, B> {
-        return drop(size, this);
-    }
-
-    dropWhile(predicate: Predicate<B>): Transducer<A, B> {
-        return dropWhile(predicate, this);
-    }
-
-    take(count: number): Transducer<A, B> {
-        return take(count, this);
-    }
-
-    takeWhile(predicate: Predicate<B>): Transducer<A, B> {
-        return takeWhile(predicate, this);
-    }
-
-    scan<C>(reducer: Reducer<B, C>): Transducer<A, C> {
-        return scan(reducer, this);
-    }
-
-    reduce<C>(reducer: Reducer<B, C>): Transducer<A, C> {
-        return reduce(reducer, this);
-    }
-
-    sort(comparator: Comparator<B> = ascending): Transducer<A, B> {
-        return sort(comparator, this);
-    }
-
-    zip<C>(other: Iterable<C> | AsyncIterable<C>): Transducer<A, [B, C]> {
-        return zip(other, this);
-    }
+    async_(iterable: AsyncIterable<A>): AsyncIterable<B>;
 }
 
-export abstract class Transducable<A> implements Contract<A> {
-    protected constructor(public readonly transducer: Transducer<any, A> = identity()) {
-    }
-
-    abstract create<B>(transducer: Transducer<A, B>): Transducable<B>;
-
-    decompose(): Iterable<Transducer<any, any>> {
-        return this.transducer.decompose();
-    }
-
-    map<B>(mapper: Mapper<A, B>): Transducable<B> {
-        return this.create(this.transducer.map(mapper));
-    }
-
-    flatMap<B>(mapper: Mapper<A, Transducable<B>>): Transducable<B> {
-        return this.create(this.transducer.flatMap(mapper));
-    }
-
-    filter(predicate: Predicate<A>): Transducable<A> {
-        return this.create(this.transducer.filter(predicate));
-    }
-
-    reject(predicate: Predicate<A>): Transducable<A> {
-        return this.create(this.transducer.reject(predicate));
-    }
-
-    find(predicate: Predicate<A>): Transducable<A> {
-        return this.create(this.transducer.find(predicate));
-    }
-
-    first(): Transducable<A> {
-        return this.create(this.transducer.first());
-    }
-
-    last(): Transducable<A> {
-        return this.create(this.transducer.first());
-    }
-
-    take(count: number): Transducable<A> {
-        return this.create(this.transducer.take(count));
-    }
-
-    takeWhile(predicate: Predicate<A>): Transducable<A> {
-        return this.create(this.transducer.takeWhile(predicate));
-    }
-
-    scan<B>(reducer: Reducer<A, B>): Transducable<B> {
-        return this.create(this.transducer.scan(reducer));
-    }
-
-    reduce<B>(reducer: Reducer<A, B>): Transducable<B> {
-        return this.create(this.transducer.reduce(reducer));
-    }
-
-    sort(comparator?: Comparator<A>): Transducable<A> {
-        return this.create(this.transducer.sort(comparator));
-    }
-
-    zip<B>(other: Iterable<B>|AsyncIterable<B>): Transducable<[A, B]>{
-        return this.create(this.transducer.zip(other));
-    }
-}
-
-export class IdentityTransducer<A> extends Transducer<A, A> {
+export class IdentityTransducer<A> implements Transducer<A, A> {
     async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
         return iterable;
     }
@@ -160,11 +22,10 @@ export function identity<A>(): IdentityTransducer<A> {
 }
 
 // alias
-export function transducer<A>(): IdentityTransducer<A> {
-    return identity()
-}
+export const transducer = identity;
 
-export class FirstTransducer<A> extends Transducer<A, A> {
+
+export class FirstTransducer<A> implements Transducer<A, A> {
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
         for await (const a of iterable) {
             yield a;
@@ -180,11 +41,11 @@ export class FirstTransducer<A> extends Transducer<A, A> {
     }
 }
 
-export function first<A, B>(transducer: Transducer<A, B>): Transducer<A, B> {
-    return compose(new FirstTransducer(), transducer);
+export function first<A>(): FirstTransducer<A> {
+    return new FirstTransducer();
 }
 
-export class LastTransducer<A> extends Transducer<A, A> {
+export class LastTransducer<A> implements Transducer<A, A> {
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
         let last;
         for await (last of iterable) ;
@@ -198,14 +59,12 @@ export class LastTransducer<A> extends Transducer<A, A> {
     }
 }
 
-export function last<A, B>(transducer: Transducer<A, B>): Transducer<A, B> {
-    return compose(new LastTransducer(), transducer);
+export function last<A>(): LastTransducer<A> {
+    return new LastTransducer();
 }
 
-export class MapTransducer<A, B> extends Transducer<A, B> {
-    constructor(public mapper: Mapper<A, B>) {
-        super();
-    }
+export class MapTransducer<A, B> implements Transducer<A, B> {
+    constructor(public mapper: Mapper<A, B>) {}
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
         for await (const a of iterable) {
@@ -220,13 +79,12 @@ export class MapTransducer<A, B> extends Transducer<A, B> {
     }
 }
 
-export function map<A, B, C>(mapper: Mapper<B, C>, transducer: Transducer<A, B>): Transducer<A, C> {
-    return compose(new MapTransducer(mapper), transducer);
+export function map<A, B>(mapper: Mapper<A, B>): MapTransducer<A, B> {
+    return new MapTransducer(mapper);
 }
 
-export class ZipTransducer<A, B> extends Transducer<A, [A, B]> {
+export class ZipTransducer<A, B> implements Transducer<A, [A, B]> {
     constructor(public other: Iterable<B> | AsyncIterable<B>) {
-        super();
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<[A, B]> {
@@ -252,13 +110,12 @@ export class ZipTransducer<A, B> extends Transducer<A, [A, B]> {
     }
 }
 
-export function zip<A, B, C>(other: Iterable<C> | AsyncIterable<C>, transducer: Transducer<A, B>): Transducer<A, [B, C]> {
-    return compose(new ZipTransducer(other), transducer);
+export function zip<A, B>(other: Iterable<B> | AsyncIterable<B>): ZipTransducer<A, B> {
+    return new ZipTransducer(other);
 }
 
-export class FlatMapTransducer<A, B> extends Transducer<A, B> {
-    constructor(public mapper: Mapper<A, Contract<B>>) {
-        super();
+export class FlatMapTransducer<A, B> implements Transducer<A, B> {
+    constructor(public mapper: Mapper<A, Iterable<B> | AsyncIterable<B>>) {
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
@@ -274,13 +131,12 @@ export class FlatMapTransducer<A, B> extends Transducer<A, B> {
     }
 }
 
-export function flatMap<A, B, C>(mapper: Mapper<B, Contract<C>>, transducer: Transducer<A, B>): Transducer<A, C> {
-    return compose(new FlatMapTransducer(mapper), transducer);
+export function flatMap<A, B>(mapper: Mapper<A, Iterable<B> | AsyncIterable<B>>): FlatMapTransducer<A, B> {
+    return new FlatMapTransducer(mapper);
 }
 
-export class FilterTransducer<A> extends Transducer<A, A> {
+export class FilterTransducer<A> implements Transducer<A, A> {
     constructor(public predicate: Predicate<A>) {
-        super();
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
@@ -296,17 +152,20 @@ export class FilterTransducer<A> extends Transducer<A, A> {
     }
 }
 
-export function filter<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {
-    return compose(new FilterTransducer(predicate), transducer);
+export function filter<A>(predicate: Predicate<A>): FilterTransducer<A> {
+    return new FilterTransducer(predicate);
 }
 
-export function find<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {
-    return first(filter(predicate, transducer));
+export function reject<A>(predicate: Predicate<A>): FilterTransducer<A> {
+    return new FilterTransducer(a => !predicate(a));
 }
 
-export class CompositeTransducer<A, B, C> extends Transducer<A, C> {
+export function find<A>(predicate: Predicate<A>): Transducer<A, A> {
+    return compose(filter(predicate), first());
+}
+
+export class CompositeTransducer<A, B, C> implements Transducer<A, C> {
     constructor(public a: Transducer<A, B>, public b: Transducer<B, C>) {
-        super();
     }
 
     async_(iterator: AsyncIterable<A>): AsyncIterable<C> {
@@ -318,7 +177,7 @@ export class CompositeTransducer<A, B, C> extends Transducer<A, C> {
     }
 }
 
-export function compose<A, B, C>(b: Transducer<B, C>, a: Transducer<A, B>): CompositeTransducer<A, B, C> {
+export function compose<A, B, C>(a: Transducer<A, B>, b: Transducer<B, C>): CompositeTransducer<A, B, C> {
     return new CompositeTransducer(a, b);
 }
 
@@ -349,9 +208,8 @@ export function intoArray<A>(seed?: A[]) {
     return new IntoArray<A>(seed);
 }
 
-export class ScanTransducer<A, B> extends Transducer<A, B> {
+export class ScanTransducer<A, B> implements Transducer<A, B> {
     constructor(public reducer: Reducer<A, B>, public accumilator: B = reducer.identity()) {
-        super();
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
@@ -367,17 +225,16 @@ export class ScanTransducer<A, B> extends Transducer<A, B> {
     }
 }
 
-export function scan<A, B, C>(reducer: Reducer<B, C>, transducer: Transducer<A, B>): Transducer<A, C> {
-    return compose(new ScanTransducer(reducer), transducer);
+export function scan<A, B>(reducer: Reducer<A, B>): ScanTransducer<A, B> {
+    return new ScanTransducer(reducer);
 }
 
-export function reduce<A, B, C>(reducer: Reducer<B, C>, transducer: Transducer<A, B>): Transducer<A, C> {
-    return last(scan(reducer, transducer));
+export function reduce<A, B>(reducer: Reducer<A, B>): Transducer<A, B> {
+    return compose(scan(reducer), last());
 }
 
-export class TakeTransducer<A> extends Transducer<A, A> {
+export class TakeTransducer<A> implements Transducer<A, A> {
     constructor(public count: number) {
-        super();
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
@@ -397,13 +254,12 @@ export class TakeTransducer<A> extends Transducer<A, A> {
     }
 }
 
-export function take<A, B>(count: number, transducer: Transducer<A, B>): Transducer<A, B> {
-    return compose(new TakeTransducer(count), transducer);
+export function take<A, B>(count: number): TakeTransducer<A> {
+    return new TakeTransducer(count);
 }
 
-export class DropTransducer<A> extends Transducer<A, A> {
+export class DropTransducer<A> implements Transducer<A, A> {
     constructor(public count: number) {
-        super();
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
@@ -419,13 +275,12 @@ export class DropTransducer<A> extends Transducer<A, A> {
     }
 }
 
-export function drop<A, B>(count: number, transducer: Transducer<A, B>): Transducer<A, B> {
-    return compose(new DropTransducer(count), transducer);
+export function drop<A>(count: number): DropTransducer<A> {
+    return new DropTransducer(count);
 }
 
-export class DropWhileTransducer<A> extends Transducer<A, A> {
+export class DropWhileTransducer<A> implements Transducer<A, A> {
     constructor(public predicate: Predicate<A>) {
-        super();
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
@@ -445,14 +300,12 @@ export class DropWhileTransducer<A> extends Transducer<A, A> {
     }
 }
 
-export function dropWhile<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {
-    return compose(new DropWhileTransducer(predicate), transducer);
+export function dropWhile<A>(predicate: Predicate<A>): DropWhileTransducer<A> {
+    return new DropWhileTransducer(predicate);
 }
 
-
-export class TakeWhileTransducer<A> extends Transducer<A, A> {
+export class TakeWhileTransducer<A> implements Transducer<A, A> {
     constructor(public predicate: Predicate<A>) {
-        super();
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
@@ -470,13 +323,13 @@ export class TakeWhileTransducer<A> extends Transducer<A, A> {
     }
 }
 
-export function takeWhile<A, B>(predicate: Predicate<B>, transducer: Transducer<A, B>): Transducer<A, B> {
-    return compose(new TakeWhileTransducer(predicate), transducer);
+export function takeWhile<T>(predicate: (t: T) => boolean): TakeWhileTransducer<T> {
+    return new TakeWhileTransducer(predicate)
 }
 
-export class SortTransducer<A> extends Transducer<A, A> {
+
+export class SortTransducer<A> implements Transducer<A, A> {
     constructor(public comparator: Comparator<A>) {
-        super();
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
@@ -492,8 +345,8 @@ export class SortTransducer<A> extends Transducer<A, A> {
     }
 }
 
-export function sort<A, B>(comparator: Comparator<B>, transducer: Transducer<A, B>): Transducer<A, B> {
-    return compose(new SortTransducer(comparator), transducer);
+export function sort<A>(comparator: Comparator<A> = ascending): SortTransducer<A> {
+    return new SortTransducer(comparator);
 }
 
 
