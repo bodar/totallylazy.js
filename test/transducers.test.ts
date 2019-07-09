@@ -22,7 +22,7 @@ import {assertSync} from "./collections.test";
 import {ascending, by, descending} from "../src/collections";
 
 
-describe("syncrs", () => {
+describe("Transducer", () => {
     it("can drop", () => {
         assertSync(drop(2).sync([1, 2, 3]), 3);
         assertSync(drop(4).sync([1, 2, 3]), ...[]);
