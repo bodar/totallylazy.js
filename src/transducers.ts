@@ -28,15 +28,13 @@ export const transducer = identity;
 export class FirstTransducer<A> implements Transducer<A, A> {
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
         for await (const a of iterable) {
-            yield a;
-            return;
+            return yield a;
         }
     }
 
     * sync(iterable: Iterable<A>): Iterable<A> {
         for (const a of iterable) {
-            yield a;
-            return;
+            return yield a;
         }
     }
 }
@@ -64,7 +62,8 @@ export function last<A>(): LastTransducer<A> {
 }
 
 export class MapTransducer<A, B> implements Transducer<A, B> {
-    constructor(public mapper: Mapper<A, B>) {}
+    constructor(public mapper: Mapper<A, B>) {
+    }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
         for await (const a of iterable) {
@@ -209,18 +208,20 @@ export function intoArray<A>(seed?: A[]) {
 }
 
 export class ScanTransducer<A, B> implements Transducer<A, B> {
-    constructor(public reducer: Reducer<A, B>, public accumilator: B = reducer.identity()) {
+    constructor(public reducer: Reducer<A, B>) {
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
+        let accumilator = this.reducer.identity();
         for await (const a of iterable) {
-            yield this.accumilator = this.reducer.call(this.accumilator, a);
+            yield accumilator = this.reducer.call(accumilator, a);
         }
     }
 
     * sync(iterable: Iterable<A>): Iterable<B> {
+        let accumilator = this.reducer.identity();
         for (const a of iterable) {
-            yield this.accumilator = this.reducer.call(this.accumilator, a);
+            yield accumilator = this.reducer.call(accumilator, a);
         }
     }
 }
