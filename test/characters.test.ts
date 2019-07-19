@@ -2,7 +2,7 @@ import {characters, splitByRegex, different} from "../src/characters";
 import {assert} from 'chai';
 import {array} from "../src/collections";
 import {filter, flatMap, map} from "../src/transducers";
-import {pipe} from "../src/sequence";
+import {sequence} from "../src/sequence";
 
 describe("difference", function () {
     it("can find differences between string", () => {

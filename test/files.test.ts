@@ -2,6 +2,7 @@ import {assert} from 'chai';
 import {File} from '../src/files';
 import {runningInNode} from "../src/node";
 import {sequence} from "../src/sequence";
+import {array} from "../src/collections";
 
 describe("files", function () {
     before(function() {
@@ -18,7 +19,7 @@ describe("files", function () {
     });
 
     it('can list children', async () => {
-        const size = await sequence(new File('test/example/').children()).size();
+        const size = (await array(new File('test/example/').children())).length;
         assert.strictEqual(size, 2);
     });
 
@@ -31,7 +32,7 @@ describe("files", function () {
     });
 
     it('can list descendants', async () => {
-        const size = await sequence(new File('test/example/').descendants()).size();
+        const size = (await array(new File('test/example/').descendants())).length;
         assert.strictEqual(size, 3);
     });
 
