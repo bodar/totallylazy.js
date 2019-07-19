@@ -1,5 +1,6 @@
 import {add, increment, subtract} from "./numbers";
-import {takeWhile, Transducer} from "./transducers";
+import {decompose, takeWhile, Transducer} from "./transducers";
+import {flatten} from "./arrays";
 
 export function* iterate<T>(generator: (t: T) => T, value: T): Iterable<T> {
     while (true) {
@@ -18,17 +19,27 @@ export function* range(start: number, end?: number, step: number = 1): Iterable<
     if (end === undefined) yield* iterate(increment, start);
     else {
         const absolute = Math.abs(step);
-        if (end < start) yield* pipe(iterate(subtract(absolute), start), takeWhile(n => n >= end));
-        else yield* pipe(iterate(add(absolute), start), takeWhile(n => n <= end));
+        if (end < start) yield* sequence(iterate(subtract(absolute), start), takeWhile(n => n >= end));
+        else yield* sequence(iterate(add(absolute), start), takeWhile(n => n <= end));
     }
 }
 
-export function pipe<A, B>(a: Iterable<A>, b: Transducer<A, B>): Iterable<B>;
-export function pipe<A, B, C>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>): Iterable<C>;
-export function pipe<A, B, C, D>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>): Iterable<D>;
-export function pipe<A, B, C, D, E>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e:  Transducer<D, E>): Iterable<E>;
-export function pipe(a: Iterable<any>, ...args: Transducer<any, any>[]): Iterable<any> {
-    return args.reduce((r, v) => v.sync(r), a);
+export function sequence<A, B>(a: Iterable<A>, b: Transducer<A, B>): Sequence<B>;
+export function sequence<A, B, C>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>): Sequence<C>;
+export function sequence<A, B, C, D>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>): Sequence<D>;
+export function sequence<A, B, C, D, E>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e:  Transducer<D, E>): Sequence<E>;
+export function sequence(source: Iterable<any>, ...transducers: Transducer<any, any>[]): Sequence<any> {
+    return new Sequence<any>(source, transducers);
+}
+
+export class Sequence<T> implements Iterable<T>{
+    constructor(public source: Iterable<any>, public transducers: Transducer<any, any>[]){
+
+    }
+
+    [Symbol.iterator](): Iterator<T> {
+        return this.transducers.reduce((r, v) => v.sync(r), this.source)[Symbol.iterator]();
+    }
 }
 
 
