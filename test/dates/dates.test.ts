@@ -1,6 +1,16 @@
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {date, format, hasNativeFormatToParts, numeric, Options, parse, parser, parsers} from "../../src/dates";
+import {
+    date,
+    format,
+    Formatters,
+    hasNativeFormatToParts,
+    numeric,
+    Options,
+    parse,
+    parser,
+    parsers
+} from "../../src/dates";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
@@ -65,6 +75,11 @@ describe("dates", function () {
 
         assertFormat('ru-RU', date(2019, 1, 31), {day: '2-digit', year: 'numeric', month: 'short'}, '31 янв. 2019 г.');
         assertFormat('ru-RU', date(2019, 2, 1), {day: '2-digit', year: 'numeric', month: 'short'}, '01 февр. 2019 г.');
+    });
+
+    it('can parse dates with additional spaces', function () {
+        assertParse('zh-CN', '2019年 9月 26日 ', date(2019, 9, 26), {day: 'numeric', year: 'numeric', month: 'long'});
+        assertParse('en', 'SEP 27, 2019', date(2019, 9, 27), {day: 'numeric', year: 'numeric', month: 'long'});
     });
 
     it("ignores case", () => {

@@ -52,7 +52,7 @@ export class RegexBuilder {
                 case "weekday":
                     return `(?<weekday>${this.weekdays.pattern.toLocaleLowerCase(this.locale)})`;
                 default: {
-                    const chars = unique(characters(part.value)).join('').replace(' ', '\\s');
+                    const chars = unique(characters(this.ensureLiteralsAlwaysContainSpace(part))).join('').replace(' ', '\\s');
                     return `[${chars}]+?`;
                 }
             }
@@ -68,6 +68,10 @@ export class RegexBuilder {
         };
 
         return new RegexParser(new RegExp(pattern), groups, this.locale);
+    }
+
+    private ensureLiteralsAlwaysContainSpace(part: DateTimeFormatPart) {
+        return part.value + ' ';
     }
 }
 
