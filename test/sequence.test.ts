@@ -1,27 +1,24 @@
-import {sequence, range} from "../src/sequence";
-import {assertSync} from "./collections.test";
-import {
-    CompositeTransducer,
-    FilterTransducer,
-    find,
-    FirstTransducer,
-    flatMap,
-    FlatMapTransducer,
-    IdentityTransducer,
-    take
-} from "../src/transducers";
+import {range, sequence} from "../src/sequence";
+import {assertAsync, assertSync} from "./collections.test";
+import {CompositeTransducer, find, flatMap, FlatMapTransducer, take} from "../src/transducers";
 import {assert} from 'chai';
 
 describe("Sequence", () => {
     it("supports ranges", () => {
         assertSync(sequence(range(1), take(3)), 1, 2, 3);
+        assertSync(sequence(range(1, undefined, 2), take(3)), 1, 3, 5);
+        assertSync(sequence(range(1, undefined, -1), take(3)), 1, 0, -1);
         assertSync(range(1, 5), 1, 2, 3, 4, 5);
         assertSync(range(5, 1), 5, 4, 3, 2, 1);
         assertSync(range(1, 10, 2), 1, 3, 5, 7, 9);
         assertSync(range(10, 1, 2), 10, 8, 6, 4, 2);
     });
 
-    it("decomposition still works even when moving from Sequence to Option", () => {
+    it("range throw is step is 0", () => {
+        assert.throws(() => assertSync(range(1, undefined, 0)), Error, "step can not be 0");
+    });
+
+    it("decomposition works - WIP", () => {
         const value = sequence([1, 2, 3], flatMap(n => [n, n * 2]), find(n => n > 2));
         const [fmap, findT] = value.transducers;
         assert.instanceOf(fmap, FlatMapTransducer);
@@ -34,5 +31,15 @@ describe("Sequence", () => {
 
     it("operations terminate early", () => {
         assertSync(sequence(range(1), flatMap(n => [n, n * 2]), take(6)), 1, 2, 2, 4, 3, 6);
+    });
+
+    it("supports async operations", async () => {
+        async function *asyncRange(count = 0): AsyncIterable<number> {
+            while(true) {
+                yield count++;
+            }
+        }
+
+        return assertAsync(sequence(asyncRange(1), flatMap((n: number) => [n, n * 2]), take(6)), 1, 2, 2, 4, 3, 6);
     });
 });
