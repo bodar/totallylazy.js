@@ -15,12 +15,10 @@
     "lib": [
       "dom",
       "esnext"
-    ],
-    "types": ["mocha"]
+    ]
   },
   "include": [
     "src/**/*",
-    "test/**/*",
-    "test-browser.ts"
+    "test/**/*"
   ]
 }

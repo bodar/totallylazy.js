@@ -1,7 +1,5 @@
 import {Body, Chunk, Handler, Header, Headers, host, isBody, Request, request, Response, Server, Uri} from ".";
 import {createServer, IncomingMessage, request as NodeRequest, Server as NodeServer, ServerResponse} from 'http';
-import {TextEncoder} from 'text-encoding';
-import {URL} from 'url';
 
 export class ClientHandler implements Handler {
     handle(request: Request): Promise<Response> {
