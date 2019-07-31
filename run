@@ -2,21 +2,8 @@
 set -e
 
 source ./version.sh
+source ./nvm.sh
 
-export NVM_DIR=$HOME/.nvm
-
-if [[ ! -d $NVM_DIR ]]; then
-  mkdir -p $NVM_DIR
-  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
-fi
-
-if [[ ! $(command -v nvm) ]]; then
-  set +e
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  set -e
-fi
-
-nvm install
 
 if [[ ! $(command -v yarn) ]]; then
     npm install -g yarn
