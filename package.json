@@ -13,6 +13,7 @@
     "test-browser": "ts-node test-browser.ts"
   },
   "dependencies": {
+    "fusebox": "^1.3.123",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
