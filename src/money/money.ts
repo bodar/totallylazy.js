@@ -2,6 +2,9 @@ import NumberFormatOptions = Intl.NumberFormatOptions;
 import NumberFormatPart = Intl.NumberFormatPart;
 import NumberFormatPartTypes = Intl.NumberFormatPartTypes;
 import {NamedMatch, NamedRegExp, replace} from "../characters";
+import {filter, flatMap, map} from "../transducers";
+import {sequence} from "../sequence";
+import {array} from "../collections";
 
 /**
  * Parsing flow
@@ -53,7 +56,9 @@ export function parse(value: string, locale?: string): Money {
 }
 
 export function parseToParts(value: string, locale?: string): NumberFormatPart[] {
-    return regexParser(locale).parse(value);
+    const numberFormatParts = regexParser(locale).parse(value);
+    console.log(numberFormatParts);
+    return numberFormatParts;
 }
 
 export const defaultOptions: NumberFormatOptions = {
@@ -65,17 +70,25 @@ const exampleMoney = money('GBP', 1234567.89);
 
 export function regexParser(locale?: string): Parser<NumberFormatPart[]> {
     const parts = partsFrom(exampleMoney, locale);
+    const [group = ''] = parts.filter(p => p.type === 'group').map(p => p.value);
+    const noGroups = parts.filter(p => p.type !== 'group');
+    let integerAdded = false;
 
-    const namedPattern = parts.map(part => {
+    const namedPattern = noGroups.map(part => {
         switch (part.type) {
             case "currency":
                 return '(?<currency>[a-zA-Z]{3})';
             case "decimal":
-                return `(?<decimal>[${part.value}])`;
+                return `(?<decimal>[${part.value}]?)`;
             case "fraction":
-                return `(?<fraction>\\d+)`;
+                return `(?<fraction>\\d*)`;
             case "integer":
-                return '(?<integer>\\d+)';
+                if (integerAdded) {
+                    return '';
+                } else {
+                    integerAdded = true;
+                    return `(?<integergroup>[0-9${group}]+)`;
+                }
             default:
                 return `(?<${part.type}>[${part.value}]?)`;
         }
@@ -108,9 +121,27 @@ export abstract class BaseParser<T> implements Parser<T> {
     abstract convert(matches: NamedMatch[]): T
 }
 
+const integers = NamedRegExp.create('(?<integer>\\d+)');
+
 export class NumberFormatPartParser extends BaseParser<NumberFormatPart[]> {
     convert(matches: NamedMatch[]) {
-        return matches.map((m, i) => ({type: m.name as NumberFormatPartTypes, value: m.value.toLocaleUpperCase(this.locale)}));
+        return array(sequence(matches, filter(m => Boolean(m.value)), flatMap((m: NamedMatch) => {
+            const type = m.name;
+            if (type === 'integergroup') {
+                return array(sequence(integers.iterate(m.value), filter(m => Boolean(m)), map(m => {
+                    if(Array.isArray(m)) {
+                        return { type: 'integer', value: m[0].value } as NumberFormatPart;
+                    } else {
+                        return { type: 'group', value: m } as NumberFormatPart;
+                    }
+                })));
+            } else {
+                return [{
+                    type,
+                    value: m.value.toLocaleUpperCase(this.locale)
+                } as NumberFormatPart];
+            }
+        })));
     }
 }
 

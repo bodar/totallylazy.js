@@ -5,9 +5,9 @@ import NumberFormatPart = Intl.NumberFormatPart;
 describe("Money", function () {
 
     it('can parse money', () => {
-        const locale = 'en-GB';
-        const parsed = parse('EUR 1,234,567.89', locale);
-        assert.deepEqual(parsed, money('EUR', 1234567.89));
+        assert.deepEqual(parse('EUR 1,234,567.89', 'en-GB'), money('EUR', 1234567.89));
+        assert.deepEqual(parse('EUR 156', 'en-GB'), money('EUR', 156));
+        assert.deepEqual(parse('EUR 156.89', 'en-GB'), money('EUR', 156.89));
     });
 
     it('can convert parts to money', () => {
