@@ -1,22 +1,65 @@
-export interface Names {
-    [key: string]: number;
-}
+import {regex} from "./pattern";
 
-export interface NamedGroups {
-    names: Names;
-    pattern: string;
-}
+export type Names = string[];
 
 const namesRegex = /\(\?<([^>]+)>/g;
 
-export function namedGroups(originalPattern:string): NamedGroups{
-    let index = 0;
-    const names: Names = {};
-    const pattern = replace(namesRegex, originalPattern, match => {
-        names[match[1]] = ++index;
-        return '(';
-    });
-    return {names: names, pattern};
+export type NonMatch = string;
+
+export class NamedRegExp {
+    constructor(public pattern: RegExp, public names: Names) {
+    }
+
+    static create(originalPattern: string, flags?: string): NamedRegExp {
+        const names: Names = [];
+        const pattern = replace(namesRegex, originalPattern, match => {
+            names.push(match[1]);
+            return '(';
+        });
+        return new NamedRegExp(new RegExp(pattern, flags), names);
+    }
+
+    match(value: string): NamedMatch[] {
+        const result = value.match(this.pattern);
+        if (!result) return [];
+        return this.namedMatch(result);
+    }
+
+    private namedMatch(result: RegExpMatchArray) {
+        const values = result.slice(1);
+        return values.map((v, i) => ({name: this.names[i], value: v}));
+    }
+
+    * exec(value:string): Iterable<NamedMatch[]> {
+        const stateful = new RegExp(this.pattern.source, 'g');
+        while (true) {
+            const match = stateful.exec(value);
+            if (!match) break;
+            yield this.namedMatch(match);
+        }
+    }
+
+    * iterate(value:string): Iterable<NamedMatch[]|NonMatch> {
+        let position = 0;
+        const stateful = new RegExp(this.pattern.source, 'g');
+        while (true) {
+            const match = stateful.exec(value);
+            if (!match) break;
+            yield value.substring(position, match.index);
+            yield this.namedMatch(match);
+            position = stateful.lastIndex;
+        }
+        yield value.substring(position);
+    }
+
+    toString() {
+        return `Pattern: ${this.pattern} Names: ${JSON.stringify(this.names)}`;
+    }
+}
+
+export interface NamedMatch {
+    name: string;
+    value: string;
 }
 
 

@@ -12,10 +12,13 @@ import {
     Weekdays
 } from "./index";
 import {cache, lazy} from "../lazy";
-import {characters, namedGroups, NamedGroups, replace} from "../characters";
+import {characters, NamedRegExp, replace} from "../characters";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
+import {sequence} from "../sequence";
+import {map} from "../transducers";
+import {array} from "../collections";
 
 export class Formatters {
     @cache
@@ -145,55 +148,46 @@ export class FormatToParts {
         return weekdays(this.locale, this.options, false)[this.weekdayValue - 1];
     }
 
-    @lazy get learningNamesPattern(): NamedGroups {
+    @lazy get learningNamesPattern(): NamedRegExp {
         const template = (key: string) => `(?<${key}>${(this as any)[key]})`;
         const patterns = Object.keys(this.options).map(k => template(k));
         const namedPattern = `(?:${patterns.join("|")})`;
-        return namedGroups(namedPattern);
+        return NamedRegExp.create(namedPattern);
     }
 
-    @lazy get actualNamesPattern(): NamedGroups {
-        const {names: learningNames, pattern: learningPattern} = this.learningNamesPattern;
-        const learningRegex = new RegExp(learningPattern, 'g');
+    @lazy get actualNamesPattern(): NamedRegExp {
+        const learningRegex = this.learningNamesPattern;
 
-        const result: string[] = [];
-        let count = 0;
-        const literalHandler = (value: string) => {
-            if (value) {
-                result.push(`(?<literal-${count++}>[${value}]+?)`);
+        const result = array(sequence(learningRegex.iterate(this.formatted), map(value => {
+            if(Array.isArray(value)) {
+                let [type] = value.filter(n => Boolean(n.value)).map(n => n.name);
+                if (!type) throw new Error();
+                if (type == 'year') return '(?<year>\\d{4})';
+                else if (type == "day") return '(?<day>\\d{1,2})';
+                else if (type == "month") return `(?<month>(?:\\d{1,2}|${this.months.pattern}))`;
+                else if (type == "weekday") return `(?<weekday>${this.weekdays.pattern})`;
+            } else {
+                if (value) {
+                    return `(?<literal>[${value}]+?)`;
+                }
             }
-        };
-        replace(learningRegex, this.formatted, match => {
-            let [type] = Object.keys(learningNames).map(k => match[learningNames[k]] ? k : undefined).filter(Boolean);
-            if (!type) throw new Error();
-            if (type == 'year') result.push('(?<year>\\d{4})');
-            else if (type == "day") result.push('(?<day>\\d{1,2})');
-            else if (type == "month") result.push(`(?<month>(?:\\d{1,2}|${this.months.pattern}))`);
-            else if (type == "weekday") result.push(`(?<weekday>${this.weekdays.pattern})`);
-            return "";
-        }, value => {
-            literalHandler(value);
-            return "";
-        });
+        })));
 
-        return namedGroups("^" + result.join("") + "$");
+        return NamedRegExp.create("^" + result.join("") + "$");
     }
 
     formatToParts(date: Date): DateTimeFormatPart[] {
-        const {names, pattern} = this.actualNamesPattern;
-
+        const regex = this.actualNamesPattern;
         const actualResult = this.formatter.format(date);
-        const regex = new RegExp(pattern);
 
-        const parts: DateTimeFormatPart[] = [];
-        const match = actualResult.match(regex);
+        const match = regex.match(actualResult);
         if (!match) {
-            throw new Error(`${pattern} did not match ${actualResult}`);
+            throw new Error(`${regex} did not match ${actualResult}`);
         }
-        Object.keys(names).map((type) => {
-            let value = match[names[type]];
-            type = this.getType(type, value);
-            parts.push({type: (type as any), value});
+
+        const parts = match.map(m => {
+            const type = this.getType(m.name, m.value);
+            return {type, value: m.value};
         });
 
         return this.collapseLiterals(parts);
@@ -216,7 +210,6 @@ export class FormatToParts {
     }
 
     private getType(type: string, value: string): DateTimeFormatPartTypes {
-        type = type.split('-')[0];
         if (type === 'month' || type === 'weekday') {
             if (this.parsable(this.months, value)) return "month";
             if (this.parsable(this.weekdays, value)) return "weekday";

@@ -7,8 +7,8 @@ import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 
 export interface Datum {
-    number: number;
     name: string;
+    number: number;
 }
 
 export class DatumLookup<T extends Datum = Datum> {

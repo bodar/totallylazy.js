@@ -1,6 +1,6 @@
 import {cache, lazy} from "../lazy";
 import {flatten, unique} from "../arrays";
-import {characters, namedGroups, replace} from "../characters";
+import {characters, NamedMatch, NamedRegExp, replace} from "../characters";
 import {
     date,
     defaultOptions,
@@ -12,6 +12,7 @@ import {
 } from "./index";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
+import {BaseParser} from "../money/money";
 
 export function parse(value: string, locale?: string, options?: string | Options, native = hasNativeFormatToParts): Date {
     return parser(locale, options, native).parse(value);
@@ -58,16 +59,7 @@ export class RegexBuilder {
             }
         }).join("");
 
-        const {names, pattern} = namedGroups(namedPattern);
-
-        const groups = {
-            year: numeric(names['year']),
-            month: parseMonth(names['month'], this.months),
-            day: numeric(names['day']),
-            weekday: parseWeekday(names['weekday'], this.weekdays),
-        };
-
-        return new RegexParser(new RegExp(pattern), groups, this.locale);
+        return new RegexParser(NamedRegExp.create(namedPattern), this.locale);
     }
 
     private ensureLiteralsAlwaysContainSpace(part: DateTimeFormatPart) {
@@ -105,37 +97,42 @@ export function parsers(...parsers: DateParser[]): DateParser {
     return new CompositeDateParser(parsers);
 }
 
-export interface RegexGroups {
-    year: OptionHandler;
-    month: OptionHandler;
-    day: OptionHandler;
-    weekday: OptionHandler;
+export class DateTimeFormatPartParser extends BaseParser<DateTimeFormatPart[]> {
+    convert(matches: NamedMatch[]) {
+        return matches.map((m, i) => ({type: m.name as DateTimeFormatPartTypes, value: m.value.toLocaleUpperCase(this.locale)}));
+    }
+}
+
+export function dateFrom(parts: DateTimeFormatPart[], locale?:string): Date {
+    const [year] = parts.filter(p => p.type === 'year');
+    if (!year) throw new Error("No year found");
+    const yyyy = Number(year.value);
+
+    const [month] = parts.filter(p => p.type === 'month');
+    if (!month) throw new Error("No month found");
+    const MM = Months.get(locale).parse(month.value).number;
+
+    const [day] = parts.filter(p => p.type === 'day');
+    if (!day) throw new Error("No day found");
+    const dd = Number(day.value);
+
+    return date(yyyy, MM, dd);
 }
 
 export class RegexParser implements DateParser {
-    constructor(private regex: RegExp, private groups: RegexGroups, private locale?: string) {
+    private parser: DateTimeFormatPartParser;
+    constructor(private regex: NamedRegExp, private locale: string) {
+        this.parser = new DateTimeFormatPartParser(regex, locale)
     }
 
     parse(value: string): Date {
-        const lower = value.toLocaleLowerCase(this.locale);
-        const match = lower.match(this.regex);
-        if (!match) throw new Error(`Locale "${this.locale}" generated regex ${this.regex} did not match "${lower}" `);
-        return date(this.groups.year(match), this.groups.month(match), this.groups.day(match));
+        return dateFrom(this.parser.parse(value), this.locale);
     }
 
     parseAll(value: string): Date[] {
-        const regex = new RegExp(this.regex.source, 'g');
-        const lower = value.toLocaleLowerCase(this.locale);
-        const result: Date[] = [];
-        while (true) {
-            const match = regex.exec(lower);
-            if(!match) break;
-            result.push(date(this.groups.year(match), this.groups.month(match), this.groups.day(match)));
-        }
-        return result;
+        return this.parser.parseAll(value).map(v => dateFrom(v, this.locale));
     }
 }
-
 
 export const formatRegex = /(?:(y+)|(M+)|(d+)|(E+))/g;
 
@@ -198,19 +195,7 @@ export function formatBuilder(locale: string, format: string): RegexBuilder {
     return new RegexBuilder(locale, optionsFrom(parts), parts)
 }
 
-export type OptionHandler = (match: RegExpMatchArray) => number;
 
-export const numeric = (index: number): OptionHandler => (match: RegExpMatchArray): number => {
-    return parseInt(match[index]);
-};
-
-export const parseMonth = (index: number, months: Months): OptionHandler => (match: RegExpMatchArray): number => {
-    return months.parse(match[index]).number;
-};
-
-export const parseWeekday = (index: number, weekdays: Weekdays): OptionHandler => (match: RegExpMatchArray): number => {
-    return weekdays.parse(match[index]).number;
-};
 
 export const defaultParserOptions: (string | Options)[] = [
     {year: 'numeric', month: 'long', day: 'numeric', weekday: "long"},

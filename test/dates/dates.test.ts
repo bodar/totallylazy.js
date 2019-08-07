@@ -1,16 +1,6 @@
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {
-    date,
-    format,
-    Formatters,
-    hasNativeFormatToParts,
-    numeric,
-    Options,
-    parse,
-    parser,
-    parsers
-} from "../../src/dates";
+import {date, format, hasNativeFormatToParts, Options, parse, parser, parsers} from "../../src/dates";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
