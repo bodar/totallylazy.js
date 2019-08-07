@@ -1,9 +1,3 @@
-import {Predicate} from "./predicates";
-
-if (typeof Symbol.asyncIterator == 'undefined') {
-    (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
-}
-
 export type Mapper<A, B> = (a: A) => B;
 export type Comparator<A> = (a: A, b: A) => number;
 
@@ -28,7 +22,7 @@ export function key<A, K extends keyof A>(name: K): Key<A, K> {
 }
 
 export interface Reducer<A, B> {
-    call(accumilator: B, instance: A): B;
+    call(accumulator: B, instance: A): B;
 
     identity(): B;
 }
