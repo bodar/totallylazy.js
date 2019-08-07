@@ -1,5 +1,7 @@
 .idea/workspace.xml
 .idea/encodings.xml
+.idea/codeStyles
+.idea/.gitignore
 .npmrc
 build/artifacts
 node_modules

@@ -5,10 +5,6 @@ import {lazy} from './lazy';
 import {Stats} from "fs";
 import {Readable, Writable} from 'stream';
 
-if (typeof Symbol.asyncIterator == 'undefined') {
-    (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
-}
-
 export class File {
     public absolutePath:string;
 
