@@ -101,6 +101,10 @@ export class DateTimeFormatPartParser extends BaseParser<DateTimeFormatPart[]> {
     convert(matches: NamedMatch[]) {
         return matches.map((m, i) => ({type: m.name as DateTimeFormatPartTypes, value: m.value.toLocaleUpperCase(this.locale)}));
     }
+
+    preProcess(value: string): string {
+        return value.toLocaleLowerCase(this.locale);
+    }
 }
 
 export function dateFrom(parts: DateTimeFormatPart[], locale?:string): Date {

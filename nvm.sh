@@ -22,7 +22,7 @@ function setIdeaToUseNvm() {
     if [ -f .idea/workspace.xml ]; then
         NODE_VERSION=$(nvm use |  grep -oEi 'v[0-9.]+' | head -1)
         echo Setting IDEA workspace to $NODE_VERSION
-        sed -i "" "s/\.nvm\/versions\/node\/[^/]\+/\.nvm\/versions\/node\/${NODE_VERSION}/g" .idea/workspace.xml
+        sed -ie "s/\.nvm\/versions\/node\/[^/]\+/\.nvm\/versions\/node\/${NODE_VERSION}/g" .idea/workspace.xml
     fi
 }
 

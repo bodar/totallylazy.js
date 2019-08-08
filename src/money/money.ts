@@ -87,7 +87,7 @@ export function regexParser(locale?: string): Parser<NumberFormatPart[]> {
     const namedPattern = noGroups.map(part => {
         switch (part.type) {
             case "currency":
-                return `(?<currency>[a-z]{3}|${symbolPattern.toLocaleLowerCase()})`;
+                return `(?<currency>[A-Z]{3}|${symbolPattern})`;
             case "decimal":
                 return `(?<decimal>[${part.value}]?)`;
             case "fraction":
@@ -113,19 +113,23 @@ export abstract class BaseParser<T> implements Parser<T> {
     }
 
     parse(value: string): T {
-        const lower = value.toLocaleLowerCase(this.locale);
+        const lower = this.preProcess(value);
         const match = this.regex.match(lower);
         if (match.length === 0) throw new Error(`Generated regex ${this.regex.pattern} did not match "${lower}" `);
         return this.convert(match);
     }
 
     parseAll(value: string): T[] {
-        const lower = value.toLocaleLowerCase(this.locale);
+        const lower = this.preProcess(value);
         const result: T[] = [];
         for (const match of this.regex.exec(lower)) {
             result.push(this.convert(match));
         }
         return result;
+    }
+
+    preProcess(value:string) {
+        return value;
     }
 
     abstract convert(matches: NamedMatch[]): T

@@ -1,5 +1,3 @@
-import {regex} from "./pattern";
-
 export type Names = string[];
 
 const namesRegex = /\(\?<([^>]+)>/g;
