@@ -22,7 +22,7 @@ export interface Money {
     value: number;
 }
 
-export function money(currency: string, value: number): Money;
+export function money(currency: string, amount: number): Money;
 export function money(parts: NumberFormatPart[]): Money;
 export function money(currencyOrParts: string | NumberFormatPart[], value?: number): Money {
     if (!Array.isArray(currencyOrParts) && value) {
@@ -46,9 +46,15 @@ export function moneyFrom(parts: NumberFormatPart[]): Money {
     return money(currency.value, value)
 }
 
-export function partsFrom(money: Money, locale?: string): NumberFormatPart[] {
-    const formatter = new Intl.NumberFormat(locale, {...defaultOptions, currency: money.currency});
+export type CurrencyDisplay = 'symbol' | 'code';
+
+export function partsFrom(money: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): NumberFormatPart[] {
+    const formatter = new Intl.NumberFormat(locale, {currencyDisplay, currency: money.currency, style: 'currency'});
     return formatter.formatToParts(money.value);
+}
+
+export function format(money: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): string {
+    return partsFrom(money, locale, currencyDisplay).map(p => p.value).join('');
 }
 
 export function parse(value: string, locale?: string): Money {
@@ -56,15 +62,9 @@ export function parse(value: string, locale?: string): Money {
 }
 
 export function parseToParts(value: string, locale?: string): NumberFormatPart[] {
-    const numberFormatParts = regexParser(locale).parse(value);
-    console.log(numberFormatParts);
-    return numberFormatParts;
+    return regexParser(locale).parse(value);
 }
 
-export const defaultOptions: NumberFormatOptions = {
-    style: 'currency',
-    currencyDisplay: 'code'
-};
 
 const exampleMoney = money('GBP', 1234567.89);
 
@@ -129,10 +129,10 @@ export class NumberFormatPartParser extends BaseParser<NumberFormatPart[]> {
             const type = m.name;
             if (type === 'integergroup') {
                 return array(sequence(integers.iterate(m.value), filter(m => Boolean(m)), map(m => {
-                    if(Array.isArray(m)) {
-                        return { type: 'integer', value: m[0].value } as NumberFormatPart;
+                    if (Array.isArray(m)) {
+                        return {type: 'integer', value: m[0].value} as NumberFormatPart;
                     } else {
-                        return { type: 'group', value: m } as NumberFormatPart;
+                        return {type: 'group', value: m} as NumberFormatPart;
                     }
                 })));
             } else {
