@@ -12,13 +12,13 @@ import {
     Weekdays
 } from "./index";
 import {cache, lazy} from "../lazy";
-import {characters, NamedRegExp, replace} from "../characters";
-import DateTimeFormatPart = Intl.DateTimeFormatPart;
-import DateTimeFormat = Intl.DateTimeFormat;
-import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
+import {characters, NamedRegExp} from "../characters";
 import {sequence} from "../sequence";
 import {map} from "../transducers";
 import {array} from "../collections";
+import DateTimeFormatPart = Intl.DateTimeFormatPart;
+import DateTimeFormat = Intl.DateTimeFormat;
+import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
 export class Formatters {
     @cache

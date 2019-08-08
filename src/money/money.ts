@@ -1,7 +1,5 @@
-import NumberFormatOptions = Intl.NumberFormatOptions;
 import NumberFormatPart = Intl.NumberFormatPart;
-import NumberFormatPartTypes = Intl.NumberFormatPartTypes;
-import {characters, NamedMatch, NamedRegExp, replace} from "../characters";
+import {characters, NamedMatch, NamedRegExp} from "../characters";
 import {filter, flatMap, map} from "../transducers";
 import {sequence} from "../sequence";
 import {array} from "../collections";
@@ -89,7 +87,7 @@ export function regexParser(locale?: string): Parser<NumberFormatPart[]> {
     const namedPattern = noGroups.map(part => {
         switch (part.type) {
             case "currency":
-                return `(?<currency>[A-Z]{3}|${symbolPattern})`;
+                return `(?<currency>[a-z]{3}|${symbolPattern.toLocaleLowerCase()})`;
             case "decimal":
                 return `(?<decimal>[${part.value}]?)`;
             case "fraction":

@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import {format, money, parse} from "../../src/money/money";
-import NumberFormatPart = Intl.NumberFormatPart;
 import {locales} from "../dates/dates.test";
+import NumberFormatPart = Intl.NumberFormatPart;
 
 export const numberLocales = Intl.NumberFormat.supportedLocalesOf(locales);
 const currencies = ["AED", "ANG", "AUD", "CHE", "CHF", "CHW", "EUR", "GBP", "HKD", "HNL", "HTG", "HUF", "IDR", "ILS", "INR", "IQD", "IRR", "ISK", "JMD", "JOD", "JPY", "KES", "KGS", "KPW", "KRW", "KWD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRU", "MUR", "MVR", "MWK", "MXN", "MXV", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLL", "SOS", "SRD", "SSP", "STN", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "USN", "UYI", "UYU", "UYW", "UZS", "VES", "VND", "VUV", "WST", "XAG", "XAU", "XBA", "XBB", "XBC", "XBD", "XCD", "XDR", "XOF", "XPD", "XPF", "XPT", "XSU", "XTS", "XUA", "XXX", "YER", "ZAR", "ZMW", "ZWL"];
@@ -17,10 +17,8 @@ describe("Money", function () {
     it('can parse money with currency symbol', () => {
         const m = money('GBP', 123.45);
         const locale = 'en-GB';
-        const f = format(m, locale);
-        const s = format(m, locale, "symbol");
-        console.log(locale, f, s);
-        const parsed = parse(s, locale);
+        const symbol = format(m, locale, "symbol");
+        const parsed = parse(symbol, locale);
         assert.deepEqual(parsed, money('£', 123.45));
     });
 
@@ -30,8 +28,6 @@ describe("Money", function () {
                 for (const amount of amounts) {
                     const m = money(currency, amount);
                     const f = format(m, locale);
-                    const s = format(m, locale, "symbol");
-                    console.log(locale, f, s)
                     const parsed = parse(f, locale);
                     assert.deepEqual(parsed, m);
                 }
