@@ -97,7 +97,7 @@ export function regexParser(locale?: string): Parser<NumberFormatPart[]> {
                     return '';
                 } else {
                     integerAdded = true;
-                    return `(?<integergroup>[\\d${group}]+)`;
+                    return `(?<integer-group>[\\d${group}]+)`;
                 }
             default:
                 return `(?<${part.type}>[${part.value}]?)`;
@@ -141,7 +141,7 @@ export class NumberFormatPartParser extends BaseParser<NumberFormatPart[]> {
     convert(matches: NamedMatch[]) {
         return array(sequence(matches, filter(m => Boolean(m.value)), flatMap((m: NamedMatch) => {
             const type = m.name;
-            if (type === 'integergroup') {
+            if (type === 'integer-group') {
                 return array(sequence(integers.iterate(m.value), filter(m => Boolean(m)), map(m => {
                     if (Array.isArray(m)) {
                         return {type: 'integer', value: m[0].value} as NumberFormatPart;
