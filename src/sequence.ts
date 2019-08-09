@@ -26,12 +26,14 @@ export function* range(start: number, end?: number, step: number = 1): Iterable<
     }
 }
 
+export function sequence<A>(a: Iterable<A>): Sequence<A>;
 export function sequence<A, B>(a: Iterable<A>, b: Transducer<A, B>): Sequence<B>;
 export function sequence<A, B, C>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>): Sequence<C>;
 export function sequence<A, B, C, D>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>): Sequence<D>;
 export function sequence<A, B, C, D, E>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>): Sequence<E>;
 export function sequence<A, B, C, D, E, F>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>, f: Transducer<E, F>): Sequence<F>;
 
+export function sequence<A>(a: AsyncIterable<A>): AsyncSequence<A>;
 export function sequence<A, B>(a: AsyncIterable<A>, b: Transducer<A, B>): AsyncSequence<B>;
 export function sequence<A, B, C>(a: AsyncIterable<A>, b: Transducer<A, B>, c: Transducer<B, C>): AsyncSequence<C>;
 export function sequence<A, B, C, D>(a: AsyncIterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>): AsyncSequence<D>;

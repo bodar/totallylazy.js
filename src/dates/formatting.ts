@@ -158,7 +158,7 @@ export class FormatToParts {
     @lazy get actualNamesPattern(): NamedRegExp {
         const learningRegex = this.learningNamesPattern;
 
-        const result = array(sequence(learningRegex.iterate(this.formatted), map(value => {
+        const result = array(learningRegex.iterate(this.formatted), map(value => {
             if(Array.isArray(value)) {
                 let [type] = value.filter(n => Boolean(n.value)).map(n => n.name);
                 if (!type) throw new Error();
@@ -171,7 +171,7 @@ export class FormatToParts {
                     return `(?<literal>[${value}]+?)`;
                 }
             }
-        })));
+        }));
 
         return NamedRegExp.create("^" + result.join("") + "$");
     }

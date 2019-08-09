@@ -66,7 +66,7 @@ export function parseToParts(value: string, locale?: string): NumberFormatPart[]
 
 const currencies = ["AED", "ANG", "AUD", "CHE", "CHF", "CHW", "EUR", "GBP", "HKD", "HNL", "HTG", "HUF", "IDR", "ILS", "INR", "IQD", "IRR", "ISK", "JMD", "JOD", "JPY", "KES", "KGS", "KPW", "KRW", "KWD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRU", "MUR", "MVR", "MWK", "MXN", "MXV", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLL", "SOS", "SRD", "SSP", "STN", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "USN", "UYI", "UYU", "UYW", "UZS", "VES", "VND", "VUV", "WST", "XAG", "XAU", "XBA", "XBB", "XBC", "XBD", "XCD", "XDR", "XOF", "XPD", "XPF", "XPT", "XSU", "XTS", "XUA", "XXX", "YER", "ZAR", "ZMW", "ZWL"];
 const symbols = currencies.map(symbolFor);
-const symbolPattern = `[${unique(array(sequence(symbols, filter(Boolean), flatMap(characters)))).sort().join('')}]{1,3}`;
+const symbolPattern = `[${unique(array(symbols, filter(Boolean), flatMap(characters))).sort().join('')}]{1,3}`;
 
 export function symbolFor(isoCurrency:string): string | undefined {
     const parts = partsFrom(money(isoCurrency, 0), undefined, "symbol");
@@ -139,23 +139,23 @@ const integers = NamedRegExp.create('(?<integer>\\d+)');
 
 export class NumberFormatPartParser extends BaseParser<NumberFormatPart[]> {
     convert(matches: NamedMatch[]) {
-        return array(sequence(matches, filter(m => Boolean(m.value)), flatMap((m: NamedMatch) => {
+        return array(matches, filter(m => Boolean(m.value)), flatMap((m: NamedMatch) => {
             const type = m.name;
             if (type === 'integer-group') {
-                return array(sequence(integers.iterate(m.value), filter(m => Boolean(m)), map(m => {
+                return array(integers.iterate(m.value), filter(m => Boolean(m)), map(m => {
                     if (Array.isArray(m)) {
                         return {type: 'integer', value: m[0].value} as NumberFormatPart;
                     } else {
                         return {type: 'group', value: m} as NumberFormatPart;
                     }
-                })));
+                }));
             } else {
                 return [{
                     type,
                     value: m.value.toLocaleUpperCase(this.locale)
                 } as NumberFormatPart];
             }
-        })));
+        }));
     }
 }
 

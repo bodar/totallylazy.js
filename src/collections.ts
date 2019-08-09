@@ -1,3 +1,6 @@
+import {Transducer} from "./transducers";
+import {sequence} from "./sequence";
+
 export type Mapper<A, B> = (a: A) => B;
 export type Comparator<A> = (a: A, b: A) => number;
 
@@ -43,11 +46,26 @@ export function toIterable<T>(...t: T[]): Iterable<T> {
     return t;
 }
 
-export function array<T>(iterable: Iterable<T>): T[]
-export function array<T>(iterable: AsyncIterable<T>): Promise<T[]>
-export function array<T>(iterable: Iterable<T> | AsyncIterable<T>): T[] | Promise<T[]> {
-    if (isIterable(iterable)) return toArray(iterable);
-    return toPromiseArray(iterable);
+export function array<A>(iterable: Iterable<A>): Array<A>
+export function array<A, B>(a: Iterable<A>, b: Transducer<A, B>): Array<B>;
+export function array<A, B, C>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>): Array<C>;
+export function array<A, B, C, D>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>): Array<D>;
+export function array<A, B, C, D, E>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>): Array<E>;
+export function array<A, B, C, D, E, F>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>, f: Transducer<E, F>): Array<F>;
+
+export function array<A>(iterable: AsyncIterable<A>): Promise<Array<A>>
+export function array<A, B>(a: AsyncIterable<A>, b: Transducer<A, B>): Promise<Array<B>>;
+export function array<A, B, C>(a: AsyncIterable<A>, b: Transducer<A, B>, c: Transducer<B, C>): Promise<Array<C>>;
+export function array<A, B, C, D>(a: AsyncIterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>): Promise<Array<D>>;
+export function array<A, B, C, D, E>(a: AsyncIterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>): Promise<Array<E>>;
+export function array<A, B, C, D, E, F>(a: AsyncIterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>, f: Transducer<E, F>): Promise<Array<F>>;
+export function array(source: Iterable<any> | AsyncIterable<any>, ...transducers: Transducer<any, any>[]): Array<any> | Promise<Array<any>> {
+    if (isIterable(source)) {
+        // @ts-ignore
+        return toArray(sequence(source, ...transducers));
+    }
+    // @ts-ignore
+    return toPromiseArray(sequence(source, ...transducers));
 }
 
 function toArray<T>(iterable: Iterable<T>): T[] {

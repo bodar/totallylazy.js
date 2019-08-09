@@ -52,7 +52,7 @@ export class BinHandler implements Handler {
 
 
 function randomBytes(length: number) {
-    const buffer = array(sequence(repeat(Math.random), take((length / 4) + 1)));
+    const buffer = array(repeat(Math.random), take((length / 4) + 1));
 
     return new Uint8Array(Float32Array.from(buffer).buffer).slice(0, length);
 }

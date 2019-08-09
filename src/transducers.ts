@@ -212,16 +212,16 @@ export class ScanTransducer<A, B> implements Transducer<A, B> {
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
-        let accumilator = this.reducer.identity();
+        let accumulator = this.reducer.identity();
         for await (const a of iterable) {
-            yield accumilator = this.reducer.call(accumilator, a);
+            yield accumulator = this.reducer.call(accumulator, a);
         }
     }
 
     * sync(iterable: Iterable<A>): Iterable<B> {
-        let accumilator = this.reducer.identity();
+        let accumulator = this.reducer.identity();
         for (const a of iterable) {
-            yield accumilator = this.reducer.call(accumilator, a);
+            yield accumulator = this.reducer.call(accumulator, a);
         }
     }
 }
