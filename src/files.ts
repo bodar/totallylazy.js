@@ -58,7 +58,11 @@ export class File {
         return await promisify(fs.readFile)(this.absolutePath);
     }
 
-    async content(): Promise<string> {
+    async content(newContent?:string): Promise<string> {
+        if(newContent) {
+            (await promisify(fs.writeFile)(this.absolutePath, newContent));
+            return newContent;
+        }
         return (await promisify(fs.readFile)(this.absolutePath, 'utf-8')).toString();
     }
 

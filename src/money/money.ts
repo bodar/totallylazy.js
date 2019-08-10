@@ -1,9 +1,9 @@
 import NumberFormatPart = Intl.NumberFormatPart;
 import {characters, NamedMatch, NamedRegExp} from "../characters";
 import {filter, flatMap, map} from "../transducers";
-import {sequence} from "../sequence";
 import {array} from "../collections";
 import {unique} from "../arrays";
+import {Currencies, currencies} from "./currencies";
 
 /**
  * Parsing flow
@@ -47,8 +47,21 @@ export function moneyFrom(parts: NumberFormatPart[]): Money {
 
 export type CurrencyDisplay = 'symbol' | 'code';
 
+export function decimalsFor(code: keyof Currencies) {
+    const currency = currencies[code];
+    return currency ? currency.decimals : 2;
+}
+
 export function partsFrom(money: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): NumberFormatPart[] {
-    const formatter = new Intl.NumberFormat(locale, {currencyDisplay, currency: money.currency, style: 'currency'});
+    const code = money.currency;
+    const decimals = decimalsFor(code);
+    const formatter = new Intl.NumberFormat(locale, {
+        currencyDisplay,
+        currency: code,
+        style: 'currency',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: decimals
+    });
     return formatter.formatToParts(money.amount);
 }
 
@@ -64,11 +77,10 @@ export function parseToParts(value: string, locale?: string): NumberFormatPart[]
     return regexParser(locale).parse(value);
 }
 
-const currencies = ["AED", "ANG", "AUD", "CHE", "CHF", "CHW", "EUR", "GBP", "HKD", "HNL", "HTG", "HUF", "IDR", "ILS", "INR", "IQD", "IRR", "ISK", "JMD", "JOD", "JPY", "KES", "KGS", "KPW", "KRW", "KWD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRU", "MUR", "MVR", "MWK", "MXN", "MXV", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLL", "SOS", "SRD", "SSP", "STN", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "USN", "UYI", "UYU", "UYW", "UZS", "VES", "VND", "VUV", "WST", "XAG", "XAU", "XBA", "XBB", "XBC", "XBD", "XCD", "XDR", "XOF", "XPD", "XPF", "XPT", "XSU", "XTS", "XUA", "XXX", "YER", "ZAR", "ZMW", "ZWL"];
-const symbols = currencies.map(symbolFor);
+const symbols = Object.keys(currencies).map(code => symbolFor(code));
 const symbolPattern = `[${unique(array(symbols, filter(Boolean), flatMap(characters))).sort().join('')}]{1,3}`;
 
-export function symbolFor(isoCurrency:string): string | undefined {
+export function symbolFor(isoCurrency: string): string | undefined {
     const parts = partsFrom(money(isoCurrency, 0), undefined, "symbol");
     const [currency] = parts.filter(p => p.type === 'currency');
     if (!currency) throw new Error("No currency found");
@@ -128,7 +140,7 @@ export abstract class BaseParser<T> implements Parser<T> {
         return result;
     }
 
-    preProcess(value:string) {
+    preProcess(value: string) {
         return value;
     }
 

@@ -15,6 +15,7 @@ dist=build/artifacts/dist
 out=build/artifacts/out
 
 yarn clean
+yarn generate
 yarn build
 yarn test
 

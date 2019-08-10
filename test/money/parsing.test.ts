@@ -2,11 +2,10 @@ import {assert} from 'chai';
 import {format, money, parse} from "../../src/money/money";
 import {locales} from "../dates/dates.test";
 import NumberFormatPart = Intl.NumberFormatPart;
+import {currencies} from "../../src/money/currencies";
 
 export const numberLocales = Intl.NumberFormat.supportedLocalesOf(locales);
-const currencies = ["AED", "ANG", "AUD", "CHE", "CHF", "CHW", "EUR", "GBP", "HKD", "HNL", "HTG", "HUF", "IDR", "ILS", "INR", "IQD", "IRR", "ISK", "JMD", "JOD", "JPY", "KES", "KGS", "KPW", "KRW", "KWD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRU", "MUR", "MVR", "MWK", "MXN", "MXV", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLL", "SOS", "SRD", "SSP", "STN", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "USN", "UYI", "UYU", "UYW", "UZS", "VES", "VND", "VUV", "WST", "XAG", "XAU", "XBA", "XBB", "XBC", "XBD", "XCD", "XDR", "XOF", "XPD", "XPF", "XPT", "XSU", "XTS", "XUA", "XXX", "YER", "ZAR", "ZMW", "ZWL"];
-const broken = ['IQD', 'IRR', 'ISK', 'JPY', 'KPW', 'KRW', 'LAK', 'LBP', 'MGA', 'MMK', 'PYG', 'RSD', 'RWF', 'SLL', 'SOS', 'SYP', 'UGX', 'UYI', 'VND', 'VUV', 'XOF', 'XPF', 'YER'];
-const amounts = [1234567.89, 156, 156.89, .12];
+const amounts = [1234567.89, 156, 156.89, .1234, 0];
 
 describe("Money", function () {
     this.timeout(10000);
@@ -22,14 +21,15 @@ describe("Money", function () {
         assert.deepEqual(parsed, money('£', 123.45));
     });
 
-    it('can parse money', () => {
+    it.skip('can parse loads of money!', () => {
         for (const locale of numberLocales) {
-            for (const currency of currencies.filter(c => !broken.includes(c))) {
+            for (const [code, {decimals}] of Object.entries(currencies)) {
                 for (const amount of amounts) {
-                    const m = money(currency, amount);
-                    const f = format(m, locale);
-                    const parsed = parse(f, locale);
-                    assert.deepEqual(parsed, m);
+                    const original = money(code, amount);
+                    const expected = money(code, Number(amount.toFixed(decimals)));
+                    const formatted = format(original, locale);
+                    const parsed = parse(formatted, locale);
+                    assert.deepEqual(parsed, expected);
                 }
             }
         }
