@@ -50,29 +50,29 @@ describe("Months", function () {
     });
 
     it("can add additional data to help parsing", () => {
-        Months.set('de', Months.create('de', [{name: 'Mrz', number: 3}]));
+        Months.set('de', Months.create('de', [{name: 'Mrz', value: 3}]));
         assertParse('de', "06 Mrz 2019", date(2019, 3, 6), "dd MMM yyyy");
     });
 
     it("can override data to help parsing", () => {
-        Months.set('is-IS', new Months([["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]
-            .map((m, i) => ({name: m, number: i + 1}))]));
+        Months.set('is-IS', new Months(["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]
+            .map((m, i) => ({name: m, value: i + 1}))));
         assertParse('is-IS', "06 jún 2019", date(2019, 6, 6), "dd MMM yyyy");
     });
 
 
     it('is flexible in parsing as long as there is a unique match', () => {
         const ru = Months.get('ru');
-        assert.deepEqual(ru.parse('январь'), {name: 'январь', number: 1});
-        assert.deepEqual(ru.parse('января'), {name: 'январь', number: 1});
-        assert.deepEqual(ru.parse('январ'), {name: 'январь', number: 1});
-        assert.deepEqual(ru.parse('янва'), {name: 'январь', number: 1});
-        assert.deepEqual(ru.parse('янв'), {name: 'январь', number: 1});
-        assert.deepEqual(ru.parse('янв.'), {name: 'январь', number: 1});
-        assert.deepEqual(ru.parse('фев'), {name: 'февраль', number: 2});
+        assert.deepEqual(ru.parse('январь'), 1);
+        assert.deepEqual(ru.parse('января'), 1);
+        assert.deepEqual(ru.parse('январ'), 1);
+        assert.deepEqual(ru.parse('янва'), 1);
+        assert.deepEqual(ru.parse('янв'), 1);
+        assert.deepEqual(ru.parse('янв.'), 1);
+        assert.deepEqual(ru.parse('фев'), 2);
 
         const de = Months.get('de');
-        assert.deepEqual(de.parse('Feb.'), {name: 'Februar', number: 2});
+        assert.deepEqual(de.parse('Feb.'), 2);
 
     });
 
@@ -86,20 +86,20 @@ describe("Months", function () {
 
     it('can also parse numbers', () => {
         const months = Months.get('ru');
-        assert.deepEqual(months.parse('1'), {name: 'январь', number: 1});
-        assert.deepEqual(months.parse('01'), {name: 'январь', number: 1});
+        assert.deepEqual(months.parse('1'), 1);
+        assert.deepEqual(months.parse('01'), 1);
     });
 
     it('ignores case', () => {
         const months = Months.get('ru');
-        assert.deepEqual(months.parse('январь'.toLocaleUpperCase('ru')), {name: 'январь', number: 1});
-        assert.deepEqual(months.parse('января'.toLocaleLowerCase('ru')), {name: 'январь', number: 1});
+        assert.deepEqual(months.parse('январь'.toLocaleUpperCase('ru')), 1);
+        assert.deepEqual(months.parse('января'.toLocaleLowerCase('ru')), 1);
     });
 
     it('can add additional data as needed', () => {
         const original = Months.get('de');
-        const months = Months.set('de', Months.create("de", [{name: 'Mrz', number: 3}]));
-        assert.deepEqual(months.parse('Mrz'), {name: 'März', number: 3});
+        const months = Months.set('de', Months.create("de", [{name: 'Mrz', value: 3}]));
+        assert.deepEqual(months.parse('Mrz'), 3);
         Months.set('def', original);
     });
 });
@@ -114,9 +114,9 @@ describe("Weekdays", function () {
 
     it('is flexible in parsing as long as there is a unique match', () => {
         const ru = Weekdays.get('ru');
-        assert.deepEqual(ru.parse('понедельник'), {name: 'понедельник', number: 1});
-        assert.deepEqual(ru.parse('понеде'), {name: 'понедельник', number: 1});
-        assert.deepEqual(ru.parse('пн'), {name: 'понедельник', number: 1});
+        assert.deepEqual(ru.parse('понедельник'), 1);
+        assert.deepEqual(ru.parse('понеде'), 1);
+        assert.deepEqual(ru.parse('пн'), 1);
     });
 
     it('can get pattern', () => {
@@ -127,20 +127,20 @@ describe("Weekdays", function () {
 
     it('can also parse numbers', () => {
         const ru = Weekdays.get('ru');
-        assert.deepEqual(ru.parse('1'), {name: 'понедельник', number: 1});
-        assert.deepEqual(ru.parse('01'), {name: 'понедельник', number: 1});
+        assert.deepEqual(ru.parse('1'), 1);
+        assert.deepEqual(ru.parse('01'), 1);
     });
 
     it('ignores case', () => {
         const ru = Weekdays.get('ru');
-        assert.deepEqual(ru.parse('понедельник'.toLocaleLowerCase('ru')), {name: 'понедельник', number: 1});
-        assert.deepEqual(ru.parse('понедельник'.toLocaleUpperCase('ru')), {name: 'понедельник', number: 1});
+        assert.deepEqual(ru.parse('понедельник'.toLocaleLowerCase('ru')), 1);
+        assert.deepEqual(ru.parse('понедельник'.toLocaleUpperCase('ru')), 1);
     });
 
     it('length of pattern is determined by valid unicode characters - exclude RTL marker', () => {
         const containsLeadingRtlMarker = "‎Jan";
         assert.equal(containsLeadingRtlMarker.length, 4);
-        const weekdays = new Weekdays([[{name:containsLeadingRtlMarker, number: 1}]]);
+        const weekdays = new Weekdays([{name:containsLeadingRtlMarker, value: 1}]);
         assert.deepEqual(weekdays.pattern, '[Jan]{3,3}');
         assert.deepEqual(new RegExp(weekdays.pattern).test(containsLeadingRtlMarker), true);
     });

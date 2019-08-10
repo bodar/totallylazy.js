@@ -6,38 +6,29 @@ import {characters, different, replace} from "../characters";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 
-export interface Datum {
+export interface Datum<V> {
     name: string;
-    number: number;
+    value: V;
 }
 
-export class DatumLookup<T extends Datum = Datum> {
-    private readonly prefixTree: PrefixTree<number>;
+export class DatumLookup<V> {
+    private readonly prefixTree: PrefixTree<Datum<V>>;
 
-    constructor(private data: T[][]) {
-        this.prefixTree = flatten(this.data).reduce((t, m) => {
-            return t.insert(m.name, m.number);
-        }, new PrefixTree<number>());
+    constructor(private readonly data: Datum<V>[]) {
+        this.prefixTree = this.data.reduce((t, m) => {
+            return t.insert(m.name, m);
+        }, new PrefixTree<Datum<V>>());
     }
 
-    parse(value: string): T {
-        const number = parseInt(value);
-        if (!isNaN(number)) return this.get(number);
-
-        const data = unique(this.prefixTree.match(value));
+    parse(value: string): V {
+        const data = unique(this.prefixTree.match(value).map(d => d.value));
         if (data.length != 1) throw new Error(`${this.constructor.name} - Unable to parse: ${value} matched : ${JSON.stringify(data)}`);
         const [datum] = data;
-        return this.get(datum);
-    }
-
-    get(number: number): T {
-        const result = this.data[0][number - 1];
-        if (!result) throw new Error(`${this.constructor.name} - Illegal argument: number was out of range : ${number}`);
-        return result;
+        return datum;
     }
 
     get pattern(): string {
-        const [min, max] = flatten(this.data).reduce(([min, max], l) => {
+        const [min, max] = this.data.reduce(([min, max], l) => {
             const length = characters(l.name).length;
             return [Math.min(min, length), Math.max(max, length)]
         }, [Number.MAX_VALUE, Number.MIN_VALUE]);
@@ -45,13 +36,24 @@ export class DatumLookup<T extends Datum = Datum> {
     }
 
     get characters(): string[] {
-        return unique(flatten(flatten(this.data).map(d => d.name).map(characters)));
+        return unique(flatten(this.data.map(d => d.name).map(characters)));
     }
 }
 
-export type Month = Datum;
+export class NumericLookup extends DatumLookup<number>{
+    constructor(data: Datum<number>[]) {
+        super(data);
+    }
 
-export class Months extends DatumLookup<Month> {
+    parse(value: string): number {
+        const number = parseInt(value);
+        return !isNaN(number) ? number : super.parse(value);
+    }
+}
+
+export type Month = Datum<number>;
+
+export class Months extends NumericLookup {
     static formats: Options[] = [
         {month: "long"}, {month: "short"},
         {year: 'numeric', month: "long", day: 'numeric'},
@@ -69,15 +71,15 @@ export class Months extends DatumLookup<Month> {
     }
 
     static create(locale: string = 'default', additionalData: Month[] = []): Months {
-        return new Months([...Months.generateData(locale), additionalData]);
+        return new Months([...Months.generateData(locale), ...additionalData]);
     }
 
-    static generateData(locale: string = 'default'): Month[][] {
-        return Months.formats.map(f => Months.dataFor(locale, f));
+    static generateData(locale: string = 'default'): Month[] {
+        return flatten(Months.formats.map(f => Months.dataFor(locale, f)));
     }
 
     static dataFor(locale: string, options: Options, native = hasNativeFormatToParts): Month[] {
-        return months(locale, options, native).map((m, i) => ({name: m, number: i + 1}));
+        return months(locale, options, native).map((m, i) => ({name: m, value: i + 1}));
     }
 }
 
@@ -96,7 +98,7 @@ export function months(locale: string = 'default', monthFormat: MonthFormat | Op
     const key = JSON.stringify({locale, monthFormat, native});
     return months_cache[key] = months_cache[key] || (() => {
         const options: Options = {...typeof monthFormat == 'string' ? {month: monthFormat} : monthFormat};
-        if(!options.month) return [];
+        if (!options.month) return [];
 
         const dates = range(1, 12).map(i => date(2000, i, 1));
 
@@ -106,13 +108,13 @@ export function months(locale: string = 'default', monthFormat: MonthFormat | Op
 }
 
 
-export type Weekday = Datum;
+export type Weekday = Datum<number>;
 
-export class Weekdays extends DatumLookup<Weekday> {
+export class Weekdays extends NumericLookup {
     static formats: Options[] = [
         {weekday: "long"}, {weekday: "short"},
-        {year: 'numeric', month: "numeric", day:'numeric', weekday: 'long'},
-        {year: 'numeric', month: 'numeric', day:'numeric', weekday: 'short'}
+        {year: 'numeric', month: "numeric", day: 'numeric', weekday: 'long'},
+        {year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short'}
     ];
     static cache: { [key: string]: Weekdays } = {};
 
@@ -125,15 +127,15 @@ export class Weekdays extends DatumLookup<Weekday> {
     }
 
     static create(locale: string = 'default', additionalData: Weekday[] = []): Weekdays {
-        return new Weekdays([...Weekdays.generateData(locale), additionalData]);
+        return new Weekdays([...Weekdays.generateData(locale), ...additionalData]);
     }
 
-    static generateData(locale: string = 'default'): Weekday[][] {
-        return Weekdays.formats.map(f => Weekdays.dataFor(locale, f));
+    static generateData(locale: string = 'default'): Weekday[] {
+        return flatten(Weekdays.formats.map(f => Weekdays.dataFor(locale, f)));
     }
 
     static dataFor(locale: string, options: Options, native = hasNativeFormatToParts): Weekday[] {
-        return weekdays(locale, options, native).map((m, i) => ({name: m, number: i + 1}));
+        return weekdays(locale, options, native).map((m, i) => ({name: m, value: i + 1}));
     }
 }
 
@@ -143,7 +145,7 @@ export function weekdays(locale: string = 'default', weekdayFormat: WeekdayForma
     const key = JSON.stringify({locale, weekdayFormat, native});
     return weekdays_cache[key] = weekdays_cache[key] || (() => {
         const options: Options = {...typeof weekdayFormat == 'string' ? {weekday: weekdayFormat} : weekdayFormat};
-        if(!options.weekday) return [];
+        if (!options.weekday) return [];
 
         const dates = range(1, 7).map(i => date(2000, 1, i + 2));
 
@@ -169,7 +171,7 @@ export class BaseDataExtractor {
     }
 }
 
-export function valueFromParts(parts:DateTimeFormatPart[], partType: Intl.DateTimeFormatPartTypes) {
+export function valueFromParts(parts: DateTimeFormatPart[], partType: Intl.DateTimeFormatPartTypes) {
     return parts.filter(p => p.type === partType).map(p => p.value).join('');
 }
 
@@ -229,24 +231,26 @@ export class FromFormatStringMonthExtractor extends FromFormatStringDataExtracto
     }
 
     static readonly replaceYMD = /(\d)([年月日])/g;
+
     private replaceYearMonthDay(value: string) {
         return replace(FromFormatStringMonthExtractor.replaceYMD, value, matcher => {
             const number = matcher[1];
             const delimiter = matcher[2];
-            if(delimiter === '年') return `${number}year`;
-            if(delimiter === '月') return `${number}month`;
-            if(delimiter === '日') return `${number}day`;
+            if (delimiter === '年') return `${number}year`;
+            if (delimiter === '月') return `${number}month`;
+            if (delimiter === '日') return `${number}day`;
             throw new Error(`Unknown delimiter ${delimiter}`)
         });
     }
 
     static readonly restoreYMD = /(year|month|day)/g;
+
     private restoreYearMonthDay(value: string) {
         return replace(FromFormatStringMonthExtractor.restoreYMD, value, matcher => {
             const delimiter = matcher[1];
-            if(delimiter === 'year') return '年';
-            if(delimiter === 'month') return '月';
-            if(delimiter === 'day') return '日';
+            if (delimiter === 'year') return '年';
+            if (delimiter === 'month') return '月';
+            if (delimiter === 'day') return '日';
             throw new Error(`Unknown delimiter ${delimiter}`)
         });
     }

@@ -13,7 +13,6 @@ import {
 } from "./index";
 import {cache, lazy} from "../lazy";
 import {characters, NamedRegExp} from "../characters";
-import {sequence} from "../sequence";
 import {map} from "../transducers";
 import {array} from "../collections";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
@@ -133,7 +132,7 @@ export class FormatToParts {
     }
 
     @lazy get months(): Months {
-        return new Months([Months.dataFor(this.locale, this.options, false)]);
+        return new Months(Months.dataFor(this.locale, this.options, false));
     }
 
     @lazy get month(): string {
@@ -141,7 +140,7 @@ export class FormatToParts {
     }
 
     @lazy get weekdays(): Weekdays {
-        return new Weekdays([Weekdays.dataFor(this.locale, this.options, false)]);
+        return new Weekdays(Weekdays.dataFor(this.locale, this.options, false));
     }
 
     @lazy get weekday(): string {
@@ -218,7 +217,7 @@ export class FormatToParts {
         return type as any;
     }
 
-    private parsable(lookup: DatumLookup, value: string) {
+    private parsable(lookup: DatumLookup<any>, value: string) {
         try {
             return Boolean(lookup.parse(value));
         } catch (e) {

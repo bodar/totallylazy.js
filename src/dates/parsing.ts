@@ -114,7 +114,7 @@ export function dateFrom(parts: DateTimeFormatPart[], locale?:string): Date {
 
     const [month] = parts.filter(p => p.type === 'month');
     if (!month) throw new Error("No month found");
-    const MM = Months.get(locale).parse(month.value).number;
+    const MM = Months.get(locale).parse(month.value);
 
     const [day] = parts.filter(p => p.type === 'day');
     if (!day) throw new Error("No day found");
