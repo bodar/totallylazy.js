@@ -21,7 +21,7 @@ describe("Money", function () {
         assert.deepEqual(parsed, money('£', 123.45));
     });
 
-    it.skip('can parse loads of money!', () => {
+    it('can parse loads of money!', () => {
         for (const locale of numberLocales) {
             for (const [code, {decimals}] of Object.entries(currencies)) {
                 for (const amount of amounts) {
