@@ -157,7 +157,7 @@ export class NumberFormatPartParser extends BaseParser<NumberFormatPart[]> {
             } else {
                 return [{
                     type,
-                    value: m.value.toLocaleUpperCase(this.locale)
+                    value: m.value
                 } as NumberFormatPart];
             }
         }));
