@@ -1,8 +1,10 @@
 import {assert} from 'chai';
-import {format, money, parse, partsFrom} from "../../src/money/money";
+import {CurrencySymbols, format, money, parse, partsFrom} from "../../src/money/money";
 import {locales} from "../dates/dates.test";
 import {currencies} from "../../src/money/currencies";
 import NumberFormatPart = Intl.NumberFormatPart;
+import {runningInNode} from "../../src/node";
+import {Weekdays} from "../../src/dates";
 
 export const numberLocales = Intl.NumberFormat.supportedLocalesOf(locales);
 const amounts = [1234567.89, 156, 156.89, .1234, 0];
@@ -18,15 +20,7 @@ describe("Money", function () {
         const locale = 'en-GB';
         const symbol = format(m, locale, "symbol");
         const parsed = parse(symbol, locale);
-        assert.deepEqual(parsed, money('£', 123.45));
-    });
-
-    it.skip('can parse some real examples', () => {
-        assert.deepEqual(parse('274 $US', 'fr'), money('USD', 274));
-        assert.deepEqual(parse('US$274', 'ko-KR'), money('USD', 274));
-        assert.deepEqual(parse('274 US$', 'pt-PT'), money('USD', 274));
-        assert.deepEqual(parse('CA$315', 'en-US'), money('CAD', 315));
-        assert.deepEqual(parse('315 $CA', 'fr-FR'), money('CAD', 315));
+        assert.deepEqual(parsed, money('GBP', 123.45));
     });
 
     it('can parse loads of money!', () => {
@@ -67,6 +61,41 @@ describe("Money", function () {
             {type: 'integer', value: '567'},
             {type: 'decimal', value: '.'},
             {type: 'fraction', value: '89'}]);
+    });
+
+    it('can parse some real examples', () => {
+        assert.deepEqual(parse('£157', 'en-GB'), money('GBP', 157));
+        assert.deepEqual(parse('US$274', 'ko-KR'), money('USD', 274));
+        assert.deepEqual(parse('274 US$', 'pt-PT'), money('USD', 274));
+        assert.deepEqual(parse('CA$315', 'en-US'), money('CAD', 315));
+        assert.deepEqual(parse('315 $CA', 'fr-FR'), money('CAD', 315));
+    });
+});
+
+
+describe("CurrencySymbols", function () {
+    before(function () {
+        if (runningInNode() && process.env.NODE_ICU_DATA != './node_modules/full-icu') {
+            console.log("To run these tests you must set 'NODE_ICU_DATA=./node_modules/full-icu'");
+            this.skip();
+        }
+    });
+
+    it('is flexible in parsing as long as there is a unique match', () => {
+        const fr = CurrencySymbols.get('fr-FR');
+        assert.deepEqual(fr.parse('$CA'), 'CAD');
+        assert.deepEqual(fr.parse('CAD'), 'CAD');
+    });
+
+    it('can get pattern', () => {
+        const ru = CurrencySymbols.get('ru');
+        assert.deepEqual(ru.pattern, '[$ABCDEFGHIJKLMNOPQRSTUVWXYZ£¥МТ฿₩₪₫€₴₹₽]{1,4}');
+        assert.deepEqual(new RegExp(ru.pattern).test('$CA'), true);
+    });
+
+    it('can also parse the normal ISO code', () => {
+        const ru = CurrencySymbols.get('ru');
+        assert.deepEqual(ru.parse('USD'), 'USD');
     });
 });
 

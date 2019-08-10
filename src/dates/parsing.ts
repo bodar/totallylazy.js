@@ -12,7 +12,7 @@ import {
 } from "./index";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
-import {BaseParser} from "../money/money";
+import {BaseParser} from "../parsing";
 
 export function parse(value: string, locale?: string, options?: string | Options, native = hasNativeFormatToParts): Date {
     return parser(locale, options, native).parse(value);

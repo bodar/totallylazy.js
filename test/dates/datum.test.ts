@@ -78,7 +78,7 @@ describe("Months", function () {
 
     it('can get pattern', () => {
         const ru = Months.get('ru');
-        assert.deepEqual(ru.pattern, "[январьфелмтпйиюгусбокд.]{3,8}");
+        assert.deepEqual(ru.pattern, "[.абвгдеийклмнопрстуфьюя]{3,8}");
         assert.deepEqual(new RegExp(ru.pattern).test('январь'), true);
         assert.deepEqual(new RegExp(ru.pattern).test('января'), true);
         assert.deepEqual(new RegExp(ru.pattern).test('янв.'), true);
@@ -121,7 +121,7 @@ describe("Weekdays", function () {
 
     it('can get pattern', () => {
         const ru = Weekdays.get('ru');
-        assert.deepEqual(ru.pattern, '[понедльиквтрсачгяцуб]{2,11}');
+        assert.deepEqual(ru.pattern, '[абвгдеиклнопрстуцчья]{2,11}');
         assert.deepEqual(new RegExp(ru.pattern).test('понедельник'), true);
     });
 
