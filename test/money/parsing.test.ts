@@ -21,6 +21,14 @@ describe("Money", function () {
         assert.deepEqual(parsed, money('£', 123.45));
     });
 
+    it.skip('can parse some real examples', () => {
+        assert.deepEqual(parse('274 $US', 'fr'), money('USD', 274));
+        assert.deepEqual(parse('US$274', 'ko-KR'), money('USD', 274));
+        assert.deepEqual(parse('274 US$', 'pt-PT'), money('USD', 274));
+        assert.deepEqual(parse('CA$315', 'en-US'), money('CAD', 315));
+        assert.deepEqual(parse('315 $CA', 'fr-FR'), money('CAD', 315));
+    });
+
     it('can parse loads of money!', () => {
         for (const locale of numberLocales) {
             for (const [code, {decimals}] of Object.entries(currencies)) {
