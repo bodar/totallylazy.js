@@ -1,7 +1,7 @@
 import NumberFormatPart = Intl.NumberFormatPart;
 import {characters, NamedMatch, NamedRegExp} from "../characters";
-import {filter, flatMap, map} from "../transducers";
-import {array} from "../collections";
+import {dedupe, filter, flatMap, map} from "../transducers";
+import {array, by, Comparator} from "../collections";
 import {unique} from "../arrays";
 import {Currencies, currencies} from "./currencies";
 
@@ -92,9 +92,7 @@ const exampleMoney = money('GBP', 1234567.89);
 export function regexParser(locale?: string): Parser<NumberFormatPart[]> {
     const parts = partsFrom(exampleMoney, locale);
     const [group = ''] = parts.filter(p => p.type === 'group').map(p => p.value);
-    const noGroups = parts.filter(p => p.type !== 'group');
-
-    let integerAdded = false;
+    const noGroups = array(parts, filter(p => p.type !== 'group'), dedupe(by('type')));
 
     const namedPattern = noGroups.map(part => {
         switch (part.type) {
@@ -105,12 +103,7 @@ export function regexParser(locale?: string): Parser<NumberFormatPart[]> {
             case "fraction":
                 return `(?<fraction>\\d*)`;
             case "integer":
-                if (integerAdded) {
-                    return '';
-                } else {
-                    integerAdded = true;
-                    return `(?<integer-group>[\\d${group}]+)`;
-                }
+                return `(?<integer-group>[\\d${group}]+)`;
             default:
                 return `(?<${part.type}>[${part.value}]?)`;
         }

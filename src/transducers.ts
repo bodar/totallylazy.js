@@ -350,5 +350,33 @@ export function sort<A>(comparator: Comparator<A> = ascending): SortTransducer<A
     return new SortTransducer(comparator);
 }
 
+export class DedupTransducer<A> implements Transducer<A, A> {
+    constructor(public comparator: Comparator<A>) {
+    }
+
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        let previous;
+        for await (const current of iterable) {
+            if (!previous) yield current;
+            else if (this.comparator(current, previous) !== 0) yield current;
+            previous = current;
+        }
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        let previous;
+        for (const current of iterable) {
+            if (!previous) yield current;
+            else if (this.comparator(current, previous) !== 0) yield current;
+            previous = current;
+        }
+    }
+}
+
+export function dedupe<A>(comparator: Comparator<A> = ascending): DedupTransducer<A> {
+    return new DedupTransducer(comparator)
+}
+
+
 
 

@@ -14,12 +14,14 @@ import {
     sort,
     take,
     takeWhile,
-    zip
+    zip,
+    dedupe
 } from "../src/transducers";
 import {repeat} from "../src/sequence";
 import {sum} from "../src/numbers";
 import {assertSync} from "./collections.test";
-import {ascending, by, descending} from "../src/collections";
+import {ascending, by, Comparator, descending} from "../src/collections";
+import {characters} from "../src/characters";
 
 
 describe("Transducer", () => {
@@ -103,12 +105,17 @@ describe("Transducer", () => {
         const fatty = new Cat('Fatty', 18);
         const cats = [freaky, fatty];
 
-        assertSync(sort<Cat>(by('name')).sync(cats), fatty, freaky);
+        const comparator: Comparator<Cat> = by('name');
+        assertSync(sort<Cat>(comparator).sync(cats), fatty, freaky);
         assertSync(sort<Cat>(by('name', ascending)).sync(cats), fatty, freaky);
         assertSync(sort<Cat>(by('name', descending)).sync(cats), freaky, fatty);
         assertSync(sort<Cat>(by('age')).sync(cats), freaky, fatty);
         assertSync(sort<Cat>(by('age', ascending)).sync(cats), freaky, fatty);
         assertSync(sort<Cat>(by('age', descending)).sync(cats), fatty, freaky);
+    });
+
+    it("can dedupe consecutive duplicates ", async () => {
+        assertSync(dedupe<string>().sync(characters("Leeeeroy")), 'L','e','r','o','y');
     });
 
     it("supports terminating early with take", async () => {

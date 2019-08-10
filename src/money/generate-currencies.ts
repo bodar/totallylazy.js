@@ -1,14 +1,14 @@
 ///@ts-ignore
-import {parseXml, Element} from "libxmljs";
+import {Element, parseXml} from "libxmljs";
 ///@ts-ignore
 import * as fetch from "node-fetch";
 import {File} from "../files";
-import {flatMap} from "../transducers";
-import {array} from "../collections";
 
 (async () => {
+    const url = 'https://www.currency-iso.org/dam/downloads/lists/list_one.xml';
+    console.log(`Downloading ${url}`);
     ///@ts-ignore
-    const response = await fetch('https://www.currency-iso.org/dam/downloads/lists/list_one.xml');
+    const response = await fetch(url);
     if(response.status !== 200) {
         console.error(response);
         return;
@@ -25,6 +25,7 @@ import {array} from "../collections";
     }, {});
 
     const generated = new File('currencies.ts', __dirname);
+    console.log(`Generating ${generated.absolutePath}`);
     const json = JSON.stringify(data, undefined, 2);
     const context = `// Generated file do not edit or checkin
 export interface Currency {
