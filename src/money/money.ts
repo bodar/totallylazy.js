@@ -1,10 +1,10 @@
 import NumberFormatPart = Intl.NumberFormatPart;
-import {characters, NamedMatch, NamedRegExp} from "../characters";
+import {NamedMatch, NamedRegExp} from "../characters";
 import {dedupe, filter, flatMap, map} from "../transducers";
 import {array, by} from "../collections";
-import {flatten, unique} from "../arrays";
+import {flatten} from "../arrays";
 import {Currencies, currencies} from "./currencies";
-import {cache, lazy} from "../lazy";
+import {cache} from "../lazy";
 import {Datum, DatumLookup} from "../dates";
 import {BaseParser, Parser} from "../parsing";
 
@@ -24,19 +24,7 @@ export interface Money {
     amount: number;
 }
 
-export function money(currency: string, amount: number): Money;
-export function money(parts: NumberFormatPart[]): Money;
-export function money(currencyOrParts: string | NumberFormatPart[], amount?: number): Money {
-    if (!Array.isArray(currencyOrParts) && typeof amount === 'number') {
-        return moneyLiteral(currencyOrParts, amount);
-    }
-    if (Array.isArray(currencyOrParts)) {
-        return moneyFrom(currencyOrParts);
-    }
-    throw new Error("Invalid arguments");
-}
-
-function moneyLiteral(currency: string, amount: number): Money {
+export function money(currency: string, amount: number): Money {
     return {amount, currency};
 }
 

@@ -1,25 +1,22 @@
 import {characters, NamedMatch, NamedRegExp} from "./characters";
 import {PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
+import {array} from "./collections";
+import {map} from "./transducers";
 
 export abstract class BaseParser<T> implements Parser<T> {
     constructor(protected regex: NamedRegExp, protected locale?: string) {
     }
 
-    parse(value: string): T {
-        const lower = this.preProcess(value);
-        const match = this.regex.match(lower);
-        if (match.length === 0) throw new Error(`Generated regex ${this.regex.pattern} did not match "${lower}" `);
+    parse(raw: string): T {
+        const value = this.preProcess(raw);
+        const match = this.regex.match(value);
+        if (match.length === 0) throw new Error(`Generated regex ${this.regex.pattern} did not match "${value}" `);
         return this.convert(match);
     }
 
     parseAll(value: string): T[] {
-        const lower = this.preProcess(value);
-        const result: T[] = [];
-        for (const match of this.regex.exec(lower)) {
-            result.push(this.convert(match));
-        }
-        return result;
+        return array(this.regex.exec(this.preProcess(value)), map(this.convert))
     }
 
     preProcess(value: string) {
