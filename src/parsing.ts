@@ -38,19 +38,21 @@ export interface Datum<V> {
 }
 
 export class DatumLookup<V> {
-    private readonly prefixTree: PrefixTree<Datum<V>>;
+    private readonly prefixTree: PrefixTree<Datum<V>[]>;
 
     constructor(private readonly data: Datum<V>[]) {
         this.prefixTree = this.data.reduce((t, m) => {
-            return t.insert(m.name, m);
-        }, new PrefixTree<Datum<V>>());
+            const data = t.lookup(m.name) || [];
+            data.push(m);
+            return t.insert(m.name, data);
+        }, new PrefixTree<Datum<V>[]>());
     }
 
-    parse(value: string): V {
-        const data = unique(this.prefixTree.match(value).map(d => d.value));
-        if (data.length != 1) throw new Error(`${this.constructor.name} - Unable to parse: ${value} matched : ${JSON.stringify(data)}`);
-        const [datum] = data;
-        return datum;
+    parse(value: string, strategy: MatchStrategy<V> = uniqueMatch): V {
+        const matches: Datum<V>[] = flatten(this.prefixTree.match(value));
+        const result = strategy(matches);
+        if (!result) throw new Error(`${this.constructor.name} - Unable to parse: ${value} matched : ${JSON.stringify(matches)}`);
+        return result;
     }
 
     get pattern(): string {
@@ -64,4 +66,13 @@ export class DatumLookup<V> {
     get characters(): string[] {
         return unique(flatten(this.data.map(d => d.name).map(characters))).sort();
     }
+}
+
+export type MatchStrategy<V> = (matches: Datum<V>[]) => V | undefined;
+
+export function uniqueMatch<V>(matches: Datum<V>[]): V | undefined {
+    const data = unique(matches.map(d => d.value));
+    if (data.length != 1) return undefined;
+    const [datum] = data;
+    return datum;
 }

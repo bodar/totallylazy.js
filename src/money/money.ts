@@ -3,10 +3,11 @@ import {NamedMatch, NamedRegExp} from "../characters";
 import {dedupe, filter, flatMap, map} from "../transducers";
 import {array, by} from "../collections";
 import {flatten} from "../arrays";
-import {Currencies, currencies} from "./currencies";
+import {currencies} from "./currencies";
 import {cache} from "../lazy";
 import {Datum, DatumLookup} from "../dates";
 import {BaseParser, Parser} from "../parsing";
+import {Currencies, Currency} from "./currencies-def";
 
 /**
  * Parsing flow
@@ -90,22 +91,21 @@ export class CurrencySymbols extends DatumLookup<string> {
     }
 
     static generateData(locale: string = 'default'): CurrencySymbol[] {
-        return flatten(Object.keys(currencies).map(c => CurrencySymbols.dataFor(locale, c)));
+        return flatten(Object.keys(currencies).map(c => CurrencySymbols.dataFor(locale, c, currencies[c])));
     }
 
-    static dataFor(locale: string, currency:string): CurrencySymbol[] {
-        const result = [{name: currency, value: currency}];
-        const symbol = symbolFor(locale, currency);
-        symbol && result.push({name: symbol, value: currency});
-        return result;
+    static dataFor(locale: string, iso: string, currency:Currency): CurrencySymbol[] {
+        return [{name: iso, value: iso},
+            {name: symbolFor(locale, iso), value: iso},
+            ...currency.symbols.map(s => ({name: s, value: iso}))];
     }
 }
 
-export function symbolFor(locale: string, isoCurrency: string): string | undefined {
+export function symbolFor(locale: string, isoCurrency: string): string {
     const parts = partsFrom(money(isoCurrency, 0), locale, "symbol");
     const [currency] = parts.filter(p => p.type === 'currency');
     if (!currency) throw new Error("No currency found");
-    return currency.value !== isoCurrency ? currency.value : undefined;
+    return currency.value;
 }
 
 const exampleMoney = money('GBP', 1234567.89);

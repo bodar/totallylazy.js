@@ -41,6 +41,11 @@
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/strip-json-comments/-/strip-json-comments-0.0.30.tgz#9aa30c04db212a9a0649d6ae6fd50accc40748a1"
 
+"@types/wikidata-sdk@^5.15.1":
+  version "5.15.1"
+  resolved "https://registry.yarnpkg.com/@types/wikidata-sdk/-/wikidata-sdk-5.15.1.tgz#037ba486c8a80de40b147df29c041c5696a3caed"
+  integrity sha512-xGM4C1kujCoXPrFmIEwpz5bROgt81GW/NYyGBae5J55GcWOxX5PLUbR02wlAF7LQnm0mEYG5UwxH2gfylPEHvg==
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -876,6 +881,18 @@ wide-align@^1.1.0:
   integrity sha512-QGkOQc8XL6Bt5PwnsExKBPuMKBxnGxWWW3fU55Xt4feHozMUhdUMaBCk290qpm/wG5u/RSKzwdAC4i51YigihA==
   dependencies:
     string-width "^1.0.2 || 2"
+
+wikibase-sdk@^7.0.7:
+  version "7.0.13"
+  resolved "https://registry.yarnpkg.com/wikibase-sdk/-/wikibase-sdk-7.0.13.tgz#4e2e740717057f64d9973cc2666b02b7baa46065"
+  integrity sha512-FHJWfLIx8dWmvaT/JcOrePN8KGITY/h3EnKGGUBRH/61y6Q5UV78w1TUUE4nm/pfstPelZUaFNliUHg3kscKrQ==
+
+wikidata-sdk@^7.0.7:
+  version "7.0.7"
+  resolved "https://registry.yarnpkg.com/wikidata-sdk/-/wikidata-sdk-7.0.7.tgz#fb4e8e2f8cb693f58d7c3acf57a9fab1c9c102f2"
+  integrity sha512-p3DIAimYU0Nn4pRrN939KJFSO1SGAcqiajU+Zrgow26qfVeetImqPF/bwiOYo64supci5tEsJrrEe44MRPJpIA==
+  dependencies:
+    wikibase-sdk "^7.0.7"
 
 wrappy@1:
   version "1.0.2"

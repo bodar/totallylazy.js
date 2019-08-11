@@ -90,10 +90,15 @@ describe("CurrencySymbols", function () {
         assert.deepEqual(fr.parse('CAD'), 'CAD');
     });
 
+    it.skip('YEN should be ambiguous', () => {
+        const fr = CurrencySymbols.get('en');
+        assert.deepEqual(fr.parse('¥'), 'CNY');
+    });
+
     it('can get pattern', () => {
-        const ru = CurrencySymbols.get('ru');
-        assert.deepEqual(ru.pattern, '[$ABCDEFGHIJKLMNOPQRSTUVWXYZ£¥МТ฿₩₪₫€₴₹₽]{1,4}');
-        assert.deepEqual(new RegExp(ru.pattern).test('$CA'), true);
+        const en = CurrencySymbols.get('en');
+        assert.deepEqual(en.pattern, '[$./ABCDEFGHIJKLMNOPQRSTUVWXYZgkprstuz¢£¤¥čłƒвл֏ألم৳฿៛₦₩₪₫€₲₴₹₺₼₽﷼]{1,4}');
+        assert.deepEqual(new RegExp(en.pattern).test('$CA'), true);
     });
 
     it('can also parse the normal ISO code', () => {
