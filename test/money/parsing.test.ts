@@ -11,9 +11,6 @@ const amounts = [1234567.89, 156, 156.89, .1234, 0];
 describe("Money", function () {
     this.timeout(10000);
 
-    const groupDelimetersFound = [',', '.', ' ', '’', ' '];
-    // Contains narrow non breaking space - 8239
-
     it('can parse money with currency symbol', () => {
         const m = money('GBP', 123.45);
         const locale = 'en-GB';
@@ -62,7 +59,7 @@ describe("Money", function () {
             {type: 'fraction', value: '89'}]);
     });
 
-    it('can pass unambiguous real examples', () => {
+    it('can parse unambiguous real examples', () => {
         assert.deepEqual(parse('£157', 'en-GB'), money('GBP', 157));
         assert.deepEqual(parse('US$274', 'ko-KR'), money('USD', 274));
         assert.deepEqual(parse('274 US$', 'pt-PT'), money('USD', 274));
@@ -70,7 +67,7 @@ describe("Money", function () {
         assert.deepEqual(parse('315 $CA', 'fr-FR'), money('CAD', 315));
     });
 
-    it.skip('can pass ambiguous real examples with a custom strategy', () => {
+    it.skip('can parse ambiguous real examples with a custom strategy???', () => {
         assert.deepEqual(parse('¥ 2890.30', 'en'), money('CNY', 2890.30));
     });
 });
@@ -90,9 +87,9 @@ describe("CurrencySymbols", function () {
         assert.deepEqual(fr.parse('CAD'), 'CAD');
     });
 
-    it.skip('YEN should be ambiguous', () => {
+    it('Yen symbol is ambiguous so throw', () => {
         const fr = CurrencySymbols.get('en');
-        assert.deepEqual(fr.parse('¥'), 'CNY');
+        assert.throw(() => fr.parse('¥'));
     });
 
     it('can get pattern', () => {
