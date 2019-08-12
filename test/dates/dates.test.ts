@@ -38,6 +38,16 @@ describe("dates", function () {
         }
     });
 
+    it('can parse multiple dates in a string', function () {
+        assert.deepEqual(parser('en').parseAll('Checkin: 12 Jan 2009 Checkout: 13 Jan 2009'),
+            [date(2009, 1, 12), date(2009, 1, 13)]);
+    });
+
+    it('ignores values that are very nearly a valid date', function () {
+        assert.deepEqual(parser('en').parseAll('Checkin: 12 Jan 2009 Checkout: 13 Jan 2009  Nearly a date: 13 Dan 2009'),
+            [date(2009, 1, 12), date(2009, 1, 13)]);
+    });
+
     it('can format and parse a date in many different locals', function () {
         const original = date(2001, 6, 3);
         for (const locale of supported) {

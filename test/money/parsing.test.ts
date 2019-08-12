@@ -11,14 +11,6 @@ const amounts = [1234567.89, 156, 156.89, .1234, 0];
 describe("Money", function () {
     this.timeout(10000);
 
-    it('can parse money with currency symbol', () => {
-        const m = money('GBP', 123.45);
-        const locale = 'en-GB';
-        const symbol = format(m, locale, "symbol");
-        const parsed = parse(symbol, locale);
-        assert.deepEqual(parsed, money('GBP', 123.45));
-    });
-
     it('can parse loads of money!', () => {
         for (const locale of numberLocales) {
             for (const [code, {decimals}] of Object.entries(currencies)) {

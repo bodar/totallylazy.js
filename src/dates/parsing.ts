@@ -13,6 +13,8 @@ import {
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import {BaseParser, Parser} from "../parsing";
+import {array} from "../collections";
+import {flatMap} from "../transducers";
 
 export function parse(value: string, locale?: string, options?: string | Options, native = hasNativeFormatToParts): Date {
     return parser(locale, options, native).parse(value);
@@ -83,7 +85,7 @@ export class CompositeDateParser implements Parser<Date> {
     }
 
     parseAll(value: string): Date[] {
-        return flatten(this.parsers.map( p => p.parseAll(value)));
+        return flatten(this.parsers.map(p => p.parseAll(value)));
     }
 }
 
@@ -93,7 +95,10 @@ export function parsers(...parsers: Parser<Date>[]): Parser<Date> {
 
 export class DateTimeFormatPartParser extends BaseParser<DateTimeFormatPart[]> {
     convert(matches: NamedMatch[]) {
-        return matches.map((m) => ({type: m.name as DateTimeFormatPartTypes, value: m.value.toLocaleUpperCase(this.locale)}));
+        return matches.map((m) => ({
+            type: m.name as DateTimeFormatPartTypes,
+            value: m.value.toLocaleUpperCase(this.locale)
+        }));
     }
 
     preProcess(value: string): string {
@@ -101,7 +106,7 @@ export class DateTimeFormatPartParser extends BaseParser<DateTimeFormatPart[]> {
     }
 }
 
-export function dateFrom(parts: DateTimeFormatPart[], locale?:string): Date {
+export function dateFrom(parts: DateTimeFormatPart[], locale?: string): Date {
     const [year] = parts.filter(p => p.type === 'year');
     if (!year) throw new Error("No year found");
     const yyyy = Number(year.value);
@@ -119,6 +124,7 @@ export function dateFrom(parts: DateTimeFormatPart[], locale?:string): Date {
 
 export class RegexParser implements Parser<Date> {
     private parser: DateTimeFormatPartParser;
+
     constructor(private regex: NamedRegExp, private locale: string) {
         this.parser = new DateTimeFormatPartParser(regex, locale)
     }
@@ -128,7 +134,13 @@ export class RegexParser implements Parser<Date> {
     }
 
     parseAll(value: string): Date[] {
-        return this.parser.parseAll(value).map(v => dateFrom(v, this.locale));
+        return array(this.parser.parseAll(value), flatMap(v => {
+            try {
+                return [dateFrom(v, this.locale)]
+            } catch (e) {
+                return [];
+            }
+        }));
     }
 }
 
@@ -192,7 +204,6 @@ export function formatBuilder(locale: string, format: string): RegexBuilder {
 
     return new RegexBuilder(locale, optionsFrom(parts), parts)
 }
-
 
 
 export const defaultParserOptions: (string | Options)[] = [
