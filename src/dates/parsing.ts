@@ -1,20 +1,12 @@
 import {cache, lazy} from "../lazy";
-import {flatten, unique} from "../arrays";
+import {unique} from "../arrays";
 import {characters, NamedMatch, NamedRegExp, replace} from "../characters";
-import {
-    date,
-    defaultOptions,
-    formatData,
-    hasNativeFormatToParts,
-    Months,
-    Options,
-    Weekdays,
-} from "./index";
-import DateTimeFormatPart = Intl.DateTimeFormatPart;
-import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
-import {BaseParser, Parser} from "../parsing";
+import {date, defaultOptions, formatData, hasNativeFormatToParts, Months, Options, Weekdays,} from "./index";
+import {BaseParser, Parser, parsers} from "../parsing";
 import {array} from "../collections";
 import {flatMap} from "../transducers";
+import DateTimeFormatPart = Intl.DateTimeFormatPart;
+import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
 export function parse(value: string, locale?: string, options?: string | Options, native = hasNativeFormatToParts): Date {
     return parser(locale, options, native).parse(value);
@@ -67,30 +59,6 @@ export class RegexBuilder {
     private static ensureLiteralsAlwaysContainSpace(part: DateTimeFormatPart) {
         return part.value + ' ';
     }
-}
-
-export class CompositeDateParser implements Parser<Date> {
-    constructor(private readonly parsers: Parser<Date>[]) {
-    }
-
-    parse(value: string): Date {
-        for (const parser of this.parsers) {
-            try {
-                const result = parser.parse(value);
-                if (result) return result;
-            } catch (ignore) {
-            }
-        }
-        throw new Error("Unable to parse date: " + value);
-    }
-
-    parseAll(value: string): Date[] {
-        return flatten(this.parsers.map(p => p.parseAll(value)));
-    }
-}
-
-export function parsers(...parsers: Parser<Date>[]): Parser<Date> {
-    return new CompositeDateParser(parsers);
 }
 
 export class DateTimeFormatPartParser extends BaseParser<DateTimeFormatPart[]> {

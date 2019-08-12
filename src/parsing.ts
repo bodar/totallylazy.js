@@ -3,7 +3,6 @@ import {PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
 import {array, Mapper} from "./collections";
 import {flatMap, map} from "./transducers";
-import {dateFrom, DateTimeFormatPartParser} from "./dates";
 
 export abstract class BaseParser<T> implements Parser<T> {
     constructor(protected regex: NamedRegExp, protected locale?: string) {
@@ -87,4 +86,28 @@ export class DatumLookup<V> {
     get characters(): string[] {
         return unique(flatten(this.data.map(d => d.name).map(characters))).sort();
     }
+}
+
+export class CompositeParser<T> implements Parser<T> {
+    constructor(private readonly parsers: Parser<T>[]) {
+    }
+
+    parse(value: string): T {
+        for (const parser of this.parsers) {
+            try {
+                const result = parser.parse(value);
+                if (result) return result;
+            } catch (ignore) {
+            }
+        }
+        throw new Error("Unable to parse date: " + value);
+    }
+
+    parseAll(value: string): T[] {
+        return flatten(this.parsers.map(p => p.parseAll(value)));
+    }
+}
+
+export function parsers<T>(...parsers: Parser<T>[]): Parser<T> {
+    return new CompositeParser(parsers);
 }
