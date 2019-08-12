@@ -29,7 +29,7 @@ export function money(currency: string, amount: number): Money {
     return {amount, currency};
 }
 
-export function moneyFrom(parts: NumberFormatPart[], locale?:string, strategy: MatchStrategy<string> = uniqueMatch): Money {
+export function moneyFrom(parts: NumberFormatPart[], locale?:string, strategy?: MatchStrategy<string>): Money {
     const [currency] = parts.filter(p => p.type === 'currency');
     if (!currency) throw new Error("No currency found");
     const filtered = parts.filter(p => p.type === 'integer' || p.type === 'decimal' || p.type === 'fraction');
@@ -69,7 +69,7 @@ export function parse(value: string, locale?: string): Money {
     return moneyFrom(parseToParts(value, locale), locale);
 }
 
-export function parser(locale?:string, strategy: MatchStrategy<string> = uniqueMatch): Parser<Money> {
+export function parser(locale?:string, strategy?: MatchStrategy<string>): Parser<Money> {
     return new MappingParser(RegexParser.create(locale), p => moneyFrom(p, locale, strategy));
 }
 

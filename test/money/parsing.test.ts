@@ -104,7 +104,7 @@ describe("CurrencySymbols", function () {
 
     it('can get pattern', () => {
         const en = CurrencySymbols.get('en');
-        assert.deepEqual(en.pattern, '[$./ABCDEFGHIJKLMNOPQRSTUVWXYZgkprstuz¢£¤¥čłƒвл֏ألم৳฿៛₦₩₪₫€₲₴₹₺₼₽﷼]{1,4}');
+        assert.deepEqual(en.pattern, '[$./ABCDEFGHIJKLMNOPQRSTUVWXYZghkprstuz¢£¤¥čłƒвл֏ألم৳฿៛₦₩₪₫€₲₴₹₺₼₽﷼]{1,4}');
         assert.deepEqual(new RegExp(en.pattern).test('$CA'), true);
     });
 
