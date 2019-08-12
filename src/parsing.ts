@@ -2,7 +2,8 @@ import {characters, NamedMatch, NamedRegExp} from "./characters";
 import {PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
 import {array, Mapper} from "./collections";
-import {map} from "./transducers";
+import {flatMap, map} from "./transducers";
+import {dateFrom, DateTimeFormatPartParser} from "./dates";
 
 export abstract class BaseParser<T> implements Parser<T> {
     constructor(protected regex: NamedRegExp, protected locale?: string) {
@@ -24,6 +25,25 @@ export abstract class BaseParser<T> implements Parser<T> {
     }
 
     abstract convert(matches: NamedMatch[]): T
+}
+
+export class MappingParser<A,B> implements Parser<B> {
+    constructor(private parser: Parser<A>, private mapper:Mapper<A,B>) {
+    }
+
+    parse(value: string): B {
+        return this.mapper(this.parser.parse(value));
+    }
+
+    parseAll(value: string): B[] {
+        return array(this.parser.parseAll(value), flatMap(v => {
+            try {
+                return [this.mapper(v)]
+            } catch (e) {
+                return [];
+            }
+        }));
+    }
 }
 
 export interface Parser<T> {

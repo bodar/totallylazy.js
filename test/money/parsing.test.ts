@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {CurrencySymbols, format, money, moneyFrom, parse, partsFrom} from "../../src/money/money";
+import {CurrencySymbols, format, money, moneyFrom, parse, partsFrom, parser} from "../../src/money/money";
 import {locales} from "../dates/dates.test";
 import {currencies} from "../../src/money/currencies";
 import {runningInNode} from "../../src/node";
@@ -61,6 +61,16 @@ describe("Money", function () {
 
     it.skip('can parse ambiguous real examples with a custom strategy???', () => {
         assert.deepEqual(parse('¥ 2890.30', 'en'), money('CNY', 2890.30));
+    });
+
+    it('can parse multiple monies in a string', function () {
+        assert.deepEqual(parser('en').parseAll('Total: USD 100 Tax: USD 10'),
+            [money('USD', 100), money('USD', 10)]);
+    });
+
+    it('ignores values that are very nearly valid money', function () {
+        assert.deepEqual(parser('en').parseAll('Total: USD 100 Tax: USD 10 Nearly: DAN 10'),
+            [money('USD', 100), money('USD', 10)]);
     });
 });
 

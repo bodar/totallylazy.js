@@ -1,12 +1,12 @@
 import NumberFormatPart = Intl.NumberFormatPart;
 import {NamedMatch, NamedRegExp} from "../characters";
 import {dedupe, filter, flatMap, map} from "../transducers";
-import {array, by} from "../collections";
+import {array, by, Mapper} from "../collections";
 import {flatten} from "../arrays";
 import {currencies} from "./currencies";
 import {cache} from "../lazy";
-import {Datum, DatumLookup} from "../dates";
-import {BaseParser, Parser} from "../parsing";
+import {dateFrom, DateTimeFormatPartParser, Datum, DatumLookup} from "../dates";
+import {BaseParser, MappingParser, Parser} from "../parsing";
 import {Currencies, Currency} from "./currencies-def";
 
 /**
@@ -67,6 +67,10 @@ export function format(money: Money, locale?: string, currencyDisplay: CurrencyD
 
 export function parse(value: string, locale?: string): Money {
     return moneyFrom(parseToParts(value, locale), locale);
+}
+
+export function parser(locale?:string): Parser<Money> {
+    return new MappingParser(RegexParser.create(locale), p => moneyFrom(p, locale));
 }
 
 export function parseToParts(value: string, locale?: string): NumberFormatPart[] {
@@ -134,6 +138,7 @@ export class RegexParser {
         return new NumberFormatPartParser(NamedRegExp.create(namedPattern));
     }
 }
+
 
 const integers = NamedRegExp.create('(?<integer>\\d+)');
 
