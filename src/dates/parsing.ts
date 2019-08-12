@@ -2,7 +2,7 @@ import {cache, lazy} from "../lazy";
 import {unique} from "../arrays";
 import {characters, NamedMatch, NamedRegExp, replace} from "../characters";
 import {date, defaultOptions, formatData, hasNativeFormatToParts, Months, Options, Weekdays,} from "./index";
-import {BaseParser, Parser, parsers} from "../parsing";
+import {BaseParser, MappingParser, Parser, parsers} from "../parsing";
 import {array} from "../collections";
 import {flatMap} from "../transducers";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
@@ -35,7 +35,7 @@ export class RegexBuilder {
         return Weekdays.get(this.locale);
     }
 
-    @lazy get regexParser(): RegexParser {
+    @lazy get regexParser(): Parser<Date> {
         const namedPattern = this.formatted.map(part => {
             switch (part.type) {
                 case "year":
@@ -53,7 +53,7 @@ export class RegexBuilder {
             }
         }).join("");
 
-        return new RegexParser(NamedRegExp.create(namedPattern), this.locale);
+        return new MappingParser(new DateTimeFormatPartParser(NamedRegExp.create(namedPattern), this.locale), p => dateFrom(p, this.locale));
     }
 
     private static ensureLiteralsAlwaysContainSpace(part: DateTimeFormatPart) {
@@ -88,28 +88,6 @@ export function dateFrom(parts: DateTimeFormatPart[], locale?: string): Date {
     const dd = Number(day.value);
 
     return date(yyyy, MM, dd);
-}
-
-export class RegexParser implements Parser<Date> {
-    private parser: DateTimeFormatPartParser;
-
-    constructor(private regex: NamedRegExp, private locale: string) {
-        this.parser = new DateTimeFormatPartParser(regex, locale)
-    }
-
-    parse(value: string): Date {
-        return dateFrom(this.parser.parse(value), this.locale);
-    }
-
-    parseAll(value: string): Date[] {
-        return array(this.parser.parseAll(value), flatMap(v => {
-            try {
-                return [dateFrom(v, this.locale)]
-            } catch (e) {
-                return [];
-            }
-        }));
-    }
 }
 
 export const formatRegex = /(?:(y+)|(M+)|(d+)|(E+))/g;
