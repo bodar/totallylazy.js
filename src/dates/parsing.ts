@@ -3,8 +3,6 @@ import {unique} from "../arrays";
 import {characters, NamedMatch, NamedRegExp, replace} from "../characters";
 import {date, defaultOptions, formatData, hasNativeFormatToParts, Months, Options, Weekdays,} from "./index";
 import {BaseParser, MappingParser, Parser, parsers} from "../parsing";
-import {array} from "../collections";
-import {flatMap} from "../transducers";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
@@ -36,7 +34,11 @@ export class RegexBuilder {
     }
 
     @lazy get regexParser(): Parser<Date> {
-        const namedPattern = this.formatted.map(part => {
+        return new MappingParser(new DateTimeFormatPartParser(NamedRegExp.create(this.buildPattern()), this.locale), p => dateFrom(p, this.locale));
+    }
+
+    buildPattern() {
+        return this.formatted.map(part => {
             switch (part.type) {
                 case "year":
                     return '(?<year>\\d{4})';
@@ -52,8 +54,6 @@ export class RegexBuilder {
                 }
             }
         }).join("");
-
-        return new MappingParser(new DateTimeFormatPartParser(NamedRegExp.create(namedPattern), this.locale), p => dateFrom(p, this.locale));
     }
 
     private static ensureLiteralsAlwaysContainSpace(part: DateTimeFormatPart) {

@@ -1,11 +1,11 @@
 import NumberFormatPart = Intl.NumberFormatPart;
 import {NamedMatch, NamedRegExp} from "../characters";
 import {dedupe, filter, flatMap, map} from "../transducers";
-import {array, by, Mapper} from "../collections";
+import {array, by} from "../collections";
 import {flatten} from "../arrays";
 import {currencies} from "./currencies";
 import {cache} from "../lazy";
-import {dateFrom, DateTimeFormatPartParser, Datum, DatumLookup} from "../dates";
+import {Datum, DatumLookup} from "../dates";
 import {BaseParser, MappingParser, Parser} from "../parsing";
 import {Currencies, Currency} from "./currencies-def";
 
@@ -116,11 +116,15 @@ const exampleMoney = money('GBP', 1234567.89);
 
 export class RegexParser {
     @cache static create(locale?: string): Parser<NumberFormatPart[]> {
+        return new NumberFormatPartParser(NamedRegExp.create(this.buildPattern(locale)));
+    }
+
+    static buildPattern(locale?: string): string {
         const parts = partsFrom(exampleMoney, locale);
         const [group = ''] = parts.filter(p => p.type === 'group').map(p => p.value);
         const noGroups = array(parts, filter(p => p.type !== 'group'), dedupe(by('type')));
 
-        const namedPattern = noGroups.map(part => {
+        return noGroups.map(part => {
             switch (part.type) {
                 case "currency":
                     return `(?<currency>${CurrencySymbols.get(locale).pattern})`;
@@ -134,8 +138,6 @@ export class RegexParser {
                     return `(?<${part.type}>[${part.value} ]?)`;
             }
         }).join("");
-
-        return new NumberFormatPartParser(NamedRegExp.create(namedPattern));
     }
 }
 
