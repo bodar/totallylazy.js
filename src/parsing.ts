@@ -26,8 +26,8 @@ export abstract class BaseParser<T> implements Parser<T> {
     abstract convert(matches: NamedMatch[]): T
 }
 
-export class MappingParser<A,B> implements Parser<B> {
-    constructor(private parser: Parser<A>, private mapper:Mapper<A,B>) {
+export class MappingParser<A, B> implements Parser<B> {
+    constructor(private parser: Parser<A>, private mapper: Mapper<A, B>) {
     }
 
     parse(value: string): B {
@@ -67,12 +67,11 @@ export class DatumLookup<V> {
         }, new PrefixTree<Datum<V>[]>());
     }
 
-    parse(value: string): V {
+    parse(value: string, strategy: MatchStrategy<V> = uniqueMatch): V {
         const matches: Datum<V>[] = flatten(this.prefixTree.match(value));
-        const data = unique(matches.map(d => d.value));
-        if (data.length != 1) throw new Error(`${this.constructor.name} - Unable to parse: ${value} matched : ${JSON.stringify(matches)}`);
-        const [datum] = data;
-        return datum;
+        const match = strategy(matches);
+        if (typeof match === "undefined") throw new Error(`${this.constructor.name} - Unable to parse: ${value} matched : ${JSON.stringify(matches)}`);
+        return match;
     }
 
     get pattern(): string {
@@ -87,6 +86,23 @@ export class DatumLookup<V> {
         return unique(flatten(this.data.map(d => d.name).map(characters))).sort();
     }
 }
+
+export type MatchStrategy<V> = (matches: Datum<V>[]) => V | undefined;
+
+export function uniqueMatch<V>(matches: Datum<V>[]): V | undefined {
+    const data = unique(matches.map(d => d.value));
+    if (data.length != 1) return undefined;
+    return data[0];
+}
+
+export function prefer<V>(value:V): MatchStrategy<V> {
+    return (matches: Datum<V>[]) => {
+        const [match] = matches.filter(m => m.value === value);
+        if(typeof match === "undefined") return uniqueMatch(matches);
+        return match.value;
+    };
+}
+
 
 export class CompositeParser<T> implements Parser<T> {
     constructor(private readonly parsers: Parser<T>[]) {

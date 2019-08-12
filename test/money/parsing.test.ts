@@ -1,9 +1,10 @@
 import {assert} from 'chai';
-import {CurrencySymbols, format, money, moneyFrom, parse, partsFrom, parser} from "../../src/money/money";
+import {CurrencySymbols, format, money, moneyFrom, parse, parser, partsFrom} from "../../src/money/money";
 import {locales} from "../dates/dates.test";
 import {currencies} from "../../src/money/currencies";
 import {runningInNode} from "../../src/node";
 import NumberFormatPart = Intl.NumberFormatPart;
+import {Datum, prefer, MatchStrategy, uniqueMatch} from "../../src/parsing";
 
 export const numberLocales = Intl.NumberFormat.supportedLocalesOf(locales);
 const amounts = [1234567.89, 156, 156.89, .1234, 0];
@@ -59,8 +60,14 @@ describe("Money", function () {
         assert.deepEqual(parse('315 $CA', 'fr-FR'), money('CAD', 315));
     });
 
-    it.skip('can parse ambiguous real examples with a custom strategy???', () => {
-        assert.deepEqual(parse('¥ 2890.30', 'en'), money('CNY', 2890.30));
+    it('can parse ambiguous real examples with a custom strategy???', () => {
+        assert.deepEqual(parser('en', prefer('CNY')).parse('¥ 2890.30'), money('CNY', 2890.30));
+        assert.deepEqual(parser('en', prefer('CNY')).parse('GBP 2890.30'), money('GBP', 2890.30));
+        assert.deepEqual(parser('en', prefer('USD')).parse('$ 433.80'), money('USD', 433.80));
+        assert.deepEqual(parser('en').parse('₩ 398526.56'), money('KRW', 398526.56));
+        assert.deepEqual(parser('en').parse('KSh 34,202.20'), money('KES', 34202.20));
+        assert.deepEqual(parser('en').parse('AED 1204.99'), money('AED', 1204.99));
+        // assert.deepEqual(parser('en').parse('95065.22 Ft'), money('HUF', 95065.22));
     });
 
     it('can parse multiple monies in a string', function () {
@@ -73,6 +80,7 @@ describe("Money", function () {
             [money('USD', 100), money('USD', 10)]);
     });
 });
+
 
 
 describe("CurrencySymbols", function () {

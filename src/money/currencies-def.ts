@@ -6,3 +6,12 @@ export interface Currency {
 export interface Currencies {
     [code: string] : Currency;
 }
+
+export interface CurrencySymbol {
+    iso: string;
+    symbol: string
+}
+
+export const additionalSymbols: CurrencySymbol[] = [{
+    iso: 'KES', symbol: 'KSh'
+}];

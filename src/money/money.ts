@@ -2,11 +2,11 @@ import NumberFormatPart = Intl.NumberFormatPart;
 import {NamedMatch, NamedRegExp} from "../characters";
 import {dedupe, filter, flatMap, map} from "../transducers";
 import {array, by} from "../collections";
-import {flatten} from "../arrays";
+import {flatten, unique} from "../arrays";
 import {currencies} from "./currencies";
 import {cache} from "../lazy";
 import {Datum, DatumLookup} from "../dates";
-import {BaseParser, MappingParser, Parser} from "../parsing";
+import {BaseParser, MappingParser, MatchStrategy, Parser, uniqueMatch} from "../parsing";
 import {Currencies, Currency} from "./currencies-def";
 
 /**
@@ -29,12 +29,12 @@ export function money(currency: string, amount: number): Money {
     return {amount, currency};
 }
 
-export function moneyFrom(parts: NumberFormatPart[], locale?:string): Money {
+export function moneyFrom(parts: NumberFormatPart[], locale?:string, strategy: MatchStrategy<string> = uniqueMatch): Money {
     const [currency] = parts.filter(p => p.type === 'currency');
     if (!currency) throw new Error("No currency found");
     const filtered = parts.filter(p => p.type === 'integer' || p.type === 'decimal' || p.type === 'fraction');
     const value = Number(filtered.map(p => p.type === 'decimal' ? '.' : p.value).join(''));
-    return money(CurrencySymbols.get(locale).parse(currency.value), value)
+    return money(CurrencySymbols.get(locale).parse(currency.value, strategy), value)
 }
 
 export type CurrencyDisplay = 'symbol' | 'code';
@@ -69,20 +69,20 @@ export function parse(value: string, locale?: string): Money {
     return moneyFrom(parseToParts(value, locale), locale);
 }
 
-export function parser(locale?:string): Parser<Money> {
-    return new MappingParser(RegexParser.create(locale), p => moneyFrom(p, locale));
+export function parser(locale?:string, strategy: MatchStrategy<string> = uniqueMatch): Parser<Money> {
+    return new MappingParser(RegexParser.create(locale), p => moneyFrom(p, locale, strategy));
 }
 
 export function parseToParts(value: string, locale?: string): NumberFormatPart[] {
     return RegexParser.create(locale).parse(value);
 }
 
-export type CurrencySymbol = Datum<string>;
+export type CurrencySymbolDatum = Datum<string>;
 
 export class CurrencySymbols extends DatumLookup<string> {
     static cache: { [key: string]: CurrencySymbols } = {};
 
-    static get(locale: string = 'default', additionalData: CurrencySymbol[] = []): CurrencySymbols {
+    static get(locale: string = 'default', additionalData: CurrencySymbolDatum[] = []): CurrencySymbols {
         return CurrencySymbols.cache[locale] = CurrencySymbols.cache[locale] || CurrencySymbols.create(locale, additionalData);
     }
 
@@ -90,15 +90,15 @@ export class CurrencySymbols extends DatumLookup<string> {
         return CurrencySymbols.cache[locale] = months;
     }
 
-    static create(locale: string = 'default', additionalData: CurrencySymbol[] = []): CurrencySymbols {
+    static create(locale: string = 'default', additionalData: CurrencySymbolDatum[] = []): CurrencySymbols {
         return new CurrencySymbols([...CurrencySymbols.generateData(locale), ...additionalData]);
     }
 
-    static generateData(locale: string = 'default'): CurrencySymbol[] {
+    static generateData(locale: string = 'default'): CurrencySymbolDatum[] {
         return flatten(Object.keys(currencies).map(c => CurrencySymbols.dataFor(locale, c, currencies[c])));
     }
 
-    static dataFor(locale: string, iso: string, currency:Currency): CurrencySymbol[] {
+    static dataFor(locale: string, iso: string, currency:Currency): CurrencySymbolDatum[] {
         return [{name: iso, value: iso},
             {name: symbolFor(locale, iso), value: iso},
             ...currency.symbols.map(s => ({name: s, value: iso}))];

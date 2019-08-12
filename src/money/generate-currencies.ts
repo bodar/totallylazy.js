@@ -4,10 +4,10 @@ import {Element, parseXml} from "libxmljs";
 import * as fetch from "node-fetch";
 import {File} from "../files";
 import {sparqlQuery, simplify} from 'wikidata-sdk';
-import {Currency} from "./currencies-def";
+import {additionalSymbols, Currency, CurrencySymbol} from "./currencies-def";
 
 (async () => {
-    const symbols = await getSymbols();
+    const symbols = [...await getSymbols(), ...additionalSymbols];
     const currencies = symbols.reduce((c, s) => {
         const currency = c[s.iso] || {symbols: [], decimals: 2};
         if(!currency.symbols.includes(s.symbol)) currency.symbols.push(s.symbol);
@@ -43,12 +43,9 @@ export interface Currencies {
     [code: string] : Currency;
 }
 
-interface Symbol {
-    iso: string;
-    symbol: string
-}
 
-async function getSymbols(): Promise<Symbol[]> {
+
+async function getSymbols(): Promise<CurrencySymbol[]> {
     const query = sparqlQuery(`SELECT DISTINCT ?iso ?symbol WHERE {
   ?item wdt:P31 wd:Q8142.
   ?item wdt:P498 ?iso. 
