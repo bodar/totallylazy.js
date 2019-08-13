@@ -95,9 +95,9 @@ export function uniqueMatch<V>(matches: Datum<V>[]): V | undefined {
     return data[0];
 }
 
-export function prefer<V>(value:V): MatchStrategy<V> {
+export function prefer<V>(...values:V[]): MatchStrategy<V> {
     return (matches: Datum<V>[]) => {
-        const [match] = matches.filter(m => m.value === value);
+        const [match] = matches.filter(m => values.indexOf(m.value) !== -1);
         if(typeof match === "undefined") return uniqueMatch(matches);
         return match.value;
     };

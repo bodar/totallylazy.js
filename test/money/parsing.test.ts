@@ -64,11 +64,15 @@ describe("Money", function () {
         assert.deepEqual(parser('en', prefer('CNY')).parse('¥ 2890.30'), money('CNY', 2890.30));
         assert.deepEqual(parser('en', prefer('CNY')).parse('GBP 2890.30'), money('GBP', 2890.30));
         assert.deepEqual(parser('en', prefer('USD')).parse('$ 433.80'), money('USD', 433.80));
+        const p = parser('en', prefer('USD', 'CNY'));
+        assert.deepEqual(p.parse('$ 433.80'), money('USD', 433.80));
+        assert.deepEqual(p.parse('¥ 2890.30'), money('CNY', 2890.30));
         assert.deepEqual(parser('en').parse('₩ 398526.56'), money('KRW', 398526.56));
         assert.deepEqual(parser('en').parse('KSh 34,202.20'), money('KES', 34202.20));
         assert.deepEqual(parser('en').parse('AED 1204.99'), money('AED', 1204.99));
         // assert.deepEqual(parser('en').parse('95065.22 Ft'), money('HUF', 95065.22));
     });
+
 
     it('can parse multiple monies in a string', function () {
         assert.deepEqual(parser('en').parseAll('Total: USD 100 Tax: USD 10'),
