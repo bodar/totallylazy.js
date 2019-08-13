@@ -12,7 +12,7 @@ import {
     Weekdays
 } from "./index";
 import {cache, lazy} from "../lazy";
-import {characters, NamedRegExp} from "../characters";
+import {characters, isNamedMatch, NamedRegExp} from "../characters";
 import {map} from "../transducers";
 import {array} from "../collections";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
@@ -158,7 +158,7 @@ export class FormatToParts {
         const learningRegex = this.learningNamesPattern;
 
         const result = array(learningRegex.iterate(this.formatted), map(value => {
-            if(Array.isArray(value)) {
+            if(isNamedMatch(value)) {
                 let [type] = value.filter(n => Boolean(n.value)).map(n => n.name);
                 if (!type) throw new Error();
                 if (type == 'year') return '(?<year>\\d{4})';
@@ -166,9 +166,7 @@ export class FormatToParts {
                 else if (type == "month") return `(?<month>(?:\\d{1,2}|${this.months.pattern}))`;
                 else if (type == "weekday") return `(?<weekday>${this.weekdays.pattern})`;
             } else {
-                if (value) {
                     return `(?<literal>[${value}]+?)`;
-                }
             }
         }));
 

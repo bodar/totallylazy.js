@@ -4,7 +4,7 @@ import {locales} from "../dates/dates.test";
 import {currencies} from "../../src/money/currencies";
 import {runningInNode} from "../../src/node";
 import NumberFormatPart = Intl.NumberFormatPart;
-import {Datum, prefer, MatchStrategy, uniqueMatch} from "../../src/parsing";
+import {Datum, prefer, MatchStrategy, uniqueMatch, parsers} from "../../src/parsing";
 
 export const numberLocales = Intl.NumberFormat.supportedLocalesOf(locales);
 const amounts = [1234567.89, 156, 156.89, .1234, 0];
@@ -70,7 +70,12 @@ describe("Money", function () {
         assert.deepEqual(parser('en').parse('₩ 398526.56'), money('KRW', 398526.56));
         assert.deepEqual(parser('en').parse('KSh 34,202.20'), money('KES', 34202.20));
         assert.deepEqual(parser('en').parse('AED 1204.99'), money('AED', 1204.99));
-        // assert.deepEqual(parser('en').parse('95065.22 Ft'), money('HUF', 95065.22));
+
+        // This is a weird hotchpotch of formats, semi english decimal with hungarian symbol
+        // Hungarian would be 95 065,22 Ft
+        // but english could be HUF 95,065.22
+        // will support with format string
+        // assert.deepEqual(parsers(parser('en'), parser('hu')).parse('95065.22 Ft'), money('HUF', 95065.22));
     });
 
 

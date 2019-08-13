@@ -1,5 +1,5 @@
 import NumberFormatPart = Intl.NumberFormatPart;
-import {NamedMatch, NamedRegExp} from "../characters";
+import {isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
 import {dedupe, filter, flatMap, map} from "../transducers";
 import {array, by} from "../collections";
 import {flatten, unique} from "../arrays";
@@ -150,7 +150,7 @@ export class NumberFormatPartParser extends BaseParser<NumberFormatPart[]> {
             const type = m.name;
             if (type === 'integer-group') {
                 return array(integers.iterate(m.value), filter(m => Boolean(m)), map(m => {
-                    if (Array.isArray(m)) {
+                    if (isNamedMatch(m)) {
                         return {type: 'integer', value: m[0].value} as NumberFormatPart;
                     } else {
                         return {type: 'group', value: m} as NumberFormatPart;

@@ -1,10 +1,12 @@
 import {cache, lazy} from "../lazy";
 import {unique} from "../arrays";
-import {characters, NamedMatch, NamedRegExp, replace} from "../characters";
+import {characters, isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
 import {date, defaultOptions, formatData, hasNativeFormatToParts, Months, Options, Weekdays,} from "./index";
 import {BaseParser, MappingParser, Parser, parsers} from "../parsing";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
+import {array} from "../collections";
+import {map} from "../transducers";
 
 export function parse(value: string, locale?: string, options?: string | Options, native = hasNativeFormatToParts): Date {
     return parser(locale, options, native).parse(value);
@@ -90,16 +92,6 @@ export function dateFrom(parts: DateTimeFormatPart[], locale?: string): Date {
     return date(yyyy, MM, dd);
 }
 
-export const formatRegex = /(?:(y+)|(M+)|(d+)|(E+))/g;
-
-export function typeFrom(value: string): DateTimeFormatPartTypes {
-    if (value.indexOf('y') != -1) return 'year';
-    if (value.indexOf('M') != -1) return 'month';
-    if (value.indexOf('d') != -1) return 'day';
-    if (value.indexOf('E') != -1) return 'weekday';
-    throw new Error(`Illegal Argument: ${value}`);
-}
-
 export function formatFrom(type: DateTimeFormatPartTypes, length: number): string {
     if (type === 'year') {
         if (length === 4) return "numeric";
@@ -122,18 +114,19 @@ export function formatFrom(type: DateTimeFormatPartTypes, length: number): strin
     throw new Error(`Illegal Argument: ${type} ${length}`);
 }
 
+export const formatRegex = NamedRegExp.create('(?:(?<year>y+)|(?<month>M+)|(?<day>d+)|(?<weekday>E+))', 'g');
+
 export function partsFrom(format: string): DateTimeFormatPart[] {
-    const parts: DateTimeFormatPart[] = [];
-    replace(formatRegex, format, match => {
-        const type = typeFrom(match[0]);
-        const value = formatFrom(type, match[0].length);
-        parts.push({type, value});
-        return "";
-    }, a => {
-        if (a) parts.push({type: "literal", value: a});
-        return "";
-    });
-    return parts;
+    return array(formatRegex.iterate(format), map(matchOrNot => {
+        if(isNamedMatch(matchOrNot)) {
+            const [match] = matchOrNot.filter(m => Boolean(m.value));
+            const type = match.name as DateTimeFormatPartTypes;
+            const value = formatFrom(type, match.value.length);
+            return {type, value};
+        } else {
+            return {type: "literal", value: matchOrNot};
+        }
+    }));
 }
 
 export function optionsFrom(formatOrParts: string | DateTimeFormatPart[]): Options {

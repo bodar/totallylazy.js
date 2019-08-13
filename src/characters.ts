@@ -43,11 +43,13 @@ export class NamedRegExp {
         while (true) {
             const match = stateful.exec(value);
             if (!match) break;
-            yield value.substring(position, match.index);
+            const nonMatch = value.substring(position, match.index);
+            if(nonMatch) yield nonMatch;
             yield this.namedMatch(match);
             position = stateful.lastIndex;
         }
-        yield value.substring(position);
+        const nonMatch = value.substring(position);
+        if(nonMatch) yield nonMatch;
     }
 
     toString() {
@@ -55,11 +57,18 @@ export class NamedRegExp {
     }
 }
 
+export function isNamedMatch(value: NamedMatch[]|NonMatch): value is NamedMatch[] {
+    return Array.isArray(value);
+}
+
+export function isNonMatch(value: NamedMatch[]|NonMatch): value is NonMatch {
+    return typeof value === "string";
+}
+
 export interface NamedMatch {
     name: string;
     value: string;
 }
-
 
 export function replace(regex: RegExp, value: string, replacer: (match: RegExpExecArray) => string, nonMatchedReplacer: (a: string) => string = (value) => value) {
     const result = [];
