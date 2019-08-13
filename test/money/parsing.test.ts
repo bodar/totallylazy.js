@@ -14,6 +14,7 @@ import {currencies} from "../../src/money/currencies";
 import {runningInNode} from "../../src/node";
 import {prefer} from "../../src/parsing";
 import NumberFormatPart = Intl.NumberFormatPart;
+import {Currency} from "../../src/money/currencies-def";
 
 export const numberLocales = Intl.NumberFormat.supportedLocalesOf(locales);
 const amounts = [1234567.89, 156, 156.89, .1234, 0];
@@ -23,7 +24,7 @@ describe("Money", function () {
 
     it('can parse loads of money!', () => {
         for (const locale of numberLocales) {
-            for (const [code, {decimals}] of Object.entries(currencies)) {
+            for (const [code, {decimals}] of currenciesWithDifferentDecimals) {
                 for (const amount of amounts) {
                     const original = money(code, amount);
                     const expected = money(code, Number(amount.toFixed(decimals)));
@@ -113,14 +114,24 @@ describe("Money", function () {
     });
 
     it('has ponyfill for formatToParts', () => {
-        const m = money('HUF', 95065.22);
-        const locale = 'en';
-        const formatter = Formatter.create(m.currency, locale);
-        const p = formatToPartsPonyfill(m, locale);
-        assert.deepEqual(p, formatter.formatToParts(m.amount));
+        for (const locale of numberLocales.filter(l => l != 'hy-Latn-IT-arevela')) {
+            for (const [code] of currenciesWithDifferentDecimals) {
+                for (const amount of amounts) {
+                    const original = money(code, amount);
+                    const formatter = Formatter.create(original.currency, locale);
+                    const ponyResult = formatToPartsPonyfill(original, locale);
+                    const nativeResult = formatter.formatToParts(original.amount);
+                    assert.deepEqual(ponyResult, nativeResult);
+                }
+            }
+        }
     });
 });
 
+export const currenciesWithDifferentDecimals: [string, Currency][] = Object.values(Object.entries(currencies).reduce((a, [code, currency]) => {
+    a[currency.decimals] = [code, currency];
+    return a;
+}, {} as any));
 
 describe("CurrencySymbols", function () {
     before(function () {
