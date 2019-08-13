@@ -2,7 +2,18 @@ import {date, format, Formatters, FormatToParts, ImprovedDateTimeFormat, Options
 import {assert} from 'chai';
 import {options, supported} from "./dates.test";
 import {runningInNode} from "../../src/node";
-import {characters} from "../../src/characters";
+import {characters, NamedRegExp} from "../../src/characters";
+import {array} from "../../src/collections";
+import {
+    CurrencySymbols,
+    integersReally, Money, moneyFrom,
+    NumberFormatPartParser,
+    partsFromFormat,
+    RegexParser
+} from "../../src/money/money";
+import {MappingParser} from "../../src/parsing";
+
+
 
 describe("FormatToParts", function () {
     before(function () {

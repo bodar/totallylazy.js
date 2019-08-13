@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import {
     CurrencySymbols,
-    format,
+    format, Formatter, formatToPartsPonyfill,
     money,
     moneyFrom,
     parse,
@@ -110,6 +110,14 @@ describe("Money", function () {
     it('ignores values that are very nearly valid money', function () {
         assert.deepEqual(parser('en').parseAll('Total: USD 100 Tax: USD 10 Nearly: DAN 10'),
             [money('USD', 100), money('USD', 10)]);
+    });
+
+    it('has ponyfill for formatToParts', () => {
+        const m = money('HUF', 95065.22);
+        const locale = 'en';
+        const formatter = Formatter.create(m.currency, locale);
+        const p = formatToPartsPonyfill(m, locale);
+        assert.deepEqual(p, formatter.formatToParts(m.amount));
     });
 });
 

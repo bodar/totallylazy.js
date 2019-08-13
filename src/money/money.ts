@@ -10,13 +10,22 @@ import {BaseParser, MappingParser, MatchStrategy, Parser} from "../parsing";
 import {Currencies, Currency} from "./currencies-def";
 
 /**
- * Parsing flow
+ *
+ * Building a parser (implementing parseToParts)
+ *
+ *   locale -> example-money -> formatToParts() -> parts -> named pattern
+ *
+ *
+ * Parsing flow (uses parseToParts)
  *
  *   (string + locale) -> parts -> money
  *
- * Building a parser
  *
- *   locale -> money -> parts -> named pattern
+ * formatToParts (non-native)
+ *
+ *   example-money -> format (native) -> example-money-pattern -> examples-part -> example-pattern
+ *   actual-money ->  format (native) -> example-pattern -> actual-parts
+ *
  */
 
 
@@ -59,11 +68,24 @@ export class Formatter {
 }
 
 export function partsFrom(money: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): NumberFormatPart[] {
-    return Formatter.create(money.currency, locale, currencyDisplay).formatToParts(money.amount);
+    const formatter = Formatter.create(money.currency, locale, currencyDisplay);
+    return typeof formatter.formatToParts === 'function' ? formatter.formatToParts(money.amount) : formatToPartsPonyfill(money, locale, currencyDisplay);
 }
 
 export function format(money: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): string {
     return partsFrom(money, locale, currencyDisplay).map(p => p.value).join('');
+}
+
+export function formatToPartsPonyfill(actual: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): NumberFormatPart[] {
+    const currency = actual.currency;
+    const exampleMoney = money(currency, 111222.3333);
+    const p = NamedRegExp.create(`(?:(?<integer-group>1.*2)(?<decimal>.)(?<fraction>3+)|(?<currency>${CurrencySymbols.get(locale).pattern}))`);
+    const formatter = Formatter.create(currency, locale, currencyDisplay);
+    const f = formatter.format(exampleMoney.amount);
+    const parts = partsFromFormat(f, p, integersReally);
+    const pattern: string = RegexParser.buildFrom(parts);
+    const pp: NumberFormatPartParser = new NumberFormatPartParser(NamedRegExp.create(pattern));
+    return pp.parse(formatter.format(actual.amount))
 }
 
 export function parse(value: string, locale?: string, options?: Options): Money {
@@ -162,13 +184,15 @@ export function parseIntegerGroup(regex:NamedRegExp, m: NamedMatch): NumberForma
     }));
 }
 
+export const integersReally = NamedRegExp.create('(?<integer>\\d+)');
+
 export class NumberFormatPartParser extends BaseParser<NumberFormatPart[]> {
-    private integers = NamedRegExp.create('(?<integer>\\d+)');
+
 
     convert(matches: NamedMatch[]) {
         return array(matches, filter(m => Boolean(m.value)), flatMap((m: NamedMatch) => {
             if (m.name === 'integer-group') {
-                return parseIntegerGroup(this.integers, m);
+                return parseIntegerGroup(integersReally, m);
             } else {
                 return [{type: m.name, value: m.value} as NumberFormatPart];
             }
@@ -178,10 +202,9 @@ export class NumberFormatPartParser extends BaseParser<NumberFormatPart[]> {
 
 const formatRegex = NamedRegExp.create('(?:(?<integer-group>(?:i.*i|i))(?<decimal>[^f])(?<fraction>f+)|(?<currency>C+))', 'g');
 
-export function partsFromFormat(format: string): NumberFormatPart[] {
-    const integers = NamedRegExp.create('(?<integer>i+)');
+export function partsFromFormat(format: string, regex: NamedRegExp = formatRegex, integers:NamedRegExp = NamedRegExp.create('(?<integer>i+)')): NumberFormatPart[] {
 
-    return array(formatRegex.iterate(format), flatMap((matchOrNot:MatchOrNot) => {
+    return array(regex.iterate(format), flatMap((matchOrNot:MatchOrNot) => {
         if (isNamedMatch(matchOrNot)) {
             const [first, second, third]: NamedMatch[] = matchOrNot.filter(m => Boolean(m.value));
             if (first.name === 'currency') {
