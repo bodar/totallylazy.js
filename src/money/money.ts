@@ -65,8 +65,8 @@ export function format(money: Money, locale?: string, currencyDisplay: CurrencyD
     return partsFrom(money, locale, currencyDisplay).map(p => p.value).join('');
 }
 
-export function parse(value: string, locale?: string): Money {
-    return moneyFrom(parseToParts(value, locale), locale);
+export function parse(value: string, locale?: string, strategy?: MatchStrategy<string>): Money {
+    return moneyFrom(parseToParts(value, locale), locale, strategy);
 }
 
 export function parser(locale?:string, strategy?: MatchStrategy<string>): Parser<Money> {
