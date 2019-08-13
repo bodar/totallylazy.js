@@ -16,7 +16,7 @@ export abstract class BaseParser<T> implements Parser<T> {
     }
 
     parseAll(value: string): T[] {
-        return array(this.regex.exec(this.preProcess(value)), map(this.convert))
+        return array(this.regex.exec(this.preProcess(value)), map(this.convert.bind(this)))
     }
 
     preProcess(value: string) {

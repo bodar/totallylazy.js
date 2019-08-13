@@ -2,7 +2,14 @@ export type Names = string[];
 
 const namesRegex = /\(\?<([^>]+)>/g;
 
+export interface NamedMatch {
+    name: string;
+    value: string;
+}
+
 export type NonMatch = string;
+
+export type MatchOrNot = NamedMatch[]|NonMatch;
 
 export class NamedRegExp {
     constructor(public pattern: RegExp, public names: Names) {
@@ -37,7 +44,7 @@ export class NamedRegExp {
         }
     }
 
-    * iterate(value:string): Iterable<NamedMatch[]|NonMatch> {
+    * iterate(value:string): Iterable<MatchOrNot> {
         let position = 0;
         const stateful = new RegExp(this.pattern.source, 'g');
         while (true) {
@@ -57,18 +64,14 @@ export class NamedRegExp {
     }
 }
 
-export function isNamedMatch(value: NamedMatch[]|NonMatch): value is NamedMatch[] {
+export function isNamedMatch(value: MatchOrNot): value is NamedMatch[] {
     return Array.isArray(value);
 }
 
-export function isNonMatch(value: NamedMatch[]|NonMatch): value is NonMatch {
+export function isNonMatch(value: MatchOrNot): value is NonMatch {
     return typeof value === "string";
 }
 
-export interface NamedMatch {
-    name: string;
-    value: string;
-}
 
 export function replace(regex: RegExp, value: string, replacer: (match: RegExpExecArray) => string, nonMatchedReplacer: (a: string) => string = (value) => value) {
     const result = [];
