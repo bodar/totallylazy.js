@@ -4,26 +4,39 @@ import {flatten, unique} from "./arrays";
 import {array, Mapper} from "./collections";
 import {flatMap, map} from "./transducers";
 
-export abstract class BaseParser<T> implements Parser<T> {
-    constructor(protected regex: NamedRegExp, protected locale?: string) {
+export class NamedRegexParser implements Parser<NamedMatch[]> {
+    constructor(protected regex: NamedRegExp) {
     }
 
-    parse(raw: string): T {
-        const value = this.preProcess(raw);
+    parse(value: string): NamedMatch[] {
         const match = this.regex.match(value);
         if (match.length === 0) throw new Error(`Generated regex ${this.regex.pattern} did not match "${value}" `);
-        return this.convert(match);
+        return match;
+    }
+
+    parseAll(value: string): NamedMatch[][] {
+        return array(this.regex.exec(value));
+    }
+}
+
+export function namedRegexParser(regex: NamedRegExp) {
+    return new NamedRegexParser(regex);
+}
+
+export class PreProcessor<T> implements Parser<T> {
+    constructor(private delegate: Parser<T>, private mapper: Mapper<string, string>) {
+    }
+    parse(value: string): T {
+        return this.delegate.parse(this.mapper(value));
     }
 
     parseAll(value: string): T[] {
-        return array(this.regex.exec(this.preProcess(value)), map(this.convert.bind(this)))
+        return this.delegate.parseAll(this.mapper(value));
     }
+}
 
-    preProcess(value: string) {
-        return value;
-    }
-
-    abstract convert(matches: NamedMatch[]): T
+export function preProcess<T>(delegate: Parser<T>, mapper: Mapper<string, string>) {
+    return new PreProcessor(delegate, mapper);
 }
 
 export class MappingParser<A, B> implements Parser<B> {
@@ -43,6 +56,10 @@ export class MappingParser<A, B> implements Parser<B> {
             }
         }));
     }
+}
+
+export function mappingParser<A,B>(parser: Parser<A>, mapper: Mapper<A, B>) {
+    return new MappingParser(parser, mapper);
 }
 
 export interface Parser<T> {

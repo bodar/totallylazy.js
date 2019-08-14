@@ -2,7 +2,7 @@ import {cache, lazy} from "../lazy";
 import {unique} from "../arrays";
 import {characters, isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
 import {date, defaultOptions, formatData, hasNativeFormatToParts, Months, Options, Weekdays,} from "./index";
-import {BaseParser, MappingParser, Parser, parsers} from "../parsing";
+import {mappingParser, namedRegexParser, Parser, parsers, preProcess} from "../parsing";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import {array} from "../collections";
@@ -18,8 +18,7 @@ export class RegexBuilder {
                 private formatted: DateTimeFormatPart[]) {
     }
 
-    @cache
-    static create(locale: string = 'default', options: string | Options = defaultOptions, native = hasNativeFormatToParts): RegexBuilder {
+    @cache static create(locale: string = 'default', options: string | Options = defaultOptions, native = hasNativeFormatToParts): RegexBuilder {
         if (typeof options == 'string') {
             return formatBuilder(locale, options);
         } else {
@@ -27,29 +26,17 @@ export class RegexBuilder {
         }
     }
 
-    @lazy get months(): Months {
-        return Months.get(this.locale);
-    }
-
-    @lazy get weekdays(): Weekdays {
-        return Weekdays.get(this.locale);
-    }
-
-    @lazy get regexParser(): Parser<Date> {
-        return new MappingParser(new DateTimeFormatPartParser(NamedRegExp.create(this.buildPattern()), this.locale), p => dateFrom(p, this.locale));
-    }
-
-    buildPattern() {
+     @lazy get pattern() {
         return this.formatted.map(part => {
             switch (part.type) {
                 case "year":
                     return '(?<year>\\d{4})';
                 case "month":
-                    return `(?<month>(?:\\d{1,2}|${this.months.pattern.toLocaleLowerCase(this.locale)}))`;
+                    return `(?<month>(?:\\d{1,2}|${Months.get(this.locale).pattern.toLocaleLowerCase(this.locale)}))`;
                 case "day":
                     return '(?<day>\\d{1,2})';
                 case "weekday":
-                    return `(?<weekday>${this.weekdays.pattern.toLocaleLowerCase(this.locale)})`;
+                    return `(?<weekday>${Weekdays.get(this.locale).pattern.toLocaleLowerCase(this.locale)})`;
                 default: {
                     const chars = unique(characters(RegexBuilder.ensureLiteralsAlwaysContainSpace(part))).join('').replace(' ', '\\s');
                     return `[${chars}]+?`;
@@ -63,16 +50,27 @@ export class RegexBuilder {
     }
 }
 
-export class DateTimeFormatPartParser extends BaseParser<DateTimeFormatPart[]> {
-    convert(matches: NamedMatch[]) {
+export class DateParser {
+    @cache static create(locale: string = 'default', options: string | Options = defaultOptions, native = hasNativeFormatToParts){
+        const pattern = RegexBuilder.create(locale, options, native).pattern;
+        return mappingParser(DateTimeFormatPartParser.create(NamedRegExp.create(pattern), locale), p => dateFrom(p, locale));
+    }
+}
+
+export class DateTimeFormatPartParser {
+    @cache static create(regex: NamedRegExp, locale?:string): Parser<DateTimeFormatPart[]> {
+        return preProcess(mappingParser(namedRegexParser(regex), m => this.convert(m, locale)), this.preProcess);
+    }
+
+    static convert(matches: NamedMatch[], locale?:string): DateTimeFormatPart[] {
         return matches.map((m) => ({
             type: m.name as DateTimeFormatPartTypes,
-            value: m.value.toLocaleUpperCase(this.locale)
+            value: m.value.toLocaleUpperCase(locale)
         }));
     }
 
-    preProcess(value: string): string {
-        return value.toLocaleLowerCase(this.locale);
+    static preProcess(value: string, locale?:string): string {
+        return value.toLocaleLowerCase(locale);
     }
 }
 
@@ -163,13 +161,13 @@ export function parser(locale?: string, options?: string | Options, native = has
 }
 
 export function simpleParser(locale: string = 'default', format: string, native = hasNativeFormatToParts): Parser<Date> {
-    return RegexBuilder.create(locale, format, native).regexParser;
+    return DateParser.create(locale, format, native);
 }
 
 export function localeParser(locale?: string, options?: string | Options, native = hasNativeFormatToParts): Parser<Date> {
     if (!options) {
         return parsers(...defaultParserOptions.map(o => localeParser(locale, o, native)))
     }
-    return RegexBuilder.create(locale, options, native).regexParser;
+    return DateParser.create(locale, options, native);
 }
 

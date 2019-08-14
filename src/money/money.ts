@@ -5,7 +5,7 @@ import {flatten} from "../arrays";
 import {currencies} from "./currencies";
 import {cache, lazy} from "../lazy";
 import {Datum, DatumLookup} from "../dates";
-import {BaseParser, MappingParser, MatchStrategy, Parser} from "../parsing";
+import {mappingParser, MatchStrategy, namedRegexParser, Parser} from "../parsing";
 import {Currencies, Currency} from "./currencies-def";
 import NumberFormatPart = Intl.NumberFormatPart;
 
@@ -110,8 +110,9 @@ export function parse(value: string, locale?: string, options?: Options): Money 
     return moneyFrom(parseToParts(value, locale), locale, options);
 }
 
+
 export function parser(locale?: string, options?: Options): Parser<Money> {
-    return new MappingParser(NumberFormatPartParser.create(locale, options), p => moneyFrom(p, locale, options));
+    return MoneyParser.create(locale, options);
 }
 
 export function parseToParts(value: string, locale?: string): NumberFormatPart[] {
@@ -188,16 +189,21 @@ export class RegexBuilder {
     }
 }
 
-export class NumberFormatPartParser extends BaseParser<NumberFormatPart[]> {
-    static create(locale?: string, pattern?: string): Parser<Intl.NumberFormatPart[]>;
-    static create(locale?: string, options?: Options): Parser<Intl.NumberFormatPart[]>
-    @cache static create(locale?: string, patternOrOption?: string | Options): Parser<Intl.NumberFormatPart[]> {
+export class MoneyParser {
+    static create(locale?: string, options?: Options): Parser<Money> {
+        return mappingParser(NumberFormatPartParser.create(locale, options), p => moneyFrom(p, locale, options));
+    }
+}
+
+export class NumberFormatPartParser {
+    static create(locale?: string, pattern?: string): Parser<NumberFormatPart[]>;
+    static create(locale?: string, options?: Options): Parser<NumberFormatPart[]>
+    @cache static create(locale?: string, patternOrOption?: string | Options): Parser<NumberFormatPart[]> {
         const pattern = typeof patternOrOption  === "string" ? patternOrOption : RegexBuilder.buildFromOptions(locale, patternOrOption);
-        return new NumberFormatPartParser(NamedRegExp.create(pattern), locale);
+        return mappingParser(namedRegexParser(NamedRegExp.create(pattern)), this.convert);
     }
 
-
-    convert(matches: NamedMatch[]) {
+    static convert(matches: NamedMatch[]) {
         return array(matches, filter(m => Boolean(m.value)), flatMap((m: NamedMatch) => {
             if (m.name === 'integer-group') {
                 return IntegerGroupParser.digits.parse(m.value);
@@ -237,7 +243,7 @@ export class PartsFromFormat {
 
     @lazy
     static get format(): PartsFromFormat {
-        const regex = NamedRegExp.create('(?:(?<integer-group>(?:i.*i|i))(?<decimal>[^f])(?<fraction>f+)|(?<currency>C+))', 'g');
+        const regex = NamedRegExp.create('(?:(?<integer-group>(?:i.*i|i))(?<decimal>[^f])(?<fraction>f+)|(?<currency>C+))');
         return new PartsFromFormat(regex, IntegerGroupParser.integerFormat);
     }
 

@@ -62,6 +62,13 @@ export class NamedRegExp {
     toString() {
         return `Pattern: ${this.pattern} Names: ${JSON.stringify(this.names)}`;
     }
+
+    toJSON() {
+        return {
+            pattern: this.pattern.source,
+            names: this.names
+        };
+    }
 }
 
 export function isNamedMatch(value: MatchOrNot): value is NamedMatch[] {
