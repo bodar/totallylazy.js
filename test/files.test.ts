@@ -44,4 +44,11 @@ describe("files", function () {
         const content:string = await new File('run').content();
         assert(content.length > 0);
     });
+
+    it('can write file content as string', async () => {
+        const file = new File('run');
+        await file.content('foo');
+        const content = await file.content();
+        assert(content === 'foo');
+    });
 });
