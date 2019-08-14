@@ -46,7 +46,7 @@ describe("files", function () {
     });
 
     it('can write file content as string', async () => {
-        const file = new File('run');
+        const file = File.tempDirectory.child('run');
         await file.content('foo');
         const content = await file.content();
         assert(content === 'foo');

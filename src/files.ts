@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import {promisify} from 'util';
 import {lazy} from './lazy';
@@ -17,6 +18,7 @@ export class File {
     }
 
     static workingDirectory = new File(process.cwd());
+    static tempDirectory = new File(os.tmpdir());
 
     @lazy get name(): string {
         return path.basename(this.absolutePath);
