@@ -65,9 +65,9 @@ async function generateFile(currencies: Currencies) {
     const generated = new File('currencies.ts', __dirname);
     console.log(`Generating ${generated.absolutePath}`);
     const json = JSON.stringify(currencies, undefined, 2);
-    const context = `// Generated file do not edit or checkin
+    const content = `// Generated file do not edit or checkin
 import {Currencies} from "./currencies-def";
     
 export const currencies: Currencies = ${json};`;
-    await generated.content(context);
+    await generated.content(content);
 }
