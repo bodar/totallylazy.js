@@ -6,8 +6,7 @@ import {
     moneyFrom,
     parse,
     parser,
-    partsFrom,
-    partsFromFormat
+    partsFrom, PartsFromFormat,
 } from "../../src/money/money";
 import {locales} from "../dates/dates.test";
 import {currencies} from "../../src/money/currencies";
@@ -90,7 +89,7 @@ describe("Money", function () {
     it('can convert format string to parts', () => {
         const f = 'i,iii.fff CCCC';
 
-        const parts: NumberFormatPart[] = partsFromFormat(f);
+        const parts: NumberFormatPart[] = PartsFromFormat.format.parse(f);
         assert.deepEqual(parts, [
             {type: 'integer', value: 'i'},
             {type: "group", value: ','},

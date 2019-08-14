@@ -4,7 +4,7 @@ import {dedupe, filter, flatMap, map} from "../transducers";
 import {array, by} from "../collections";
 import {flatten} from "../arrays";
 import {currencies} from "./currencies";
-import {cache} from "../lazy";
+import {cache, lazy} from "../lazy";
 import {Datum, DatumLookup} from "../dates";
 import {BaseParser, MappingParser, MatchStrategy, Parser} from "../parsing";
 import {Currencies, Currency} from "./currencies-def";
@@ -82,24 +82,25 @@ export function formatToPartsPonyfill(actual: Money, locale?: string, currencyDi
     return FormatToParts.create(currency, locale, currencyDisplay).format(amount);
 }
 
+const exampleMoney = money('GBP', 111222.3333);
+
 export class FormatToParts {
-    constructor(private currency:string,
+    constructor(private currency: string,
                 private currencyDisplay: CurrencyDisplay,
                 private parser: NumberFormatPartParser,
                 private locale?: string) {
     }
 
-    @cache static create(currency:string, locale?: string, currencyDisplay: CurrencyDisplay = 'code'):FormatToParts {
-        const exampleMoney = money(currency, 111222.3333);
-        const examplePattern = NamedRegExp.create(`(?:(?<integer-group>1.*2)(?:(?<decimal>.)(?<fraction>3+))?|(?<currency>${CurrencySymbols.get(locale).pattern}))`);
+    @cache
+    static create(currency: string, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): FormatToParts {
         const exampleFormatted = Formatter.create(currency, locale, currencyDisplay).format(exampleMoney.amount);
-        const exampleParts = partsFromFormat(exampleFormatted, examplePattern, integersReally);
+        const exampleParts = PartsFromFormat.examplePattern(locale).parse(exampleFormatted);
         const genericPattern = RegexParser.buildFrom(exampleParts);
         const genericPartsParser = new NumberFormatPartParser(NamedRegExp.create(genericPattern));
         return new FormatToParts(currency, currencyDisplay, genericPartsParser, locale);
     }
 
-    format(amount:number) {
+    format(amount: number) {
         const formatter = Formatter.create(this.currency, this.locale, this.currencyDisplay);
         return this.parser.parse(formatter.format(amount));
     }
@@ -158,12 +159,10 @@ export function symbolFor(locale: string, isoCurrency: string): string {
     return currency.value;
 }
 
-const exampleMoney = money('GBP', 1234567.89);
-
 export class RegexParser {
     @cache
-    static create(locale?: string, options?:Options): Parser<NumberFormatPart[]> {
-        const originalPattern = options && options.format ? this.buildFrom(partsFromFormat(options.format)) : this.buildPattern(locale);
+    static create(locale?: string, options?: Options): Parser<NumberFormatPart[]> {
+        const originalPattern = options && options.format ? this.buildFrom(PartsFromFormat.format.parse(options.format)) : this.buildPattern(locale);
         return new NumberFormatPartParser(NamedRegExp.create(originalPattern));
     }
 
@@ -192,25 +191,11 @@ export class RegexParser {
     }
 }
 
-export function parseIntegerGroup(regex:NamedRegExp, m: NamedMatch): NumberFormatPart[] {
-    return array(regex.iterate(m.value), filter(m => Boolean(m)), map(m => {
-        if (isNamedMatch(m)) {
-            return {type: 'integer', value: m[0].value} as NumberFormatPart;
-        } else {
-            return {type: 'group', value: m} as NumberFormatPart;
-        }
-    }));
-}
-
-export const integersReally = NamedRegExp.create('(?<integer>\\d+)');
-
 export class NumberFormatPartParser extends BaseParser<NumberFormatPart[]> {
-
-
     convert(matches: NamedMatch[]) {
         return array(matches, filter(m => Boolean(m.value)), flatMap((m: NamedMatch) => {
             if (m.name === 'integer-group') {
-                return parseIntegerGroup(integersReally, m);
+                return IntegerGroupParser.digits.parse(m.value);
             } else {
                 return [{type: m.name, value: m.value} as NumberFormatPart];
             }
@@ -218,27 +203,67 @@ export class NumberFormatPartParser extends BaseParser<NumberFormatPart[]> {
     }
 }
 
-const formatRegex = NamedRegExp.create('(?:(?<integer-group>(?:i.*i|i))(?<decimal>[^f])(?<fraction>f+)|(?<currency>C+))', 'g');
+export class PartsFromFormat {
+    constructor(private formatRegex: NamedRegExp, private integerGroupParser: IntegerGroupParser) {
+    }
 
-export function partsFromFormat(format: string, regex: NamedRegExp = formatRegex, integers:NamedRegExp = NamedRegExp.create('(?<integer>i+)')): NumberFormatPart[] {
-    return array(regex.iterate(format), flatMap((matchOrNot:MatchOrNot) => {
-        if (isNamedMatch(matchOrNot)) {
-            const [first, second, third]: NamedMatch[] = matchOrNot.filter(m => Boolean(m.value));
-            if (first.name === 'currency') {
-                return [{type: first.name, value: first.value}] as NumberFormatPart[];
-            } else {
-                const integerAndGroups = parseIntegerGroup(integers, first);
-                if (second) {
-                    return [...integerAndGroups,
-                        {type: second.name, value: second.value},
-                        {type: third.name, value: third.value}] as NumberFormatPart[];
+    parse(format: string): NumberFormatPart[] {
+        return array(this.formatRegex.iterate(format), flatMap((matchOrNot: MatchOrNot) => {
+            if (isNamedMatch(matchOrNot)) {
+                const [first, second, third]: NamedMatch[] = matchOrNot.filter(m => Boolean(m.value));
+                if (first.name === 'currency') {
+                    return [{type: first.name, value: first.value}] as NumberFormatPart[];
                 } else {
-                    return integerAndGroups;
+                    const integerAndGroups = this.integerGroupParser.parse(first.value);
+                    if (second) {
+                        return [...integerAndGroups,
+                            {type: second.name, value: second.value},
+                            {type: third.name, value: third.value}] as NumberFormatPart[];
+                    } else {
+                        return integerAndGroups;
+                    }
                 }
+            } else {
+                return [{type: "literal", value: matchOrNot}];
             }
-        } else {
-            return [{type: "literal", value: matchOrNot}];
-        }
-    }));
+        }));
+    }
+
+
+    @lazy
+    static get format(): PartsFromFormat {
+        const regex = NamedRegExp.create('(?:(?<integer-group>(?:i.*i|i))(?<decimal>[^f])(?<fraction>f+)|(?<currency>C+))', 'g');
+        return new PartsFromFormat(regex, IntegerGroupParser.integerFormat);
+    }
+
+    @cache
+    static examplePattern(locale?: string) {
+        const regex = NamedRegExp.create(`(?:(?<integer-group>1.*2)(?:(?<decimal>.)(?<fraction>3+))?|(?<currency>${CurrencySymbols.get(locale).pattern}))`);
+        return new PartsFromFormat(regex, IntegerGroupParser.digits);
+    }
 }
 
+export class IntegerGroupParser {
+    constructor(private regex: NamedRegExp) {
+    }
+
+    parse(value: string): NumberFormatPart[] {
+        return array(this.regex.iterate(value), map(m => {
+            if (isNamedMatch(m)) {
+                return {type: 'integer', value: m[0].value} as NumberFormatPart;
+            } else {
+                return {type: 'group', value: m} as NumberFormatPart;
+            }
+        }));
+    }
+
+    @lazy
+    static get digits(): IntegerGroupParser {
+        return new IntegerGroupParser(NamedRegExp.create('(?<integer>\\d+)'));
+    }
+
+    @lazy
+    static get integerFormat(): IntegerGroupParser {
+        return new IntegerGroupParser(NamedRegExp.create('(?<integer>i+)'));
+    }
+}

@@ -2,17 +2,7 @@ import {date, format, Formatters, FormatToParts, ImprovedDateTimeFormat, Options
 import {assert} from 'chai';
 import {options, supported} from "./dates.test";
 import {runningInNode} from "../../src/node";
-import {characters, NamedRegExp} from "../../src/characters";
-import {array} from "../../src/collections";
-import {
-    CurrencySymbols,
-    integersReally, Money, moneyFrom,
-    NumberFormatPartParser,
-    partsFromFormat,
-    RegexParser
-} from "../../src/money/money";
-import {MappingParser} from "../../src/parsing";
-
+import {characters} from "../../src/characters";
 
 
 describe("FormatToParts", function () {
@@ -29,7 +19,7 @@ describe("FormatToParts", function () {
         const formatter = Formatters.create(locale, option);
         const expected = formatter.formatToParts(original);
         const actual = FormatToParts.create(locale, option).formatToParts(original);
-        assert.deepEqual(actual.map(v => v.value).join(""), expected.map(v => v.value).join(""), `${locale} ${JSON.stringify(option)}`)
+        assert.deepEqual(actual.map(v => v.value).join(""), expected.map(v => v.value).join(""), `${locale} ${JSON.stringify(option)}`);
         assert.deepEqual(actual.map(v => v.type), expected.map(v => v.type), `${locale} ${JSON.stringify(option)}`)
     }
 
@@ -63,7 +53,7 @@ describe("ImprovedDateTimeFormat", function () {
         assert.equal(characters(containsLeadingRtlMarker).length, 25);
 
         const result = new ImprovedDateTimeFormat('ignored', {}, {
-            format(date?: Date | number): string {
+            format(ignore?: Date | number): string {
                 return containsLeadingRtlMarker;
             }
         } as any).format(date(2019, 1, 2));
