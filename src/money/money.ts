@@ -221,15 +221,15 @@ export class PartsFromFormat {
     parse(format: string): NumberFormatPart[] {
         return array(this.formatRegex.iterate(format), flatMap((matchOrNot: MatchOrNot) => {
             if (isNamedMatch(matchOrNot)) {
-                const [first, second, third]: NamedMatch[] = matchOrNot.filter(m => Boolean(m.value));
-                if (first.name === 'currency') {
-                    return [{type: first.name, value: first.value}] as NumberFormatPart[];
+                const [integerGroupOrCurrency, decimal, fractions]: NamedMatch[] = matchOrNot.filter(m => Boolean(m.value));
+                if (integerGroupOrCurrency.name === 'currency') {
+                    return [{type: integerGroupOrCurrency.name, value: integerGroupOrCurrency.value}] as NumberFormatPart[];
                 } else {
-                    const integerAndGroups = this.integerGroupParser.parse(first.value);
-                    if (second) {
+                    const integerAndGroups = this.integerGroupParser.parse(integerGroupOrCurrency.value);
+                    if (decimal) {
                         return [...integerAndGroups,
-                            {type: second.name, value: second.value},
-                            {type: third.name, value: third.value}] as NumberFormatPart[];
+                            {type: decimal.name, value: decimal.value},
+                            {type: fractions.name, value: fractions.value}] as NumberFormatPart[];
                     } else {
                         return integerAndGroups;
                     }
