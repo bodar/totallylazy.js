@@ -377,6 +377,30 @@ export function dedupe<A>(comparator: Comparator<A> = ascending): DedupTransduce
     return new DedupTransducer(comparator)
 }
 
+export function windowed<A>(size: number, step: number = 1): WindowedTransducer<A> {
+    return new WindowedTransducer(size, step);
+}
+
+export class WindowedTransducer<A> implements Transducer<A, A[]> {
+    constructor(public size: number, public step: number) {
+    }
+
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A[]> {
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A[]> {
+        const buffer: A[] = [];
+        // let count = 0;
+        for (const current of iterable) {
+            // if (++count <= this.step) {
+            //     count = 0;
+                if (buffer.length === this.size) buffer.shift();
+                buffer.push(current);
+                if (buffer.length === this.size) yield [...buffer];
+            // }
+        }
+    }
+}
 
 
 
