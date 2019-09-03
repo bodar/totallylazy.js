@@ -83,8 +83,17 @@ describe("Money", function () {
         // This is a weird hotchpotch of formats, semi english decimal with hungarian symbol
         // Hungarian would be 95 065,22 Ft
         // but english could be HUF 95,065.22
-
         assert.deepEqual(parser('en', {format: 'iii.fff CCC'}).parse('95065.22 Ft'), money('HUF', 95065.22));
+
+        assert.deepEqual(parser('en', {format: 'iii.fff CCC'}).parse('80.40 GBP'), money('GBP', 80.40));
+        assert.deepEqual(parser('en', {format: 'iii iii,ff CCC'}).parse('1' + String.fromCharCode(8239) + '025,00 EUR'), money('EUR', 1025.00));
+    });
+
+    it('treats all forms of space as the same including nbsp 160 & 8239', () => {
+        const spaces = [32, 160, 8239];
+        for (const space of spaces) {
+            assert.deepEqual(parser('fr').parse('1' + String.fromCharCode(space) +'025,00 EUR'), money('EUR', 1025.00));
+        }
     });
 
     it('can convert format string to parts', () => {

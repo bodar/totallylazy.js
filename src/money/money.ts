@@ -172,6 +172,17 @@ export function symbolFor(locale: string, isoCurrency: string): string {
     return currency.value;
 }
 
+
+
+class Spaces {
+    static codes:string[] = [32, 160, 8239].map(code => String.fromCharCode(code));
+    static spaces = Spaces.codes.join('');
+
+    static handle(value: string): string {
+        return Spaces.codes.indexOf(value) != -1 ? Spaces.spaces : value;
+    }
+}
+
 export class RegexBuilder {
     static buildFromOptions(locale?: string, options?: Options): string {
         return options && options.format ? this.buildFrom(PartsFromFormat.format.parse(options.format)) : this.buildPattern(locale);
@@ -194,7 +205,7 @@ export class RegexBuilder {
                 case "fraction":
                     return `(?<fraction>\\d*)`;
                 case "integer":
-                    return `(?<integer-group>[\\d${group}]+)`;
+                    return `(?<integer-group>[\\d${Spaces.handle(group)}]*\\d+)`;
                 default:
                     return `(?<${part.type}>[${part.value} ]?)`;
             }
