@@ -389,7 +389,10 @@ export class WindowedTransducer<A> implements Transducer<A, A[]> {
         let buffer: A[] = [];
         let skip = 0;
         for await (const current of iterable) {
-            if(skip-- > 0) continue;
+            if(skip > 0) {
+                skip--;
+                continue;
+            }
             buffer.push(current);
             if (buffer.length === this.size) {
                 yield [...buffer];
@@ -403,7 +406,10 @@ export class WindowedTransducer<A> implements Transducer<A, A[]> {
         let buffer: A[] = [];
         let skip = 0;
         for (const current of iterable) {
-            if(skip-- > 0) continue;
+            if(skip > 0) {
+                skip--;
+                continue;
+            }
             buffer.push(current);
             if (buffer.length === this.size) {
                 yield [...buffer];
