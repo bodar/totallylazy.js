@@ -1,7 +1,7 @@
 import {
     date,
     DatumLookup,
-    defaultOptions,
+    defaultOptions, Format,
     months,
     Months,
     Options,
@@ -68,7 +68,7 @@ export class ImprovedDateTimeFormat implements DateTimeFormat {
     }
 }
 
-export function format(value: Date, locale?: string, options: string | Options = defaultOptions): string {
+export function format(value: Date, locale?: string, options: Format | Options = defaultOptions): string {
     return Formatters.create(locale, options).format(value);
 }
 

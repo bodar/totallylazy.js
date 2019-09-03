@@ -118,10 +118,23 @@ export function parser(locale?: string, options?: Options): Parser<Money> {
 export function parseToParts(value: string, locale?: string): NumberFormatPart[] {
     return NumberFormatPartParser.create(locale).parse(value);
 }
+/**
+ *  Given an example money like: 'USD 1,234.567' and a format 'CCC iii.fff'
+ *
+ *  i: Integer including group separator (1,234)
+ *  f: Fraction after the decimal separator (567)
+ *  C: ISO currency code or symbol (USD or $)
+ *
+ *  Currently the number of format characters is just ignored and the user should just use them to help readability.
+ *  This may change in future if needed to be more strict.
+ *
+ *  so 'CCC iii.fff' is the same as 'C i.f'
+ */
+export type Format = string;
 
 export interface Options {
     strategy?: MatchStrategy<string>;
-    format?: string;
+    format?: Format;
 }
 
 export type CurrencySymbolDatum = Datum<string>;

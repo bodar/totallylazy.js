@@ -69,7 +69,7 @@ describe("Money", function () {
         assert.deepEqual(parse('315 $CA', 'fr-FR'), money('CAD', 315));
     });
 
-    it('can parse ambiguous real examples with a custom strategy???', () => {
+    it('can parse ambiguous real examples with a custom strategy', () => {
         assert.deepEqual(parser('en', {strategy: prefer('CNY')}).parse('¥ 2890.30'), money('CNY', 2890.30));
         assert.deepEqual(parser('en', {strategy: prefer('CNY')}).parse('GBP 2890.30'), money('GBP', 2890.30));
         assert.deepEqual(parser('en', {strategy: prefer('USD')}).parse('$ 433.80'), money('USD', 433.80));
@@ -83,11 +83,12 @@ describe("Money", function () {
         // This is a weird hotchpotch of formats, semi english decimal with hungarian symbol
         // Hungarian would be 95 065,22 Ft
         // but english could be HUF 95,065.22
-        assert.deepEqual(parser('en', {format: 'iii.fff CCCC'}).parse('95065.22 Ft'), money('HUF', 95065.22));
+
+        assert.deepEqual(parser('en', {format: 'iii.fff CCC'}).parse('95065.22 Ft'), money('HUF', 95065.22));
     });
 
     it('can convert format string to parts', () => {
-        const f = 'i,iii.fff CCCC';
+        const f = 'i,iii.fff CCC';
 
         const parts: NumberFormatPart[] = PartsFromFormat.format.parse(f);
         assert.deepEqual(parts, [
@@ -97,7 +98,7 @@ describe("Money", function () {
             {type: "decimal", value: '.'},
             {type: "fraction", value: 'fff'},
             {type: "literal", value: ' '},
-            {type: "currency", value: 'CCCC'},
+            {type: "currency", value: 'CCC'},
         ] as NumberFormatPart[]);
     });
 

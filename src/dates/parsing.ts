@@ -114,7 +114,26 @@ export function formatFrom(type: DateTimeFormatPartTypes, length: number): strin
 
 export const formatRegex = NamedRegExp.create('(?:(?<year>y+)|(?<month>M+)|(?<day>d+)|(?<weekday>E+))', 'g');
 
-export function partsFrom(format: string): DateTimeFormatPart[] {
+/**
+ * Format:
+ *  Year
+ *      yy: 2 digit (01)
+ *      yyyy: numeric (normally 4 digit)
+ *  Month
+ *      M: numeric (1 or 10)
+ *      MM: 2 digit (01)
+ *      MMM: short (Jan)
+ *      MMMM: long (January)
+ *  Day
+ *      d: numeric (1 or 10)
+ *      dd: 2 digit (01)
+ *  Weekday
+ *      EEE: short (Mon)
+ *      EEEE: long (Monday)
+ */
+export type Format = string;
+
+export function partsFrom(format: Format): DateTimeFormatPart[] {
     return array(formatRegex.iterate(format), map(matchOrNot => {
         if(isNamedMatch(matchOrNot)) {
             const [match] = matchOrNot.filter(m => Boolean(m.value));
@@ -127,7 +146,7 @@ export function partsFrom(format: string): DateTimeFormatPart[] {
     }));
 }
 
-export function optionsFrom(formatOrParts: string | DateTimeFormatPart[]): Options {
+export function optionsFrom(formatOrParts: Format | DateTimeFormatPart[]): Options {
     const parts = typeof formatOrParts === "string" ? partsFrom(formatOrParts) : formatOrParts;
     const keys = ['year', 'month', 'day', 'weekday'];
     return parts.filter(p => keys.indexOf(p.type) != -1).reduce((a, p) => {
@@ -136,14 +155,14 @@ export function optionsFrom(formatOrParts: string | DateTimeFormatPart[]): Optio
     }, {} as any);
 }
 
-export function formatBuilder(locale: string, format: string): RegexBuilder {
+export function formatBuilder(locale: string, format: Format): RegexBuilder {
     const parts = partsFrom(format);
 
     return new RegexBuilder(locale, optionsFrom(parts), parts)
 }
 
 
-export const defaultParserOptions: (string | Options)[] = [
+export const defaultParserOptions: (Format | Options)[] = [
     {year: 'numeric', month: 'long', day: 'numeric', weekday: "long"},
     {year: 'numeric', month: 'short', day: 'numeric', weekday: 'short'},
     {year: 'numeric', month: 'numeric', day: 'numeric'},
@@ -152,7 +171,7 @@ export const defaultParserOptions: (string | Options)[] = [
     "dd MMM yyyy",
 ];
 
-export function parser(locale?: string, options?: string | Options, native = hasNativeFormatToParts): Parser<Date> {
+export function parser(locale?: string, options?: Format | Options, native = hasNativeFormatToParts): Parser<Date> {
     if (typeof options == 'string') {
         return simpleParser(locale, options, native);
     } else {
@@ -160,11 +179,11 @@ export function parser(locale?: string, options?: string | Options, native = has
     }
 }
 
-export function simpleParser(locale: string = 'default', format: string, native = hasNativeFormatToParts): Parser<Date> {
+export function simpleParser(locale: string = 'default', format: Format, native = hasNativeFormatToParts): Parser<Date> {
     return DateParser.create(locale, format, native);
 }
 
-export function localeParser(locale?: string, options?: string | Options, native = hasNativeFormatToParts): Parser<Date> {
+export function localeParser(locale?: string, options?: Format | Options, native = hasNativeFormatToParts): Parser<Date> {
     if (!options) {
         return parsers(...defaultParserOptions.map(o => localeParser(locale, o, native)))
     }
