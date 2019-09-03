@@ -209,7 +209,7 @@ export class RegexBuilder {
                 default:
                     return `(?<${part.type}>[${part.value} ]?)`;
             }
-        }).join("");
+        }).join("") + '(?=\\s|$)';
     }
 }
 

@@ -96,6 +96,10 @@ describe("Money", function () {
         }
     });
 
+    it('only parses at the word boundary', () => {
+        assert.deepEqual(parser('fr').parseAll('1© 2019 Wynn Resorts Holdings, LLC. '), []);
+    });
+
     it('can convert format string to parts', () => {
         const f = 'i,iii.fff CCC';
 
