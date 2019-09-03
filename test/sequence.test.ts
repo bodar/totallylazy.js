@@ -34,15 +34,6 @@ describe("Sequence", () => {
         assertSync(sequence(range(1), flatMap(n => [n, n * 2]), take(6)), 1, 2, 2, 4, 3, 6);
     });
 
-    it("supports a sliding window on infinite sequence", function () {
-        assert.deepEqual(array(range(1), windowed(3), take(3)), [[1, 2, 3], [2, 3, 4], [3, 4, 5]]);
-    });
-
-    it.skip("supports a sliding window on infinite sequence with custom step function", function () {
-        assert.deepEqual(array(range(1), windowed(3, 2), take(3)), [[1, 2, 3], [3, 4, 5], [5, 6, 7]]);
-    });
-
-
     it("supports async operations", async () => {
         async function *asyncRange(count = 0): AsyncIterable<number> {
             while(true) {

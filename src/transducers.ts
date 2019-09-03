@@ -386,21 +386,34 @@ export class WindowedTransducer<A> implements Transducer<A, A[]> {
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A[]> {
+        let buffer: A[] = [];
+        let skip = 0;
+        for await (const current of iterable) {
+            if(skip-- > 0) continue;
+            buffer.push(current);
+            if (buffer.length === this.size) {
+                yield [...buffer];
+                buffer = buffer.slice(this.step);
+                if(this.step > this.size) skip = this.step - this.size;
+            }
+        }
     }
 
     * sync(iterable: Iterable<A>): Iterable<A[]> {
-        const buffer: A[] = [];
-        // let count = 0;
+        let buffer: A[] = [];
+        let skip = 0;
         for (const current of iterable) {
-            // if (++count <= this.step) {
-            //     count = 0;
-                if (buffer.length === this.size) buffer.shift();
-                buffer.push(current);
-                if (buffer.length === this.size) yield [...buffer];
-            // }
+            if(skip-- > 0) continue;
+            buffer.push(current);
+            if (buffer.length === this.size) {
+                yield [...buffer];
+                buffer = buffer.slice(this.step);
+                if(this.step > this.size) skip = this.step - this.size;
+            }
         }
     }
 }
+
 
 
 

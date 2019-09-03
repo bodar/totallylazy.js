@@ -15,12 +15,12 @@ import {
     take,
     takeWhile,
     zip,
-    dedupe
+    dedupe, windowed
 } from "../src/transducers";
-import {repeat} from "../src/sequence";
+import {range, repeat} from "../src/sequence";
 import {sum} from "../src/numbers";
 import {assertSync} from "./collections.test";
-import {ascending, by, Comparator, descending} from "../src/collections";
+import {array, ascending, by, Comparator, descending} from "../src/collections";
 import {characters} from "../src/characters";
 
 
@@ -93,6 +93,20 @@ describe("Transducer", () => {
         assertSync(sort().sync([3, 4, 8, 1, 2, 0, 3, 2, 9]), 0, 1, 2, 2, 3, 3, 4, 8, 9);
         assertSync(sort(ascending).sync([3, 4, 8, 1, 2, 0, 3, 2, 9]), 0, 1, 2, 2, 3, 3, 4, 8, 9);
         assertSync(sort(descending).sync([3, 4, 8, 1, 2, 0, 3, 2, 9]), 9, 8, 4, 3, 3, 2, 2, 1, 0);
+    });
+
+    it("supports a sliding window on infinite sequence", function () {
+        assert.deepEqual(array(range(1), windowed(3), take(3)), [[1, 2, 3], [2, 3, 4], [3, 4, 5]]);
+    });
+
+    it("supports a sliding window on infinite sequence with custom step function", function () {
+        assert.deepEqual(array(range(1), windowed(3, 1), take(3)), [[1, 2, 3], [2, 3, 4], [3, 4, 5]]);
+        assert.deepEqual(array(range(1), windowed(3, 2), take(3)), [[1, 2, 3], [3, 4, 5], [5, 6, 7]]);
+        assert.deepEqual(array(range(1), windowed(3, 3), take(3)), [[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+    });
+
+    it("supports a sliding window on infinite sequence with custom step function that is greater than the size", function () {
+        assert.deepEqual(array(range(1), windowed(3, 4), take(3)), [[1, 2, 3], [5, 6, 7], [9, 10, 11]]);
     });
 
     it("can sort by property of object", async () => {
