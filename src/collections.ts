@@ -16,6 +16,16 @@ export function descending<T>(a: T, b: T): number {
     return 0;
 }
 
+export function comparators<T>(...comparators: Comparator<T>[]): Comparator<T> {
+    return (a, b) => {
+        for (const comparator of comparators) {
+            const result = comparator(a, b);
+            if (result != 0) return result;
+        }
+        return 0;
+    }
+}
+
 export interface Key<A, K extends keyof A> extends Mapper<A, A[K]> {
     name: K
 }
@@ -84,11 +94,8 @@ export async function* toAsyncIterable<A>(promise: PromiseLike<A>): AsyncIterabl
     yield promise;
 }
 
-
 export function by<A, K extends keyof A>(key: K, comparator: Comparator<A[K]> = ascending): Comparator<A> {
     return (a: A, b: A) => {
         return comparator(a[key], b[key]);
     }
 }
-
-

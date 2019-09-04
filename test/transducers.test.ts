@@ -1,5 +1,6 @@
-import {assert} from 'chai';
+import { assert } from 'chai';
 import {
+    dedupe,
     drop,
     dropWhile,
     filter,
@@ -14,14 +15,14 @@ import {
     sort,
     take,
     takeWhile,
-    zip,
-    dedupe, windowed
+    windowed,
+    zip
 } from "../src/transducers";
-import {range, repeat} from "../src/sequence";
-import {sum} from "../src/numbers";
-import {assertSync} from "./collections.test";
-import {array, ascending, by, Comparator, descending} from "../src/collections";
-import {characters} from "../src/characters";
+import { range, repeat } from "../src/sequence";
+import { sum } from "../src/numbers";
+import { assertSync } from "./collections.test";
+import { array, ascending, by, Comparator, comparators, descending } from "../src/collections";
+import { characters } from "../src/characters";
 
 
 describe("Transducer", () => {
@@ -126,6 +127,20 @@ describe("Transducer", () => {
         assertSync(sort<Cat>(by('age')).sync(cats), freaky, fatty);
         assertSync(sort<Cat>(by('age', ascending)).sync(cats), freaky, fatty);
         assertSync(sort<Cat>(by('age', descending)).sync(cats), fatty, freaky);
+    });
+
+    it("can sort by two properties of the same object", async () => {
+        class Cat {
+            constructor(public name: string, public age: number) {
+            }
+        }
+
+        const freaky = new Cat('Freaky', 17);
+        const freakyClone = new Cat('Freaky', 16);
+        const fatty = new Cat('Fatty', 17);
+        const cats = [freaky, freakyClone, fatty];
+
+        assertSync(sort<Cat>(comparators(by('age'), by('name'))).sync(cats), freakyClone, fatty, freaky);
     });
 
     it("can dedupe consecutive duplicates ", async () => {
