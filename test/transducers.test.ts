@@ -15,8 +15,9 @@ import {
     sort,
     take,
     takeWhile,
+    zip,
     windowed,
-    zip
+    unique
 } from "../src/transducers";
 import { range, repeat } from "../src/sequence";
 import { sum } from "../src/numbers";
@@ -143,8 +144,12 @@ describe("Transducer", () => {
         assertSync(sort<Cat>(comparators(by('age'), by('name'))).sync(cats), freakyClone, fatty, freaky);
     });
 
-    it("can dedupe consecutive duplicates ", async () => {
+    it("can dedupe consecutive duplicates - works with infinite iterables", async () => {
         assertSync(dedupe<string>().sync(characters("Leeeeroy")), 'L','e','r','o','y');
+    });
+
+    it("can get unique elements - only works with finite iterables", async () => {
+        assertSync(unique<string>().sync(characters("Leeeereeeeoy")), 'L','e','r','o','y');
     });
 
     it("supports terminating early with take", async () => {

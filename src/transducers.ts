@@ -1,5 +1,6 @@
 import {array, ascending, Comparator, isAsyncIterable, isIterable, Mapper, Reducer} from "./collections";
 import {Predicate} from "./predicates";
+import {AVLTree} from "./avltree";
 
 export interface Transducer<A, B> {
     sync(iterable: Iterable<A>): Iterable<B>;
@@ -377,6 +378,35 @@ export function dedupe<A>(comparator: Comparator<A> = ascending): DedupTransduce
     return new DedupTransducer(comparator)
 }
 
+export class UniqueTransducer<A> implements Transducer<A, A> {
+    constructor(public comparator: Comparator<A>) {
+    }
+
+    async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
+        let values = AVLTree.empty<A, undefined>(this.comparator);
+        for await (const current of iterable) {
+            if (!values.contains(current)) {
+                values = values.insert(current, undefined);
+                yield current;
+            }
+        }
+    }
+
+    * sync(iterable: Iterable<A>): Iterable<A> {
+        let values = AVLTree.empty<A, undefined>(this.comparator);
+        for (const current of iterable) {
+            if (!values.contains(current)) {
+                values = values.insert(current, undefined);
+                yield current;
+            }
+        }
+    }
+}
+
+export function unique<A>(comparator: Comparator<A> = ascending): DedupTransducer<A> {
+    return new UniqueTransducer(comparator)
+}
+
 export function windowed<A>(size: number, step: number = 1): WindowedTransducer<A> {
     return new WindowedTransducer(size, step);
 }
@@ -389,7 +419,7 @@ export class WindowedTransducer<A> implements Transducer<A, A[]> {
         let buffer: A[] = [];
         let skip = 0;
         for await (const current of iterable) {
-            if(skip > 0) {
+            if (skip > 0) {
                 skip--;
                 continue;
             }
@@ -397,7 +427,7 @@ export class WindowedTransducer<A> implements Transducer<A, A[]> {
             if (buffer.length === this.size) {
                 yield [...buffer];
                 buffer = buffer.slice(this.step);
-                if(this.step > this.size) skip = this.step - this.size;
+                if (this.step > this.size) skip = this.step - this.size;
             }
         }
     }
@@ -406,7 +436,7 @@ export class WindowedTransducer<A> implements Transducer<A, A[]> {
         let buffer: A[] = [];
         let skip = 0;
         for (const current of iterable) {
-            if(skip > 0) {
+            if (skip > 0) {
                 skip--;
                 continue;
             }
@@ -414,7 +444,7 @@ export class WindowedTransducer<A> implements Transducer<A, A[]> {
             if (buffer.length === this.size) {
                 yield [...buffer];
                 buffer = buffer.slice(this.step);
-                if(this.step > this.size) skip = this.step - this.size;
+                if (this.step > this.size) skip = this.step - this.size;
             }
         }
     }
