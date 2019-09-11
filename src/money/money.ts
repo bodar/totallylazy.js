@@ -196,7 +196,7 @@ export class RegexBuilder {
         const [group = ''] = parts.filter(p => p.type === 'group').map(p => p.value);
         const noGroups = array(parts, filter(p => p.type !== 'group'), dedupe(by('type')));
 
-        return noGroups.map(part => {
+        return "(?:^|\\s)" + noGroups.map(part => {
             switch (part.type) {
                 case "currency":
                     return `(?<currency>${CurrencySymbols.get(locale).pattern})`;

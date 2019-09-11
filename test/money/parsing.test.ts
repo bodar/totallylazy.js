@@ -98,6 +98,7 @@ describe("Money", function () {
 
     it('only parses at the word boundary', () => {
         assert.deepEqual(parser('fr').parseAll('1© 2019 Wynn Resorts Holdings, LLC. '), []);
+        assert.deepEqual(parser('en').parseAll('Last 1 room remaining'), []);
     });
 
     it('can convert format string to parts', () => {
