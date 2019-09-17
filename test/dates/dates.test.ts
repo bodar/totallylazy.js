@@ -125,7 +125,6 @@ describe("dates", function () {
     });
 
     it("can use a simple format string", () => {
-        assertParse('en-US', "10/25/19", date(2019, 10, 25),"MM/dd/yy");
         assertParse('en-GB', "06 Jan 2019", date(2019, 1, 6),"dd MMM yyyy");
         assertParse('tr-TR', "06 Nis 2019", date(2019, 4, 6),"dd MMM yyyy");
         assertParse('hr-HR', "06 ožu 2019", date(2019, 3, 6),"dd MMM yyyy");
