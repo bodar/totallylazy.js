@@ -107,7 +107,7 @@ export class FormatToParts {
 }
 
 export function parse(value: string, locale?: string, options?: Options): Money {
-    return moneyFrom(parseToParts(value, locale), locale, options);
+    return moneyFrom(parseToParts(value, locale, options), locale, options);
 }
 
 
@@ -115,8 +115,8 @@ export function parser(locale?: string, options?: Options): Parser<Money> {
     return MoneyParser.create(locale, options);
 }
 
-export function parseToParts(value: string, locale?: string): NumberFormatPart[] {
-    return NumberFormatPartParser.create(locale).parse(value);
+export function parseToParts(value: string, locale?: string, options?: Options): NumberFormatPart[] {
+    return NumberFormatPartParser.create(locale, options).parse(value);
 }
 /**
  *  Given an example money like: 'USD 1,234.567' and a format 'CCC iii.fff'
@@ -267,7 +267,7 @@ export class PartsFromFormat {
 
     @lazy
     static get format(): PartsFromFormat {
-        const regex = NamedRegExp.create('(?:(?<integer-group>(?:i.*i|i))(?<decimal>[^f])(?<fraction>f+)|(?<currency>C+))');
+        const regex = NamedRegExp.create('(?:(?<integer-group>(?:i.*i|i))(?:(?<decimal>[^f])(?<fraction>f+))?|(?<currency>C+))');
         return new PartsFromFormat(regex, IntegerGroupParser.integerFormat);
     }
 

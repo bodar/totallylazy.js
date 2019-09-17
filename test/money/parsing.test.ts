@@ -87,6 +87,13 @@ describe("Money", function () {
 
         assert.deepEqual(parser('en', {format: 'iii.fff CCC'}).parse('80.40 GBP'), money('GBP', 80.40));
         assert.deepEqual(parser('en', {format: 'iii iii,ff CCC'}).parse('1' + String.fromCharCode(8239) + '025,00 EUR'), money('EUR', 1025.00));
+        assert.deepEqual(parser('en', {format: 'i,i CCC'}).parse('550,000 IDR'), money('IDR', 550000));
+    });
+
+    it('can accept format strings directly in the parse method', () => {
+        assert.deepEqual(parse('80.40 GBP', 'en', {format: 'iii.fff CCC'}), money('GBP', 80.40));
+        assert.deepEqual(parse('1' + String.fromCharCode(8239) + '025,00 EUR', 'en', {format: 'iii iii,ff CCC'}), money('EUR', 1025.00));
+        assert.deepEqual(parse('550,000 IDR', 'en', {format: 'i,i CCC'}), money('IDR', 550000));
     });
 
     it('treats all forms of space as the same including nbsp 160 & 8239', () => {
