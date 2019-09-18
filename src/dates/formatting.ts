@@ -21,14 +21,14 @@ import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
 export class Formatters {
     @cache
-    static create(locale: string = 'default', options: string | Options = defaultOptions): DateTimeFormat {
+    static create(locale: string , options: string | Options = defaultOptions): DateTimeFormat {
         if (typeof options === "string") return new SimpleFormat(locale, options);
         return new ImprovedDateTimeFormat(locale, options);
     }
 
     // Slightly older versions of Safari implement the method but return an empty array!
     @cache
-    static isNativelySupported(locale: string = 'default', options: Options = defaultOptions): boolean {
+    static isNativelySupported(locale: string , options: Options = defaultOptions): boolean {
         const formatter = this.dateTimeFormat(locale, options);
         return typeof formatter.formatToParts == 'function' && formatter.formatToParts(new Date()).length > 0;
     }
@@ -68,7 +68,7 @@ export class ImprovedDateTimeFormat implements DateTimeFormat {
     }
 }
 
-export function format(value: Date, locale?: string, options: Format | Options = defaultOptions): string {
+export function format(value: Date, locale: string, options: Format | Options = defaultOptions): string {
     return Formatters.create(locale, options).format(value);
 }
 
@@ -103,7 +103,7 @@ export class SimpleFormat implements DateTimeFormat {
 
 export const hasNativeFormatToParts = typeof Intl.DateTimeFormat.prototype.formatToParts == 'function';
 
-export function formatData(value: Date, locale: string = 'default', options: Options = defaultOptions, native = hasNativeFormatToParts): DateTimeFormatPart[] {
+export function formatData(value: Date, locale: string , options: Options = defaultOptions, native = hasNativeFormatToParts): DateTimeFormatPart[] {
     const formatter = Formatters.create(locale, options);
     if (native) return formatter.formatToParts(value);
     return FormatToParts.create(locale, options).formatToParts(value);

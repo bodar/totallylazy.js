@@ -6,7 +6,7 @@ import {Datum, DatumLookup} from "../parsing";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 
-export class NumericLookup extends DatumLookup<number>{
+export class NumericLookup extends DatumLookup<number> {
     constructor(data: Datum<number>[]) {
         super(data);
     }
@@ -28,19 +28,19 @@ export class Months extends NumericLookup {
 
     static cache: { [key: string]: Months } = {};
 
-    static get(locale: string = 'default', additionalData: Month[] = []): Months {
+    static get(locale: string, additionalData: Month[] = []): Months {
         return Months.cache[locale] = Months.cache[locale] || Months.create(locale, additionalData);
     }
 
-    static set(locale: string = 'default', months: Months): Months {
+    static set(locale: string, months: Months): Months {
         return Months.cache[locale] = months;
     }
 
-    static create(locale: string = 'default', additionalData: Month[] = []): Months {
+    static create(locale: string, additionalData: Month[] = []): Months {
         return new Months([...Months.generateData(locale), ...additionalData]);
     }
 
-    static generateData(locale: string = 'default'): Month[] {
+    static generateData(locale: string): Month[] {
         return flatten(Months.formats.map(f => Months.dataFor(locale, f)));
     }
 
@@ -60,7 +60,7 @@ function range(start: number, end: number): number[] {
 
 const months_cache: { [key: string]: string[] } = {};
 
-export function months(locale: string = 'default', monthFormat: MonthFormat | Options = 'long', native = hasNativeFormatToParts): string[] {
+export function months(locale: string, monthFormat: MonthFormat | Options = 'long', native = hasNativeFormatToParts): string[] {
     const key = JSON.stringify({locale, monthFormat, native});
     return months_cache[key] = months_cache[key] || (() => {
         const options: Options = {...typeof monthFormat == 'string' ? {month: monthFormat} : monthFormat};
@@ -84,19 +84,19 @@ export class Weekdays extends NumericLookup {
     ];
     static cache: { [key: string]: Weekdays } = {};
 
-    static get(locale: string = 'default', additionalData: Weekday[] = []): Weekdays {
+    static get(locale: string, additionalData: Weekday[] = []): Weekdays {
         return Weekdays.cache[locale] = Weekdays.cache[locale] || Weekdays.create(locale, additionalData);
     }
 
-    static set(locale: string = 'default', weekdays: Weekdays): Weekdays {
+    static set(locale: string, weekdays: Weekdays): Weekdays {
         return Weekdays.cache[locale] = weekdays;
     }
 
-    static create(locale: string = 'default', additionalData: Weekday[] = []): Weekdays {
+    static create(locale: string, additionalData: Weekday[] = []): Weekdays {
         return new Weekdays([...Weekdays.generateData(locale), ...additionalData]);
     }
 
-    static generateData(locale: string = 'default'): Weekday[] {
+    static generateData(locale: string): Weekday[] {
         return flatten(Weekdays.formats.map(f => Weekdays.dataFor(locale, f)));
     }
 
@@ -107,7 +107,7 @@ export class Weekdays extends NumericLookup {
 
 const weekdays_cache: { [key: string]: string[] } = {};
 
-export function weekdays(locale: string = 'default', weekdayFormat: WeekdayFormat | Options = 'long', native = hasNativeFormatToParts): string[] {
+export function weekdays(locale: string, weekdayFormat: WeekdayFormat | Options = 'long', native = hasNativeFormatToParts): string[] {
     const key = JSON.stringify({locale, weekdayFormat, native});
     return weekdays_cache[key] = weekdays_cache[key] || (() => {
         const options: Options = {...typeof weekdayFormat == 'string' ? {weekday: weekdayFormat} : weekdayFormat};

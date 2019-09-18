@@ -38,7 +38,7 @@ export function money(currency: string, amount: number): Money {
     return {amount, currency};
 }
 
-export function moneyFrom(parts: NumberFormatPart[], locale?: string, options?: Options): Money {
+export function moneyFrom(parts: NumberFormatPart[], locale: string, options?: Options): Money {
     const [currency] = parts.filter(p => p.type === 'currency');
     if (!currency) throw new Error("No currency found");
     const filtered = parts.filter(p => p.type === 'integer' || p.type === 'decimal' || p.type === 'fraction');
@@ -55,7 +55,7 @@ export function decimalsFor(code: keyof Currencies) {
 
 export class Formatter {
     @cache
-    static create(currency: string, locale?: string, currencyDisplay: CurrencyDisplay = 'code') {
+    static create(currency: string, locale: string, currencyDisplay: CurrencyDisplay = 'code') {
         return new Intl.NumberFormat(locale, {
             currencyDisplay,
             currency,
@@ -68,16 +68,16 @@ export class Formatter {
 
 export const hasNativeFormatToParts = typeof Intl.NumberFormat.prototype.formatToParts == 'function';
 
-export function partsFrom(money: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code', hasNative = hasNativeFormatToParts): NumberFormatPart[] {
+export function partsFrom(money: Money, locale: string, currencyDisplay: CurrencyDisplay = 'code', hasNative = hasNativeFormatToParts): NumberFormatPart[] {
     const formatter = Formatter.create(money.currency, locale, currencyDisplay);
     return hasNative ? formatter.formatToParts(money.amount) : formatToPartsPonyfill(money, locale, currencyDisplay);
 }
 
-export function format(money: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): string {
+export function format(money: Money, locale: string, currencyDisplay: CurrencyDisplay = 'code'): string {
     return Formatter.create(money.currency, locale, currencyDisplay).format(money.amount);
 }
 
-export function formatToPartsPonyfill(actual: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): NumberFormatPart[] {
+export function formatToPartsPonyfill(actual: Money, locale: string, currencyDisplay: CurrencyDisplay = 'code'): NumberFormatPart[] {
     const currency = actual.currency;
     const amount = actual.amount;
     return FormatToParts.create(currency, locale, currencyDisplay).format(amount);
@@ -89,11 +89,11 @@ export class FormatToParts {
     constructor(private currency: string,
                 private currencyDisplay: CurrencyDisplay,
                 private parser: Parser<NumberFormatPart[]>,
-                private locale?: string) {
+                private locale: string) {
     }
 
     @cache
-    static create(currency: string, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): FormatToParts {
+    static create(currency: string, locale: string, currencyDisplay: CurrencyDisplay = 'code'): FormatToParts {
         const exampleFormatted = Formatter.create(currency, locale, currencyDisplay).format(exampleMoney.amount);
         const exampleParts = PartsFromFormat.examplePattern(locale).parse(exampleFormatted);
         const genericPattern = RegexBuilder.buildFrom(exampleParts, locale);
@@ -108,16 +108,16 @@ export class FormatToParts {
 
 }
 
-export function parse(value: string, locale?: string, options?: Options): Money {
+export function parse(value: string, locale: string, options?: Options): Money {
     return moneyFrom(parseToParts(value, locale, options), locale, options);
 }
 
 
-export function parser(locale?: string, options?: Options): Parser<Money> {
+export function parser(locale: string, options?: Options): Parser<Money> {
     return MoneyParser.create(locale, options);
 }
 
-export function parseToParts(value: string, locale?: string, options?: Options): NumberFormatPart[] {
+export function parseToParts(value: string, locale: string, options?: Options): NumberFormatPart[] {
     return NumberFormatPartParser.create(locale, options).parse(value);
 }
 /**
@@ -144,19 +144,19 @@ export type CurrencySymbolDatum = Datum<string>;
 export class CurrencySymbols extends DatumLookup<string> {
     static cache: { [key: string]: CurrencySymbols } = {};
 
-    static get(locale: string = 'default', additionalData: CurrencySymbolDatum[] = []): CurrencySymbols {
+    static get(locale: string , additionalData: CurrencySymbolDatum[] = []): CurrencySymbols {
         return CurrencySymbols.cache[locale] = CurrencySymbols.cache[locale] || CurrencySymbols.create(locale, additionalData);
     }
 
-    static set(locale: string = 'default', months: CurrencySymbols): CurrencySymbols {
+    static set(locale: string , months: CurrencySymbols): CurrencySymbols {
         return CurrencySymbols.cache[locale] = months;
     }
 
-    static create(locale: string = 'default', additionalData: CurrencySymbolDatum[] = []): CurrencySymbols {
+    static create(locale: string , additionalData: CurrencySymbolDatum[] = []): CurrencySymbols {
         return new CurrencySymbols([...CurrencySymbols.generateData(locale), ...additionalData]);
     }
 
-    static generateData(locale: string = 'default'): CurrencySymbolDatum[] {
+    static generateData(locale: string ): CurrencySymbolDatum[] {
         return flatten(Object.keys(currencies).map(c => CurrencySymbols.dataFor(locale, c, currencies[c])));
     }
 
@@ -195,15 +195,15 @@ class Spaces {
 }
 
 export class RegexBuilder {
-    static buildFromOptions(locale?: string, options?: Options): string {
-        return options && options.format ? this.buildFrom(PartsFromFormat.format.parse(options.format)) : this.buildPattern(locale);
+    static buildFromOptions(locale: string, options?: Options): string {
+        return options && options.format ? this.buildFrom(PartsFromFormat.format.parse(options.format), locale) : this.buildPattern(locale);
     }
 
-    static buildPattern(locale?: string): string {
+    static buildPattern(locale: string): string {
         return this.buildFrom(partsFrom(exampleMoney, locale), locale);
     }
 
-    static buildFrom(parts: NumberFormatPart[], locale?: string): string {
+    static buildFrom(parts: NumberFormatPart[], locale: string): string {
         const [group = ''] = parts.filter(p => p.type === 'group').map(p => p.value);
         const noGroups = array(parts, filter(p => p.type !== 'group'), dedupe(by('type')));
 
@@ -225,15 +225,15 @@ export class RegexBuilder {
 }
 
 export class MoneyParser {
-    static create(locale?: string, options?: Options): Parser<Money> {
+    static create(locale: string, options?: Options): Parser<Money> {
         return mappingParser(NumberFormatPartParser.create(locale, options), p => moneyFrom(p, locale, options));
     }
 }
 
 export class NumberFormatPartParser {
-    static create(locale?: string, pattern?: string): Parser<NumberFormatPart[]>;
-    static create(locale?: string, options?: Options): Parser<NumberFormatPart[]>
-    @cache static create(locale?: string, patternOrOption?: string | Options): Parser<NumberFormatPart[]> {
+    static create(locale: string, pattern?: string): Parser<NumberFormatPart[]>;
+    static create(locale: string, options?: Options): Parser<NumberFormatPart[]>
+    @cache static create(locale: string, patternOrOption?: string | Options): Parser<NumberFormatPart[]> {
         const pattern = typeof patternOrOption  === "string" ? patternOrOption : RegexBuilder.buildFromOptions(locale, patternOrOption);
         return mappingParser(namedRegexParser(NamedRegExp.create(pattern)), this.convert);
     }
@@ -283,7 +283,7 @@ export class PartsFromFormat {
     }
 
     @cache
-    static examplePattern(locale?: string): PartsFromFormat {
+    static examplePattern(locale: string): PartsFromFormat {
         const regex = NamedRegExp.create(`(?:(?<integer-group>1.*2)(?:(?<decimal>.)(?<fraction>3+))?|(?<currency>${CurrencySymbols.get(locale).pattern}))`);
         return new PartsFromFormat(regex, IntegerGroupParser.digits);
     }

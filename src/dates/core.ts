@@ -1,8 +1,8 @@
 declare global {
     interface String {
-        toLocaleLowerCase(locale?: string): string;
+        toLocaleLowerCase(locale: string): string;
 
-        toLocaleUpperCase(locale?: string): string;
+        toLocaleUpperCase(locale: string): string;
     }
 }
 

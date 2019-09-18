@@ -32,7 +32,7 @@ describe("Money", function () {
     });
 
     it('formatToPartsPonyfill', function () {
-        assert.deepEqual(formatToPartsPonyfill(money('GBP', 123456.78)), [
+        assert.deepEqual(formatToPartsPonyfill(money('GBP', 123456.78), 'en'), [
             {type: 'currency', value: 'GBP'},
             {type: "literal", value: " "},
             {type: 'integer', value: '123'},
@@ -68,11 +68,11 @@ describe("Money", function () {
             {type: 'decimal', value: '.'},
             {type: 'fraction', value: '89'}];
 
-        assert.deepEqual(moneyFrom(isoParts), money('EUR', 1234567.89));
+        assert.deepEqual(moneyFrom(isoParts, 'en'), money('EUR', 1234567.89));
     });
 
     it('can convert money to parts', () => {
-        assert.deepEqual(partsFrom(money('EUR', 1234567.89)), [{type: 'currency', value: 'EUR'},
+        assert.deepEqual(partsFrom(money('EUR', 1234567.89), 'en'), [{type: 'currency', value: 'EUR'},
             {type: 'literal', value: ' '},
             {type: 'integer', value: '1'},
             {type: 'group', value: ','},
