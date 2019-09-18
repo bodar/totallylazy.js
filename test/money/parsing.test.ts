@@ -6,7 +6,7 @@ import {
     moneyFrom,
     parse,
     parser,
-    partsFrom, PartsFromFormat,
+    partsFrom, PartsFromFormat, symbolFor,
 } from "../../src/money/money";
 import {locales} from "../dates/dates.test";
 import {currencies} from "../../src/money/currencies";
@@ -20,6 +20,28 @@ const amounts = [1234567.89, 156, 156.89, .1234, 0];
 
 describe("Money", function () {
     this.timeout(10000);
+
+    it('symbolFor works when no native method is available', () => {
+        for (const locale of numberLocales) {
+            for (const code of Object.keys(currencies)) {
+                const nonNative = symbolFor(locale, code, false);
+                const native = symbolFor(locale, code, true);
+                assert.equal(nonNative, native);
+            }
+        }
+    });
+
+    it('formatToPartsPonyfill', function () {
+        assert.deepEqual(formatToPartsPonyfill(money('GBP', 123456.78)), [
+            {type: 'currency', value: 'GBP'},
+            {type: "literal", value: " "},
+            {type: 'integer', value: '123'},
+            {type: 'group', value: ','},
+            {type: 'integer', value: '456'},
+            {type: 'decimal', value: '.'},
+            {type: 'fraction', value: '78'},
+        ]);
+    });
 
     it('can parse loads of money!', () => {
         for (const locale of numberLocales) {

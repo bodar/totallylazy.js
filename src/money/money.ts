@@ -1,4 +1,4 @@
-import {isNamedMatch, MatchOrNot, NamedMatch, NamedRegExp} from "../characters";
+import {different, isNamedMatch, MatchOrNot, NamedMatch, NamedRegExp} from "../characters";
 import {dedupe, filter, flatMap, map} from "../transducers";
 import {array, by} from "../collections";
 import {flatten} from "../arrays";
@@ -66,13 +66,15 @@ export class Formatter {
     }
 }
 
-export function partsFrom(money: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): NumberFormatPart[] {
+export const hasNativeFormatToParts = typeof Intl.NumberFormat.prototype.formatToParts == 'function';
+
+export function partsFrom(money: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code', hasNative = hasNativeFormatToParts): NumberFormatPart[] {
     const formatter = Formatter.create(money.currency, locale, currencyDisplay);
-    return typeof formatter.formatToParts === 'function' ? formatter.formatToParts(money.amount) : formatToPartsPonyfill(money, locale, currencyDisplay);
+    return hasNative ? formatter.formatToParts(money.amount) : formatToPartsPonyfill(money, locale, currencyDisplay);
 }
 
 export function format(money: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): string {
-    return partsFrom(money, locale, currencyDisplay).map(p => p.value).join('');
+    return Formatter.create(money.currency, locale, currencyDisplay).format(money.amount);
 }
 
 export function formatToPartsPonyfill(actual: Money, locale?: string, currencyDisplay: CurrencyDisplay = 'code'): NumberFormatPart[] {
@@ -99,7 +101,7 @@ export class FormatToParts {
         return new FormatToParts(currency, currencyDisplay, genericPartsParser, locale);
     }
 
-    format(amount: number) {
+    format(amount: number): Intl.NumberFormatPart[] {
         const formatter = Formatter.create(this.currency, this.locale, this.currencyDisplay);
         return this.parser.parse(formatter.format(amount));
     }
@@ -165,18 +167,27 @@ export class CurrencySymbols extends DatumLookup<string> {
     }
 }
 
-export function symbolFor(locale: string, isoCurrency: string): string {
-    const parts = partsFrom(money(isoCurrency, 0), locale, "symbol");
-    const [currency] = parts.filter(p => p.type === 'currency');
-    if (!currency) throw new Error("No currency found");
-    return currency.value;
+const gbpSymbol = /[£GBP]+/;
+
+export function symbolFor(locale: string, isoCurrency: string, hasNative = hasNativeFormatToParts): string {
+    if(hasNative) {
+        const parts = partsFrom(money(isoCurrency, 0), locale, "symbol");
+        const [currency] = parts.filter(p => p.type === 'currency');
+        if (!currency) throw new Error("No currency found");
+        return currency.value;
+    } else {
+        const example = Formatter.create('GBP', locale, "symbol").format(1).replace(gbpSymbol, '@@@');
+        const other = Formatter.create(isoCurrency, locale, "symbol").format(1);
+        const [,result] = different([example, other]);
+        if(!result) return '£';
+        return result.replace(Spaces.pattern, '');
+    }
 }
-
-
 
 class Spaces {
     static codes:string[] = [32, 160, 8239].map(code => String.fromCharCode(code));
     static spaces = Spaces.codes.join('');
+    static pattern = new RegExp(`[${Spaces.spaces}]`, 'g');
 
     static handle(value: string): string {
         return Spaces.codes.indexOf(value) != -1 ? Spaces.spaces : value;
