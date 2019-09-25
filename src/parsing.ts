@@ -26,6 +26,7 @@ export function namedRegexParser(regex: NamedRegExp) {
 export class PreProcessor<T> implements Parser<T> {
     constructor(private delegate: Parser<T>, private mapper: Mapper<string, string>) {
     }
+
     parse(value: string): T {
         return this.delegate.parse(this.mapper(value));
     }
@@ -58,7 +59,7 @@ export class MappingParser<A, B> implements Parser<B> {
     }
 }
 
-export function mappingParser<A,B>(parser: Parser<A>, mapper: Mapper<A, B>) {
+export function mappingParser<A, B>(parser: Parser<A>, mapper: Mapper<A, B>) {
     return new MappingParser(parser, mapper);
 }
 
@@ -112,16 +113,16 @@ export function uniqueMatch<V>(matches: Datum<V>[]): V | undefined {
     return data[0];
 }
 
-export function prefer<V>(...values:V[]): MatchStrategy<V> {
+export function prefer<V>(...values: V[]): MatchStrategy<V> {
     return (matches: Datum<V>[]) => {
         const [match] = matches.filter(m => values.indexOf(m.value) !== -1);
-        if(typeof match === "undefined") return uniqueMatch(matches);
+        if (typeof match === "undefined") return uniqueMatch(matches);
         return match.value;
     };
 }
 
 
-export class CompositeParser<T> implements Parser<T> {
+export class OrParser<T> implements Parser<T> {
     constructor(private readonly parsers: Parser<T>[]) {
     }
 
@@ -137,10 +138,37 @@ export class CompositeParser<T> implements Parser<T> {
     }
 
     parseAll(value: string): T[] {
+        for (const parser of this.parsers) {
+            const result = parser.parseAll(value);
+            if (result.length > 0) return result;
+        }
+        return [];
+    }
+}
+
+export class AllParser<T> implements Parser<T> {
+    constructor(private readonly parsers: Parser<T>[]) {
+    }
+
+    parse(value: string): T {
+        throw new Error("Not supported, please call AllParser.parseAll");
+    }
+
+    parseAll(value: string): T[] {
         return flatten(this.parsers.map(p => p.parseAll(value)));
     }
 }
 
+export class Parsers {
+    static or<T>(...parsers: Parser<T>[]): Parser<T> {
+        return new OrParser(parsers);
+    }
+
+    static all<T>(...parsers: Parser<T>[]): Parser<T> {
+        return new AllParser(parsers);
+    }
+}
+
 export function parsers<T>(...parsers: Parser<T>[]): Parser<T> {
-    return new CompositeParser(parsers);
+    return Parsers.or(...parsers);
 }

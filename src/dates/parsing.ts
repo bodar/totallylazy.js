@@ -2,7 +2,7 @@ import {cache, lazy} from "../lazy";
 import {unique} from "../arrays";
 import {characters, isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
 import {date, defaultOptions, formatData, hasNativeFormatToParts, Months, Options, Weekdays,} from "./index";
-import {mappingParser, namedRegexParser, Parser, parsers, preProcess} from "../parsing";
+import {mappingParser, namedRegexParser, Parser, Parsers, parsers, preProcess} from "../parsing";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import {array} from "../collections";
@@ -188,7 +188,7 @@ export function simpleParser(locale: string, format: Format, native = hasNativeF
 
 export function localeParser(locale: string, options?: Format | Options, native = hasNativeFormatToParts): Parser<Date> {
     if (!options) {
-        return parsers(...defaultParserOptions.map(o => localeParser(locale, o, native)))
+        return Parsers.or(...defaultParserOptions.map(o => localeParser(locale, o, native)));
     }
     return DateParser.create(locale, options, native);
 }
