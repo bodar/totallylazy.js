@@ -146,6 +146,14 @@ export class OrParser<T> implements Parser<T> {
     }
 }
 
+export function or<T>(...parsers: Parser<T>[]): Parser<T> {
+    return new OrParser(parsers);
+}
+
+export function parsers<T>(...parsers: Parser<T>[]): Parser<T> {
+    return or(...parsers);
+}
+
 export class AllParser<T> implements Parser<T> {
     constructor(private readonly parsers: Parser<T>[]) {
     }
@@ -159,16 +167,7 @@ export class AllParser<T> implements Parser<T> {
     }
 }
 
-export class Parsers {
-    static or<T>(...parsers: Parser<T>[]): Parser<T> {
-        return new OrParser(parsers);
-    }
-
-    static all<T>(...parsers: Parser<T>[]): Parser<T> {
-        return new AllParser(parsers);
-    }
+export function all<T>(...parsers: Parser<T>[]): Parser<T> {
+    return new AllParser(parsers);
 }
 
-export function parsers<T>(...parsers: Parser<T>[]): Parser<T> {
-    return Parsers.or(...parsers);
-}
