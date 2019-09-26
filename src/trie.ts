@@ -55,7 +55,7 @@ export class Trie<K, V> {
 }
 
 
-export const DEFAULT_COMPARATOR = new Intl.Collator(undefined, {usage: 'search', sensitivity: 'base'}).compare;
+export const DEFAULT_COMPARATOR = new Intl.Collator(undefined, {usage: 'sort', sensitivity: 'base'}).compare;
 
 export class PrefixTree<V = string> {
     constructor(private converter = characters,
