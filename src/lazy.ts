@@ -20,10 +20,10 @@ export function cache(target: any, name: string, descriptor: PropertyDescriptor)
 
     return Object.defineProperty(target, name, {
         ...descriptor,
-        value: (...args:any[]) => {
+        value: function(...args:any[]) {
             const key = JSON.stringify(args);
             // @ts-ignore
-            return cache[key] = cache[key] || descriptor.value.call(target, ...args);
+            return cache[key] = cache[key] || descriptor.value.call(this, ...args);
         }
     });
 }

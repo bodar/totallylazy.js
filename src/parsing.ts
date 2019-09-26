@@ -3,6 +3,7 @@ import {PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
 import {array, Mapper} from "./collections";
 import {flatMap, map} from "./transducers";
+import { cache } from "./lazy";
 
 export class NamedRegexParser implements Parser<NamedMatch[]> {
     constructor(protected regex: NamedRegExp) {
@@ -171,3 +172,18 @@ export function all<T>(...parsers: Parser<T>[]): Parser<T> {
     return new AllParser(parsers);
 }
 
+export class CachingParser<T> implements Parser<T>{
+    constructor(private parser: Parser<T>){}
+
+    @cache parse(value: string): T {
+        return this.parser.parse(value);
+    }
+
+    @cache parseAll(value: string): T[] {
+        return this.parser.parseAll(value);
+    }
+}
+
+export function caching<T>(parser: Parser<T>) {
+    return new CachingParser(parser);
+}
