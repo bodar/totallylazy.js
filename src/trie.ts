@@ -54,8 +54,11 @@ export class Trie<K, V> {
     }
 }
 
+const IntlComparator = new Intl.Collator(undefined, {usage: 'sort', sensitivity: 'base'}).compare;
+// Direct comparison about 15% quicker than Intl, so use it if we can
+const shortCircuitingComparator = (a: string, b: string) => a === b ? 0 : IntlComparator(a, b);
 
-export const DEFAULT_COMPARATOR = new Intl.Collator(undefined, {usage: 'sort', sensitivity: 'base'}).compare;
+export const DEFAULT_COMPARATOR = shortCircuitingComparator;
 
 export class PrefixTree<V = string> {
     constructor(private converter = characters,
