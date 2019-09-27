@@ -7,7 +7,7 @@ import {
     parse,
     parser,
     partsFrom, PartsFromFormat, symbolFor,
-} from "../../src/money/money";
+} from "../../src/money";
 import {locales} from "../dates/dates.test";
 import {currencies} from "../../src/money/currencies";
 import {runningInNode} from "../../src/node";
@@ -131,14 +131,6 @@ describe("Money", function () {
     });
 
     it('does not match any additional money when they adjoin', function () {
-        assert.deepEqual(parser('en', {format: 'i,i.f C'}).parseAll('You save 11.40 EUR    102.60 EUR'),
-            [money('EUR', 11.4), money('EUR', 102.6)]);
-
-        assert.deepEqual(parser('en', {format: 'C i,i.f'}).parseAll('You save 11.40 EUR    102.60 EUR'),
-            []);
-    });
-
-    it('understands the correct decimal places per currency', function () {
         assert.deepEqual(parser('en', {format: 'i,i.f C'}).parseAll('You save 11.40 EUR    102.60 EUR'),
             [money('EUR', 11.4), money('EUR', 102.6)]);
 

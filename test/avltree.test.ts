@@ -38,6 +38,12 @@ describe("AVLTree", function () {
         assert.isFalse(t.delete(keyA).tree.delete(keyB).tree.contains('a'));
     });
 
+    it('supports first and last', function () {
+        const tree = AVLTree.empty<number, number>().insert(3, 3).insert(4, 4).insert(5, 5);
+        assert.equal(tree.first(), 3);
+        assert.equal(tree.last(), 5);
+    });
+
     it('balances right right case', function () {
         const tree = AVLTree.empty<number, null>();
         assert.equal(tree.insert(3, null).insert(4, null).insert(5, null).toString(), "(( 3=null ) 4=null ( 5=null ))");

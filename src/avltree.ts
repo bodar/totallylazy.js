@@ -29,6 +29,10 @@ export abstract class AVLTree<K, V> {
 
     abstract delete(key: K): Result<K, V>;
 
+    abstract first(): V | undefined;
+
+    abstract last(): V | undefined;
+
     abstract removeFirst(): Result<K, V>;
 
     abstract removeLast(): Result<K, V>;
@@ -70,6 +74,14 @@ class Empty<K, V> extends AVLTree<K, V> {
 
     delete(key: K): Result<K, V> {
         return {tree: this};
+    }
+
+    first(): undefined {
+        return undefined;
+    }
+
+    last(): undefined {
+        return undefined;
     }
 
     removeFirst(): Result<K, V> {
@@ -155,6 +167,16 @@ class Node<K, V> extends AVLTree<K, V> {
             key: deletedKey,
             value: deletedValue
         };
+    }
+
+    first(): V | undefined {
+        if (this.left.isEmpty) return this.value;
+        return this.left.first();
+    }
+
+    last(): V | undefined {
+        if (this.right.isEmpty) return this.value;
+        return this.right.last();
     }
 
     removeFirst(): Result<K, V> {
