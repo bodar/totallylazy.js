@@ -34,11 +34,7 @@ export function key<A, K extends keyof A>(name: K): Key<A, K> {
     return Object.assign((a: A) => a[name], {name})
 }
 
-export interface Reducer<A, B> {
-    call(accumulator: B, instance: A): B;
-
-    identity(): B;
-}
+export type Reducer<A, B> = (accumulator: B, value: A) => B;
 
 export function isIterable(instance: any): instance is Iterable<any> {
     return typeof instance == 'object' && Symbol.iterator in instance;

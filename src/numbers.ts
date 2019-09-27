@@ -18,14 +18,4 @@ export function subtract(a: number, b?: number) {
     else return a - b;
 }
 
-export class Sum implements Reducer<number, number> {
-    call(a: number, b: number): number {
-        return a + b;
-    }
-
-    identity(): number {
-        return 0;
-    }
-}
-
-export const sum = new Sum();
+export const sum = (a: number, b: number) => a + b;

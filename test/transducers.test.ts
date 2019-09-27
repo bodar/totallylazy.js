@@ -6,7 +6,6 @@ import {
     filter,
     find,
     first,
-    intoArray,
     last,
     map,
     reduce,
@@ -69,15 +68,11 @@ describe("Transducer", () => {
     });
 
     it("can scan", () => {
-        assertSync(scan(sum).sync([0, 2, 4]), 0, 2, 6);
+        assertSync(scan(sum, 0).sync([0, 2, 4]), 0, 2, 6);
     });
 
     it("can reduce", () => {
-        assertSync(reduce(sum).sync([0, 2, 4]), 6);
-    });
-
-    it("can reduce to array", () => {
-        assertSync(reduce(intoArray<number>()).sync([0, 2, 4]), [0, 2, 4]);
+        assertSync(reduce(sum, 0).sync([0, 2, 4]), 6);
     });
 
     it("can take", () => {

@@ -190,49 +190,31 @@ export function* decompose(transducer: Transducer<any, any>): Iterable<Transduce
     }
 }
 
-export class IntoArray<A> implements Reducer<A, A[]> {
-    constructor(public seed: A[] = []) {
-    }
-
-    call(accumulator: A[], instance: A): A[] {
-        accumulator.push(instance);
-        return accumulator;
-    }
-
-    identity(): A[] {
-        return this.seed;
-    }
-}
-
-export function intoArray<A>(seed?: A[]) {
-    return new IntoArray<A>(seed);
-}
-
 export class ScanTransducer<A, B> implements Transducer<A, B> {
-    constructor(public reducer: Reducer<A, B>) {
+    constructor(public reducer: Reducer<A, B>, public seed:B) {
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
-        let accumulator = this.reducer.identity();
+        let accumulator = this.seed;
         for await (const a of iterable) {
-            yield accumulator = this.reducer.call(accumulator, a);
+            yield accumulator = this.reducer(accumulator, a);
         }
     }
 
     * sync(iterable: Iterable<A>): Iterable<B> {
-        let accumulator = this.reducer.identity();
+        let accumulator = this.seed;
         for (const a of iterable) {
-            yield accumulator = this.reducer.call(accumulator, a);
+            yield accumulator = this.reducer(accumulator, a);
         }
     }
 }
 
-export function scan<A, B>(reducer: Reducer<A, B>): ScanTransducer<A, B> {
-    return new ScanTransducer(reducer);
+export function scan<A, B>(reducer: Reducer<A, B>, seed:B): ScanTransducer<A, B> {
+    return new ScanTransducer(reducer, seed);
 }
 
-export function reduce<A, B>(reducer: Reducer<A, B>): Transducer<A, B> {
-    return compose(scan(reducer), last());
+export function reduce<A, B>(reducer: Reducer<A, B>, seed:B): Transducer<A, B> {
+    return compose(scan(reducer, seed), last());
 }
 
 export class TakeTransducer<A> implements Transducer<A, A> {
