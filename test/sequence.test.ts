@@ -1,8 +1,8 @@
 import {range, sequence} from "../src/sequence";
 import {assertAsync, assertSync} from "./collections.test";
-import {CompositeTransducer, drop, find, flatMap, FlatMapTransducer, take, windowed} from "../src/transducers";
+import {CompositeTransducer, filter, find, first, flatMap, FlatMapTransducer, last, take} from "../src/transducers";
 import {assert} from 'chai';
-import {array} from "../src/collections";
+import {single} from "../src/collections";
 
 describe("Sequence", () => {
     it("supports ranges", () => {
@@ -32,6 +32,11 @@ describe("Sequence", () => {
 
     it("operations terminate early", () => {
         assertSync(sequence(range(1), flatMap(n => [n, n * 2]), take(6)), 1, 2, 2, 4, 3, 6);
+    });
+
+    it("can get a single value out", () => {
+        assert.equal(single(range(1), filter(n => n % 2 == 0), first()), 2);
+        assert.equal(single(range(1, 10), filter(n => n % 2 == 0), last()), 10);
     });
 
     it("supports async operations", async () => {
