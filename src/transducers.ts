@@ -196,6 +196,7 @@ export class ScanTransducer<A, B> implements Transducer<A, B> {
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<B> {
         let accumulator = this.seed;
+        yield accumulator;
         for await (const a of iterable) {
             yield accumulator = this.reducer(accumulator, a);
         }
@@ -203,6 +204,7 @@ export class ScanTransducer<A, B> implements Transducer<A, B> {
 
     * sync(iterable: Iterable<A>): Iterable<B> {
         let accumulator = this.seed;
+        yield accumulator;
         for (const a of iterable) {
             yield accumulator = this.reducer(accumulator, a);
         }

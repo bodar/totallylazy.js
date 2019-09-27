@@ -1,8 +1,19 @@
 import {range, sequence} from "../src/sequence";
 import {assertAsync, assertSync} from "./collections.test";
-import {CompositeTransducer, filter, find, first, flatMap, FlatMapTransducer, last, take} from "../src/transducers";
+import {
+    CompositeTransducer,
+    filter,
+    find,
+    first,
+    flatMap,
+    FlatMapTransducer,
+    last,
+    reduce,
+    take
+} from "../src/transducers";
 import {assert} from 'chai';
 import {single} from "../src/collections";
+import {sum} from "../src/numbers";
 
 describe("Sequence", () => {
     it("supports ranges", () => {
@@ -37,6 +48,7 @@ describe("Sequence", () => {
     it("can get a single value out", () => {
         assert.equal(single(range(1), filter(n => n % 2 == 0), first()), 2);
         assert.equal(single(range(1, 10), filter(n => n % 2 == 0), last()), 10);
+        assert.equal(single([], reduce(sum, 0)), 0);
     });
 
     it("supports async operations", async () => {

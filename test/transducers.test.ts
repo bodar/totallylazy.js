@@ -68,11 +68,15 @@ describe("Transducer", () => {
     });
 
     it("can scan", () => {
-        assertSync(scan(sum, 0).sync([0, 2, 4]), 0, 2, 6);
+        assertSync(scan(sum, 0).sync([]), 0);
+        assertSync(scan(sum, 0).sync([2]), 0, 2);
+        assertSync(scan(sum, 0).sync([2, 4, 6]), 0, 2, 6, 12);
     });
 
     it("can reduce", () => {
-        assertSync(reduce(sum, 0).sync([0, 2, 4]), 6);
+        assertSync(reduce(sum, 0).sync([]), 0);
+        assertSync(reduce(sum, 0).sync([2]), 2);
+        assertSync(reduce(sum, 0).sync([2, 4, 6]), 12);
     });
 
     it("can take", () => {
