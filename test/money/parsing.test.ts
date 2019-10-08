@@ -91,6 +91,13 @@ describe("Money", function () {
         assert.deepEqual(parse('315 $CA', 'fr-FR'), money('CAD', 315));
     });
 
+    it('currency symbol can be at back or front', () => {
+        assert.deepEqual(parse('€1.234,56', 'de-DE'), money('EUR', 1234.56));
+        assert.deepEqual(parse('1.234,56 €', 'de-DE'), money('EUR', 1234.56));
+        assert.deepEqual(parse('EUR 1.234,56', 'de-DE'), money('EUR', 1234.56));
+        assert.deepEqual(parse('1.234,56 EUR', 'de-DE'), money('EUR', 1234.56));
+    });
+
     it('can parse ambiguous real examples with a custom strategy', () => {
         assert.deepEqual(parser('en', {strategy: prefer('CNY')}).parse('¥ 2890.30'), money('CNY', 2890.30));
         assert.deepEqual(parser('en', {strategy: prefer('CNY')}).parse('GBP 2890.30'), money('GBP', 2890.30));
@@ -131,9 +138,22 @@ describe("Money", function () {
     });
 
     it('does not match any additional money when they adjoin', function () {
-        assert.deepEqual(parser('en', {format: 'i,i.f C'}).parseAll('You save 11.40 EUR    102.60 EUR'),
+         assert.deepEqual(parser('en').parseAll('You save 11.40 EUR    102.60 EUR'),
             [money('EUR', 11.4), money('EUR', 102.6)]);
 
+        assert.deepEqual(parser('en').parseAll('11.40 EUR 102.60 EUR'),
+            [money('EUR', 11.4), money('EUR', 102.6)]);
+
+        assert.deepEqual(parser('en').parseAll('EUR 11.40    EUR 102.60'),
+            [money('EUR', 11.4), money('EUR', 102.6)]);
+
+        // Think this one would need a full grammar as currency is already non-greedy
+        //
+        // assert.deepEqual(parser('en').parseAll('EUR 11.40 EUR 102.60'),
+        //     [money('EUR', 11.4), money('EUR', 102.6)]);
+    });
+
+    it('when a format string is provided automatically go into strict mode so the currency symbol has to be exactly where the user specifies', function () {
         assert.deepEqual(parser('en', {format: 'C i,i.f'}).parseAll('You save 11.40 EUR    102.60 EUR'),
             []);
     });
