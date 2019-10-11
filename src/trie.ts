@@ -1,8 +1,9 @@
 import {flatten, unique} from "./arrays";
 import {lazy} from "./lazy";
 import {characters} from "./characters";
-import {array, ascending, Comparator} from "./collections";
+import {array, ascending, Comparator, single} from "./collections";
 import {AVLTree} from "./avltree";
+import {reduce} from "./transducers";
 
 export class Trie<K, V> {
     constructor(public readonly comparator: Comparator<K> = ascending,
@@ -26,9 +27,9 @@ export class Trie<K, V> {
     }
 
     match(key: K[]): V[] {
-        if (key.length == 0) return array(this.children.values()).reduce((a, t) => {
+        if (key.length == 0) return single(this.children.values(), reduce((a, t) => {
             return a.concat(t.match(key));
-        }, this.value ? [this.value] : []);
+        }, this.value ? [this.value] : []));
         const [head, ...tail] = key;
         const child = this.children.lookup(head);
         return child ? child.match(tail) : [];
@@ -50,7 +51,7 @@ export class Trie<K, V> {
     }
 
     @lazy get height(): number {
-        return array(this.children.values()).reduce((a, c) => Math.max(a, c.height + 1), 0);
+        return single(this.children.values(), reduce((a, c) => Math.max(a, c.height + 1), 0));
     }
 }
 
@@ -102,9 +103,9 @@ export class PrefixTree<V = string> {
     search(key: string, maxDist: number): Result<V>[] {
         const empty = Row.create(this.converter(key), this.comparator);
 
-        return array(this.trie.children.entries()).reduce((a: Result<V>[], [letter, value]) => {
+        return single(this.trie.children.entries(), reduce((a: Result<V>[], [letter, value]) => {
             return a.concat(recurse(value, letter, empty, maxDist));
-        }, [] as Result<V>[]);
+        }, [] as Result<V>[]));
     };
 }
 
