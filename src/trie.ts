@@ -119,9 +119,9 @@ function recurse<V>(trie: Trie<string, V>, letter: string, previousRow: Row, max
     }
 
     if (currentRow.minimal <= maxDist) {
-        return array(trie.children.entries()).reduce((a, [letter, value]) => {
+        return single(trie.children.entries(), reduce((a, [letter, value]) => {
             return a.concat(recurse(value, letter, currentRow, maxDist));
-        }, result);
+        }, result));
     }
 
     return result;
