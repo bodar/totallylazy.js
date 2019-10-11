@@ -1,6 +1,8 @@
 import {assert} from 'chai';
 import {AVLTree} from "../src/avltree";
 import {array} from "../src/collections";
+import {range} from "../src/sequence";
+import {map, take} from "../src/transducers";
 
 describe("AVLTree", function () {
     const tree = AVLTree.empty<string, string>();
@@ -8,6 +10,15 @@ describe("AVLTree", function () {
     it('supports isEmpty', function () {
         assert.equal(tree.isEmpty, true);
         assert.equal(AVLTree.create('a', 'value').isEmpty, false);
+    });
+
+    it('can build tree from multiple entries in one go', function () {
+        for (let count = 0; count < 10; count++) {
+            const entries = array(range(1), map(i => ([i, i] as [number, number])), take(count));
+            const manual = entries.reduce((a, [k,v]) => a.insert(k, v), AVLTree.empty<number, number>());
+            const tree = AVLTree.of(entries);
+            assert.deepEqual(array(tree.entries()), array(manual.entries()));
+        }
     });
 
     it('supports contains', function () {
@@ -84,6 +95,6 @@ describe("AVLTree", function () {
 
     it('can iterate over entries', function () {
         const tree = AVLTree.empty<number, string>().insert(0, 'a').insert(1, 'b').insert(2, 'c');
-        assert.deepEqual(array(tree.entries()), [[0,'a'], [1,'b'], [2,'c']]);
+        assert.deepEqual(array(tree.entries()), [[0, 'a'], [1, 'b'], [2, 'c']]);
     });
 });

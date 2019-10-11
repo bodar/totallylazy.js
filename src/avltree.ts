@@ -1,4 +1,4 @@
-import {ascending, Comparator} from "./collections";
+import {ascending, by, Comparator} from "./collections";
 import {lazy} from "./lazy";
 
 export interface Result<K, V> {
@@ -16,8 +16,35 @@ export abstract class AVLTree<K, V> {
     }
 
     static create<K, V>(key: K, value: V, comparator: Comparator<K> = ascending): AVLTree<K, V> {
-        return AVLTree.empty<K, V>(comparator).insert(key, value);
+        const empty = AVLTree.empty<K, V>(comparator);
+        return new Node(comparator, key, value, empty, empty);
     }
+
+    static of<K, V>(entries: [K, V][], comparator: Comparator<K> = ascending): AVLTree<K, V> {
+        return AVLTree.preSorted(entries.sort(by(0)), comparator, AVLTree.empty<K, V>(comparator));
+    }
+
+    private static preSorted<K, V>(entries: [K, V][],
+                          comparator: Comparator<K>,
+                          empty: AVLTree<K, V>): AVLTree<K, V> {
+        const length = entries.length;
+        switch (length) {
+            case 0:
+                return empty;
+            case 1: {
+                const [[key, value]] = entries;
+                return new Node<K, V>(comparator, key, value, empty, empty);
+            }
+            default: {
+                const mid = Math.floor(length / 2);
+                const left = AVLTree.preSorted(entries.slice(0, mid), comparator, empty);
+                const right = AVLTree.preSorted(entries.slice(mid + 1), comparator, empty);
+                const [key, value] = entries[mid];
+                return new Node<K, V>(comparator, key, value, left, right);
+            }
+        }
+    }
+
 
     abstract readonly isEmpty: boolean;
 
@@ -47,7 +74,7 @@ export abstract class AVLTree<K, V> {
 
     abstract values(): Iterable<V>;
 
-    abstract entries(): Iterable<[K,V]>;
+    abstract entries(): Iterable<[K, V]>;
 
 }
 
@@ -104,7 +131,7 @@ class Empty<K, V> extends AVLTree<K, V> {
         return;
     }
 
-    * entries(): Iterable<[K,V]> {
+    * entries(): Iterable<[K, V]> {
         return [];
     }
 }
@@ -220,21 +247,21 @@ class Node<K, V> extends AVLTree<K, V> {
     }
 
     * keys(): Iterable<K> {
-        yield * this.left.keys();
+        yield* this.left.keys();
         yield this.key;
-        yield * this.right.keys();
+        yield* this.right.keys();
     }
 
     * values(): Iterable<V> {
-        yield * this.left.values();
+        yield* this.left.values();
         yield this.value;
-        yield * this.right.values();
+        yield* this.right.values();
     }
 
-    * entries(): Iterable<[K,V]> {
-        yield * this.left.entries();
+    * entries(): Iterable<[K, V]> {
+        yield* this.left.entries();
         yield [this.key, this.value];
-        yield * this.right.entries();
+        yield* this.right.entries();
     }
 }
 
