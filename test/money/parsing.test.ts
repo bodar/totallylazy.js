@@ -128,7 +128,7 @@ describe("Money", function () {
     it('treats all forms of space as the same including nbsp 160 & 8239', () => {
         const spaces = [32, 160, 8239];
         for (const space of spaces) {
-            assert.deepEqual(parser('fr').parse('1' + String.fromCharCode(space) +'025,00 EUR'), money('EUR', 1025.00));
+            assert.deepEqual(parser('fr').parse(`1${String.fromCharCode(space)}025,00${String.fromCharCode(space)}EUR`), money('EUR', 1025.00));
         }
     });
 

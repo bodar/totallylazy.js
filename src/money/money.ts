@@ -233,7 +233,7 @@ export class RegexBuilder {
                 case "integer":
                     return `(?<integer-group>[\\d${Spaces.handle(group)}]*\\d+)`;
                 default:
-                    return `(?<${part.type}>[${part.value} ]?)`;
+                    return `(?<${part.type}>[${part.value}${Spaces.spaces}]?)`;
             }
         }).join("");
         return `(?:^|\\s)${pattern}(?=\\s|$)`;
