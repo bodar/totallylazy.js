@@ -6,7 +6,7 @@ import {
     moneyFrom,
     parse,
     parser,
-    partsFrom, PartsFromFormat, symbolFor,
+    partsFrom, PartsFromFormat, RegexBuilder, symbolFor,
 } from "../../src/money";
 import {locales} from "../dates/dates.test";
 import {currencies} from "../../src/money/currencies";
@@ -138,7 +138,7 @@ describe("Money", function () {
     });
 
     it('does not match any additional money when they adjoin', function () {
-         assert.deepEqual(parser('en').parseAll('You save 11.40 EUR    102.60 EUR'),
+        assert.deepEqual(parser('en').parseAll('You save 11.40 EUR    102.60 EUR'),
             [money('EUR', 11.4), money('EUR', 102.6)]);
 
         assert.deepEqual(parser('en').parseAll('11.40 EUR 102.60 EUR'),
@@ -234,5 +234,18 @@ describe("CurrencySymbols", function () {
     });
 });
 
+
+describe("RegexBuilder", function () {
+    it('buildParts ensures that a currency and a space literal are at the start and end of the produced parts - needed to ensure Safari is as flexible in parsing as the other browsers', () => {
+        const parts = RegexBuilder.buildParts(partsFrom(money('GBP', 1), 'en-GB', "symbol"));
+        assert.deepEqual(parts, [
+            {type: 'currency', value: '£'},
+            {type: 'literal', value: ' '},
+            {type: 'integer', value: '1'},
+            {type: 'literal', value: ' '},
+            {type: 'currency', value: '£'}
+        ]);
+    });
+});
 
 

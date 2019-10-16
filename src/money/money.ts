@@ -206,21 +206,8 @@ export class RegexBuilder {
     }
 
     static buildFrom(raw: NumberFormatPart[], locale: string, strict: boolean = false): string {
-        const parts = [...raw];
-        const [group = ''] = parts.filter(p => p.type === 'group').map(p => p.value);
-        if(!strict) {
-            const first = parts[0];
-            const last = parts[parts.length - 1];
-            const literal:NumberFormatPart = {type: "literal", value: ' '};
-
-            if (first.type === "currency") {
-                parts.push(literal, first);
-            } else if (last.type === "currency") {
-                parts.unshift(last, literal);
-            }
-        }
-
-        const noGroups = array(parts, filter(p => p.type !== 'group'), dedupe(by('type')));
+        const noGroups = this.buildParts(raw, strict);
+        const [group = ''] = raw.filter(p => p.type === 'group').map(p => p.value);
 
         const pattern = noGroups.map(part => {
             switch (part.type) {
@@ -233,10 +220,29 @@ export class RegexBuilder {
                 case "integer":
                     return `(?<integer-group>[\\d${Spaces.handle(group)}]*\\d+)`;
                 default:
-                    return `(?<${part.type}>[${part.value}${Spaces.spaces}]?)`;
+                    return `(?<${part.type}>[${Spaces.handle(part.value)}]?)`;
             }
         }).join("");
         return `(?:^|\\s)${pattern}(?=\\s|$)`;
+    }
+
+    static buildParts(raw: Intl.NumberFormatPart[], strict: boolean = false) {
+        const parts = [...raw];
+        if (!strict) {
+            const first = parts[0];
+            const last = parts[parts.length - 1];
+            const literal: NumberFormatPart = {type: "literal", value: ' '};
+
+            if (first.type === "currency") {
+                parts.push(literal, first);
+                parts.splice(1, 0, literal)
+            } else if (last.type === "currency") {
+                parts.unshift(last, literal);
+                parts.splice(parts.length - 2, 0, literal)
+            }
+        }
+
+        return array(parts, filter(p => p.type !== 'group'), dedupe(by('type')));
     }
 }
 
