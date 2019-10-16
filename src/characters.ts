@@ -125,7 +125,8 @@ export function different(values: string[]): string[] {
 
 
 export function removeUnneededUnicodeCharacters(char:string):boolean{
-    return char.charCodeAt(0) != 8206;
+    const code = char.charCodeAt(0);
+    return code != 8206 && code != 8207;
 }
 
 export function characters(value:string):string[] {
