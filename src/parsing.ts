@@ -184,6 +184,4 @@ export class CachingParser<T> implements Parser<T>{
     }
 }
 
-export function caching<T>(parser: Parser<T>) {
-    return new CachingParser(parser);
-}
+

@@ -1,4 +1,4 @@
-import { caching, CachingParser, Parser } from "../src/parsing";
+import { CachingParser, Parser } from "../src/parsing";
 import { assert } from 'chai';
 
 describe('CachingParser', () => {
@@ -12,7 +12,7 @@ describe('CachingParser', () => {
         return [++this.count];
       }
     }
-    const cachingParser = caching(new CountingParser());
+    const cachingParser = new CachingParser(new CountingParser());
 
     assert.equal(cachingParser.parse('foo'), 1);
     assert.equal(cachingParser.parse('foo'), 1);
