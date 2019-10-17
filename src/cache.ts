@@ -8,16 +8,20 @@ export function cache(target: any, name: string, descriptor: PropertyDescriptor)
         value: function (...args: any[]) {
             const key = JSON.stringify(args);
             // @ts-ignore
-            return cache[key] = cache[key] || descriptor.value.call(this, ...args);
+            const result = cache[key];
+            if (typeof result !== 'undefined') return result;
+            return cache[key] = descriptor.value.call(this, ...args);
         }
     });
 }
 
-export function caching<F extends Function>(fun: F) : F {
+export function caching<F extends Function>(fun: F): F {
     const cache: { [key: string]: any } = {};
 
     return function (...args: any[]) {
         const key = JSON.stringify(args);
-        return cache[key] = cache[key] || fun(...args);
+        const result = cache[key];
+        if (typeof result !== 'undefined') return result;
+        return cache[key] = fun(...args);
     } as any;
 }
