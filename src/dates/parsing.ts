@@ -1,4 +1,4 @@
-import {cache, lazy} from "../lazy";
+import {lazy} from "../lazy";
 import {unique} from "../arrays";
 import {characters, isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
 import {date, defaultOptions, formatData, hasNativeFormatToParts, Months, Options, Weekdays,} from "./index";
@@ -7,6 +7,7 @@ import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import {array} from "../collections";
 import {map} from "../transducers";
+import {cache} from "../cache";
 
 export function parse(value: string, locale: string, options?: string | Options, native = hasNativeFormatToParts): Date {
     return parser(locale, options, native).parse(value);

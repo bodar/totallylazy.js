@@ -3,7 +3,7 @@ import {PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
 import {array, Mapper} from "./collections";
 import {flatMap, map} from "./transducers";
-import { cache } from "./lazy";
+import {cache} from "./cache";
 
 export class NamedRegexParser implements Parser<NamedMatch[]> {
     constructor(protected regex: NamedRegExp) {

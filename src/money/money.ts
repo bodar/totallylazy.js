@@ -3,11 +3,12 @@ import {dedupe, filter, flatMap, map} from "../transducers";
 import {array, by} from "../collections";
 import {flatten} from "../arrays";
 import {currencies} from "./currencies";
-import {cache, lazy} from "../lazy";
+import {lazy} from "../lazy";
 import {Datum, DatumLookup} from "../dates";
 import {mappingParser, MatchStrategy, namedRegexParser, Parser} from "../parsing";
 import {Currencies, Currency} from "./currencies-def";
 import NumberFormatPart = Intl.NumberFormatPart;
+import {cache} from "../cache";
 
 /**
  *
