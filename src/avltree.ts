@@ -81,6 +81,7 @@ export abstract class AVLTree<K, V> {
 class Empty<K, V> extends AVLTree<K, V> {
     constructor(comparator: Comparator<K>) {
         super(comparator);
+        console.log('Empty constructor called')
     }
 
     readonly isEmpty = true;

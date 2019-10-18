@@ -1,15 +1,32 @@
-import {flatten, unique} from "./arrays";
 import {lazy} from "./lazy";
 import {characters} from "./characters";
-import {array, ascending, Comparator, single} from "./collections";
+import {ascending, Comparator, single} from "./collections";
 import {AVLTree} from "./avltree";
 import {flatMap, map, reduce} from "./transducers";
 import {sequence} from "./sequence";
 
+export class TrieFactory<K, V> {
+    constructor(public readonly comparator: Comparator<K> = ascending) {
+    }
+
+    @lazy get avlTree(): AVLTree<K, Trie<K, V>> {
+        return AVLTree.empty(this.comparator);
+    }
+
+    @lazy get empty(): Trie<K, V> {
+        return new Trie<K, V>(this, undefined, this.avlTree);
+    }
+
+    create(value?: V, children: AVLTree<K, Trie<K, V>> = this.avlTree): Trie<K, V> {
+        return (typeof value === 'undefined' && children.isEmpty) ? this.empty : new Trie<K, V>(this, value, children);
+    }
+}
+
 export class Trie<K, V> {
-    constructor(public readonly comparator: Comparator<K> = ascending,
+    constructor(public readonly factory: TrieFactory<K, V> = new TrieFactory<K, V>(),
                 public readonly value?: V,
-                public readonly children: AVLTree<K, Trie<K, V>> = AVLTree.empty(comparator)) {
+                public readonly children: AVLTree<K, Trie<K, V>> = factory.avlTree) {
+        console.log('Trie constructor called')
     }
 
     contains(key: K[]): boolean {
@@ -37,10 +54,15 @@ export class Trie<K, V> {
     }
 
     insert(key: K[], value: V): Trie<K, V> {
-        if (key.length == 0) return new Trie(this.comparator, value, this.children);
+
+        if (key.length == 0) return this.factory.create(value, this.children);
         const [head, ...tail] = key;
-        const child: Trie<K, V> = (this.children.lookup(head) || new Trie<K, V>(this.comparator)).insert(tail, value);
-        return new Trie(this.comparator, this.value, this.children.insert(head, child));
+        let child = this.children.lookup(head);
+        if (!child) {
+            child = this.factory.create();
+        }
+        child = child.insert(tail, value);
+        return this.factory.create(this.value, this.children.insert(head, child));
     }
 
     delete(key: K[]): Trie<K, V> {
@@ -48,13 +70,13 @@ export class Trie<K, V> {
     }
 
     entries(): Iterable<Pair<K[], V>> {
-        function *recurse<K, V>(prefix: K[], [key, trie]: Pair<K, Trie<K, V>>): Iterable<Pair<K[], V>> {
+        function* recurse<K, V>(prefix: K[], [key, trie]: Pair<K, Trie<K, V>>): Iterable<Pair<K[], V>> {
             prefix = [...prefix, key];
             if (trie.value) yield pair(prefix, trie.value);
             yield* recurseChildren(trie, prefix);
         }
 
-        function recurseChildren<K,V>(trie: Trie<K,V>, prefix: K[]) {
+        function recurseChildren<K, V>(trie: Trie<K, V>, prefix: K[]) {
             return sequence(trie.children.entries(), flatMap(entry => recurse(prefix, entry)));
         }
 
@@ -66,7 +88,7 @@ export class Trie<K, V> {
     }
 
     values(): Iterable<V> {
-        return sequence(this.entries(), map(([,value]) => value));
+        return sequence(this.entries(), map(([, value]) => value));
     }
 
     @lazy get height(): number {
@@ -91,7 +113,7 @@ export const DEFAULT_COMPARATOR = IntlComparator;
 export class PrefixTree<V = string> {
     constructor(private converter = characters,
                 private comparator: Comparator<string> = DEFAULT_COMPARATOR,
-                private trie = new Trie<string, V>(comparator)) {
+                private trie = new Trie<string, V>(new TrieFactory<string, V>(comparator))) {
     }
 
     contains(value: string): boolean {
@@ -128,7 +150,7 @@ export class PrefixTree<V = string> {
     }
 
     values(): Iterable<V> {
-        return sequence(this.entries(), map(([,value]) => value));
+        return sequence(this.entries(), map(([, value]) => value));
     }
 
     @lazy get height(): number {

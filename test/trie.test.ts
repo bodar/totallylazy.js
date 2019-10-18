@@ -1,13 +1,13 @@
 import {assert} from 'chai';
 import {DEFAULT_COMPARATOR, PrefixTree, Row, Trie} from "../src/trie";
 import {characters} from "../src/characters";
-import {Suite} from 'benchmark';
 import {array} from "../src/collections";
 
 describe("Trie", function () {
     it('supports isEmpty', function () {
-        assert.equal(new Trie().isEmpty, true);
-        assert.equal(new Trie().insert(['a'], 'value').isEmpty, false);
+        // assert.equal(new Trie().isEmpty, true);
+        const trie = new Trie().insert(['a'], 'value');
+        assert.equal(trie.isEmpty, false);
     });
 
     it('supports contains', function () {
@@ -24,6 +24,13 @@ describe("Trie", function () {
         assert.equal(new Trie().lookup(keyA), undefined);
         assert.equal(new Trie().insert(keyA, valueA).lookup(keyA), valueA);
         assert.equal(new Trie().insert(keyA, valueA).insert(keyB, valueB).lookup(keyB), valueB);
+    });
+
+    it('can replace an element', function () {
+        assert.equal(new Trie().insert([1], 'old').insert([1], 'new').lookup([1]), 'new');
+        const trie = new Trie().insert([1], 'old').insert([1, 2], 'preserves').insert([1], 'new');
+        assert.equal(trie.lookup([1]), 'new');
+        assert.equal(trie.lookup([1, 2]), 'preserves');
     });
 
     it('supports match', function () {
