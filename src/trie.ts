@@ -3,7 +3,8 @@ import {lazy} from "./lazy";
 import {characters} from "./characters";
 import {array, ascending, Comparator, single} from "./collections";
 import {AVLTree} from "./avltree";
-import {reduce} from "./transducers";
+import {flatMap, map, reduce} from "./transducers";
+import {sequence} from "./sequence";
 
 export class Trie<K, V> {
     constructor(public readonly comparator: Comparator<K> = ascending,
@@ -46,13 +47,41 @@ export class Trie<K, V> {
         return this.insert(key, undefined as any);
     }
 
-    @lazy get keys(): K[] {
-        return unique(flatten(array(this.children.entries()).map(([k, v]) => ([k, ...v.keys]))));
+    entries(): Iterable<Pair<K[], V>> {
+        function *recurse<K, V>(prefix: K[], [key, trie]: Pair<K, Trie<K, V>>): Iterable<Pair<K[], V>> {
+            prefix = [...prefix, key];
+            if (trie.value) yield pair(prefix, trie.value);
+            yield* recurseChildren(trie, prefix);
+        }
+
+        function recurseChildren<K,V>(trie: Trie<K,V>, prefix: K[]) {
+            return sequence(trie.children.entries(), flatMap(entry => recurse(prefix, entry)));
+        }
+
+        return recurseChildren(this, []);
+    }
+
+    keys(): Iterable<K[]> {
+        return sequence(this.entries(), map(([key]) => key));
+    }
+
+    values(): Iterable<V> {
+        return sequence(this.entries(), map(([,value]) => value));
     }
 
     @lazy get height(): number {
         return single(this.children.values(), reduce((a, c) => Math.max(a, c.height + 1), 0));
     }
+
+    toString() {
+        return (this.value ? `(${this.value})` : '') + this.children;
+    }
+}
+
+export type Pair<K, V> = [K, V];
+
+export function pair<K, V>(key: K, value: V): Pair<K, V> {
+    return [key, value];
 }
 
 const IntlComparator = new Intl.Collator(undefined, {usage: 'sort', sensitivity: 'base'}).compare;
@@ -90,8 +119,16 @@ export class PrefixTree<V = string> {
         return new PrefixTree(this.converter, this.comparator, this.trie.insert(this.converter(value), undefined as any));
     }
 
-    @lazy get keys(): string[] {
-        return this.trie.keys;
+    entries(): Iterable<Pair<string, V>> {
+        return sequence(this.trie.entries(), map(([chars, value]) => pair(chars.join(''), value)));
+    }
+
+    keys(): Iterable<string> {
+        return sequence(this.entries(), map(([key]) => key));
+    }
+
+    values(): Iterable<V> {
+        return sequence(this.entries(), map(([,value]) => value));
     }
 
     @lazy get height(): number {

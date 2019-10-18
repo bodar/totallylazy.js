@@ -2,6 +2,7 @@ import {assert} from 'chai';
 import {DEFAULT_COMPARATOR, PrefixTree, Row, Trie} from "../src/trie";
 import {characters} from "../src/characters";
 import {Suite} from 'benchmark';
+import {array} from "../src/collections";
 
 describe("Trie", function () {
     it('supports isEmpty', function () {
@@ -46,9 +47,19 @@ describe("Trie", function () {
         assert.deepEqual(trie.delete(keyA).delete(keyB).match([]), []);
     });
 
+    it('supports entries', function () {
+        const trie = new Trie().insert(['a'], 'valueA').insert(['a', 'b'], 'valueB').insert(['c', 'a', 'd'], 'valueC');
+        assert.deepEqual(array(trie.entries()), [[['a'], 'valueA'], [['a', 'b'], 'valueB'], [['c', 'a', 'd'], 'valueC']]);
+    });
+
     it('supports keys', function () {
-        const trie = new Trie().insert(['a'], 'valueA').insert(['a', 'b'], 'valueB').insert(['c', 'a', 'd'], 'valueB');
-        assert.deepEqual(trie.keys, ['a', 'b', 'c', 'd']);
+        const trie = new Trie().insert(['a'], 'valueA').insert(['a', 'b'], 'valueB').insert(['c', 'a', 'd'], 'valueC');
+        assert.deepEqual(array(trie.keys()), [['a'], ['a', 'b'], ['c', 'a', 'd']]);
+    });
+
+    it('supports values', function () {
+        const trie = new Trie().insert(['a'], 'valueA').insert(['a', 'b'], 'valueB').insert(['c', 'a', 'd'], 'valueC');
+        assert.deepEqual(array(trie.values()), ['valueA', 'valueB', 'valueC']);
     });
 });
 
@@ -99,13 +110,28 @@ describe("PrefixTree", function () {
         assert.deepEqual(trie.match('янв'), [1, 1, 1]);
     });
 
-    it('can get characters', function () {
+    it('supports entries', function () {
         const trie = new PrefixTree<number>()
-            .insert("январь", 1)
-            .insert("января", 1)
-            .insert("янв.", 1);
+            .insert("янв.", 1)
+            .insert("январь", 2)
+            .insert("января", 3);
+        assert.deepEqual(array(trie.entries()), [["янв.", 1], ["январь", 2], ["января", 3]]);
+    });
 
-        assert.includeMembers(trie.keys, ['я', 'н', 'в', 'а', 'р', 'ь', '.']);
+    it('supports keys', function () {
+        const trie = new PrefixTree<number>()
+            .insert("янв.", 1)
+            .insert("январь", 2)
+            .insert("января", 3);
+        assert.deepEqual(array(trie.keys()), ["янв.", "январь", "января"]);
+    });
+
+    it('supports values', function () {
+        const trie = new PrefixTree<number>()
+            .insert("янв.", 1)
+            .insert("январь", 2)
+            .insert("января", 3);
+        assert.deepEqual(array(trie.values()), [1, 2, 3]);
     });
 
     it('can get height', function () {
