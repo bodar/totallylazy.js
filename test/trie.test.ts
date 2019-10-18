@@ -1,6 +1,7 @@
 import {assert} from 'chai';
 import {DEFAULT_COMPARATOR, PrefixTree, Row, Trie} from "../src/trie";
 import {characters} from "../src/characters";
+import {Suite} from 'benchmark';
 
 describe("Trie", function () {
     it('supports isEmpty', function () {
