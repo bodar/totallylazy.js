@@ -20,13 +20,18 @@ export class TrieFactory<K, V> {
     create(value?: V, children: AVLTree<K, Trie<K, V>> = this.avlTree): Trie<K, V> {
         return (typeof value === 'undefined' && children.isEmpty) ? this.empty : new Trie<K, V>(this, value, children);
     }
+
+    construct(key: K[], value: V): Trie<K, V> {
+        if (key.length === 0) return this.create(value);
+        const [head, ...tail] = key;
+        return this.create(undefined, this.avlTree.insert(head, this.construct(tail, value)));
+    }
 }
 
 export class Trie<K, V> {
     constructor(public readonly factory: TrieFactory<K, V> = new TrieFactory<K, V>(),
                 public readonly value?: V,
                 public readonly children: AVLTree<K, Trie<K, V>> = factory.avlTree) {
-        console.log('Trie constructor called')
     }
 
     contains(key: K[]): boolean {
@@ -54,14 +59,15 @@ export class Trie<K, V> {
     }
 
     insert(key: K[], value: V): Trie<K, V> {
-
-        if (key.length == 0) return this.factory.create(value, this.children);
+        if (key.length === 0) return this.factory.create(value, this.children);
         const [head, ...tail] = key;
         let child = this.children.lookup(head);
-        if (!child) {
-            child = this.factory.create();
+        if (child) {
+            child = child.insert(tail, value);
+        } else {
+            child = this.factory.construct(tail, value);
         }
-        child = child.insert(tail, value);
+
         return this.factory.create(this.value, this.children.insert(head, child));
     }
 

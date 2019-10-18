@@ -1,13 +1,16 @@
 import {assert} from 'chai';
-import {DEFAULT_COMPARATOR, PrefixTree, Row, Trie} from "../src/trie";
+import {DEFAULT_COMPARATOR, Pair, pair, PrefixTree, Row, Trie, TrieFactory} from "../src/trie";
 import {characters} from "../src/characters";
 import {array} from "../src/collections";
 
 describe("Trie", function () {
     it('supports isEmpty', function () {
-        // assert.equal(new Trie().isEmpty, true);
-        const trie = new Trie().insert(['a'], 'value');
-        assert.equal(trie.isEmpty, false);
+        assert.equal(new Trie().isEmpty, true);
+        assert.equal(new Trie().insert(['a'], 'value').isEmpty, false);
+    });
+
+    it('can construct the tree in place', function () {
+        assert.equal(new TrieFactory().construct(['c', 'a', 't'], 'Mr Magoo').lookup(['c', 'a', 't']), 'Mr Magoo');
     });
 
     it('supports contains', function () {
