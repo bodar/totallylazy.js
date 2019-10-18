@@ -18,7 +18,7 @@ export class TrieFactory<K, V> {
     }
 
     create(value?: V, children: AVLTree<K, Trie<K, V>> = this.avlTree): Trie<K, V> {
-        return (typeof value === 'undefined' && children.isEmpty) ? this.empty : new Trie<K, V>(this, value, children);
+        return new Trie<K, V>(this, value, children);
     }
 
     construct(key: K[], value: V): Trie<K, V> {

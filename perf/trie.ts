@@ -10,14 +10,14 @@ interface HotelIdentifiers {
     "identifierId": string
 }
 
-function build(idenitifiers: HotelIdentifiers[], comparator: Comparator<string>) {
-    return idenitifiers.reduce((p, id) => p.insert(id.hotelIdentifier, id), new PrefixTree<HotelIdentifiers>(undefined, comparator));
+function build(identifiers: HotelIdentifiers[], comparator: Comparator<string>) {
+    return identifiers.reduce((p, id) => p.insert(id.hotelIdentifier, id), new PrefixTree<HotelIdentifiers>(undefined, comparator));
 }
 
 
 (async () => {
     const json = await new File('perf/identifiers.json').content();
-    const idenitifiers: HotelIdentifiers[] = JSON.parse(json);
+    const identifiers: HotelIdentifiers[] = JSON.parse(json);
     const sort = new Intl.Collator(undefined, {usage: 'sort', sensitivity: 'base'}).compare;
     const search = new Intl.Collator(undefined, {usage: 'search', sensitivity: 'base'}).compare;
 
@@ -25,11 +25,11 @@ function build(idenitifiers: HotelIdentifiers[], comparator: Comparator<string>)
     const suite = new Suite('PrefixTree');
 
     suite.add('IntlComparator sort', function () {
-        build(idenitifiers, sort);
+        build(identifiers, sort);
     }).add('IntlComparator search', function () {
-        build(idenitifiers, search);
+        build(identifiers, search);
     }).add('ascending', function () {
-        build(idenitifiers, ascending);
+        build(identifiers, ascending);
     }).on('cycle', function (event: any) {
         console.log(String(event.target));
     }).on('complete', function () {

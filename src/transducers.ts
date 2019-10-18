@@ -391,12 +391,12 @@ export function unique<A>(comparator: Comparator<A> = ascending): DedupTransduce
     return new UniqueTransducer(comparator)
 }
 
-export function windowed<A>(size: number, step: number = 1): WindowedTransducer<A> {
-    return new WindowedTransducer(size, step);
+export function windowed<A>(size: number, step: number = 1, remainder = false): WindowedTransducer<A> {
+    return new WindowedTransducer(size, step, remainder);
 }
 
 export class WindowedTransducer<A> implements Transducer<A, A[]> {
-    constructor(public size: number, public step: number) {
+    constructor(public size: number, public step: number, private remainder:boolean) {
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A[]> {
@@ -414,6 +414,7 @@ export class WindowedTransducer<A> implements Transducer<A, A[]> {
                 if (this.step > this.size) skip = this.step - this.size;
             }
         }
+        if(this.remainder) yield [...buffer];
     }
 
     * sync(iterable: Iterable<A>): Iterable<A[]> {
@@ -431,6 +432,7 @@ export class WindowedTransducer<A> implements Transducer<A, A[]> {
                 if (this.step > this.size) skip = this.step - this.size;
             }
         }
+        if(this.remainder) yield [...buffer];
     }
 }
 
