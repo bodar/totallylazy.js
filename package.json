@@ -10,7 +10,8 @@
     "clean": "rm -rf build/artifacts",
     "build": "tsc",
     "generate": "ts-node src/money/generate-currencies.ts",
-    "test": "NODE_ENV=development NODE_ICU_DATA=./node_modules/full-icu TZ='America/Los_Angeles' yarn run mocha --require ts-node/register 'test/**/*.test.ts'"
+    "test": "NODE_ENV=development NODE_ICU_DATA=./node_modules/full-icu TZ='America/Los_Angeles' yarn run mocha --require ts-node/register 'test/**/*.test.ts'",
+    "perf": "ts-node perf/trie.ts"
   },
   "dependencies": {
     "tslib": "^1.10.0"

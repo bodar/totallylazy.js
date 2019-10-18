@@ -1,0 +1,2917 @@
+[
+  {
+    "hotelIdentifier": "Best Western Hotel Blois Chateau Blois",
+    "apiKey": "c76fd6e18a82e8ee3eac29b17d9c90feb6f010dd",
+    "identifierId": "01D5431E1Y66ZDYCA28A8WBHZB"
+  },
+  {
+    "hotelIdentifier": "93561 Best Western Plus Soleil Et Jardin",
+    "apiKey": "d4faee1a0fd08fed749448727bfa99518803ce2b",
+    "identifierId": "01D3E2N1WMVKZCBGJHTZ3R9G2J"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel The Wish Versailles Guyancourt",
+    "apiKey": "5a789e1f9687c14e2bd298ffa7dc96d3360491bf",
+    "identifierId": "01D544ST6E1AGNG2TGVKWRPT0V"
+  },
+  {
+    "hotelIdentifier": "93588 Best Western Plus La Rade",
+    "apiKey": "07d5c43144ab923ffcae8535aba6ff3b8a1a8bc4",
+    "identifierId": "01D3E2MZTBG554H2F974CAKKYA"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Saint Claude Peronne",
+    "apiKey": "9f8774f8cebf7255af75e08be82fc5d7955fdf30",
+    "identifierId": "01D544TFWHR1338ZGBTNFGM8NJ"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Le Swann Paris",
+    "apiKey": "326347803b84dd944296635c29933bd4f8f46a75",
+    "identifierId": "01D541HDSXFCC0R1CHK8ECXB0Z"
+  },
+  {
+    "hotelIdentifier": "93828 Best Western Hotel Le Montmartre Saint Pierre",
+    "apiKey": "d0996dd59f20b3b226499ae95777b863d3eb8004",
+    "identifierId": "01D3E2N2CM0PFR7PS48JHGEFQK"
+  },
+  {
+    "hotelIdentifier": "93757 Best Western The Wish Versailles",
+    "apiKey": "5a789e1f9687c14e2bd298ffa7dc96d3360491bf",
+    "identifierId": "01D3E2MZ0YY2RVZF33S0E8NWWZ"
+  },
+  {
+    "hotelIdentifier": "93375 Best Western Plus Hotel Du Parc Chantilly",
+    "apiKey": "9c15d1247051baf1166a168cd24099fbbec68fab",
+    "identifierId": "01D3E2MY7QNJFFZ3TRF12WSG5P"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Journel Saint-Laurent-Du-Var Saint-Laurent-Du-Var",
+    "apiKey": "f9716af22d106bbb878abd035381dcd04a88a911",
+    "identifierId": "01D45J4MF5VQB927NHS8CEGYVM"
+  },
+  {
+    "hotelIdentifier": "93642 Best Western Hotel Le Sud",
+    "apiKey": "734509cbc30ba372a0c41ddf5dc6b49536c32e8d",
+    "identifierId": "01D3E2N17TXWW42FDH50GSPPEZ"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Trocadero La Tour Paris",
+    "apiKey": "833a75518d92ebfeaac2114f69a024b0e8211df6",
+    "identifierId": "01D54CE6EGZD9KZQFHSP8NDQJ6"
+  },
+  {
+    "hotelIdentifier": "93837 Best Western Blanche De Castille Dourdan",
+    "apiKey": "1df2269d0d9972a9b6ae2f73f44be4f524a376d5",
+    "identifierId": "01D3E2MZW9T02VXY681EX4RG5Q"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Adagio Saumur",
+    "apiKey": "e08f7f0f44c96f37e337b30de22dceaf74fe8b63",
+    "identifierId": "01D5416YS9MEGPA29HE2KXX3EV"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Blanche De Castille Dourdan Dourdan",
+    "apiKey": "1df2269d0d9972a9b6ae2f73f44be4f524a376d5",
+    "identifierId": "01D5449ZN94GZ6HPXM8T9JN5Y0"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Brittany La Baule-Centre La Baule",
+    "apiKey": "e31405a500e35ea139bc2d943d65ff6c2d34ebe2",
+    "identifierId": "01D7YY87K34DY3XY9D3BPPKDJS"
+  },
+  {
+    "hotelIdentifier": "93804 Best Western Plus Le Patio des Artistes",
+    "apiKey": "ed62c59f2bd6ef0659dbaf6b64bae16660edbd82",
+    "identifierId": "01D3E2MZF7EYC2Q4B9Q21FGHZ3"
+  },
+  {
+    "hotelIdentifier": "93293 Best Western Plus La Fayette Hotel et SPA",
+    "apiKey": "c665b878e00636df98476af70494c8a060557c69",
+    "identifierId": "01D3E2MXNAWX41GQ60QQHA1VPX"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Renoir Sarlat-La-Caneda",
+    "apiKey": "35db8cf6ebc5d58a90aa54b59e4ff5bf594d1e0f",
+    "identifierId": "01D541T8QC18YQKYVXPXTT0VXA"
+  },
+  {
+    "hotelIdentifier": "93785 Best Western Plus Palais des Congres",
+    "apiKey": "c97f999634a814f09bc39588fd60d61bb9c3fc72",
+    "identifierId": "01D3E2N2296HFXQRX4FBQ987BA"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Cannes Riviera & Spa Cannes",
+    "apiKey": "8531cd48e389c34cbb3ae0f093e656d2f8b2c380",
+    "identifierId": "01D542K4R32NGTQPNRCVMFH2FM"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Bastia Centre Bastia",
+    "apiKey": "71d6ab98503ee9971f8d509c426361c7ec64305f",
+    "identifierId": "01D4AB65F5FQNAXJJ1B3XZDNYX"
+  },
+  {
+    "hotelIdentifier": "93281 Best Western Grand Hotel Francais",
+    "apiKey": "d06b16cc60acaf1e0802a4ab8aabc1541cd1f50d",
+    "identifierId": "01D3E2MY1C21H5E11H7C48FKVN"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Alexander Park Chambery",
+    "apiKey": "e3499da185751446919827ae713746b22f810949",
+    "identifierId": "01D541NT1FG0QV6EJ8BXVPJJTY"
+  },
+  {
+    "hotelIdentifier": "93750 Best Western Hotel des Voyageurs",
+    "apiKey": "ea767395ff5496d6470844ab57b8d155e019a8d9",
+    "identifierId": "01D3E2N1FS23AP0YSXE50J338D"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Sourceo Saint-Paul-Les-Dax",
+    "apiKey": "5202e2a1cab115dc5c41f23d8398641f077f8e57",
+    "identifierId": "01D5408QEF8GT5CM9SR5PKQW4P"
+  },
+  {
+    "hotelIdentifier": "93818 Best Western Hotel Opera Drouot",
+    "apiKey": "f8c52ffe993900e44fc3afdc025eedfab16c544d",
+    "identifierId": "01D3E2MZ5S0AZ37AW86M7BFGY2"
+  },
+  {
+    "hotelIdentifier": "Le Domaine De Montjoie Bw Premier Collection Hotel Ramonville-Saint-Agne",
+    "apiKey": "8314c8b76773d7d12934b214e38a3a43a2f2df7a",
+    "identifierId": "01D54459YM11B9AVC8QKFPMXTX"
+  },
+  {
+    "hotelIdentifier": "Best Western Santa Maria Hotel Ile Rousse",
+    "apiKey": "ff75714d2ac0ddae92badde5a7ceb2b639918a3e",
+    "identifierId": "01D5VJHA7NHVQNMMDT2DNH4ST0"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Opera Faubourg Paris",
+    "apiKey": "3984203ce091401e8d62235a54d4ee90efe67df7",
+    "identifierId": "01D7YXABQX0V9V34SYVG88J9ZF"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Paris Porte De Versailles Issy-Les-Moulineaux",
+    "apiKey": "e262ec98163292e4b0b06663f75742007445f057",
+    "identifierId": "01D541EW0A5ZJKTPJ33CGFNGKJ"
+  },
+  {
+    "hotelIdentifier": "93449 Best Western Hotel Crystal",
+    "apiKey": "0fa62bc2ac519db2348c4e45d39941be38340a62",
+    "identifierId": "01D3E2MY669R2EJDBXB7ZX1DKE"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel La Marina Saint-Raphael",
+    "apiKey": "4d24b1eabf961cf24b7ff5f9fcba03c1f3f59ec7",
+    "identifierId": "01D541PZ36FFJRA5F1TMNHA8AC"
+  },
+  {
+    "hotelIdentifier": "93862 Best Western Hotel Le Semaphore",
+    "apiKey": "11226d2b379cfb8c3bd0cb99cf869657b69c5229",
+    "identifierId": "01D3E2N0FN23JDXCA67RWF791E"
+  },
+  {
+    "hotelIdentifier": "93858 Best Western Plus Hotel Litteraire Marcel Ayme",
+    "apiKey": "8a0061603722a17b93fe07bb2c1979d581a5d1dc",
+    "identifierId": "01D3E2N2KZ0EQK7K4D6GQ6CYR9"
+  },
+  {
+    "hotelIdentifier": "93032 Best Western Premier Grand Monarque Hotel & Spa",
+    "apiKey": "43aa244629238d10ad4bf49be295311b968e5c7a",
+    "identifierId": "01D3E2MX9KGZCAZ4AGM2NZFAXA"
+  },
+  {
+    "hotelIdentifier": "93833 Best Western Au Cheval Blanc Mulhouse Nord",
+    "apiKey": "55c18e015d797ac4216d7c55557971b88a3c50bd",
+    "identifierId": "01D3E2N2F4NKH2TQKN54QRFSW9"
+  },
+  {
+    "hotelIdentifier": "93604 Best Western Plus Ajaccio Amiraute",
+    "apiKey": "5387f756031dd32f33d2bdce2d50654ef59f6537",
+    "identifierId": "01D3E2MYRRC3G4FETPXGQQDSXC"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Litteraire Marcel Ayme Paris",
+    "apiKey": "8a0061603722a17b93fe07bb2c1979d581a5d1dc",
+    "identifierId": "01D547NM1YS61AF1ETZVCCDCTJ"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Journel Paris Sud Ris-Orangis",
+    "apiKey": "0069b5de330380a612a0ea225a15d081d6b87a32",
+    "identifierId": "01D5402GBCCRQ8NMBW6D47VC7P"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Le Rive Droite & Spa Lourdes",
+    "apiKey": "723efe8c2194f00ec00a386bb4f39ab3ae1aea75",
+    "identifierId": "01D7Z4W1S3ZTKNC9QVY5MMMD9S"
+  },
+  {
+    "hotelIdentifier": "93421 Best Western Hotel De France",
+    "apiKey": "d2782d925a8d805b9c43065cb0d8068a8fb21220",
+    "identifierId": "01D3E2MXQ9F5K4HGCJADSTYXE4"
+  },
+  {
+    "hotelIdentifier": "93541 Best Western Astoria",
+    "apiKey": "846e80d9d2c0fb533574e847c9651024d6cfabc3",
+    "identifierId": "01D3E2MYFXFY4MZ571T8XWRAA2"
+  },
+  {
+    "hotelIdentifier": "93713 Best Western Hotel La Mare O Poissons",
+    "apiKey": "19c4a110bf3fff432bdae16a271f8362bda2fa52",
+    "identifierId": "01D3E2N0YC431FS5Q74756EAQ5"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel De La Breche Niort",
+    "apiKey": "815f219dfbd4c0e736b91a026e24459aa89c090f",
+    "identifierId": "01D4AXM1TJ9DXRX58DC67P8SS4"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Villa Dest Strasbourg",
+    "apiKey": "d2515be89271c925c0ea83d98054753c38126edf",
+    "identifierId": "01D7Z1VH8PZVCVMAZPXAFVD028"
+  },
+  {
+    "hotelIdentifier": "93796 Best Western Plus Paris Velizy",
+    "apiKey": "e9acc6b1cefc13ca081536191a30a0e0519ace5a",
+    "identifierId": "01D3E2MZ6EPPE20E6YMD5QGRCP"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Suitcase Paris La Defense Bois-Colombes",
+    "apiKey": "53b57a16a2815ffdc960d4c931775a3ea5f10653",
+    "identifierId": "01D5403CY7BCHFDP3YAZW08MA9"
+  },
+  {
+    "hotelIdentifier": "93843 Regent Contades, BW Premier Collection",
+    "apiKey": "024afd48e35d639f9601c378c342f173358a58e8",
+    "identifierId": "01D3E2N13NA6618FR5FGJ0Y4XC"
+  },
+  {
+    "hotelIdentifier": "93787 Best Western Plus Hotel Metz Technopole",
+    "apiKey": "08f0a64f5036ba3e4f9c97b5eca5bb5edbe7579e",
+    "identifierId": "01D3E2MZK8J4VFVBPYFJ44F7R5"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Empire Elysees Paris",
+    "apiKey": "c6a18023f5c6b3254f82bc0a7e20dd4c36150c1c",
+    "identifierId": "01D541FVCDNJP80MMN26KDD5VK"
+  },
+  {
+    "hotelIdentifier": "93556 Best Western Le Val Majour",
+    "apiKey": "bf09627ec21bf3e7bb5b6a4683b47f28a3f57383",
+    "identifierId": "01D3E2MYKT7FWBQYVQBFVJV0H5"
+  },
+  {
+    "hotelIdentifier": "93477 Best Western Hotel De France",
+    "apiKey": "51283ba5f0121a6e82401f411edae86538634879",
+    "identifierId": "01D3E2MXT1W7JZVGDTMNFH3N0P"
+  },
+  {
+    "hotelIdentifier": "93861 Best Western Park Hotel Geneve-Thoiry",
+    "apiKey": "6b19b606c8009f921463366c355a33458fac57b1",
+    "identifierId": "01D3E2N1AWAYWKB0CJK455GNN1"
+  },
+  {
+    "hotelIdentifier": "93693 Sure Hotel by Best Western la Palmeraie",
+    "apiKey": "aee670b2a020bba43a27345430c4ba8466817fe3",
+    "identifierId": "01D3E2MZ7R6Y7ZZTY0EWJ0JTSS"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Windsor Perpignan",
+    "apiKey": "84355433a9e87a08b2f59ee1453d65d94bde2b0f",
+    "identifierId": "01D54C3ZF8QKBPX1Y2N7FWWW6F"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Les Humanistes Selestat",
+    "apiKey": "946460bb466993fdc768356004a0bd6dc3c877de",
+    "identifierId": "01D541KVCY1N2932FBCJMM7X89"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Montparnasse Paris",
+    "apiKey": "373c65d28acb549716d73ec471fc8ce8289c4c64",
+    "identifierId": "01D5419Z11SRKWA4A5DJGCNADS"
+  },
+  {
+    "hotelIdentifier": "93777 Best Western Plus Paris Meudon Ermitage",
+    "apiKey": "27c3f29165dcda91ccb8424c1e8374c95a7078db",
+    "identifierId": "01D3E2N0YQ8V4FA6CS4CNKAVE2"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Ker Lann Aeroport Rennes",
+    "apiKey": "ded27298aded347099f979dd5f1b4ec6d574aae2",
+    "identifierId": "01D4TK373SCPC3NWASB77Q6F7P"
+  },
+  {
+    "hotelIdentifier": "93752 Best Western Plus Hotel Windsor",
+    "apiKey": "84355433a9e87a08b2f59ee1453d65d94bde2b0f",
+    "identifierId": "01D3E2N0J8ZSKPAGNRAQXP640Q"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel La Metairie Gosnay",
+    "apiKey": "4bccf9e8d2f6d44af9870ef07d292de893dc7245",
+    "identifierId": "01D7YZANGWFP4RTYCPS1SMQPYF"
+  },
+  {
+    "hotelIdentifier": "93540 Best Western Premier Mondial",
+    "apiKey": "dbacf8b2d4734efdd923584d732b2e106cde23ea",
+    "identifierId": "01D3E2N0Q641A0CMKPVTKN0ZY0"
+  },
+  {
+    "hotelIdentifier": "93640 Best Western Premier Louvre Saint Honore",
+    "apiKey": "e9c15caa7df7ea13785591b935c9a5ab438ffac6",
+    "identifierId": "01D3E2MZXKPJB3RJCZSDWYAY5K"
+  },
+  {
+    "hotelIdentifier": "Hotel Kle Bw Signature Collection Kaysersberg",
+    "apiKey": "",
+    "identifierId": "01D3E2MW9M5H4VTNKPW0ECC6K3"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Ile De France Chateau-Thierry",
+    "apiKey": "6709ad9dec2a4796e4a84640d4494d0b251b5999",
+    "identifierId": "01D541TP3RG80GSHKA1VT21PTH"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Opera Liege Paris",
+    "apiKey": "adef426732a28794b079dbe77f99017c89a4ed93",
+    "identifierId": "01D40H63050REMBR0BQSBAB6X5"
+  },
+  {
+    "hotelIdentifier": "93557 Best Western Alba Hotel",
+    "apiKey": "f801518ae46587dddae2dfaa197b40d02ded047a",
+    "identifierId": "01D3E2MYX1EEHXWTFFA2KEM29H"
+  },
+  {
+    "hotelIdentifier": "93612 Best Western Le Vinci Loire Valley",
+    "apiKey": "a394b88513eebdd6865ec6b4f930da0c891e1e55",
+    "identifierId": "01D3E2N0RQXX88WFS5KASFFRJ5"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Toubkal Casablanca",
+    "apiKey": "365a4fbc77c8d4e162c2162c27006b95f832319d",
+    "identifierId": "01D5423WD9EEY5ZHXTKQSSZJ8D"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Aix Sainte Victoire Fuveau",
+    "apiKey": "dd1be82c8d22d18255a5498bfe6e3c268fc474cb",
+    "identifierId": "01D42ENNMDE8CPCGPGT05ZJK57"
+  },
+  {
+    "hotelIdentifier": "93685 Best Western Hotel Ronceray Opera",
+    "apiKey": "32cff138824d04f533c12b50220895dd84e06f64",
+    "identifierId": "01D3E2N0040CMZ40AH7QKF93ZD"
+  },
+  {
+    "hotelIdentifier": "Best Western Dijon Quetigny Hotel Quetigny",
+    "apiKey": "974d48d507e1f6589ef5f3bff8d9762ca06d2605",
+    "identifierId": "01D56J4051F3RS1CY9G9EZ7CFE"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Kapital Opera Paris",
+    "apiKey": "8df54972f291c94c2e1fbf66454de11a842a5fb1",
+    "identifierId": "01D5402T1KVH2EX3MZJW6PSRRP"
+  },
+  {
+    "hotelIdentifier": "93261 Best Western Au Trocadero",
+    "apiKey": "cb952b0e76299bf7549022ac965be917d31dbed1",
+    "identifierId": "01D3E2MXPZZ7DQ2D140MWN84GF"
+  },
+  {
+    "hotelIdentifier": "93620 Best Western Amiral Hotel",
+    "apiKey": "821a4a830bafdc50d30cb800e9e9b330cddb5574",
+    "identifierId": "01D3E2MZFCEANQ5JGNY4Z01ZV5"
+  },
+  {
+    "hotelIdentifier": "93816 Best Western Richelieu Lyon Part-Dieu",
+    "apiKey": "da10ba2ecda2d0f9e15bfebee14307503ebc8cd0",
+    "identifierId": "01D3E2N2EJ0NNERVWA54M62QMH"
+  },
+  {
+    "hotelIdentifier": "Regent Contades Bw Premier Collection Hotel Strasbourg",
+    "apiKey": "024afd48e35d639f9601c378c342f173358a58e8",
+    "identifierId": "01D542K5ZC3PZWRQZNYX3X871B"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Les Beaux Arts Compiegne",
+    "apiKey": "d21f770f650f6cb44708e6de869b1bc457b50bc9",
+    "identifierId": "01D5423Y9Y80CF5DA4VZXM17R1"
+  },
+  {
+    "hotelIdentifier": "93823 Best Western Premier Kapital Opera",
+    "apiKey": "8df54972f291c94c2e1fbf66454de11a842a5fb1",
+    "identifierId": "01D3E2N17N7Z53Z33R3CQG36GB"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Colombe Oran",
+    "apiKey": "0fba1ca7b6abd49779eb20a9f9dad37b2782be3c",
+    "identifierId": "01D7Z57NDB02V8YAGXFP7G8GW7"
+  },
+  {
+    "hotelIdentifier": "93475 Best Western Sourceo",
+    "apiKey": "5202e2a1cab115dc5c41f23d8398641f077f8e57",
+    "identifierId": "01D3E2MY2EA9DG4TZGE12F1QS6"
+  },
+  {
+    "hotelIdentifier": "93867 Best Western Plus Hotel Brice Garden",
+    "apiKey": "e561586e94ed407a1ac33990dc2e803cc8be96e1",
+    "identifierId": "01D3E2N1SDKFTNVW72NEQK10BC"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel San Benedetto Cholet",
+    "apiKey": "2cda639685c29bbfe7a6f47576121fe989f0cf87",
+    "identifierId": "01D541B9BNPES7QJ6MC6400H9Y"
+  },
+  {
+    "hotelIdentifier": "93810 Best Western Plus Design & Spa Bassin D'Arcachon",
+    "apiKey": "ac721b163a9bf5e5263c40b3fbc17ebe499a10ba",
+    "identifierId": "01D3E2N1MB1WXZGGA7NV2HACDN"
+  },
+  {
+    "hotelIdentifier": "93759 Best Western Hotel du Mucem",
+    "apiKey": "60ebb1115ab2ddac6e8072588eeb673e53fd2dea",
+    "identifierId": "01D3E2MZCKTFZGM6RHGVRYHQMM"
+  },
+  {
+    "hotelIdentifier": "93869 Westminster Hotel & Spa, BW Premier Collection",
+    "apiKey": "85010bd8cef038d2dc3e6f8598309cc1735dc859",
+    "identifierId": "01D3E2N1WA3TPZ5613FXS0NJBY"
+  },
+  {
+    "hotelIdentifier": "93601 Best Western Plus Hotel Sydney Opera",
+    "apiKey": "df626437147eea3e457f9934877d8b0cafc93610",
+    "identifierId": "01D3E2MZE2YZR9YEWECBD62WRD"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel La Corniche Toulon",
+    "apiKey": "e44df71c2509ca6bee64a9722014e40977d12168",
+    "identifierId": "01D42EQKQGRVFY7P28NBPYDEND"
+  },
+  {
+    "hotelIdentifier": "93608 Best Western Hotel Paradou",
+    "apiKey": "3830192e0308efc6144663a7e35b8c17e4a33ef0",
+    "identifierId": "01D3E2N0SKNMP6T3YGHNPK02RZ"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Opera Batignolles Paris",
+    "apiKey": "336fc32c1849520ae2cfc120c8dfd7ef83beec2e",
+    "identifierId": "01D54P0MNZ03E1Z5CK05JRZC7K"
+  },
+  {
+    "hotelIdentifier": "Hotel Best Western De La Bourse Mulhouse",
+    "apiKey": "55c18e015d797ac4216d7c55557971b88a3c50bd",
+    "identifierId": "01D58YMA4VAPNW3RJBTCV6PGN3"
+  },
+  {
+    "hotelIdentifier": "93597 Best Western Brittany La Baule-Centre",
+    "apiKey": "e31405a500e35ea139bc2d943d65ff6c2d34ebe2",
+    "identifierId": "01D3E2MYWQM890VC3DMMYJMGY8"
+  },
+  {
+    "hotelIdentifier": "93870 Best Western Hotel Grand Parc",
+    "apiKey": "8c322890891299d3e5703a0c7a7a6e84f426cac7",
+    "identifierId": "01D3E2N17CSWH0JGZTWY762S79"
+  },
+  {
+    "hotelIdentifier": "93842 Best Western Paris Saint-Quentin",
+    "apiKey": "0daff4436171ed73887dfe33f98332ba61aaa3f7",
+    "identifierId": "01D3E2N1PXP62R22H5NZTPDZ4Y"
+  },
+  {
+    "hotelIdentifier": "Sure Hotel By Best Western Paris Gare Du Nord Paris",
+    "apiKey": "670a53106412353749c9f276af15f6cca05c1e4b",
+    "identifierId": "01D540EJ7DBTEZTKSENGN11G6T"
+  },
+  {
+    "hotelIdentifier": "93781 Best Western Plus Les Terrasses de Brehat",
+    "apiKey": "063d4795cf7ec83a03ef6167b88b48fc4c08e959",
+    "identifierId": "01D3E2MYME4XC1VY8C89G5XV5D"
+  },
+  {
+    "hotelIdentifier": "93388 Best Western ARThotel",
+    "apiKey": "6e98a22bf462ee563a566d6afecb8e2c6a1321b0",
+    "identifierId": "01D3E2MY46DCFCV19GG8DB1G6N"
+  },
+  {
+    "hotelIdentifier": "Best Western Atlantys Hotel Zenith Nantes Saint Herblain",
+    "apiKey": "ec8a32405ba0f5522e424acfd0dab88f4d93d4b6",
+    "identifierId": "01D5409Q43KGAAX53ME7W1EAAZ"
+  },
+  {
+    "hotelIdentifier": "93483 Best Western L'Orangerie",
+    "apiKey": "ea1bfbb88778220f964e5eff8eb9bcbf488b21db",
+    "identifierId": "01D3E2MYKV62GPQAK9XV458FD9"
+  },
+  {
+    "hotelIdentifier": "93734 Best Western Plus Hotel La Joliette",
+    "apiKey": "3b07461f942999e9c7219aa068693d05f096ecc5",
+    "identifierId": "01D3E2N0W7AGZ2FNRZYR35AC3M"
+  },
+  {
+    "hotelIdentifier": "93712 Best Western Hotel de la Breche",
+    "apiKey": "815f219dfbd4c0e736b91a026e24459aa89c090f",
+    "identifierId": "01D3E2MZA1N817ME90WGQEJHMR"
+  },
+  {
+    "hotelIdentifier": "Best Western Les Bains De Perros-Guirec Hotel Et Spa Perros-Guirec",
+    "apiKey": "439a3d29c1d015c32d12cd61fd7152ab5fd0747f",
+    "identifierId": "01D7YWQJ7B6A6ZQ0KPK9BF435W"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Antibes Riviera",
+    "apiKey": "ad818b83a0f0250972f556d7666a21703c9599a4",
+    "identifierId": "01D40GVW0SZT2Q9JFP5XWF4CTR"
+  },
+  {
+    "hotelIdentifier": "93795 Le Saint-Antoine Hotel & Spa, BW Premier Collection",
+    "apiKey": "21165ed22c6d33ccbbf96c652c7cff7fe5fce48d",
+    "identifierId": "01D3E2N1564ZTDPS7PD11T777H"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Setif Setif",
+    "apiKey": "2ceeb8e091f48ecf572600bbe790aeea8526fa9d",
+    "identifierId": "01D4SWCPPV4JB8AMRHCZWJTN1D"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Opera Drouot Paris",
+    "apiKey": "f8c52ffe993900e44fc3afdc025eedfab16c544d",
+    "identifierId": "01D7YXSWVM480CF3K9Z6R681WW"
+  },
+  {
+    "hotelIdentifier": "93671 Best Western Plus Gare Saint Jean",
+    "apiKey": "34fbd5171228e7efb7595bca9e1b82deb3804afd",
+    "identifierId": "01D3E2N06V9MC20EQ3YBJT2HVC"
+  },
+  {
+    "hotelIdentifier": "93850 Best Western Plus Hyeres Cote D'azur",
+    "apiKey": "2ac6ad22b43dd5837dc76b49f25bf7855138a42d",
+    "identifierId": "01D3E2N1CN6T89CY62Q2TBV9GK"
+  },
+  {
+    "hotelIdentifier": "93782 Best Western Hotel Colombe",
+    "apiKey": "0fba1ca7b6abd49779eb20a9f9dad37b2782be3c",
+    "identifierId": "01D3E2N1ZG12PYBQRDH5F256Y0"
+  },
+  {
+    "hotelIdentifier": "93765 Best Western Plus Hotel Le Rhenan",
+    "apiKey": "2bf76c3c068b60bd15236482e9f3045f1713f034",
+    "identifierId": "01D3E2MZQ5PW3YNZVAXQ7TCNZD"
+  },
+  {
+    "hotelIdentifier": "93838 Best Western Rives de Paris La Defense",
+    "apiKey": "13f5afa5b9961ea23f1e4898a3b48593a05aa1f6",
+    "identifierId": "01D3E2N1AV5DHP591B7G7GJSW1"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Restaurant Dauphitel Echirolles",
+    "apiKey": "b1456c9ea789a2190159d86c90181acf9e250316",
+    "identifierId": "01D48KQQ473TSDDVHF6ACA3MAG"
+  },
+  {
+    "hotelIdentifier": "93582 Best Western Plus Hotel Colbert",
+    "apiKey": "88b00fd2fcb154ded24823a68bb33ef757feb319",
+    "identifierId": "01D3E2MYQKGB6FTJZ8B8JW1QXH"
+  },
+  {
+    "hotelIdentifier": "93714 Best Western Paris CDG Airport",
+    "apiKey": "d6b82e8e575a83fb3c1cb60669aa880fc819d0e2",
+    "identifierId": "01D3E2MYWXS0K3KTQY1XGP93FK"
+  },
+  {
+    "hotelIdentifier": "Westminster Hotel & Spa Bw Premier Collection Nice",
+    "apiKey": "85010bd8cef038d2dc3e6f8598309cc1735dc859",
+    "identifierId": "01D5446CX7WCJ9NXV4GGG4BFA8"
+  },
+  {
+    "hotelIdentifier": "93520 Best Western Plus Hotel La Marina",
+    "apiKey": "4d24b1eabf961cf24b7ff5f9fcba03c1f3f59ec7",
+    "identifierId": "01D3E2MYQGP05G2RAZY4E7XPH9"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Omnubo Saint Mars La Reorthe",
+    "apiKey": "920eaea7a6901e39aa63128bf870b9cf68f4d809",
+    "identifierId": "01D5404GY9MTYD83PVSTWM7S83"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Grand Monarque Hotel & Spa Chartres",
+    "apiKey": "43aa244629238d10ad4bf49be295311b968e5c7a",
+    "identifierId": "01D543C56YJ9ZZ22YXPK8PEDWN"
+  },
+  {
+    "hotelIdentifier": "93485 Best Western Hotel Terminus",
+    "apiKey": "1023c5c534ccfa493fca0c22f8669baf8d229b29",
+    "identifierId": "01D3E2MYDCSDP2BA8C4G3T4SCP"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Anjou Lafayette Opera Париж",
+    "apiKey": "da6bf0d3098891f80d4b5733ec71c547bbd20578",
+    "identifierId": "01D554J5FSTPS2P07Q5300YT73"
+  },
+  {
+    "hotelIdentifier": "93613 Best Western Hotel de Paris",
+    "apiKey": "324276600ad448709de1d1303da0da385c37aec0",
+    "identifierId": "01D3E2MYQFY30M89NATPDYTCPY"
+  },
+  {
+    "hotelIdentifier": "93536 Best Western Crequi Lyon Part Dieu",
+    "apiKey": "84d1924ae2c2964b6fb610b79bbbf0313a1a7be0",
+    "identifierId": "01D3E2MYSWH073MGY4WHZDZR06"
+  },
+  {
+    "hotelIdentifier": "93511 Best Western Hotel Le Pont D'Or",
+    "apiKey": "f7ed5cacd6221f8545fb43ef83fee291f9a56b33",
+    "identifierId": "01D3E2MY673KQKAAB0RZCZVSV8"
+  },
+  {
+    "hotelIdentifier": "93851 Best Western Plus Antibes Riviera",
+    "apiKey": "ad818b83a0f0250972f556d7666a21703c9599a4",
+    "identifierId": "01D3E2N08QXZMZQNXCGE4BE434"
+  },
+  {
+    "hotelIdentifier": "93878 Sure Hotel by Best Western Port Jerome - Le Havre",
+    "apiKey": "4ea47ff54ee124398ed39edf1225ada3dd548fd6",
+    "identifierId": "01D3E2N0J8XGK2FD3W8QC1K4J4"
+  },
+  {
+    "hotelIdentifier": "93618 Best Western Plus Vannes Centre Ville",
+    "apiKey": "2717ed030f13082dc0c6b84db10abbcf921ab3bb",
+    "identifierId": "01D3E2N03482GQW4JJ9GC0HG3P"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Au Trocadero Paris",
+    "apiKey": "cb952b0e76299bf7549022ac965be917d31dbed1",
+    "identifierId": "01D543TX1087XQDX19WNXFPP43"
+  },
+  {
+    "hotelIdentifier": "93721 Best Western Alexander Park",
+    "apiKey": "e3499da185751446919827ae713746b22f810949",
+    "identifierId": "01D3E2N10RZQKK4DQ1V3N642QD"
+  },
+  {
+    "hotelIdentifier": "Best Western Bridge Hotel Lyon East Jons",
+    "apiKey": "43a0f4f022b60521a266cc9c75dcb332f633d2fb",
+    "identifierId": "01D546DD6WC4AH2R0Z6ZNQNTRZ"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Metz Technopole Metz",
+    "apiKey": "",
+    "identifierId": "01D3E2MW9M5H4VTNKPW0ECC6K3"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Montcalm Paris",
+    "apiKey": "092f2fd7827672140b7d4f5883cabf741f272464",
+    "identifierId": "01D54088Y3GP60K4B3VEKMN7QC"
+  },
+  {
+    "hotelIdentifier": "93554 Best Western Hotel Restaurant Dauphitel",
+    "apiKey": "b1456c9ea789a2190159d86c90181acf9e250316",
+    "identifierId": "01D3E2N0NVX7BD4HNFBGFQZC1Q"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Admiral La Tour De Salvagny",
+    "apiKey": "d1560179930410dc2bd2d18723d31cce8f3383ea",
+    "identifierId": "01D541WZJ9BH2M72FB915V6M0K"
+  },
+  {
+    "hotelIdentifier": "93583 Best Western Kregenn",
+    "apiKey": "747390c8662b975ea10eb5d31f0c289eba553a08",
+    "identifierId": "01D3E2MYC327M9CHYTC3REPDYG"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Vieux Port La Ciotat",
+    "apiKey": "d64caa1e4c720e84f9b7aa7c269c142836b8f775",
+    "identifierId": "01D42EPR36BYM1TYG4NH9A14H2"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Continental Pau",
+    "apiKey": "d9bbf5a2b8d2c835cc539f1d97bbd66f2c715e46",
+    "identifierId": "01D4T5Z3VPRQ8AE3892H2E30WX"
+  },
+  {
+    "hotelIdentifier": "93847 Best Western Plus La Demeure",
+    "apiKey": "4f9f3f140876e877f55c83db3b16ea829e34dc1a",
+    "identifierId": "01D3E2N0FVAT2V429020GJBTP2"
+  },
+  {
+    "hotelIdentifier": "Sure Hotel By Best Western Port Jerome - Le Havre Port Jerome Sur Seine",
+    "apiKey": "4ea47ff54ee124398ed39edf1225ada3dd548fd6",
+    "identifierId": "01D4WYB405VCP3F7C3X8E6T306"
+  },
+  {
+    "hotelIdentifier": "93225 Best Western Aramis Saint-Germain",
+    "apiKey": "e8d34f56425098f9a2f479922581974841c954f2",
+    "identifierId": "01D3E2MYDPNAVRT7BCEA5EVBKJ"
+  },
+  {
+    "hotelIdentifier": "93827 Best Western Plus Hotel Le Rive Droite & SPA",
+    "apiKey": "723efe8c2194f00ec00a386bb4f39ab3ae1aea75",
+    "identifierId": "01D3E2N0633FHN6HXKZ9C96G0W"
+  },
+  {
+    "hotelIdentifier": "93822 Best Western Hotel Graslin",
+    "apiKey": "b0e70a1f685b557f7f52803d82d1c8e6b7670d8f",
+    "identifierId": "01D3E2N2CRD1GQ0YYQ43B11J1R"
+  },
+  {
+    "hotelIdentifier": "93621 Best Western Plus Hotel Gergovie",
+    "apiKey": "bb662446cefc7df260e3130987825909ed661e63",
+    "identifierId": "01D3E2MZ6RXDDJTVMEP5XF81T4"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Richelieu Lyon Part-Dieu Lyon",
+    "apiKey": "da10ba2ecda2d0f9e15bfebee14307503ebc8cd0",
+    "identifierId": "01D433QEXDMH7FXJ4TXS7B9DN7"
+  },
+  {
+    "hotelIdentifier": "93170 Best Western Plus Hotel Le Donjon",
+    "apiKey": "9a6e2a232b3e8f3a5c2aec6027d489637b32bde4",
+    "identifierId": "01D3E2MXDQKK7H72EQGA9WTT4P"
+  },
+  {
+    "hotelIdentifier": "93702 Best Western Plus Santa Maria",
+    "apiKey": "ff75714d2ac0ddae92badde5a7ceb2b639918a3e",
+    "identifierId": "01D3E2MZM5XFNXFQSK7N0EP028"
+  },
+  {
+    "hotelIdentifier": "93771 Best Western Le Marquis de La Baume",
+    "apiKey": "c434f5bbcbacc8a05657e1d785db5a9b6a74bc90",
+    "identifierId": "01D3E2MYZ2ZMKS9T6A56ES5FV6"
+  },
+  {
+    "hotelIdentifier": "Best Western Central Hotel Tours",
+    "apiKey": "b66524ca532123b8a04f6f06539de09a02af7af0",
+    "identifierId": "01D40EQ2G3XK61RSSX5W5E2RZD"
+  },
+  {
+    "hotelIdentifier": "93578 Best Western Plus Quartier Latin Pantheon",
+    "apiKey": "b3646e704874a7d2b9254809e311cf5534346cac",
+    "identifierId": "01D3E2N0MPVQS7CQFAEWXQBTE0"
+  },
+  {
+    "hotelIdentifier": "93546 Best Western Aurore",
+    "apiKey": "9854ffeeac768eb68a7e64cd90127dba8c10fd9a",
+    "identifierId": "01D3E2MYFQ2G52445QQC3X5ZS8"
+  },
+  {
+    "hotelIdentifier": "93670 Best Western Hotel de la Bourse",
+    "apiKey": "4f0e5c57bfd079eba387c4f75a9ba1b6d6abe196",
+    "identifierId": "01D3E2MYSY3W0BTD671SESVA26"
+  },
+  {
+    "hotelIdentifier": "93812 Best Western Hotel Gap",
+    "apiKey": "6b9623a017578fe981b9f0dffbcad8da4718e660",
+    "identifierId": "01D3E2N274DHVXEQ71W441VNG4"
+  },
+  {
+    "hotelIdentifier": "93758 Best Western The Hotel Versailles",
+    "apiKey": "6fb6de5ffadfec59a9e15147e6c3042ad71b54ab",
+    "identifierId": "01D3E2N27E9CY4CQ3W1W6VXQ4V"
+  },
+  {
+    "hotelIdentifier": "Best Western Golf Hotel",
+    "apiKey": "983c197a351c62e609609b6e63a00b749a63782c",
+    "identifierId": "01D40PWBYXV674PF3CFX9WY1Q8"
+  },
+  {
+    "hotelIdentifier": "93783 Best Western Premier Why Hotel",
+    "apiKey": "8149a8777c74c7aaadf20ec7d68d1a512efb89a5",
+    "identifierId": "01D3E2N0NDERXE355NZNY4XA2K"
+  },
+  {
+    "hotelIdentifier": "93610 Best Western Hotel International",
+    "apiKey": "c85654e53c45600acaf64fef1ab58928d60faba5",
+    "identifierId": "01D3E2MZ59JTF886BXFJNXZ2SQ"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Escapade Senlis Senlis",
+    "apiKey": "4f0d2bec74d51ada6e7ca7d9f29d4f8373c166c9",
+    "identifierId": "01D541WHNT5CWA739EWCB21C9M"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Quartier Latin Pantheon Paris",
+    "apiKey": "b3646e704874a7d2b9254809e311cf5534346cac",
+    "identifierId": "01D42H9C3R7JNDANVZCTHR8JCE"
+  },
+  {
+    "hotelIdentifier": "93856 Best Western Hotel Journel Antibes",
+    "apiKey": "0479765faa046586caec3719e6dba7ae9e33054e",
+    "identifierId": "01D3E2N1PWGDN1HPKR87SNR2TZ"
+  },
+  {
+    "hotelIdentifier": "93090 Best Western Continental",
+    "apiKey": "d9bbf5a2b8d2c835cc539f1d97bbd66f2c715e46",
+    "identifierId": "01D3E2MXDNJKR07S9DA7SY5HZZ"
+  },
+  {
+    "hotelIdentifier": "93396 Best Western Central Hotel",
+    "apiKey": "b66524ca532123b8a04f6f06539de09a02af7af0",
+    "identifierId": "01D3E2MXT391QA9PVYTZTK3JGY"
+  },
+  {
+    "hotelIdentifier": "93791 Best Western Plus Le Canard Sur le Toit",
+    "apiKey": "37b568578de2e24d35e9173a147ced43d9916145",
+    "identifierId": "01D3E2MZV9CG3SF70W435659AE"
+  },
+  {
+    "hotelIdentifier": "93037 Best Western Grand Hotel Bristol",
+    "apiKey": "55c831a65d09a2668db23474a08650f0be86d272",
+    "identifierId": "01D3E2MX9HV8NW56KZ2ET5T9M2"
+  },
+  {
+    "hotelIdentifier": "Best Western Park Hotel Geneve-Thoiry Thoiry",
+    "apiKey": "6b19b606c8009f921463366c355a33458fac57b1",
+    "identifierId": "01D54532Q3HC52THJKP7ENKAQF"
+  },
+  {
+    "hotelIdentifier": "93126 Best Western Montcalm",
+    "apiKey": "092f2fd7827672140b7d4f5883cabf741f272464",
+    "identifierId": "01D3E2MXKHVJKM8X7EEMD94WNM"
+  },
+  {
+    "hotelIdentifier": "Maison Albar Hotel Opera Diamond Bw Premier Collection Paris",
+    "apiKey": "3a8981e1a681c81089837e0c54ead109e1a6015a",
+    "identifierId": "01D7Z9N6KNS3CRRRTDFHYJKZXK"
+  },
+  {
+    "hotelIdentifier": "93834 Les Violettes Hotel & SPA Alsace, BW Premier Collection",
+    "apiKey": "3ca237633b3e02f08fc8d7cb68b8ebfffd938c1f",
+    "identifierId": "01D3E2N2NWPCM60Y6A6QCGKXGT"
+  },
+  {
+    "hotelIdentifier": "93593 Best Western Le Cheval Blanc",
+    "apiKey": "9429a5b879b8460f01986a5efea49ed321d6dfcd",
+    "identifierId": "01D3E2N08PCMYN9Y77B2247RJB"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel De France Bourg-En-Bresse",
+    "apiKey": "51283ba5f0121a6e82401f411edae86538634879",
+    "identifierId": "01D544C4FE5C0K14RBTERMGWTE"
+  },
+  {
+    "hotelIdentifier": "93631 Best Western Premier Trocadero la Tour",
+    "apiKey": "833a75518d92ebfeaac2114f69a024b0e8211df6",
+    "identifierId": "01D3E2N1Z546YJW23VGJ5FJSAP"
+  },
+  {
+    "hotelIdentifier": "Best Western Lorangerie",
+    "apiKey": "ea1bfbb88778220f964e5eff8eb9bcbf488b21db",
+    "identifierId": "01D40N2FEQ0B1SZHZ362RRHFCT"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Eiffel Cambronne Paris",
+    "apiKey": "2740307153cf8000afdd432ceca39bffd64d61ea",
+    "identifierId": "01D540C55MHCYV7CHSXYGF5GYH"
+  },
+  {
+    "hotelIdentifier": "93720 Best Western Hotel Le Guilhem",
+    "apiKey": "dff073c788c49e0dc0fa04304a170d0e1a9979a3",
+    "identifierId": "01D3E2N05J0KWWEVN4QHZWCR22"
+  },
+  {
+    "hotelIdentifier": "93826 Best Western Plus Hotel Litteraire Alexandre Vialatte",
+    "apiKey": "4fc7e40bffc491c8af2823f4b1cb69c97718a2ee",
+    "identifierId": "01D3E2N1M6GG2T7TFXE97YH35N"
+  },
+  {
+    "hotelIdentifier": "93832 Best Western Seine West Hotel",
+    "apiKey": "8dc3396fc2c61bb5613c4a0668d6e8fd34ee6a98",
+    "identifierId": "01D3E2N18DKNNF3SG8MPMVTXA8"
+  },
+  {
+    "hotelIdentifier": "93634 Best Western Premier Opera Opal",
+    "apiKey": "351102accdf1dd5887259369febbde7f5cac43a5",
+    "identifierId": "01D3E2N1B25PF2D8Y3E89MZSTR"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Montfleuri In Sainte-Maxime",
+    "apiKey": "dc26bf64313183c4b06e628e155948efea53fcbb",
+    "identifierId": "01D553JXVK997G5RQ5CGF3MMF6"
+  },
+  {
+    "hotelIdentifier": "Hotel Best Western Seine West Puteaux",
+    "apiKey": "8dc3396fc2c61bb5613c4a0668d6e8fd34ee6a98",
+    "identifierId": "01D5ECR2KBY6MB5365EGZ78T02"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Saint Etienne Porte Du Forez Andrezieux-Boutheon",
+    "apiKey": "3c2b49f3fe44f89970c2e33a295518a6ef0a4c50",
+    "identifierId": "01D5EDR4VVHNXFWKASNW5X9SWB"
+  },
+  {
+    "hotelIdentifier": "93841 Abbaye des Capucins Spa & Resort, BW Premier Collection",
+    "apiKey": "0515b1f896abb500d92f108f3636b0eba27bc724",
+    "identifierId": "01D3E2N1SVZ5AC8NBJKSSRGHBJ"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Star Champs Elysees Paris",
+    "apiKey": "353ce8b67fc21e7b188c9ae2f268860b2940ef51",
+    "identifierId": "01D7Z2T7A59HKBF0Q37S920K1N"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Val De Bievre In Jouy-En-Josas",
+    "apiKey": "0d5721be1e79227c251c152696a1add00c75dddb",
+    "identifierId": "01D5XVH4NG2Q8DNQMT5Y7XW9WP"
+  },
+  {
+    "hotelIdentifier": "Best Western Le Cheval Blanc Hotel Honfleur",
+    "apiKey": "9429a5b879b8460f01986a5efea49ed321d6dfcd",
+    "identifierId": "01D5H2E1EATDF7GFBQQ2JRPB9Y"
+  },
+  {
+    "hotelIdentifier": "93729 Best Western Hotel Le Montparnasse",
+    "apiKey": "373c65d28acb549716d73ec471fc8ce8289c4c64",
+    "identifierId": "01D3E2MZ1DA55ECA1KD3AFD5WX"
+  },
+  {
+    "hotelIdentifier": "93865 Best Western Hotel Centre Reims",
+    "apiKey": "7570f58242c086719c3b66ec1d0e1f28fa343c08",
+    "identifierId": "01D3E2MZYT6ENE6JB8YVVCGKC7"
+  },
+  {
+    "hotelIdentifier": "Best Western Sevan Parc Hotel Pertuis",
+    "apiKey": "f82956f37ce91ef958078888236284735a9f2f04",
+    "identifierId": "01D542V7G4RCVB72SZ3SD3TNXQ"
+  },
+  {
+    "hotelIdentifier": "93813 Best Western Hotel du Roy D'Aragon",
+    "apiKey": "59e427d5e09d43d3ac2de05ef1ff55335b289d6e",
+    "identifierId": "01D3E2N24XWTM8N1Q9J1WD3W6P"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Vannes Centre Ville Vannes",
+    "apiKey": "2717ed030f13082dc0c6b84db10abbcf921ab3bb",
+    "identifierId": "01D54113EJS3B6Z9M3QJ11S7S4"
+  },
+  {
+    "hotelIdentifier": "93716 Best Western Plus Paris Val de Bievre",
+    "apiKey": "0d5721be1e79227c251c152696a1add00c75dddb",
+    "identifierId": "01D3E2N1JN794X3WZ7FNQTYN5S"
+  },
+  {
+    "hotelIdentifier": "93829 Best Western Marseille Bourse Vieux Port",
+    "apiKey": "0247f85e200276e179de1937550c0b19e24f7d18",
+    "identifierId": "01D3E2N1A4PF7F19442S6M0AC1"
+  },
+  {
+    "hotelIdentifier": "93526 Best Western Hotel De Verdun",
+    "apiKey": "9ed3d1502ae9d8540d93e6a4c457ff94e6737324",
+    "identifierId": "01D3E2MYFYSXCTJVYM878TAFF6"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Grand Parc Chanteloup En Brie",
+    "apiKey": "8c322890891299d3e5703a0c7a7a6e84f426cac7",
+    "identifierId": "01D5401BE0WSZSBBZMSTP315ZM"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Masqhotel La Rochelle",
+    "apiKey": "6583e9f2ed4a34c9d6092af34f18bddff2a24744",
+    "identifierId": "01D4AWXQT4H121NDZEDY1ZFYGH"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Santa Maria Ile-Rousse",
+    "apiKey": "ff75714d2ac0ddae92badde5a7ceb2b639918a3e",
+    "identifierId": "01D543QQGSJN2V3BPVT81W03G1"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Chassieu Hotel & Spa Chassieu",
+    "apiKey": "52c2863829c1c6e36bd94b1133fc665bb0b09797",
+    "identifierId": "01D65DA4MCF1XM4RQ06GX0CM27"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Crystal Nancy",
+    "apiKey": "0fa62bc2ac519db2348c4e45d39941be38340a62",
+    "identifierId": "01D541VYJQY0GY60JJSXJFTRMX"
+  },
+  {
+    "hotelIdentifier": "93768 Best Western Paris Porte de Versailles",
+    "apiKey": "e262ec98163292e4b0b06663f75742007445f057",
+    "identifierId": "01D3E2N13ARPCHSDW1Y5YZD83P"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Paris Louvre Opera Paris",
+    "apiKey": "f837749faff0e60cb18090a88caa92dcb990855e",
+    "identifierId": "01D47MV96YH1KS1VWPBX1KMTG6"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Elixir Grasse Grasse",
+    "apiKey": "2cadf4763677f4bf1ea0d3d93e4383cd0d5b4791",
+    "identifierId": "01D543BXRPJAS928KPK2CZ58VV"
+  },
+  {
+    "hotelIdentifier": "93728 Best Western Hotel Faubourg Saint-Martin",
+    "apiKey": "9d73369b07160476a2f24dceeb178f6ed278b71a",
+    "identifierId": "01D3E2MZCWJRDKKWNACRVJ04JP"
+  },
+  {
+    "hotelIdentifier": "93809 Best Western Les Bains de Perros-Guirec Hotel et Spa",
+    "apiKey": "439a3d29c1d015c32d12cd61fd7152ab5fd0747f",
+    "identifierId": "01D3E2N0HTWFXPT5Y68JGZEGGT"
+  },
+  {
+    "hotelIdentifier": "93462 Best Western Plus Hostellerie Du Vallon",
+    "apiKey": "412f7fb6eeaa8b98d4a57ffa91c782c0fabb1650",
+    "identifierId": "01D3E2MXWVAYE1E5K8JZJSTVBG"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Montfleuri Sainte-Maxime",
+    "apiKey": "dc26bf64313183c4b06e628e155948efea53fcbb",
+    "identifierId": "01D540VE02ES4WWN3XKKD1ZD0Q"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Astoria Juan-Les-Pins",
+    "apiKey": "846e80d9d2c0fb533574e847c9651024d6cfabc3",
+    "identifierId": "01D7YY2WYVSW9DQBB0ZVPZ9GNY"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Roosevelt Nice",
+    "apiKey": "321edb2e06f9a8a5b38b45ea42f62b42319a65e9",
+    "identifierId": "01D7YWHJJ8W6NETRZ7EM4ZPFW0"
+  },
+  {
+    "hotelIdentifier": "93675 Best Western Le Duguesclin",
+    "apiKey": "368019062b4d0c4f0ad2d2653391fbff1eec3801",
+    "identifierId": "01D3E2MZHZJP68WJ2141MZQNMS"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel La Porte Des Chateaux Meung Sur Loire",
+    "apiKey": "434d3b6e79da0e4e316b8b8261297a6016f8098b",
+    "identifierId": "01D544DPG20KXCAE4EBCE53B1D"
+  },
+  {
+    "hotelIdentifier": "Best Western Le Relais De Laguiole Hotel & Spa Laguiole",
+    "apiKey": "697680db4b25a15334e1ff9e1c40896d724f6b6b",
+    "identifierId": "01D5405X59RQ29QY8A0QECK678"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Prince De Galles Menton",
+    "apiKey": "e854281e2b3fc291be9040f1ada77093263fbf11",
+    "identifierId": "01D54083NKFNHKW1VEA3N298RH"
+  },
+  {
+    "hotelIdentifier": "Best Western Paris Orly Airport Hotel Rungis",
+    "apiKey": "b0122de7d12b82274b195308cd342074346d2937",
+    "identifierId": "01D59A13WJRM7WN6AAN323X2CF"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel De La Poste & Spa Troyes",
+    "apiKey": "110d752f29a8b12c72d2b1ca75403c8a01b30470",
+    "identifierId": "01D451NJNV80BP6N61H0J6QGNE"
+  },
+  {
+    "hotelIdentifier": "Sure Hotel By Best Western Aix Sainte Victoire Fuveau",
+    "apiKey": "dd1be82c8d22d18255a5498bfe6e3c268fc474cb",
+    "identifierId": "01D48EENE5T0KS9PD9J98F0AMK"
+  },
+  {
+    "hotelIdentifier": "Best Western Citadelle Besancon",
+    "apiKey": "0eb766365eee5a5490fd0cffaa0a4771f174057e",
+    "identifierId": "01D4ASX7JYNW8350TD71WQ696E"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Schoenenbourg Riquewihr",
+    "apiKey": "87c820a7f5be8a0c5e77701c61c8ecf24a57daba",
+    "identifierId": "01D5429KR5MAHB9B53YRTN08MS"
+  },
+  {
+    "hotelIdentifier": "93307 Best Western Bretagne Montparnasse",
+    "apiKey": "c17bb6dee867fdf2e3261c069d9e89ea00fc73b1",
+    "identifierId": "01D3E2MXQ7B15FV917QXSG31TS"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Le Moderne Caen",
+    "apiKey": "f82949a77ae0abb7998ddc0871e0fbcfbe08ca61",
+    "identifierId": "01D542NGFAM2R62DEQG4H58DPR"
+  },
+  {
+    "hotelIdentifier": "93374 Best Western Plus Hotel Carlton",
+    "apiKey": "518b2b03f87407559d7930174fd32998eea947fb",
+    "identifierId": "01D3E2MXY0VP1R2BXWPQPYKMFF"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus 61 Paris Nation Hotel Paris",
+    "apiKey": "668a031bec2ea2a318cd07008df647648af2a240",
+    "identifierId": "01D7Z060JHRYXJWQPP3E8XCPAY"
+  },
+  {
+    "hotelIdentifier": "93736 Best Western Hotel du Pont Wilson",
+    "apiKey": "0d388cb819890dee60a32a8adbd105ec41fc5f59",
+    "identifierId": "01D3E2MYJ1C4TCGJB50J8T9E64"
+  },
+  {
+    "hotelIdentifier": "93792 Best Western Plus Hotel d'Europe et d'Angleterre",
+    "apiKey": "a719fc679fd7264cabcae57bfd5317add945d21c",
+    "identifierId": "01D3E2N0MNAWPH4PJE71ZNRMQJ"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus La Fayette Hotel Et Spa Epinal",
+    "apiKey": "c665b878e00636df98476af70494c8a060557c69",
+    "identifierId": "01D540CJJRA8XAXFPM2A8NY9RS"
+  },
+  {
+    "hotelIdentifier": "93212 Best Western Anjou Lafayette Opera",
+    "apiKey": "da6bf0d3098891f80d4b5733ec71c547bbd20578",
+    "identifierId": "01D3E2MXY4XPCRBD16NFPET418"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Montgomery Pontorson",
+    "apiKey": "b35a3f017e39f0a9d00aafa3a9aec1bbe9f92f25",
+    "identifierId": "01D405YCER3MKPJP34ZE7YEZT9"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Paris Cdg Airport Roissy-En-France",
+    "apiKey": "d6b82e8e575a83fb3c1cb60669aa880fc819d0e2",
+    "identifierId": "01D7YYF2ZE1TZW2S68MAMP7ZTZ"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Ajaccio Amiraute Ajaccio",
+    "apiKey": "5387f756031dd32f33d2bdce2d50654ef59f6537",
+    "identifierId": "01D4MN7MKB6YYMG7YD6854YFB3"
+  },
+  {
+    "hotelIdentifier": "93857 Aiden by Best Western @ T'aim",
+    "apiKey": "47375186ffd53234a1b27bcef37c1b773a30cfab",
+    "identifierId": "01D3E2MZMJ0H1K3FHXYY2FA79F"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Atrium Arles",
+    "apiKey": "3050b95c16016f05172eec72982a5c680b6033d6",
+    "identifierId": "01D540VKVKREEEX6HP9FWCKTBY"
+  },
+  {
+    "hotelIdentifier": "93636 Best Western Hotel Litteraire Gustave Flaubert",
+    "apiKey": "9cec2010c40c11e30b6d4855f1fc6222a53c4b3a",
+    "identifierId": "01D3E2N1TS06WBQ6JBTTHQBS17"
+  },
+  {
+    "hotelIdentifier": "93196 Best Western Jardin De Cluny",
+    "apiKey": "58f65c8be4391286cb0d852183a48fca9c68ee63",
+    "identifierId": "01D3E2MXKGFJSRCK27WQJWKX63"
+  },
+  {
+    "hotelIdentifier": "93547 Best Western New York",
+    "apiKey": "5fccf04e94b3f7f09c310f202faecabf84943d78",
+    "identifierId": "01D3E2MYP5E82G1VR6MTWH2FR3"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Gergovie Perignat-Les-Sarlieve - Clermont-Ferrand",
+    "apiKey": "bb662446cefc7df260e3130987825909ed661e63",
+    "identifierId": "01D543FE5M1052R9ZQVDPCEKHJ"
+  },
+  {
+    "hotelIdentifier": "Central Hotel Leonhard Feldkirch",
+    "apiKey": "b66524ca532123b8a04f6f06539de09a02af7af0",
+    "identifierId": "01D80C3R25CJTENTMAPP25GY0F"
+  },
+  {
+    "hotelIdentifier": "Best Western Grand Hotel Francais Bordeaux",
+    "apiKey": "d06b16cc60acaf1e0802a4ab8aabc1541cd1f50d",
+    "identifierId": "01D54065389AHS70MZX7EEJPPP"
+  },
+  {
+    "hotelIdentifier": "93854 Best Western Hotel Journel Paris Sud",
+    "apiKey": "0069b5de330380a612a0ea225a15d081d6b87a32",
+    "identifierId": "01D3E2N1WY7CXEE3EZPYAVT83F"
+  },
+  {
+    "hotelIdentifier": "93819 Best Western Hotel le 18 Paris",
+    "apiKey": "aac2a04741dbab51a7af911b7762166d5ff8c28c",
+    "identifierId": "01D3E2N0DM97MV9NWDV886NQ1P"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Montmartre Saint Pierre Paris",
+    "apiKey": "d0996dd59f20b3b226499ae95777b863d3eb8004",
+    "identifierId": "01D40FGESJC534XBHVE49QJK1J"
+  },
+  {
+    "hotelIdentifier": "Sure Hotel By Best Western Annemasse Annemasse",
+    "apiKey": "e44da02b312846105fac00a696a6f7add3e536cd",
+    "identifierId": "01D542NAVG07KH56MZCJ82VE2R"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Val Majour In Fontvieille",
+    "apiKey": "bf09627ec21bf3e7bb5b6a4683b47f28a3f57383",
+    "identifierId": "01D54W4ZEMT1CB5WGTNW0NJ014"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Faubourg 88 Paris",
+    "apiKey": "c62d558960ac9278e183ade2f3b287ff78d73401",
+    "identifierId": "01D7Z1CB2KD4Q71E0FTMG53TZH"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Bretagne Montparnasse Paris",
+    "apiKey": "c17bb6dee867fdf2e3261c069d9e89ea00fc73b1",
+    "identifierId": "01D4WR0664B50TBGKC60AJ3JVR"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Gaillon Opera Paris",
+    "apiKey": "2eada93b5f9bc9c07f2e1b9cc2fd77a4a98a9c2f",
+    "identifierId": "01D545WTCZ1DGCQW0N491CFYZA"
+  },
+  {
+    "hotelIdentifier": "Hotel Best Western Plus Santa Maria Ile Rousse",
+    "apiKey": "ff75714d2ac0ddae92badde5a7ceb2b639918a3e",
+    "identifierId": "01D5PQ8SQS812W0A9G43XQ8VTS"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Le Donjon Carcassonne",
+    "apiKey": "9a6e2a232b3e8f3a5c2aec6027d489637b32bde4",
+    "identifierId": "01D541KZSN98H4SE1KATZ2F88M"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Alexandra Saint-Malo",
+    "apiKey": "0c6e8cab27c62a2d7c6b69a580e5ceabc0397239",
+    "identifierId": "01D541H4KEWSRCH1S9YWJXKPD2"
+  },
+  {
+    "hotelIdentifier": "93761 Best Western Allegro Nation",
+    "apiKey": "4c8ded70354023f794a893f2b4363609b187b1cd",
+    "identifierId": "01D3E2N10V45MKTAY2KTV70HY9"
+  },
+  {
+    "hotelIdentifier": "93458 Best Western Bridge Hotel Lyon East",
+    "apiKey": "43a0f4f022b60521a266cc9c75dcb332f633d2fb",
+    "identifierId": "01D3E2MY379RZQ4CYS1NN1PC48"
+  },
+  {
+    "hotelIdentifier": "93672 Best Western Hotel des Barolles - Lyon Sud",
+    "apiKey": "a8fea08dc85ddbef8da702b4a53af547085a827f",
+    "identifierId": "01D3E2N02ZB6CGRCTB0A4ENW4J"
+  },
+  {
+    "hotelIdentifier": "Best Western La Mare O Pisces Hotel Ouistreham",
+    "apiKey": "19c4a110bf3fff432bdae16a271f8362bda2fa52",
+    "identifierId": "01D56JT9GAWBNB0ZNBJJEJEM25"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Plaisance Villefranche-Sur-Saone",
+    "apiKey": "5874fffdd3b38524eaca3b7fcf75248f4f1b5ffe",
+    "identifierId": "01D540GHH3CR2S8CVH259PX9HM"
+  },
+  {
+    "hotelIdentifier": "93364 Best Western Premier Hotel de la Poste & Spa",
+    "apiKey": "110d752f29a8b12c72d2b1ca75403c8a01b30470",
+    "identifierId": "01D3E2MXS8PD5DAE0K8QRXZTSZ"
+  },
+  {
+    "hotelIdentifier": "93800 Best Western Plus Hotel Elixir Grasse",
+    "apiKey": "2cadf4763677f4bf1ea0d3d93e4383cd0d5b4791",
+    "identifierId": "01D3E2N2A16HP23VC4987ZVJ0A"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Au Cheval Blanc Mulhouse Nord Baldersheim",
+    "apiKey": "55c18e015d797ac4216d7c55557971b88a3c50bd",
+    "identifierId": "01D540Q91A6RFEN7ZMMW4XZKYC"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Ducs De Bourgogne Paris",
+    "apiKey": "12045d5301ea627b8631d5955b136b23e55e5407",
+    "identifierId": "01D40C6VDEFY64CA2PJPSSK35R"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Kregenn Quimper",
+    "apiKey": "747390c8662b975ea10eb5d31f0c289eba553a08",
+    "identifierId": "01D54AGA7894PXRBJYXEQDE8Q0"
+  },
+  {
+    "hotelIdentifier": "ベストウエスタンプレミアホテルカピタルオペラ、パリ",
+    "apiKey": "8df54972f291c94c2e1fbf66454de11a842a5fb1",
+    "identifierId": "01D5THY09SE240FQ8JWRRB2WJQ"
+  },
+  {
+    "hotelIdentifier": "Odyssee Park Hotel Agadir",
+    "apiKey": "2829e87bcb833d0ce4fd0d8d5c4f0c30350109fe",
+    "identifierId": "01D54BJE66Q4SM8FX9KHA11JED"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Hermitage Montreuil-Sur-Mer",
+    "apiKey": "c8e6272e6aac6812329d11930991d530b8307f1c",
+    "identifierId": "01D54355GPPDB2ZVQ55F4JV3PR"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Antibes Riviera Antibes",
+    "apiKey": "ad818b83a0f0250972f556d7666a21703c9599a4",
+    "identifierId": "01D4B1AEYVZNA5CY728KY2CEGD"
+  },
+  {
+    "hotelIdentifier": "93589 Best Western Le Galice Aix Centre-Ville",
+    "apiKey": "37ef48886d6be57edc2924fab5a5843884f2433b",
+    "identifierId": "01D3E2N13Y05TGPBGYX6EPV0QF"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Des Francs Soissons",
+    "apiKey": "8f89dcab403b9c6203d3e92915de76e104ac64dc",
+    "identifierId": "01D542F7Y9HT1X9D8Z1CQM8T7C"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Colbert Chateauroux",
+    "apiKey": "88b00fd2fcb154ded24823a68bb33ef757feb319",
+    "identifierId": "01D5428A0EKD1GG3MJT936F0KM"
+  },
+  {
+    "hotelIdentifier": "93780 Best Western Plus Paris Orly Airport",
+    "apiKey": "b0122de7d12b82274b195308cd342074346d2937",
+    "identifierId": "01D3E2N1K2DPZWRNYR2N1QABDQ"
+  },
+  {
+    "hotelIdentifier": "93486 Best Western Le Relais de Laguiole Hotel & Spa",
+    "apiKey": "697680db4b25a15334e1ff9e1c40896d724f6b6b",
+    "identifierId": "01D3E2MYBB4XT0WG2ASKMJS0B0"
+  },
+  {
+    "hotelIdentifier": "93845 Best Western Hotel San Benedetto",
+    "apiKey": "2cda639685c29bbfe7a6f47576121fe989f0cf87",
+    "identifierId": "01D3E2N2AR465DC55J6G0EER76"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Elixir Grasse Grasse",
+    "apiKey": "2cadf4763677f4bf1ea0d3d93e4383cd0d5b4791",
+    "identifierId": "01D635063PW0KS1D6E1NY2FMAV"
+  },
+  {
+    "hotelIdentifier": "93668 Best Western La Metairie",
+    "apiKey": "4bccf9e8d2f6d44af9870ef07d292de893dc7245",
+    "identifierId": "01D3E2N1FZEMZ93NE8HYBZH83P"
+  },
+  {
+    "hotelIdentifier": "93696 Best Western Hotel Ile de France",
+    "apiKey": "6709ad9dec2a4796e4a84640d4494d0b251b5999",
+    "identifierId": "01D3E2N0YXMJHYZ539VSK9NT6K"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel International Annecy",
+    "apiKey": "",
+    "identifierId": "01D3E2MW9M5H4VTNKPW0ECC6K3"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Folkestone Opera Paris",
+    "apiKey": "f1297ec59f1d7200733c1d920ad6ac6688b563d3",
+    "identifierId": "01D540W6E9D39T28QYF2PJNW3D"
+  },
+  {
+    "hotelIdentifier": "Best Western Le Moulin De Ducey Hotel Ducey",
+    "apiKey": "ffecfb677e49f22345ab6c0ec41166451b3a20b3",
+    "identifierId": "01D5475R3Q7QPCYB26FZJ4XZBK"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Moulin De Ducey Ducey",
+    "apiKey": "ffecfb677e49f22345ab6c0ec41166451b3a20b3",
+    "identifierId": "01D4J090X6Y86E983HW6Y0Q4PV"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Marseille Bourse Vieux Port Marseille",
+    "apiKey": "0247f85e200276e179de1937550c0b19e24f7d18",
+    "identifierId": "01D4J2SBQY257NC9R0ENKX1ESM"
+  },
+  {
+    "hotelIdentifier": "93740 Best Western Sevres Montparnasse",
+    "apiKey": "d9ad1e93a431d30f2dca55acec09f3acf7841c94",
+    "identifierId": "01D3E2N0J9KHE947WCFAF1ZX9P"
+  },
+  {
+    "hotelIdentifier": "93543 Best Western Hotel Aurelia",
+    "apiKey": "3c7e80ff2a7645f2ebec741dd8ea724dd441f030",
+    "identifierId": "01D3E2MZ38V6VKRE3V4Y6BC3VT"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Val Majour Fontvieille",
+    "apiKey": "bf09627ec21bf3e7bb5b6a4683b47f28a3f57383",
+    "identifierId": "01D544EHW0V91ZC8AH7KZGEFXV"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Litteraire Alexandre Vialatte Clermont-Ferrand",
+    "apiKey": "4fc7e40bffc491c8af2823f4b1cb69c97718a2ee",
+    "identifierId": "01D45QQKA9CYWE793ZMMWJEX22"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Des Barolles - Lyon Sud Brignais - Lyon",
+    "apiKey": "a8fea08dc85ddbef8da702b4a53af547085a827f",
+    "identifierId": "01D4TDQ5HEZ1TSRYN8ZTGSW2CB"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Semaphore Rang Du Fliers",
+    "apiKey": "11226d2b379cfb8c3bd0cb99cf869657b69c5229",
+    "identifierId": "01D541ACSXVPRBMX7EX8PDVHTM"
+  },
+  {
+    "hotelIdentifier": "Les Violettes Hotel & Spa Alsace Bw Premier Collection Jungholtz",
+    "apiKey": "3ca237633b3e02f08fc8d7cb68b8ebfffd938c1f",
+    "identifierId": "01D542PRC6P1W5JYR9CX8E8RA7"
+  },
+  {
+    "hotelIdentifier": "93533 Best Western Premier Marais Grands Boulevards",
+    "apiKey": "964c65e794e1a99ba00b462f543192d81a23ea0a",
+    "identifierId": "01D3E2MYBCJF2KZXTR3C6KNTJ5"
+  },
+  {
+    "hotelIdentifier": "93737 Best Western Plus Elysee Secret",
+    "apiKey": "643d5c821300d582cc34c9bb9e0e51cc580753ab",
+    "identifierId": "01D3E2N039B6ZFYS3JB3PBF121"
+  },
+  {
+    "hotelIdentifier": "93802 Best Western Hotel des Thermes",
+    "apiKey": "a10cb4199855a6c1a26bf9490068f4853896a48c",
+    "identifierId": "01D3E2N149Y4Q1RWCK5W58K5Q0"
+  },
+  {
+    "hotelIdentifier": "93501 Best Western Golf Hotel",
+    "apiKey": "983c197a351c62e609609b6e63a00b749a63782c",
+    "identifierId": "01D3E2MY7HJPYHANQYWPF2BSD7"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Sydney Opera Paris",
+    "apiKey": "df626437147eea3e457f9934877d8b0cafc93610",
+    "identifierId": "01D7YYM4D7TE5WJ6NT6AVE4BZM"
+  },
+  {
+    "hotelIdentifier": "93203 Best Western Folkestone Opera",
+    "apiKey": "f1297ec59f1d7200733c1d920ad6ac6688b563d3",
+    "identifierId": "01D3E2MY1YN3M5NFSETAENBJ2V"
+  },
+  {
+    "hotelIdentifier": "56400 Sure Hotel by Best Western Bordeaux Aeroport",
+    "apiKey": "0ef8f157f21d42b735818e4fe76ede2da8c9bef8",
+    "identifierId": "01D3E2MX2F1V6HMRX8BBKHHJFA"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel La Gentilhommiere Satillieu",
+    "apiKey": "510e44bcb1398c541110a0abbceb171a8fb73a6a",
+    "identifierId": "01D40M5Z0QKZKTB7VXTDTGFJDS"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Chalet Les Saytels Le Grand-Bornand",
+    "apiKey": "260deb8731be0f3e0b65ec3f2a75d11cd837a889",
+    "identifierId": "01D546YKYGAYPFXKSA8YJ6HJ1Q"
+  },
+  {
+    "hotelIdentifier": "当然酒店的最佳西方巴黎Gare Du Nord火车站，巴黎",
+    "apiKey": "670a53106412353749c9f276af15f6cca05c1e4b",
+    "identifierId": "01D563TA3V2J2CB3A2EEZZG9QE"
+  },
+  {
+    "hotelIdentifier": "93868 Best Western Dijon Quetigny",
+    "apiKey": "974d48d507e1f6589ef5f3bff8d9762ca06d2605",
+    "identifierId": "01D3E2MZAC1Y48DCVH46WFGSRV"
+  },
+  {
+    "hotelIdentifier": "93285 Best Western Plus Le Roof",
+    "apiKey": "491db0286c9aa702121155fd4161365d609df33f",
+    "identifierId": "01D3E2MXZ9J9RQNGQWT8HFWC3Y"
+  },
+  {
+    "hotelIdentifier": "Best Western Kemaris",
+    "apiKey": "1a262022114da5e4f8b0633d079860f01b51d6d9",
+    "identifierId": "01D47MZR3V37NAB022V2FBY42T"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel La Demeure Paris",
+    "apiKey": "4f9f3f140876e877f55c83db3b16ea829e34dc1a",
+    "identifierId": "01D541NCBR59ECAE2DBN6ZRQPQ"
+  },
+  {
+    "hotelIdentifier": "93652 Best Western Plus Hotel de l'Arbois",
+    "apiKey": "bb9a511cf3d099854bd7fae9c4699a5fcab3bfaa",
+    "identifierId": "01D3E2MZVZ7V5SV7FWNTNAZJND"
+  },
+  {
+    "hotelIdentifier": "Best Western Le Pont Dor Hotel Figeac",
+    "apiKey": "f7ed5cacd6221f8545fb43ef83fee291f9a56b33",
+    "identifierId": "01D54V2ZV8EZ3H13V58NY5XJ15"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Nice Cosy Hotel Nice",
+    "apiKey": "1e3983d533e7a1da03e47b58ceeb29e75c25e918",
+    "identifierId": "01D43BWP5WKBZWQKRT6CFQA77S"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Isidore Rennes",
+    "apiKey": "bf371d11383eafb678d36627eddd31b560dcb503",
+    "identifierId": "01D42JAFRN0RVF5R3GCCE8Q61D"
+  },
+  {
+    "hotelIdentifier": "93764 Best Western Golf Hotel Lacanau",
+    "apiKey": "564f5d2d2d04c05d0d16e3afc35a57ee576c5ec0",
+    "identifierId": "01D3E2N082H8Z1S12DDDFQF7S3"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Mercedes Arc De Triomphe Paris",
+    "apiKey": "96c09c2090bcae957595d4fe450c0bde54e2a488",
+    "identifierId": "01D7YY85JACBD66NGNB131C61G"
+  },
+  {
+    "hotelIdentifier": "93686 Best Western Europe Hotel",
+    "apiKey": "569659c851ba5398185b668ad087b911713bab3e",
+    "identifierId": "01D3E2N1XQT92FC1K73DXBD76D"
+  },
+  {
+    "hotelIdentifier": "93658 Best Western Premier Vieux Port",
+    "apiKey": "d64caa1e4c720e84f9b7aa7c269c142836b8f775",
+    "identifierId": "01D3E2N0DX679CNZ39M9KGB2PN"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Europe Hotel Brest",
+    "apiKey": "",
+    "identifierId": "01D3E2MW9M5H4VTNKPW0ECC6K3"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Crequi Lyon Part Dieu Lyon",
+    "apiKey": "84d1924ae2c2964b6fb610b79bbbf0313a1a7be0",
+    "identifierId": "01D45SQK7WSPHXWN9P0J7KNCNV"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Saphir Lyon Lyon",
+    "apiKey": "a56a14414d233ca951a947e5347bad005d723555",
+    "identifierId": "01D7YTSWMNJV8VSFV5CHR175DV"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Galice Aix Centre-Ville Aix-En-Provence",
+    "apiKey": "37ef48886d6be57edc2924fab5a5843884f2433b",
+    "identifierId": "01D540KV19WXWF6R47PTEAXMT5"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Beausejour Lourdes",
+    "apiKey": "2f3c24b68e501a9440bfe523bb66481757a16bd5",
+    "identifierId": "01D541KWMWRVSG2JPSC5RW3VR3"
+  },
+  {
+    "hotelIdentifier": "93498 Best Western Plus Le Moderne",
+    "apiKey": "f82949a77ae0abb7998ddc0871e0fbcfbe08ca61",
+    "identifierId": "01D3E2MZMYKN2QB08WFM5H6BY0"
+  },
+  {
+    "hotelIdentifier": "93390 Best Western Le Bois De La Marche",
+    "apiKey": "96445f3016519935731062b854f9086dedb3f27a",
+    "identifierId": "01D3E2MXRHPATZPNFNYV8Z3KVS"
+  },
+  {
+    "hotelIdentifier": "93201 Best Western Empire Elysees",
+    "apiKey": "c6a18023f5c6b3254f82bc0a7e20dd4c36150c1c",
+    "identifierId": "01D3E2MXV9VGMWS65VZX3854E9"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Litteraire Alexandre Vialatte Clermont Ferrand",
+    "apiKey": "4fc7e40bffc491c8af2823f4b1cb69c97718a2ee",
+    "identifierId": "01D45Q9SQ7KNY3NYXEGNZRNN6W"
+  },
+  {
+    "hotelIdentifier": "93602 Best Western Select Hotel",
+    "apiKey": "62389753bf11e380862ce168c76e0cc658da8262",
+    "identifierId": "01D3E2MZSFZHVK71AQ9WCHCTKE"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel De La Plage Saint-Nazaire",
+    "apiKey": "18eca7bf194942f1f7bb09e94b4734044cdca0d7",
+    "identifierId": "01D542V8AQTGNAMWHPXKNJPWVC"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Des Voyageurs Fougeres",
+    "apiKey": "ea767395ff5496d6470844ab57b8d155e019a8d9",
+    "identifierId": "01D540PZ2T3F1B6DP7SDZYR2SY"
+  },
+  {
+    "hotelIdentifier": "93749 Best Western Hotel Garden & Spa",
+    "apiKey": "4b64ff28279bc289a8bdd3b66131634e2afcd6de",
+    "identifierId": "01D3E2N12M5HWW8130HG2X9A4R"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Le Canard Sur Le Toit Colomiers",
+    "apiKey": "37b568578de2e24d35e9173a147ced43d9916145",
+    "identifierId": "01D540JRDG6YS5RBDEG2601E4A"
+  },
+  {
+    "hotelIdentifier": "93725 Best Western Hotel Belfort",
+    "apiKey": "d22525e2f3972b1f3fde071a9d24a1f5db87a5f4",
+    "identifierId": "01D3E2MZMWBWGPJQB2SDN1T9J9"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Monopole Metropole",
+    "apiKey": "b326cf28b1f4cbf53b3aa2027f8b142b12adebd3",
+    "identifierId": "01D40G5JE4Z6400GN8GX14SC37"
+  },
+  {
+    "hotelIdentifier": "93876 Sure Hotel by Best Western Paris Gare du Nord",
+    "apiKey": "670a53106412353749c9f276af15f6cca05c1e4b",
+    "identifierId": "01D3E2N1H5T45FZBBW762WA73J"
+  },
+  {
+    "hotelIdentifier": "93385 Best Western Premier Hotel de la Paix",
+    "apiKey": "3852b3cf1ca47dcf8a4286bc18bc84935dbc94e5",
+    "identifierId": "01D3E2MXNBJ18T8Z9B6DK09YV7"
+  },
+  {
+    "hotelIdentifier": "93606 Best Western Premier Hotel Bayonne Etche Ona - Bordeaux",
+    "apiKey": "c23907f11dad448d12f236c839a921f1528ba5e0",
+    "identifierId": "01D3E2N20MAF5K3Q96W5SJAZSQ"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Brice Garden Nice",
+    "apiKey": "e561586e94ed407a1ac33990dc2e803cc8be96e1",
+    "identifierId": "01D5435QJDYNJ5T70VCT0FQRE1"
+  },
+  {
+    "hotelIdentifier": "Sure Hotel By Best Western La Palmeraie Pau",
+    "apiKey": "aee670b2a020bba43a27345430c4ba8466817fe3",
+    "identifierId": "01D7Z0406Z5XV5QXQGR9P9GSY0"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Paris St-Quentin Montigny Le Bretonneux",
+    "apiKey": "0daff4436171ed73887dfe33f98332ba61aaa3f7",
+    "identifierId": "01D57399VWGADBJ37Y74SJZ3TK"
+  },
+  {
+    "hotelIdentifier": "93874 Sure Hotel by Best Western Annemasse",
+    "apiKey": "e44da02b312846105fac00a696a6f7add3e536cd",
+    "identifierId": "01D3E2N2ASYW7XJAGGTGEX4526"
+  },
+  {
+    "hotelIdentifier": "Best Western Golf Hotel La Grande Motte",
+    "apiKey": "983c197a351c62e609609b6e63a00b749a63782c",
+    "identifierId": "01D5414YD1J05J8YHWD5CTVA05"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Golf Dalbon Albon",
+    "apiKey": "a1cf81a9e5d27a3b54873c0b197fe72bfbc41505",
+    "identifierId": "01D7YW1W4G9QJF9CKSGT40MCPJ"
+  },
+  {
+    "hotelIdentifier": "93677 Best Western Hotel Hermitage",
+    "apiKey": "c8e6272e6aac6812329d11930991d530b8307f1c",
+    "identifierId": "01D3E2N21PPKWHKN8WYRNG22ZN"
+  },
+  {
+    "hotelIdentifier": "93662 Maison Albar Hotel Opera Diamond, BW Premier Collection",
+    "apiKey": "3a8981e1a681c81089837e0c54ead109e1a6015a",
+    "identifierId": "01D3E2N0VZ0PJV1Q45RKKM9BAV"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Saint-Etienne Porte Du Forez Andrezieux-Boutheon",
+    "apiKey": "3c2b49f3fe44f89970c2e33a295518a6ef0a4c50",
+    "identifierId": "01D542ANPRPGN25A4QVA5BZVCB"
+  },
+  {
+    "hotelIdentifier": "93678 Best Western Golf d'Albon",
+    "apiKey": "a1cf81a9e5d27a3b54873c0b197fe72bfbc41505",
+    "identifierId": "01D3E2N0SPRD10TK59749GVEYV"
+  },
+  {
+    "hotelIdentifier": "93641 Best Western Hotel le Schoenenbourg",
+    "apiKey": "87c820a7f5be8a0c5e77701c61c8ecf24a57daba",
+    "identifierId": "01D3E2N0DKJXP93Y7NMPPG8GFH"
+  },
+  {
+    "hotelIdentifier": "93469 Best Western Hotel Eiffel Cambronne",
+    "apiKey": "2740307153cf8000afdd432ceca39bffd64d61ea",
+    "identifierId": "01D3E2MY0B43F0N4P7EDKZEQ7R"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Paris Orly Airport Rungis",
+    "apiKey": "b0122de7d12b82274b195308cd342074346d2937",
+    "identifierId": "01D5415WKYFAFSCXD8QRR92QNF"
+  },
+  {
+    "hotelIdentifier": "93701 Best Western Hotel Alcyon",
+    "apiKey": "bafbb59d37940f5c039a5421731aa23920bac6ef",
+    "identifierId": "01D3E2MYY3MGNT50NCK3Y17N9E"
+  },
+  {
+    "hotelIdentifier": "93683 Best Western Plus Hotel de la Regate",
+    "apiKey": "ccc28cd4431aa86bbbd1e668aa1d44bea3fea630",
+    "identifierId": "01D3E2N1DPFP5S809ZRS9RD6PG"
+  },
+  {
+    "hotelIdentifier": "93255 Best Western Le Moulin De Ducey",
+    "apiKey": "ffecfb677e49f22345ab6c0ec41166451b3a20b3",
+    "identifierId": "01D3E2MXZ72ZKGJS4QS5AQA92E"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Canet Beach Canet Plage",
+    "apiKey": "ebfbc816228c9d5748fce50668b8c0f00baa6a70",
+    "identifierId": "01D546016XJE6DT3MXDQTYMDVB"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Bayonne Etche Ona - Bordeaux Bordeaux",
+    "apiKey": "c23907f11dad448d12f236c839a921f1528ba5e0",
+    "identifierId": "01D540A2BQAHEVCKTC80NZ2D3H"
+  },
+  {
+    "hotelIdentifier": "Best Western Grand Hotel Bristol Colmar",
+    "apiKey": "55c831a65d09a2668db23474a08650f0be86d272",
+    "identifierId": "01D54DEXG5BD8ZPFA3CCCEDQ22"
+  },
+  {
+    "hotelIdentifier": "Best Western Seine West Hotel Puteaux",
+    "apiKey": "8dc3396fc2c61bb5613c4a0668d6e8fd34ee6a98",
+    "identifierId": "01D4WC0MBY3V7E5BYPYX228ZHP"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel De France",
+    "apiKey": "d2782d925a8d805b9c43065cb0d8068a8fb21220",
+    "identifierId": "01D4A9GCTMMVD82ZJCW88NAREA"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Les Rives Du Ter Larmor-Plage",
+    "apiKey": "6e6883addd8571dbb3a76d3aa657c406844eeab0",
+    "identifierId": "01D5423H4S7THG8ZXREVDEEMY0"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Canet-Plage Canet Plage",
+    "apiKey": "ebfbc816228c9d5748fce50668b8c0f00baa6a70",
+    "identifierId": "01D541FRMCFX65173A1611SC7Y"
+  },
+  {
+    "hotelIdentifier": "93848 Best Western Hotel Omnubo",
+    "apiKey": "920eaea7a6901e39aa63128bf870b9cf68f4d809",
+    "identifierId": "01D3E2N2S7NEEVJCRGS1VNRF2P"
+  },
+  {
+    "hotelIdentifier": "93007 Best Western Plus Hotel d'Anjou",
+    "apiKey": "d4d2827004c9a4540439d67fa9f1d2c07672c866",
+    "identifierId": "01D3E2MX9J6VH1MVN2DHG0MTK9"
+  },
+  {
+    "hotelIdentifier": "Best Western Odyssee Park Hotel Agadir",
+    "apiKey": "2829e87bcb833d0ce4fd0d8d5c4f0c30350109fe",
+    "identifierId": "01D555VVFTV67BH506FZX4PZ2Z"
+  },
+  {
+    "hotelIdentifier": "93079 Best Western De Diane",
+    "apiKey": "add34837c757690d845e9334a7bedc6b9f8b09e6",
+    "identifierId": "01D3E2MX280SSQ7JKNF9SZ976G"
+  },
+  {
+    "hotelIdentifier": "93412 Best Western La Gentilhommiere",
+    "apiKey": "510e44bcb1398c541110a0abbceb171a8fb73a6a",
+    "identifierId": "01D3E2MXX8KBCRH38J0QVZMS1X"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Paris Velizy Hotel Velizy Villacoublay",
+    "apiKey": "e9acc6b1cefc13ca081536191a30a0e0519ace5a",
+    "identifierId": "01D546HSFTTZD82RXAW6JRFK4D"
+  },
+  {
+    "hotelIdentifier": "93427 Best Western Plus La Corniche",
+    "apiKey": "e44df71c2509ca6bee64a9722014e40977d12168",
+    "identifierId": "01D3E2MY99F2C6R9PZPDJ1ZZ6T"
+  },
+  {
+    "hotelIdentifier": "93603 Best Western Hotel Atrium",
+    "apiKey": "3050b95c16016f05172eec72982a5c680b6033d6",
+    "identifierId": "01D3E2N0DNSM8WGB19R0AMFKEV"
+  },
+  {
+    "hotelIdentifier": "Sure Hotel By Best Western Bordeaux Aeroport Merignac",
+    "apiKey": "0ef8f157f21d42b735818e4fe76ede2da8c9bef8",
+    "identifierId": "01D4SWDTGW1H7QH5BDTJH6ZVSK"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Du Roy D&39aragon Bonifacio",
+    "apiKey": "",
+    "identifierId": "01D3E2MW9M5H4VTNKPW0ECC6K3"
+  },
+  {
+    "hotelIdentifier": "93507 Hotel L'Horset Opera BW Premier Collection",
+    "apiKey": "895784fa32a50910afcb7caa4e1193224cb89ceb",
+    "identifierId": "01D3E2MY4AP0JDCCB5PF7WPRZ9"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Monopole Metropole Strasbourg",
+    "apiKey": "b326cf28b1f4cbf53b3aa2027f8b142b12adebd3",
+    "identifierId": "01D40S0SNGV5TS6VKB5F1ABMJY"
+  },
+  {
+    "hotelIdentifier": "Hotel Best Western Paris Val De Bievre Jouy-En-Josas",
+    "apiKey": "0d5721be1e79227c251c152696a1add00c75dddb",
+    "identifierId": "01D5WRZB8XCH5KYVBY2K6STN0V"
+  },
+  {
+    "hotelIdentifier": "Best Western The Hotel Versailles Buc",
+    "apiKey": "6fb6de5ffadfec59a9e15147e6c3042ad71b54ab",
+    "identifierId": "01D7YXY3YBR04FVC67X2TK52CK"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Santa Maria Hotel Ile Rousse",
+    "apiKey": "ff75714d2ac0ddae92badde5a7ceb2b639918a3e",
+    "identifierId": "01D56D3G5PSXK8TJJE6V590B1S"
+  },
+  {
+    "hotelIdentifier": "93437 Best Western Chalet Les Saytels",
+    "apiKey": "260deb8731be0f3e0b65ec3f2a75d11cd837a889",
+    "identifierId": "01D3E2MXQ8FC211MWSA23F2E8P"
+  },
+  {
+    "hotelIdentifier": "93654 Best Western Star Champs Elysees",
+    "apiKey": "353ce8b67fc21e7b188c9ae2f268860b2940ef51",
+    "identifierId": "01D3E2MYV5WFF6XA8ZYQFPDG13"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Anjou Lafayette Opera Paris",
+    "apiKey": "da6bf0d3098891f80d4b5733ec71c547bbd20578",
+    "identifierId": "01D54ACAVMJ9MRGZ7WTRQVZCEX"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Alexandra St Malo",
+    "apiKey": "0c6e8cab27c62a2d7c6b69a580e5ceabc0397239",
+    "identifierId": "01D550YYQ4FYZ8EMZX4QWB1M2M"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel De La Bourse Mulhouse",
+    "apiKey": "4f0e5c57bfd079eba387c4f75a9ba1b6d6abe196",
+    "identifierId": "01D45JK3XCJEEVBFMXQW08Y46Y"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Carlton Annecy",
+    "apiKey": "518b2b03f87407559d7930174fd32998eea947fb",
+    "identifierId": "01D541H8J7M509N78AE1SYZE7W"
+  },
+  {
+    "hotelIdentifier": "93527 Best Western Adagio",
+    "apiKey": "e08f7f0f44c96f37e337b30de22dceaf74fe8b63",
+    "identifierId": "01D3E2MYMRF0S6T5CXBXW47DHV"
+  },
+  {
+    "hotelIdentifier": "93497 Best Western Marseille Aeroport",
+    "apiKey": "7878ffb4c8609e00123e2d47a93dd863a3bba077",
+    "identifierId": "01D3E2MYHW9P8YWBFTGW4DF34N"
+  },
+  {
+    "hotelIdentifier": "93691 Best Western Hotel Paradou Mediterranee",
+    "apiKey": "bf5d0ca595eae4dc43d4ec114d525ed966babbee",
+    "identifierId": "01D3E2N0FQ5VS371SF8DWRTDGK"
+  },
+  {
+    "hotelIdentifier": "93864 Best Western Hotel Saint Claude",
+    "apiKey": "9f8774f8cebf7255af75e08be82fc5d7955fdf30",
+    "identifierId": "01D3E2N1FV3K098V2T0AGSAX5N"
+  },
+  {
+    "hotelIdentifier": "93366 Best Western Plus Monopole Metropole",
+    "apiKey": "b326cf28b1f4cbf53b3aa2027f8b142b12adebd3",
+    "identifierId": "01D3E2MY9517BDP58MPCHRN5P1"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Du Pont Wilson Lyon",
+    "apiKey": "0d388cb819890dee60a32a8adbd105ec41fc5f59",
+    "identifierId": "01D42FM7QVC69WPX97KJ16AJYY"
+  },
+  {
+    "hotelIdentifier": "93852 Best Western Hotel Canet-Plage",
+    "apiKey": "ebfbc816228c9d5748fce50668b8c0f00baa6a70",
+    "identifierId": "01D3E2N01XSKERG2JK0XCVBCSJ"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Gemenos En Provence Gemenos",
+    "apiKey": "136d10b9b3a83700ed8f57b4c0ad907b941c87c8",
+    "identifierId": "01D42EMZAATGHVEKFQDSEFGWAH"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel La Joliette Marseille",
+    "apiKey": "3b07461f942999e9c7219aa068693d05f096ecc5",
+    "identifierId": "01D40MB9J3WFKK3M58Z7D17NJB"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Kemaris Biarritz",
+    "apiKey": "1a262022114da5e4f8b0633d079860f01b51d6d9",
+    "identifierId": "01D540X7APSW5BT181KQGEJQFR"
+  },
+  {
+    "hotelIdentifier": "93811 Best Western Auray Hotel du Loch",
+    "apiKey": "2de5c4f137c318c8dd3a73fe073cb81a039ca150",
+    "identifierId": "01D3E2MZSS6AMYRS5EFT9MAVXM"
+  },
+  {
+    "hotelIdentifier": "Best Western Golf Hotel Lacanau Lacanau-Ocean",
+    "apiKey": "564f5d2d2d04c05d0d16e3afc35a57ee576c5ec0",
+    "identifierId": "01D54BZ2GK0R2WZ0MHEQCCEXK5"
+  },
+  {
+    "hotelIdentifier": "93574 Best Western Le Comtadin",
+    "apiKey": "df0d49b8a706b2c18bb268e514a8a01536e7bf05",
+    "identifierId": "01D3E2MZCVPM9013BZ9ZMPTP02"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus L&39artist Hotel Tours",
+    "apiKey": "",
+    "identifierId": "01D3E2MW9M5H4VTNKPW0ECC6K3"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Hyeres Cote Dazur Hyeres",
+    "apiKey": "2ac6ad22b43dd5837dc76b49f25bf7855138a42d",
+    "identifierId": "01D42ER12QTEF82W2R0VJN67D6"
+  },
+  {
+    "hotelIdentifier": "93481 Best Western Hotel Montgomery",
+    "apiKey": "b35a3f017e39f0a9d00aafa3a9aec1bbe9f92f25",
+    "identifierId": "01D3E2MYDBJGXHDHPEGPJP8RVA"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Mondial Cannes",
+    "apiKey": "dbacf8b2d4734efdd923584d732b2e106cde23ea",
+    "identifierId": "01D5471BTTTN6K6CY24AAAP67R"
+  },
+  {
+    "hotelIdentifier": "93835 Best Western Plus Excelsior Chamonix Hotel Spa",
+    "apiKey": "0f923ce299529245f6365c5442df8af0ee4045e1",
+    "identifierId": "01D3E2N18C0QD9Q9Y7BHYB8Z1Y"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Journel Antibes Antibes",
+    "apiKey": "0479765faa046586caec3719e6dba7ae9e33054e",
+    "identifierId": "01D4B1FFKMGP00SQH8XK5B6144"
+  },
+  {
+    "hotelIdentifier": "93875 Best Western Atlantys Hotel Zenith Nantes",
+    "apiKey": "ec8a32405ba0f5522e424acfd0dab88f4d93d4b6",
+    "identifierId": "01D3E2N2CPEFNF7EKDYDAWHXW5"
+  },
+  {
+    "hotelIdentifier": "93700 Best Western Hotel L'Oree",
+    "apiKey": "95c9a3eab73ac571b5b0766d58632fabf5710e4f",
+    "identifierId": "01D3E2MZYFMEXD9PSB8TXXQX6W"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Allegro Nation Paris",
+    "apiKey": "4c8ded70354023f794a893f2b4363609b187b1cd",
+    "identifierId": "01D5407RCB059HSSHN4EQEMXJ0"
+  },
+  {
+    "hotelIdentifier": "93722 Best Western Blois Chateau",
+    "apiKey": "c76fd6e18a82e8ee3eac29b17d9c90feb6f010dd",
+    "identifierId": "01D3E2N0DMYC1187BR0W0SZV42"
+  },
+  {
+    "hotelIdentifier": "93880 Le Suffren, BW Signature Collection",
+    "apiKey": "f3c64790562758401dd8a4ba2660ef7949d53301",
+    "identifierId": "01D3E2N2TXRWYEX58FXC1DY7WJ"
+  },
+  {
+    "hotelIdentifier": "93635 Best Western Mercedes Arc de Triomphe",
+    "apiKey": "96c09c2090bcae957595d4fe450c0bde54e2a488",
+    "identifierId": "01D3E2MYE2B6Z50BJ4PEFNE00F"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Jardin De Cluny Paris",
+    "apiKey": "58f65c8be4391286cb0d852183a48fca9c68ee63",
+    "identifierId": "01D42H0S39QK5QS9N6D4XCZW7B"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Le Lavarin Avignon",
+    "apiKey": "e4b9f14d2dc76f27b89ea4fa7c912b54e671b56a",
+    "identifierId": "01D540F7RAM8NRKEMNB41QB1K4"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Toulouse Centre Les Capitouls Toulouse",
+    "apiKey": "e8b01270fdc1d3f1a329dcbe2b8896da9625c83a",
+    "identifierId": "01D540BBK725E9V84TZR5YJ3YJ"
+  },
+  {
+    "hotelIdentifier": "93776 Best Western Poitiers Centre Le Grand Hotel",
+    "apiKey": "ac9525c293d3d6a4fbcd1d67367e3ac8bebb995b",
+    "identifierId": "01D3E2N259DNZ928HK7J8HW9E2"
+  },
+  {
+    "hotelIdentifier": "Best Western Grand Hotel De Bordeaux Aurillac",
+    "apiKey": "9452cad7a568cbecd0b5910585c6c89dbe729583",
+    "identifierId": "01D4WXNWFHS7C55QT733G6DR1N"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Paris Saint-Quentin Montigny Le Bretonneux",
+    "apiKey": "0daff4436171ed73887dfe33f98332ba61aaa3f7",
+    "identifierId": "01D5452GYGMBPGRJWGY0KDG7QB"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Mercedes Arc De Triomphe Paris",
+    "apiKey": "",
+    "identifierId": "01D3E2MW9M5H4VTNKPW0ECC6K3"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Louvre Saint Honore Paris",
+    "apiKey": "e9c15caa7df7ea13785591b935c9a5ab438ffac6",
+    "identifierId": "01D40EWF7J2M4T1Y9GCMT37X9J"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Paradou Montfavet",
+    "apiKey": "3830192e0308efc6144663a7e35b8c17e4a33ef0",
+    "identifierId": "01D54091HCV4MYY2H1VJ80KKD3"
+  },
+  {
+    "hotelIdentifier": "93742 Sure Hotel by Best Western Aix Sainte Victoire",
+    "apiKey": "dd1be82c8d22d18255a5498bfe6e3c268fc474cb",
+    "identifierId": "01D3E2N203GPM9WJRNSF4SM6S1"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Aurelia Maussane-Les-Alpilles",
+    "apiKey": "3c7e80ff2a7645f2ebec741dd8ea724dd441f030",
+    "identifierId": "01D542KCY9EGJD6GWKTG25NKEC"
+  },
+  {
+    "hotelIdentifier": "93160 Best Western Gaillon Opera",
+    "apiKey": "2eada93b5f9bc9c07f2e1b9cc2fd77a4a98a9c2f",
+    "identifierId": "01D3E2MXDT8V98CAYVXN4F4WDE"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Uzes Pont Du Gard Uzes",
+    "apiKey": "469ab636785c80fb6386afe0a28d5a158e41d4f3",
+    "identifierId": "01D7YWB3JYAH4TMWZW91N67PS6"
+  },
+  {
+    "hotelIdentifier": "93659 Best Western Saphir Lyon",
+    "apiKey": "a56a14414d233ca951a947e5347bad005d723555",
+    "identifierId": "01D3E2MZ7B44MA22BFATQQZAPD"
+  },
+  {
+    "hotelIdentifier": "Best Western Poitiers Center Grand Hotel Poitiers",
+    "apiKey": "ac9525c293d3d6a4fbcd1d67367e3ac8bebb995b",
+    "identifierId": "01D5EDDRYG00NGV45VQCRNFMR2"
+  },
+  {
+    "hotelIdentifier": "93098 Best Western Hotel de Dieppe 1880",
+    "apiKey": "f6f63729bbbc02b60b3cba299063930c874389f2",
+    "identifierId": "01D3E2MY77PNPH90FG7QQWG8KR"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Sud Manosque",
+    "apiKey": "734509cbc30ba372a0c41ddf5dc6b49536c32e8d",
+    "identifierId": "01D54BXDRCBD1W5AZRHVTNB3G5"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Comedie Saint-Roch Montpellier",
+    "apiKey": "916bc384a7de348747d53f0b5bd028c59fa5bd85",
+    "identifierId": "01D54095K0YJ9PMNC290APF1BF"
+  },
+  {
+    "hotelIdentifier": "93454 Best Western Toulouse Centre Les Capitouls",
+    "apiKey": "e8b01270fdc1d3f1a329dcbe2b8896da9625c83a",
+    "identifierId": "01D3E2MYHQRFW15KEBN3S5C418"
+  },
+  {
+    "hotelIdentifier": "93478 Best Western Plus Hotel D'Angleterre",
+    "apiKey": "78e02fe8956e6cde3e1d3dd741eafacf896de000",
+    "identifierId": "01D3E2MY1YCGERF1SWHNZ6DB0E"
+  },
+  {
+    "hotelIdentifier": "93333 Best Western Plus Celtique Hotel & Spa",
+    "apiKey": "180d78516b2cb7b56d21a781da8a5092207d61c1",
+    "identifierId": "01D3E2MY58Z9SPXYY47S363Y6B"
+  },
+  {
+    "hotelIdentifier": "93774 Best Western Plus Karitza",
+    "apiKey": "019e4166d482653d30c7a860ec5f3b30706a49a2",
+    "identifierId": "01D3E2N0DZ666T769PGEPZHZF2"
+  },
+  {
+    "hotelIdentifier": "93669 Best Western Plus Cannes Riviera & Spa",
+    "apiKey": "8531cd48e389c34cbb3ae0f093e656d2f8b2c380",
+    "identifierId": "01D3E2N0X9D3ANGQY1MR57C7Z3"
+  },
+  {
+    "hotelIdentifier": "93707 Best Western Plus Hotel des Francs",
+    "apiKey": "8f89dcab403b9c6203d3e92915de76e104ac64dc",
+    "identifierId": "01D3E2N25A45ERZGWTSZEE5XDP"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel De Diane Nevers",
+    "apiKey": "add34837c757690d845e9334a7bedc6b9f8b09e6",
+    "identifierId": "01D4TEH46NF4DX67KMMJR5JXND"
+  },
+  {
+    "hotelIdentifier": "93817 Best Western Plus Hotel Escapade Senlis",
+    "apiKey": "4f0d2bec74d51ada6e7ca7d9f29d4f8373c166c9",
+    "identifierId": "01D3E2N112KF50PMHW49SV927Q"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Terminus Grenoble",
+    "apiKey": "1023c5c534ccfa493fca0c22f8669baf8d229b29",
+    "identifierId": "01D540E8ETQ1N4NS39QA62NYHE"
+  },
+  {
+    "hotelIdentifier": "Best Western Montcalm",
+    "apiKey": "092f2fd7827672140b7d4f5883cabf741f272464",
+    "identifierId": "01D40RBKVCSYG2RCS1RDRRQNQ2"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Nouvel Orleans Montparnasse Paris",
+    "apiKey": "2881ddf2ef2fdbe8790ea3b1a68763ef643448b9",
+    "identifierId": "01D541YQQ9Q7F065EG21Z9MG09"
+  },
+  {
+    "hotelIdentifier": "93855 Best Western Hotel Journel Saint-Laurent-du-Var",
+    "apiKey": "f9716af22d106bbb878abd035381dcd04a88a911",
+    "identifierId": "01D3E2N2F3EZFFKQ5GQEP8T3HC"
+  },
+  {
+    "hotelIdentifier": "93836 Best Western Plus Hotel Massena Nice",
+    "apiKey": "c44ae8ec690ab9d32ca8eb232716be37f560c1d0",
+    "identifierId": "01D3E2N0DJ3A4GC7HHPBAMX2TT"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Aurore Paris",
+    "apiKey": "9854ffeeac768eb68a7e64cd90127dba8c10fd9a",
+    "identifierId": "01D47KZK4VF2KK2W8R7WX7P8MS"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Cheval Blanc Honfleur",
+    "apiKey": "9429a5b879b8460f01986a5efea49ed321d6dfcd",
+    "identifierId": "01D542KB7ME76GKFRAC6SCM3NN"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Le Donjon",
+    "apiKey": "9a6e2a232b3e8f3a5c2aec6027d489637b32bde4",
+    "identifierId": "01D40HMKHJ132GQDV1HMTZW2B8"
+  },
+  {
+    "hotelIdentifier": "93831 Best Western Plus Hotel Comedie Saint-Roch",
+    "apiKey": "916bc384a7de348747d53f0b5bd028c59fa5bd85",
+    "identifierId": "01D3E2MZHS7WRBZZ1TAMT3H76E"
+  },
+  {
+    "hotelIdentifier": "93667 Best Western Hotel De La Plage",
+    "apiKey": "18eca7bf194942f1f7bb09e94b4734044cdca0d7",
+    "identifierId": "01D3E2N22TTEV80F1AV00N9AJE"
+  },
+  {
+    "hotelIdentifier": "93417 Best Western Hotel Les Beaux Arts",
+    "apiKey": "d21f770f650f6cb44708e6de869b1bc457b50bc9",
+    "identifierId": "01D3E2MXW7AMJKH6P2MJJBEFDV"
+  },
+  {
+    "hotelIdentifier": "93552 Best Western Marseille Bonneveine Prado",
+    "apiKey": "2868ecc04f3d789fa7a5b1e41cf13ebb6f141151",
+    "identifierId": "01D3E2N0MTADN2T5A1XRR3CBH6"
+  },
+  {
+    "hotelIdentifier": "93616 Best Western Plus Masqhotel",
+    "apiKey": "6583e9f2ed4a34c9d6092af34f18bddff2a24744",
+    "identifierId": "01D3E2MZZ7VSZXM9RMF2D1S6TS"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel De France Chinon",
+    "apiKey": "d2782d925a8d805b9c43065cb0d8068a8fb21220",
+    "identifierId": "01D540B5GT8QZFR8717A0C91Z0"
+  },
+  {
+    "hotelIdentifier": "93844 Hotel l'Arbre Voyageur, BW Premier Collection",
+    "apiKey": "65a3eb35ca120d0700f4f8fa4c41d015889a8f30",
+    "identifierId": "01D3E2MZ7QX6W455GMY4W9BX6F"
+  },
+  {
+    "hotelIdentifier": "Le Suffren Bw Signature Collection Port Grimaud",
+    "apiKey": "f3c64790562758401dd8a4ba2660ef7949d53301",
+    "identifierId": "01D54081KRZ4D4S8QWR1HHQKSX"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Le Roof Vannes",
+    "apiKey": "491db0286c9aa702121155fd4161365d609df33f",
+    "identifierId": "01D542RZ7YGMP7EH8VS837GCJS"
+  },
+  {
+    "hotelIdentifier": "93704 Best Western Plus Villa Saint Antoine Hotel & Spa",
+    "apiKey": "c7bfc8fbfa582b699033c955ee7f61cd1934316d",
+    "identifierId": "01D3E2N0FT8T3R5VSDDAHZX2CT"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Celtique Hotel & Spa Carnac",
+    "apiKey": "180d78516b2cb7b56d21a781da8a5092207d61c1",
+    "identifierId": "01D40D8GTDNW21HZRZH22XE57R"
+  },
+  {
+    "hotelIdentifier": "Best Western Amiral Hotel Paris",
+    "apiKey": "821a4a830bafdc50d30cb800e9e9b330cddb5574",
+    "identifierId": "01D7Z5VQYW45E9QB92D6FASGMH"
+  },
+  {
+    "hotelIdentifier": "Abbaye Des Capucins Spa & Resort Bw Premier Collection Hotel Montauban",
+    "apiKey": "0515b1f896abb500d92f108f3636b0eba27bc724",
+    "identifierId": "01D543T45CTQ7RB1P8SQNKSE1Y"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Amarys Rambouillet",
+    "apiKey": "84f0fe7289d60b3479d53e12100ee43f59ef2ef7",
+    "identifierId": "01D40K004T4VTHS1NTF4FNRG8S"
+  },
+  {
+    "hotelIdentifier": "Nell Hotel & Suites Bw Premier Collection Paris",
+    "apiKey": "be55be32a4c31011b71f11d73237955ae5a8fe90",
+    "identifierId": "01D54F11EMMDEDCDQMRVJSSDM7"
+  },
+  {
+    "hotelIdentifier": "93807 Best Western Citadelle Besancon",
+    "apiKey": "0eb766365eee5a5490fd0cffaa0a4771f174057e",
+    "identifierId": "01D3E2N15WE1HE5Z2FZQXG3Q3B"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Du Parc Chantilly Chantilly",
+    "apiKey": "9c15d1247051baf1166a168cd24099fbbec68fab",
+    "identifierId": "01D4N0Q727B49361MMW6RW8ZRG"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Alcyon Porto-Vecchio",
+    "apiKey": "bafbb59d37940f5c039a5421731aa23920bac6ef",
+    "identifierId": "01D541D5CX7DE73AG6EPSFS2H2"
+  },
+  {
+    "hotelIdentifier": "93731 Best Western Plus Opera Batignolles",
+    "apiKey": "336fc32c1849520ae2cfc120c8dfd7ef83beec2e",
+    "identifierId": "01D3E2N23G9A2S6H9V6XSDDNCM"
+  },
+  {
+    "hotelIdentifier": "93815 Best Western Plus Suitcase Paris la Defense",
+    "apiKey": "53b57a16a2815ffdc960d4c931775a3ea5f10653",
+    "identifierId": "01D3E2N28TM8J8QPEK06J21WRH"
+  },
+  {
+    "hotelIdentifier": "Best Western Le Relais De Laguiole Hotel & Spa",
+    "apiKey": "697680db4b25a15334e1ff9e1c40896d724f6b6b",
+    "identifierId": "01D4AW51SEMPFEGAAP0G1AWHTY"
+  },
+  {
+    "hotelIdentifier": "93656 Best Western Palladior Voiron",
+    "apiKey": "13c91a92c01f3ac46bdb616eb9724658d50c8655",
+    "identifierId": "01D3E2MZ16E371JEXQ28GM9740"
+  },
+  {
+    "hotelIdentifier": "93534 Best Western Paris Gare Saint Lazare",
+    "apiKey": "7dd70c9b43c5d9685eabe1ede7205d5e618d579a",
+    "identifierId": "01D3E2MZAXBZJ9CXSGSX6JYPN3"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Paris Gare Saint Lazare Paris",
+    "apiKey": "7dd70c9b43c5d9685eabe1ede7205d5e618d579a",
+    "identifierId": "01D543QW31JGZB5ECM7WJYKT74"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel La Mare O Poissons Ouistreham",
+    "apiKey": "19c4a110bf3fff432bdae16a271f8362bda2fa52",
+    "identifierId": "01D542CWKRGAQRRP9HVV1WSXSQ"
+  },
+  {
+    "hotelIdentifier": "93853 Best Western La Porte des Chateaux",
+    "apiKey": "434d3b6e79da0e4e316b8b8261297a6016f8098b",
+    "identifierId": "01D3E2N28VDF83PR08KV1GSCGZ"
+  },
+  {
+    "hotelIdentifier": "93849 Best Western Urban Hotel & Spa",
+    "apiKey": "01306f68902db2e9866dc578625b931d61c91a2c",
+    "identifierId": "01D3E2N0Z5NC8JDYVPFW2PYK7X"
+  },
+  {
+    "hotelIdentifier": "93532 Best Western Le Renoir",
+    "apiKey": "35db8cf6ebc5d58a90aa54b59e4ff5bf594d1e0f",
+    "identifierId": "01D3E2MZQVPS8M32PK87ECG7K5"
+  },
+  {
+    "hotelIdentifier": "Best Western Le Vinci Loire Valley",
+    "apiKey": "a394b88513eebdd6865ec6b4f930da0c891e1e55",
+    "identifierId": "01D4AEJNSZWZP7SN55RXXGD3NV"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Palais Des Congres Evreux",
+    "apiKey": "c97f999634a814f09bc39588fd60d61bb9c3fc72",
+    "identifierId": "01D5411JQ8SDAYWPACVJ2DMXCF"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Empire Elysees Pariz",
+    "apiKey": "c6a18023f5c6b3254f82bc0a7e20dd4c36150c1c",
+    "identifierId": "01D56Q5KBBW4SAFSM4734K99V0"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Dijon Quetigny Quetigny",
+    "apiKey": "974d48d507e1f6589ef5f3bff8d9762ca06d2605",
+    "identifierId": "01D540PN08TM5YY2B0AFKVCDQE"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Elysee Secret Paris",
+    "apiKey": "643d5c821300d582cc34c9bb9e0e51cc580753ab",
+    "identifierId": "01D7Z62MGGH7M33MGY76SRZ0RE"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Ile De France",
+    "apiKey": "6709ad9dec2a4796e4a84640d4494d0b251b5999",
+    "identifierId": "01D40G7DR8TJD1FDJNH5EG0467"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Divona Cahors Cahors",
+    "apiKey": "3505bf6faf9c2ef665778ec7f5c1934632a70fa3",
+    "identifierId": "01D545S74X0N7JZGHBSQA3PEMH"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Clos Syrah Valence",
+    "apiKey": "cc340a148ae9cf0e80c93b21d1d0c0504a127cbb",
+    "identifierId": "01D45V1E3BNH799A83SR3K0RMG"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Paris Italie Paris",
+    "apiKey": "472ab4ef9163071344918a5f5780a91313f405f3",
+    "identifierId": "01D547GGBA9ZWZSDSYVAG25PT8"
+  },
+  {
+    "hotelIdentifier": "93676 Best Western Plus Hotel de Neuville Arc de Triomphe",
+    "apiKey": "636121d8521ec5df400bb967a558b97a0fbb14a8",
+    "identifierId": "01D3E2MZ9GA6PM367Z124JZ0HY"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Masqhotel",
+    "apiKey": "6583e9f2ed4a34c9d6092af34f18bddff2a24744",
+    "identifierId": "01D4ASN5VRZYG03K0ES518T711"
+  },
+  {
+    "hotelIdentifier": "93824 Best Western Premier Opera Liege",
+    "apiKey": "adef426732a28794b079dbe77f99017c89a4ed93",
+    "identifierId": "01D3E2MZYY95D72XFK7NNERDSE"
+  },
+  {
+    "hotelIdentifier": "93516 Best Western Gemenos en Provence",
+    "apiKey": "136d10b9b3a83700ed8f57b4c0ad907b941c87c8",
+    "identifierId": "01D3E2MZ1KB39NN5MBF61Y24JZ"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Les Terrasses De Brehat Ploubazlanec",
+    "apiKey": "063d4795cf7ec83a03ef6167b88b48fc4c08e959",
+    "identifierId": "01D4APN2SP02RDD9XNHV6J8AVF"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Rives De Paris La Defense Courbevoie",
+    "apiKey": "13f5afa5b9961ea23f1e4898a3b48593a05aa1f6",
+    "identifierId": "01D541NM3WSD5BHKTP23531J7M"
+  },
+  {
+    "hotelIdentifier": "93529 Best Western Plus Le Lavarin",
+    "apiKey": "e4b9f14d2dc76f27b89ea4fa7c912b54e671b56a",
+    "identifierId": "01D3E2N1N0MSWAMNXVV7PWX1S0"
+  },
+  {
+    "hotelIdentifier": "93456 Best Western Paris Italie",
+    "apiKey": "472ab4ef9163071344918a5f5780a91313f405f3",
+    "identifierId": "01D3E2MXNBXPBJFDMRXP90WQJ2"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Richelieu Limoges",
+    "apiKey": "6048139d073ef2fb93f5415c2b6ce3f33a29483b",
+    "identifierId": "01D54459XBKDH00KEXEPXW9KVH"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Soleil Et Jardin Sanary-Sur-Mer",
+    "apiKey": "d4faee1a0fd08fed749448727bfa99518803ce2b",
+    "identifierId": "01D5404ZYFNSHRFHJBVMVYRXWX"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel De Dieppe 1880 Rouen",
+    "apiKey": "f6f63729bbbc02b60b3cba299063930c874389f2",
+    "identifierId": "01D47QCG2TH9913AKG500DWSCB"
+  },
+  {
+    "hotelIdentifier": "93747 Best Western Aquakub",
+    "apiKey": "a9cbbd978d5e54a5bb0be237f0e0ea2a3c3aa006",
+    "identifierId": "01D3E2MZD5FT91FGBRZ9STPFC0"
+  },
+  {
+    "hotelIdentifier": "93789 Best Western Premier Faubourg 88",
+    "apiKey": "c62d558960ac9278e183ade2f3b287ff78d73401",
+    "identifierId": "01D3E2N077SB8G7E10T95QPYXW"
+  },
+  {
+    "hotelIdentifier": "93657 Best Western Saint Antoine",
+    "apiKey": "fbd3f6203f6068b75adf21e60e54eebf2f2fad9e",
+    "identifierId": "01D3E2MZH1Y97CVRF0P55CHBRV"
+  },
+  {
+    "hotelIdentifier": "93585 Best Western Plus Hotel les Rives du Ter",
+    "apiKey": "6e6883addd8571dbb3a76d3aa657c406844eeab0",
+    "identifierId": "01D3E2N1R48V1228JR7PJ99KWG"
+  },
+  {
+    "hotelIdentifier": "93808 Best Western Premier Opera Faubourg",
+    "apiKey": "3984203ce091401e8d62235a54d4ee90efe67df7",
+    "identifierId": "01D3E2N0DME50FA372E1YX41SZ"
+  },
+  {
+    "hotelIdentifier": "93493 Best Western Plus Montfleuri",
+    "apiKey": "dc26bf64313183c4b06e628e155948efea53fcbb",
+    "identifierId": "01D3E2MYRX79FS98FCKP7RZKXV"
+  },
+  {
+    "hotelIdentifier": "93820 Best Western Plus Hotel Divona Cahors",
+    "apiKey": "3505bf6faf9c2ef665778ec7f5c1934632a70fa3",
+    "identifierId": "01D3E2N2731RQJZ7HWE2SCSB9X"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Duguesclin Saint-Brieuc",
+    "apiKey": "368019062b4d0c4f0ad2d2653391fbff1eec3801",
+    "identifierId": "01D53Z0NMM87KHNVWJQXY0SJTE"
+  },
+  {
+    "hotelIdentifier": "93522 Best Western Paris Louvre Opera",
+    "apiKey": "f837749faff0e60cb18090a88caa92dcb990855e",
+    "identifierId": "01D3E2N1RJ5YR499QWV18BBE4C"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel & Spa De Chassieu Chassieu",
+    "apiKey": "52c2863829c1c6e36bd94b1133fc665bb0b09797",
+    "identifierId": "01D5401DZ9NG0HR3EMNFWHQCJS"
+  },
+  {
+    "hotelIdentifier": "93684 Best Western Hotel Uzes Pont Du Gard",
+    "apiKey": "469ab636785c80fb6386afe0a28d5a158e41d4f3",
+    "identifierId": "01D3E2MYG73QW8CZ8RZM9RR4QX"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Du Mucem Marseille",
+    "apiKey": "60ebb1115ab2ddac6e8072588eeb673e53fd2dea",
+    "identifierId": "01D44ZYF35X0RYTV3CTPQ9GZV3"
+  },
+  {
+    "hotelIdentifier": "93645 Best Western Hotel Roosevelt",
+    "apiKey": "321edb2e06f9a8a5b38b45ea42f62b42319a65e9",
+    "identifierId": "01D3E2N0W53Q1ZR797AVMMYCGK"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Paris Meudon Ermitage Meudon-La-Foret",
+    "apiKey": "27c3f29165dcda91ccb8424c1e8374c95a7078db",
+    "identifierId": "01D540N8J0VJJ6140X0B6583MY"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Palladior Voiron Voiron",
+    "apiKey": "13c91a92c01f3ac46bdb616eb9724658d50c8655",
+    "identifierId": "01D540WDBRQS30KH27524XBY16"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Pont Dor Figeac",
+    "apiKey": "f7ed5cacd6221f8545fb43ef83fee291f9a56b33",
+    "identifierId": "01D5402K1648Z7CBYFF4BPD6E4"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Paradou Mediterranee Sausset-Les-Pins",
+    "apiKey": "bf5d0ca595eae4dc43d4ec114d525ed966babbee",
+    "identifierId": "01D5468NE8187P5XYKSN471FN2"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Up Hotel Lille",
+    "apiKey": "9af79b3b8f577827d04bc5e9ae614effa28b59ba",
+    "identifierId": "01D40FYMRQ6QGBK2CCVYCVPKEB"
+  },
+  {
+    "hotelIdentifier": "93278 Best Western Plus Hotel Prince De Galles",
+    "apiKey": "e854281e2b3fc291be9040f1ada77093263fbf11",
+    "identifierId": "01D3E2MXKK2N042NWA22SNNFSA"
+  },
+  {
+    "hotelIdentifier": "93679 Best Western Saint Louis",
+    "apiKey": "3f18bdd021594a7830a2fdbf1d936b6252d4ceb0",
+    "identifierId": "01D3E2MYZ7TB2NP5Y2BXPECJ55"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Graslin Nantes",
+    "apiKey": "b0e70a1f685b557f7f52803d82d1c8e6b7670d8f",
+    "identifierId": "01D543WVGBJMHTH6YAJWSNMFB7"
+  },
+  {
+    "hotelIdentifier": "93633 Best Western Plus Clos Syrah",
+    "apiKey": "cc340a148ae9cf0e80c93b21d1d0c0504a127cbb",
+    "identifierId": "01D3E2N0Q653KTJFK84H8TDV3D"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Villa Saint Antoine Hotel & Spa Clisson",
+    "apiKey": "c7bfc8fbfa582b699033c955ee7f61cd1934316d",
+    "identifierId": "01D541G8Q1SSX9FKYTJHD2VFC8"
+  },
+  {
+    "hotelIdentifier": "93530 Best Western Premier Ducs De Bourgogne",
+    "apiKey": "12045d5301ea627b8631d5955b136b23e55e5407",
+    "identifierId": "01D3E2MYA01Q5FKWBC93REPSRQ"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Deurope Et Dangleterre Macon",
+    "apiKey": "a719fc679fd7264cabcae57bfd5317add945d21c",
+    "identifierId": "01D7YYNAMR44TE8225HJX74MXB"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Saint Antoine Lyon",
+    "apiKey": "fbd3f6203f6068b75adf21e60e54eebf2f2fad9e",
+    "identifierId": "01D40F78AQ4SXR1QGSCP67B0VA"
+  },
+  {
+    "hotelIdentifier": "93013 Best Western Grand Hotel De Bordeaux",
+    "apiKey": "9452cad7a568cbecd0b5910585c6c89dbe729583",
+    "identifierId": "01D3E2MX2H8A41ZNP15E403X3C"
+  },
+  {
+    "hotelIdentifier": "Best Western Alba Hotel Nice",
+    "apiKey": "f801518ae46587dddae2dfaa197b40d02ded047a",
+    "identifierId": "01D45R7X62E37WMH6CZWW0ASHS"
+  },
+  {
+    "hotelIdentifier": "Hotel Larbre Voyageur Bw Premier Collection Lille",
+    "apiKey": "65a3eb35ca120d0700f4f8fa4c41d015889a8f30",
+    "identifierId": "01D45SXGDB10H896PVWW4VCM1X"
+  },
+  {
+    "hotelIdentifier": "93778 Best Western Premier Le Swann",
+    "apiKey": "326347803b84dd944296635c29933bd4f8f46a75",
+    "identifierId": "01D3E2MZ3F7XT3PEC28QFKPDNT"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Citadelle Besancon Besancon",
+    "apiKey": "0eb766365eee5a5490fd0cffaa0a4771f174057e",
+    "identifierId": "01D484ZXBMSNNNRDMZW55BCS0N"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Bois De La Marche Fontaine Le Comte",
+    "apiKey": "96445f3016519935731062b854f9086dedb3f27a",
+    "identifierId": "01D540MPY7P2ERSHV2SQ1VTF32"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Vinci Loire Valley Amboise",
+    "apiKey": "a394b88513eebdd6865ec6b4f930da0c891e1e55",
+    "identifierId": "01D541FBJ3SV3F4MC3SZQ6VS0Z"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Marais Grands Boulevards Paris",
+    "apiKey": "964c65e794e1a99ba00b462f543192d81a23ea0a",
+    "identifierId": "01D47WMSJXXPM4N0ACX4VNMTTK"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Hostellerie Du Vallon Trouville-Sur-Mer",
+    "apiKey": "412f7fb6eeaa8b98d4a57ffa91c782c0fabb1650",
+    "identifierId": "01D541674GV9H1GWGNQZNRS7HD"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Saint Etienne Porte Du Forez，Andrezieux-Boutheon",
+    "apiKey": "3c2b49f3fe44f89970c2e33a295518a6ef0a4c50",
+    "identifierId": "01D5487J8J3G8P12PZ4B46NHT6"
+  },
+  {
+    "hotelIdentifier": "93617 Best Western Plus Nice Cosy Hotel",
+    "apiKey": "1e3983d533e7a1da03e47b58ceeb29e75c25e918",
+    "identifierId": "01D3E2N1DCKTFRA8GA6HSAG657"
+  },
+  {
+    "hotelIdentifier": "93629 Best Western Hotel d'Arc",
+    "apiKey": "b0c3383b233cd4c6034c18a1bdfb0f7a6e7dc851",
+    "identifierId": "01D3E2MYWPGWD27885EQ37MPRQ"
+  },
+  {
+    "hotelIdentifier": "93821 Best Western Plus Hotel San Damianu",
+    "apiKey": "1666bff076e18f36860a17f996f5fe8a1a7429b7",
+    "identifierId": "01D3E2N0SPBAP7XFSFB4F6R0D4"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Marseille Aeroport Vitrolles",
+    "apiKey": "7878ffb4c8609e00123e2d47a93dd863a3bba077",
+    "identifierId": "01D541JPJKP6ZFTS8P63GG63YW"
+  },
+  {
+    "hotelIdentifier": "93788 Best Western Plus L'Artist Hotel",
+    "apiKey": "6bea15d8cba450c23bd871592b6f3c7212b57875",
+    "identifierId": "01D3E2N1JDAMA1ANFZN9B3G3QA"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel La Rade Cassis",
+    "apiKey": "07d5c43144ab923ffcae8535aba6ff3b8a1a8bc4",
+    "identifierId": "01D541PG1BS6QKAEEQG8E00EJZ"
+  },
+  {
+    "hotelIdentifier": "93544 Best Western Nouvel Orleans Montparnasse",
+    "apiKey": "2881ddf2ef2fdbe8790ea3b1a68763ef643448b9",
+    "identifierId": "01D3E2N1Y1AYPVV1Z12RAWW9KQ"
+  },
+  {
+    "hotelIdentifier": "Best Western Urban Hotel & Spa Lille",
+    "apiKey": "01306f68902db2e9866dc578625b931d61c91a2c",
+    "identifierId": "01D434F1N7QKPYKVVD1CVFY5E6"
+  },
+  {
+    "hotelIdentifier": "93840 Best Western Plus Hotel Setif",
+    "apiKey": "2ceeb8e091f48ecf572600bbe790aeea8526fa9d",
+    "identifierId": "01D3E2N2HPVJNGGKH05WHN6XXE"
+  },
+  {
+    "hotelIdentifier": "Best Western La Gentilhommiere",
+    "apiKey": "510e44bcb1398c541110a0abbceb171a8fb73a6a",
+    "identifierId": "01D40H982D8DB9ATAARVKX2S65"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Aulivia Opera Paris",
+    "apiKey": "fd78c7b3bec5a2b900e0740dc0524632cf170eb8",
+    "identifierId": "01D4B5BB6W8JCGXE5KNPQKNYBM"
+  },
+  {
+    "hotelIdentifier": "93863 Best Western Plus Hotel Villa D'est",
+    "apiKey": "d2515be89271c925c0ea83d98054753c38126edf",
+    "identifierId": "01D3E2N2M0GE6HAYHJZSBN9TG8"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Saint Louis Vincennes",
+    "apiKey": "3f18bdd021594a7830a2fdbf1d936b6252d4ceb0",
+    "identifierId": "01D47N22GV7X86RNMZXRGTCR8D"
+  },
+  {
+    "hotelIdentifier": "93563 Best Western Plus Richelieu",
+    "apiKey": "6048139d073ef2fb93f5415c2b6ce3f33a29483b",
+    "identifierId": "01D3E2MY82FQ6SXGDSJJTX947M"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Why Hotel Lille",
+    "apiKey": "8149a8777c74c7aaadf20ec7d68d1a512efb89a5",
+    "identifierId": "01D40CJ1JKND3857G8XKGF12DN"
+  },
+  {
+    "hotelIdentifier": "93755 Best Western Amarys",
+    "apiKey": "84f0fe7289d60b3479d53e12100ee43f59ef2ef7",
+    "identifierId": "01D3E2MZPRRA6C8NPW3NF4D849"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Opera Batignolles Parigi",
+    "apiKey": "336fc32c1849520ae2cfc120c8dfd7ef83beec2e",
+    "identifierId": "01D68JX30SJ89HWC1MBK87SC7W"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Aramis Saint-Germain Paris",
+    "apiKey": "e8d34f56425098f9a2f479922581974841c954f2",
+    "identifierId": "01D542SRJ98806T8F560MPT1HG"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel De Verdun Lyon",
+    "apiKey": "9ed3d1502ae9d8540d93e6a4c457ff94e6737324",
+    "identifierId": "01D548A19AB68J0G7HY6MKDN8R"
+  },
+  {
+    "hotelIdentifier": "93559 Best Western Beausejour",
+    "apiKey": "2f3c24b68e501a9440bfe523bb66481757a16bd5",
+    "identifierId": "01D3E2MZT16ZTFZMGCGJCZBH68"
+  },
+  {
+    "hotelIdentifier": "93799 Best Western Plus Hotel Isidore",
+    "apiKey": "bf371d11383eafb678d36627eddd31b560dcb503",
+    "identifierId": "01D3E2MZ158QZT9PZVNMXEGGJ5"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Centre Reims Reims",
+    "apiKey": "7570f58242c086719c3b66ec1d0e1f28fa343c08",
+    "identifierId": "01D54082GPZSY3WP5A9EEAC5HP"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel New York Nice",
+    "apiKey": "5fccf04e94b3f7f09c310f202faecabf84943d78",
+    "identifierId": "01D47RBTYNVTTT6PC1S14P2ZPA"
+  },
+  {
+    "hotelIdentifier": "93724 Best Western Odyssee Park Hotel",
+    "apiKey": "2829e87bcb833d0ce4fd0d8d5c4f0c30350109fe",
+    "identifierId": "01D3E2N2M04BYK30TE9P0GKEZ6"
+  },
+  {
+    "hotelIdentifier": "93185 Best Western Grand Hotel De Paris",
+    "apiKey": "c1667a4ba469b0416df3e9e2d55e517d12ba3c40",
+    "identifierId": "01D3E2MXTB9XE3S5BSRZ946QBT"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel La Porte Des Chateaux Meung Sur Loire Best Western La Porte Des Chateaux Hotel Meung Sur Loire",
+    "apiKey": "434d3b6e79da0e4e316b8b8261297a6016f8098b",
+    "identifierId": "01D54P5E0DN36M05TYXYSBR5HE"
+  },
+  {
+    "hotelIdentifier": "Le Saint-Antoine Hotel & Spa Bw Premier Collection Rennes",
+    "apiKey": "21165ed22c6d33ccbbf96c652c7cff7fe5fce48d",
+    "identifierId": "01D40KZFE298R25G99HTWE0MGR"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Senlis Escapade Hotel Senlis",
+    "apiKey": "4f0d2bec74d51ada6e7ca7d9f29d4f8373c166c9",
+    "identifierId": "01D58Z9302GRGC05DTSZ5XGJDZ"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Paris Val De Bievre Jouy-En-Josas",
+    "apiKey": "0d5721be1e79227c251c152696a1add00c75dddb",
+    "identifierId": "01D5405C5MT41NSAG2N3DA1Q7R"
+  },
+  {
+    "hotelIdentifier": "93756 Best Western l'Atelier 117",
+    "apiKey": "ba1885a3655695818dbe25edf214b8bbf54f49aa",
+    "identifierId": "01D3E2N012PMBCMM2DYJRV7KN8"
+  },
+  {
+    "hotelIdentifier": "93846 Le Domaine de Montjoie, BW Premier Collection",
+    "apiKey": "8314c8b76773d7d12934b214e38a3a43a2f2df7a",
+    "identifierId": "01D3E2N2GC8S1EXV7HTD1405QY"
+  },
+  {
+    "hotelIdentifier": "93394 Best Western Plus Hotel Plaisance",
+    "apiKey": "5874fffdd3b38524eaca3b7fcf75248f4f1b5ffe",
+    "identifierId": "01D3E2MXZ8JZZC787TFYEQ0CYF"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel De Neuville Arc De Triomphe Paris",
+    "apiKey": "636121d8521ec5df400bb967a558b97a0fbb14a8",
+    "identifierId": "01D7ZAE59B85B1HTECDD693ERY"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Le Comtadin Carpentras",
+    "apiKey": "df0d49b8a706b2c18bb268e514a8a01536e7bf05",
+    "identifierId": "01D540REXSXRT0KSJPXAVQWCZ9"
+  },
+  {
+    "hotelIdentifier": "The Suffren Bw Signature Collection Port Grimaud",
+    "apiKey": "f3c64790562758401dd8a4ba2660ef7949d53301",
+    "identifierId": "01D54SKTHRXFW0Y15602GHT9BZ"
+  },
+  {
+    "hotelIdentifier": "Best Western Toulouse Centre Les Capitouls",
+    "apiKey": "e8b01270fdc1d3f1a329dcbe2b8896da9625c83a",
+    "identifierId": "01D40N4PZG4PEEKD1NC4490WCW"
+  },
+  {
+    "hotelIdentifier": "Best Western Auray Hotel Du Loch Auray",
+    "apiKey": "2de5c4f137c318c8dd3a73fe073cb81a039ca150",
+    "identifierId": "01D7YWTVSCPDT3PBDV9P7Z84X6"
+  },
+  {
+    "hotelIdentifier": "Best Western Amarys",
+    "apiKey": "84f0fe7289d60b3479d53e12100ee43f59ef2ef7",
+    "identifierId": "01D4AVVZSBWHSYT94J523C4ZQ0"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Design & Spa Bassin Darcachon La Teste De Buch",
+    "apiKey": "ac721b163a9bf5e5263c40b3fbc17ebe499a10ba",
+    "identifierId": "01D540MKW7QZCBC8WTG0CVNGBN"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Windsor Hotel Perpignan",
+    "apiKey": "84355433a9e87a08b2f59ee1453d65d94bde2b0f",
+    "identifierId": "01D60R547CMDQ1MPVASJFGAP8A"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Massena Nice Nice",
+    "apiKey": "c44ae8ec690ab9d32ca8eb232716be37f560c1d0",
+    "identifierId": "01D5424EXDEX025F51ZAR7805S"
+  },
+  {
+    "hotelIdentifier": "Best Western Grand Parc Hotel Chanteloup En Brie",
+    "apiKey": "8c322890891299d3e5703a0c7a7a6e84f426cac7",
+    "identifierId": "01D56NQAZNXT8S3KPXHYQYQPZG"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Up Hotel",
+    "apiKey": "9af79b3b8f577827d04bc5e9ae614effa28b59ba",
+    "identifierId": "01D599E9CRCRFSQZYEQJXB99Y3"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel Opera Opal Paris",
+    "apiKey": "351102accdf1dd5887259369febbde7f5cac43a5",
+    "identifierId": "01D7YWXWBJ8AZM1JQSY36XYJ6N"
+  },
+  {
+    "hotelIdentifier": "Best Western Poitiers Centre Le Grand Hotel",
+    "apiKey": "ac9525c293d3d6a4fbcd1d67367e3ac8bebb995b",
+    "identifierId": "01D4AWNZ8FGGTWX4D8RD3DMM2P"
+  },
+  {
+    "hotelIdentifier": "93550 Best Western Ker Lann Aeroport",
+    "apiKey": "ded27298aded347099f979dd5f1b4ec6d574aae2",
+    "identifierId": "01D3E2MZPS35FDHP99VA42JNBZ"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Opera Batignolles Paris",
+    "apiKey": "336fc32c1849520ae2cfc120c8dfd7ef83beec2e",
+    "identifierId": "01D5P5MXFPCHJ3K0VKAG0X4P3N"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Le Roof Hotel Vannes",
+    "apiKey": "491db0286c9aa702121155fd4161365d609df33f",
+    "identifierId": "01D56K03SQGCZGPAYSBGX7F3KE"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Paris Velizy Velizy Villacoublay",
+    "apiKey": "e9acc6b1cefc13ca081536191a30a0e0519ace5a",
+    "identifierId": "01D543XHGPMB3QSNRH72QRADN7"
+  },
+  {
+    "hotelIdentifier": "Best Western Beausejour",
+    "apiKey": "2f3c24b68e501a9440bfe523bb66481757a16bd5",
+    "identifierId": "01D4AF4KRSHPD9RGVCXWJPGE7T"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Paris Meudon Hermitage Meudon-La-Foret",
+    "apiKey": "27c3f29165dcda91ccb8424c1e8374c95a7078db",
+    "identifierId": "01D6AJ5B5ZE081JT9Y9NEHB2HH"
+  },
+  {
+    "hotelIdentifier": "93490 Best Western Aulivia Opera",
+    "apiKey": "fd78c7b3bec5a2b900e0740dc0524632cf170eb8",
+    "identifierId": "01D3E2MYNPTK1H5HY3EYS65X9K"
+  },
+  {
+    "hotelIdentifier": "93879 Best Western Plus Hotel Admiral",
+    "apiKey": "d1560179930410dc2bd2d18723d31cce8f3383ea",
+    "identifierId": "01D3E2N2J793WWVKC28K6TBV2S"
+  },
+  {
+    "hotelIdentifier": "Best Western Poitiers Centre Le Grand Hotel Poitiers",
+    "apiKey": "ac9525c293d3d6a4fbcd1d67367e3ac8bebb995b",
+    "identifierId": "01D546F1P7F46ZGF2G72P6YXNG"
+  },
+  {
+    "hotelIdentifier": "Best Western Premier Hotel De La Paix Reims",
+    "apiKey": "3852b3cf1ca47dcf8a4286bc18bc84935dbc94e5",
+    "identifierId": "01D44YZGJ3ZVV76DQJ9A5YXWH1"
+  },
+  {
+    "hotelIdentifier": "93092 Best Western Sevan Parc Hotel",
+    "apiKey": "f82956f37ce91ef958078888236284735a9f2f04",
+    "identifierId": "01D3E2MXDSD66NW9PYGWDWJDW7"
+  },
+  {
+    "hotelIdentifier": "93732 Best Western Saint-Etienne Porte du Forez",
+    "apiKey": "3c2b49f3fe44f89970c2e33a295518a6ef0a4c50",
+    "identifierId": "01D3E2N1G4DC16FEMBHK5SPA0S"
+  },
+  {
+    "hotelIdentifier": "93763 Best Western Hotel de la Cite and Spa",
+    "apiKey": "1b0a3e344ce6d5f6be4b68d08240730eb6ee9a8b",
+    "identifierId": "01D3E2N1Q65XYZ6M92Z17E81AQ"
+  },
+  {
+    "hotelIdentifier": "93576 Best Western Bastia Centre",
+    "apiKey": "71d6ab98503ee9971f8d509c426361c7ec64305f",
+    "identifierId": "01D3E2MZ4E6269YWM3ANSCWTDW"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel Le Rhenan Dorlisheim",
+    "apiKey": "2bf76c3c068b60bd15236482e9f3045f1713f034",
+    "identifierId": "01D7YXMDWCSP34EF9JSP5DD5BP"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Hotel San Damianu Sartene",
+    "apiKey": "1666bff076e18f36860a17f996f5fe8a1a7429b7",
+    "identifierId": "01D542MF7KYBFVTZDE42KA8D69"
+  },
+  {
+    "hotelIdentifier": "93806 Best Western Plus Up Hotel",
+    "apiKey": "9af79b3b8f577827d04bc5e9ae614effa28b59ba",
+    "identifierId": "01D3E2N1VCTZG13PTC9TKGTHP4"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Omnubo，Saint Mars La Reorthe",
+    "apiKey": "920eaea7a6901e39aa63128bf870b9cf68f4d809",
+    "identifierId": "01D56EHTF2XE9N4EDRCSXDX5AK"
+  },
+  {
+    "hotelIdentifier": "Best Western Grand Hotel De Paris Villard-De-Lans",
+    "apiKey": "c1667a4ba469b0416df3e9e2d55e517d12ba3c40",
+    "identifierId": "01D5428KWFF0FWD5HCD9YQ3J8P"
+  },
+  {
+    "hotelIdentifier": "93695 Best Western Kemaris",
+    "apiKey": "1a262022114da5e4f8b0633d079860f01b51d6d9",
+    "identifierId": "01D3E2N1D83EZMX765VKFF7GJ4"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Belfort Belfort",
+    "apiKey": "d22525e2f3972b1f3fde071a9d24a1f5db87a5f4",
+    "identifierId": "01D5416DECJ5Z8XCRB21JC64BM"
+  },
+  {
+    "hotelIdentifier": "Best Western Grand Hotel De Bordeaux",
+    "apiKey": "9452cad7a568cbecd0b5910585c6c89dbe729583",
+    "identifierId": "01D4AP5MZEB5WPXB3XARH0F64H"
+  },
+  {
+    "hotelIdentifier": "93860 Nell Hotel & Suites, BW Premier Collection",
+    "apiKey": "be55be32a4c31011b71f11d73237955ae5a8fe90",
+    "identifierId": "01D3E2N2HM12A95WD6QG9BV2M3"
+  },
+  {
+    "hotelIdentifier": "93859 Best Western Plus Hotel Les Humanistes",
+    "apiKey": "946460bb466993fdc768356004a0bd6dc3c877de",
+    "identifierId": "01D3E2N2QHAKRYQ6K68BN7Q9XK"
+  },
+  {
+    "hotelIdentifier": "93571 Best Western Hotel Athenee",
+    "apiKey": "3fe022458df2de0b185cceb55fcad171b5874725",
+    "identifierId": "01D3E2MYT632MCFRAQ3S5JFJSM"
+  },
+  {
+    "hotelIdentifier": "93790 Best Western Plus 61 Paris Nation Hotel",
+    "apiKey": "668a031bec2ea2a318cd07008df647648af2a240",
+    "identifierId": "01D3E2N03JB8WDQGZHCM7M61TJ"
+  },
+  {
+    "hotelIdentifier": "Best Western Plus Excelsior Chamonix Hotel Spa Chamonix Mont Blanc",
+    "apiKey": "0f923ce299529245f6365c5442df8af0ee4045e1",
+    "identifierId": "01D540Q68H0NVCWT60QWWP4KGY"
+  },
+  {
+    "hotelIdentifier": "93492 Best Western Hotel Toubkal",
+    "apiKey": "365a4fbc77c8d4e162c2162c27006b95f832319d",
+    "identifierId": "01D3E2N04YESAGWK9VZJ9YHVXP"
+  },
+  {
+    "hotelIdentifier": "93598 Best Western Hotel Alexandra",
+    "apiKey": "0c6e8cab27c62a2d7c6b69a580e5ceabc0397239",
+    "identifierId": "01D3E2N0SN8RMK9ZJE4VM1GFNH"
+  },
+  {
+    "hotelIdentifier": "93775 Best Western Plus Hotel & Spa de Chassieu",
+    "apiKey": "52c2863829c1c6e36bd94b1133fc665bb0b09797",
+    "identifierId": "01D3E2MZGNSP9NPTPT934WDW6R"
+  },
+  {
+    "hotelIdentifier": "Best Western Hotel Marseille Bonneveine Prado Marseille",
+    "apiKey": "2868ecc04f3d789fa7a5b1e41cf13ebb6f141151",
+    "identifierId": "01D42EK62D5NDSAG3MW3BP1D0J"
+  }
+]

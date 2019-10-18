@@ -16,7 +16,7 @@ function build(idenitifiers: HotelIdentifiers[], comparator: Comparator<string>)
 
 
 (async () => {
-    const json = await new File('/home/dan/Downloads/identifiers.json').content();
+    const json = await new File('perf/identifiers.json').content();
     const idenitifiers: HotelIdentifiers[] = JSON.parse(json);
     const sort = new Intl.Collator(undefined, {usage: 'sort', sensitivity: 'base'}).compare;
     const search = new Intl.Collator(undefined, {usage: 'search', sensitivity: 'base'}).compare;
