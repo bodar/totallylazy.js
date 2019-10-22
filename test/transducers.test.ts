@@ -16,7 +16,7 @@ import {
     takeWhile,
     zip,
     windowed,
-    unique
+    unique, zipWithIndex
 } from "../src/transducers";
 import { range, repeat } from "../src/sequence";
 import { sum } from "../src/numbers";
@@ -38,6 +38,10 @@ describe("Transducer", () => {
 
     it("can zip", () => {
         assertSync(zip(['a', 'b', 'c']).sync([1, 2]), [1, 'a'], [2, 'b']);
+    });
+
+    it("can zip with index", () => {
+        assertSync(zipWithIndex().sync(['a', 'b']), ['a', 0], ['b', 1]);
     });
 
     it("can map", () => {

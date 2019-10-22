@@ -1,7 +1,7 @@
 import {characters, NamedMatch, NamedRegExp} from "./characters";
 import {PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
-import {array, Mapper} from "./collections";
+import {array, by, Mapper} from "./collections";
 import {flatMap, map} from "./transducers";
 import {cache} from "./cache";
 

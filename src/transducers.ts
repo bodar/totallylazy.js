@@ -1,6 +1,7 @@
 import {array, ascending, Comparator, isAsyncIterable, isIterable, Mapper, Reducer} from "./collections";
 import {Predicate} from "./predicates";
 import {AVLTree} from "./avltree";
+import {range} from "./sequence";
 
 export interface Transducer<A, B> {
     sync(iterable: Iterable<A>): Iterable<B>;
@@ -112,6 +113,10 @@ export class ZipTransducer<A, B> implements Transducer<A, [A, B]> {
 
 export function zip<A, B>(other: Iterable<B> | AsyncIterable<B>): ZipTransducer<A, B> {
     return new ZipTransducer(other);
+}
+
+export function zipWithIndex<A>(): ZipTransducer<A, number> {
+    return new ZipTransducer(range(0));
 }
 
 export class FlatMapTransducer<A, B> implements Transducer<A, B> {
