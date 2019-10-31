@@ -87,9 +87,8 @@ export class DatumLookup<V> {
     }
 
     parse(value: string, strategy: MatchStrategy<V> = uniqueMatch): V {
-        const matches: Datum<V>[] = flatten(this.prefixTree.match(value));
-        const match = strategy(matches);
-        if (typeof match === "undefined") throw new Error(`${this.constructor.name} - Unable to parse: ${value} matched : ${JSON.stringify(matches)}`);
+        const match = strategy(this.prefixTree, value);
+        if (typeof match === "undefined") throw new Error(`${this.constructor.name} - Unable to parse: ${value}`);
         return match;
     }
 
@@ -106,22 +105,25 @@ export class DatumLookup<V> {
     }
 }
 
-export type MatchStrategy<V> = (matches: Datum<V>[]) => V | undefined;
+export type MatchStrategy<V> = (prefixTree: PrefixTree<Datum<V>[]>, value: string) => V | undefined;
 
-export function uniqueMatch<V>(matches: Datum<V>[]): V | undefined {
+export function uniqueMatch<V>(prefixTree: PrefixTree<Datum<V>[]>, value: string): V | undefined {
+    const matches = flatten(prefixTree.match(value));
     const data = unique(matches.map(d => d.value));
     if (data.length != 1) return undefined;
     return data[0];
 }
 
 export function prefer<V>(...values: V[]): MatchStrategy<V> {
-    return (matches: Datum<V>[]) => {
-        const [match] = matches.filter(m => values.indexOf(m.value) !== -1);
-        if (typeof match === "undefined") return uniqueMatch(matches);
-        return match.value;
+    return (prefixTree: PrefixTree<Datum<V>[]>, value: string) => {
+        const matches = prefixTree.lookup(value) || [];
+        const data = unique(matches.map(d => d.value));
+        if (data.length === 0) return;
+        if (data.length === 1) return data[0];
+        const [match] = data.filter(m => values.indexOf(m) !== -1);
+        return match;
     };
 }
-
 
 export class OrParser<T> implements Parser<T> {
     constructor(private readonly parsers: Parser<T>[]) {
@@ -172,8 +174,9 @@ export function all<T>(...parsers: Parser<T>[]): Parser<T> {
     return new AllParser(parsers);
 }
 
-export class CachingParser<T> implements Parser<T>{
-    constructor(private parser: Parser<T>){}
+export class CachingParser<T> implements Parser<T> {
+    constructor(private parser: Parser<T>) {
+    }
 
     @cache parse(value: string): T {
         return this.parser.parse(value);

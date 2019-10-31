@@ -21,6 +21,10 @@ const amounts = [1234567.89, 156, 156.89, .1234, 0];
 describe("Money", function () {
     this.timeout(10000);
 
+    it('can parse South African Rand (ZAR/R)', () => {
+        assert.deepEqual(parser('en').parse('R1360.00'), money('ZAR', 1360));
+    });
+
     it('symbolFor works when no native method is available', () => {
         for (const locale of numberLocales) {
             for (const code of Object.keys(currencies)) {
