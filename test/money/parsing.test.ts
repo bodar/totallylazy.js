@@ -84,7 +84,7 @@ describe("Money", function () {
     });
 
     it('can parse unambiguous real examples', () => {
-        assert.deepEqual(parse('£157', 'en-GB'), money('GBP', 157));
+        assert.deepEqual(parse('£157', 'en-GB', {strategy: prefer('GBP')}), money('GBP', 157));
         assert.deepEqual(parse('US$274', 'ko-KR'), money('USD', 274));
         assert.deepEqual(parse('274 US$', 'pt-PT'), money('USD', 274));
         assert.deepEqual(parse('CA$315', 'en-US'), money('CAD', 315));
@@ -105,7 +105,7 @@ describe("Money", function () {
         const p = parser('en', {strategy: prefer('USD', 'CNY')});
         assert.deepEqual(p.parse('$ 433.80'), money('USD', 433.80));
         assert.deepEqual(p.parse('¥ 2890.30'), money('CNY', 2890.30));
-        assert.deepEqual(parser('en').parse('₩ 398526.56'), money('KRW', 398526.56));
+        assert.deepEqual(parser('en', {strategy: prefer('KRW')}).parse('₩ 398526.56'), money('KRW', 398526.56));
         assert.deepEqual(parser('en').parse('KSh 34,202.20'), money('KES', 34202.20));
         assert.deepEqual(parser('en').parse('AED 1204.99'), money('AED', 1204.99));
 
