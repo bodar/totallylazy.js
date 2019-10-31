@@ -5,7 +5,7 @@ import {flatten} from "../arrays";
 import {currencies} from "./currencies";
 import {lazy} from "../lazy";
 import {Datum, DatumLookup} from "../dates";
-import {mappingParser, MatchStrategy, namedRegexParser, Parser} from "../parsing";
+import {mappingParser, MatchStrategy, namedRegexParser, Parser, prefer} from "../parsing";
 import {Currencies, Currency} from "./currencies-def";
 import NumberFormatPart = Intl.NumberFormatPart;
 import {cache} from "../cache";
@@ -39,12 +39,14 @@ export function money(currency: string, amount: number): Money {
     return {amount, currency};
 }
 
+export const defaultStrategy = prefer('GBP');
+
 export function moneyFrom(parts: NumberFormatPart[], locale: string, options?: Options): Money {
     const [currency] = parts.filter(p => p.type === 'currency');
     if (!currency) throw new Error("No currency found");
     const filtered = parts.filter(p => p.type === 'integer' || p.type === 'decimal' || p.type === 'fraction');
     const value = Number(filtered.map(p => p.type === 'decimal' ? '.' : p.value).join(''));
-    return money(CurrencySymbols.get(locale).parse(currency.value, options && options.strategy), value)
+    return money(CurrencySymbols.get(locale).parse(currency.value, (options && options.strategy) || defaultStrategy), value)
 }
 
 export type CurrencyDisplay = 'symbol' | 'code';

@@ -83,8 +83,11 @@ describe("Money", function () {
             {type: 'fraction', value: '89'}]);
     });
 
+    it('defaults to prefering GBP as all pound currencies are pegged at 1 to 1', () => {
+        assert.deepEqual(parse('£157', 'en-GB'), money('GBP', 157));
+    });
+
     it('can parse unambiguous real examples', () => {
-        assert.deepEqual(parse('£157', 'en-GB', {strategy: prefer('GBP')}), money('GBP', 157));
         assert.deepEqual(parse('US$274', 'ko-KR'), money('USD', 274));
         assert.deepEqual(parse('274 US$', 'pt-PT'), money('USD', 274));
         assert.deepEqual(parse('CA$315', 'en-US'), money('CAD', 315));
