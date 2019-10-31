@@ -73,7 +73,7 @@ describe("ImprovedDateTimeFormat", function () {
 
 
 describe("format", function () {
-    it("can format to string", () => {
+    it("can format to parts", () => {
         const formatter = Formatters.create('en-GB', "yyyy-MM-dd");
         assert.equal(formatter.format(date(2001, 6, 9)), "2001-06-09");
         assert.deepEqual(formatter.formatToParts(date(2001, 6, 9)), [
@@ -89,5 +89,9 @@ describe("format", function () {
             month: "2-digit",
             year: "numeric"
         } as any);
+    });
+
+    it("throws if undefined date is parsed into format", () => {
+        assert.throws(() => format(undefined as any, 'en'))
     });
 });
