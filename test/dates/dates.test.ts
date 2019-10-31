@@ -38,6 +38,12 @@ describe("dates", function () {
         }
     });
 
+    it('should throw on ambiguous input', function () {
+        assert.throws(() => parser('en').parse('13/02/2020'));
+        assertDates(parser('en-GB').parse('13/02/2020'), date(2020, 2, 13));
+        assertDates(parser('en-US').parse('02/13/2020'), date(2020, 2, 13));
+    });
+
     it('can parse multiple dates in a string', function () {
         assert.deepEqual(parser('en').parseAll('Checkin: 12 Jan 2009 Checkout: 13 Jan 2009'),
             [date(2009, 1, 12), date(2009, 1, 13)]);

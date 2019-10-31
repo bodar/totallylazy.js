@@ -7,6 +7,8 @@ declare global {
 }
 
 export function date(year: number, month?: number, day?: number): Date {
+    if(month && (month < 1 || month > 12)) throw new Error(`Invalid month ${month}`);
+    if(day && (day < 1 || day > 31)) throw new Error(`Invalid day ${day}`);
     return new Date(Date.UTC(year, month ? month - 1 : 0, day ? day : 1));
 }
 
