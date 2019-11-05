@@ -189,7 +189,7 @@ export function symbolFor(locale: string, isoCurrency: string, hasNative = hasNa
     }
 }
 
-class Spaces {
+export class Spaces {
     static codes: string[] = [32, 160, 8239].map(code => String.fromCharCode(code));
     static spaces = Spaces.codes.join('');
     static pattern = new RegExp(`[${Spaces.spaces}]`, 'g');
