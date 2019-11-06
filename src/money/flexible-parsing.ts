@@ -6,6 +6,7 @@ import {array, single} from "../collections";
 
 export interface Options {
     strategy?: MatchStrategy<string>;
+    decimalSeparator?: AllowedDecimalSeparators
 }
 
 export function flexibleParse(value: string, locale: string = 'en', options?: Options): Money {
@@ -34,7 +35,7 @@ export class FlexibleMoneyParser implements Parser<Money> {
         const currencyLiteral = single(result, find(m => m.name === 'currency' && m.value !== undefined)).value;
         const amount = single(result, find(m => m.name === 'number' && m.value !== undefined)).value;
         const currency = CurrencySymbols.get(this.locale).parse(currencyLiteral, this.options && this.options.strategy);
-        return money(currency, numberParser(findDecimalSeparator(currency, amount)).parse(amount));
+        return money(currency, numberParser((this.options && this.options.decimalSeparator) || findDecimalSeparator(currency, amount)).parse(amount));
     }
 }
 

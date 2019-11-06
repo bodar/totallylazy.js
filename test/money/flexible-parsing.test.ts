@@ -99,7 +99,11 @@ describe("Flexible Paring", function () {
         assert.throws(() => flexibleParse('BHD 4,567'));
     });
 
-    it('can handle currency that is 2 character country code and symbol fi you provide a locale', () => {
+    it('can parse ambiguous value if decimal separator is supplied for a 3 decimal place currency', () => {
+        assert.deepEqual(flexibleParse('BHD 4,567', undefined, {decimalSeparator: ","}), money('BHD', 4.567));
+    });
+
+    it('can handle currency that is 2 character country code and symbol if you provide a locale', () => {
         assert.deepEqual(flexibleParse('1000 $US', 'fr-FR'), money('USD', 1000));
         // $US is not in locale en, if we get 2 digit country code data we could support this without the locale
         // assert.deepEqual(flexibleParse('1000 $US'), money('USD', 1000));
