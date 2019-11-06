@@ -39,14 +39,12 @@ export function money(currency: string, amount: number): Money {
     return {amount, currency};
 }
 
-export const defaultStrategy = prefer('GBP');
-
 export function moneyFrom(parts: NumberFormatPart[], locale: string, options?: Options): Money {
     const [currency] = parts.filter(p => p.type === 'currency');
     if (!currency) throw new Error("No currency found");
     const filtered = parts.filter(p => p.type === 'integer' || p.type === 'decimal' || p.type === 'fraction');
     const value = Number(filtered.map(p => p.type === 'decimal' ? '.' : p.value).join(''));
-    return money(CurrencySymbols.get(locale).parse(currency.value, (options && options.strategy) || defaultStrategy), value)
+    return money(CurrencySymbols.get(locale).parse(currency.value, options && options.strategy), value)
 }
 
 export type CurrencyDisplay = 'symbol' | 'code';
@@ -170,6 +168,10 @@ export class CurrencySymbols extends DatumLookup<string> {
             {name: symbolFor(locale, iso), value: iso},
             ...currency.symbols.map(s => ({name: s, value: iso}))];
     }
+
+    parse(value: string, strategy: MatchStrategy<string> = prefer('GBP')): string {
+        return super.parse(value, strategy);
+    }
 }
 
 const gbpSymbol = /[£GBP]+/;
@@ -199,6 +201,10 @@ export class Spaces {
     }
 }
 
+export function atBoundaryOnly(pattern: string) {
+    return `(?:^|\\s)${pattern}(?=\\s|$)`;
+}
+
 export class RegexBuilder {
     static buildFromOptions(locale: string, options?: Options): string {
         return options && options.format ? this.buildFrom(PartsFromFormat.format.parse(options.format), locale, true) : this.buildPattern(locale, options && options.strict || false);
@@ -226,7 +232,7 @@ export class RegexBuilder {
                     return `(?<${part.type}>[${Spaces.handle(part.value)}]?)`;
             }
         }).join("");
-        return `(?:^|\\s)${pattern}(?=\\s|$)`;
+        return atBoundaryOnly(pattern);
     }
 
     static buildParts(raw: Intl.NumberFormatPart[], strict: boolean = false) {
