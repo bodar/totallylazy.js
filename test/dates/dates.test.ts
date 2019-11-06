@@ -160,7 +160,11 @@ describe("dates", function () {
 
     it("when using a format string do not allow extra separators", () => {
         assert.throws(() => parser('en', 'dd MMM yyyy').parse('10/Jan/1977'));
+    });
 
+    it("when using a format string do not switch month format from text to digits or vice versa", () => {
+        assert.throws(() => parser('en', 'dd MMM yyyy').parse('10 01 1977'));
+        assert.throws(() => parser('en', 'dd MM yyyy').parse('10 Jan 1977'));
     });
 
     it("can parse using non native implementation", () => {

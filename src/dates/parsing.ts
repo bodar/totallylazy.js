@@ -34,7 +34,7 @@ export class RegexBuilder {
                 case "year":
                     return '(?<year>\\d{4})';
                 case "month":
-                    return `(?<month>(?:\\d{1,2}|${Months.get(this.locale).pattern.toLocaleLowerCase(this.locale)}))`;
+                    return `(?<month>${this.monthsPattern()})`;
                 case "day":
                     return '(?<day>\\d{1,2})';
                 case "weekday":
@@ -50,6 +50,16 @@ export class RegexBuilder {
     private addExtraLiterals(part: DateTimeFormatPart) {
         if (this.options.strict) return part.value;
         return part.value + ' ,.-/';
+    }
+
+    private monthsPattern(): string {
+        const numericPattern = `\\d{1,2}`;
+        const textPattern = Months.get(this.locale).pattern.toLocaleLowerCase(this.locale);
+        if (this.options.strict) {
+            if(this.options.month === "2-digit" || this.options.month === "numeric") return numericPattern;
+            return textPattern;
+        }
+        return `(?:${numericPattern}|${textPattern})`;
     }
 }
 

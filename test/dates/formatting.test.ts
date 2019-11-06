@@ -83,7 +83,7 @@ describe("format", function () {
             {type: "literal", value: "-"},
             {type: "day", value: "09"}
         ]);
-        assert.deepEqual(formatter.resolvedOptions(), {
+        assert.include(formatter.resolvedOptions() as any, {
             day: "2-digit",
             locale: "en-GB",
             month: "2-digit",
