@@ -40,15 +40,16 @@ export class RegexBuilder {
                 case "weekday":
                     return `(?<weekday>${Weekdays.get(this.locale).pattern.toLocaleLowerCase(this.locale)})`;
                 default: {
-                    const chars = unique(characters(RegexBuilder.ensureLiteralsAlwaysContainSpace(part))).join('').replace(' ', '\\s');
+                    const chars = unique(characters(this.addExtraLiterals(part))).join('').replace(' ', '\\s');
                     return `[${chars}]+?`;
                 }
             }
         }).join("");
     }
 
-    private static ensureLiteralsAlwaysContainSpace(part: DateTimeFormatPart) {
-        return part.value + ' ';
+    private addExtraLiterals(part: DateTimeFormatPart) {
+        if (this.options.strict) return part.value;
+        return part.value + ' ,.-/';
     }
 }
 
@@ -156,7 +157,7 @@ export function optionsFrom(formatOrParts: Format | DateTimeFormatPart[]): Optio
     return parts.filter(p => keys.indexOf(p.type) != -1).reduce((a, p) => {
         a[p.type] = p.value;
         return a;
-    }, {} as any);
+    }, {strict: true} as any);
 }
 
 export function formatBuilder(locale: string, format: Format): RegexBuilder {
@@ -171,8 +172,7 @@ export const defaultParserOptions: (Format | Options)[] = [
     {year: 'numeric', month: 'short', day: 'numeric', weekday: 'short'},
     {year: 'numeric', month: 'numeric', day: 'numeric'},
     {year: 'numeric', month: 'short', day: 'numeric'},
-    {year: 'numeric', month: 'long', day: 'numeric'},
-    "dd MMM yyyy",
+    {year: 'numeric', month: 'long', day: 'numeric'}
 ];
 
 export function parser(locale: string, options?: Format | Options, native = hasNativeFormatToParts): Parser<Date> {

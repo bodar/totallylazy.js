@@ -38,6 +38,22 @@ describe("dates", function () {
         }
     });
 
+    it('should be flexible around extra commas', function () {
+        assertDates(parser('en-GB').parse('13 Feb, 2020'), date(2020, 2, 13));
+        assertDates(parser('en-GB').parse('Wednesday 29, January 2020'), date(2020, 1, 29));
+    });
+
+    it('does not join adjacent dates', function () {
+        const [first, second] = parser('en-GB').parseAll('1/2/2020, 3/4/2020');
+        assertDates(first, date(2020, 2, 1));
+        assertDates(second, date(2020, 4, 3));
+    });
+
+    it('supports dots a separators', function () {
+        assertDates(parser('en-GB').parse('1.02.2020'), date(2020, 2, 1));
+        assertDates(parser('en-US').parse('1.02.2020'), date(2020, 1, 2));
+    });
+
     it('should throw on ambiguous input', function () {
         assert.throws(() => parser('en').parse('13/02/2020'));
         assertDates(parser('en-GB').parse('13/02/2020'), date(2020, 2, 13));
@@ -45,12 +61,12 @@ describe("dates", function () {
     });
 
     it('can parse multiple dates in a string', function () {
-        assert.deepEqual(parser('en').parseAll('Checkin: 12 Jan 2009 Checkout: 13 Jan 2009'),
+        assert.deepEqual(parser('en', 'dd MMM yyyy').parseAll('Checkin: 12 Jan 2009 Checkout: 13 Jan 2009'),
             [date(2009, 1, 12), date(2009, 1, 13)]);
     });
 
     it('ignores values that are very nearly a valid date', function () {
-        assert.deepEqual(parser('en').parseAll('Checkin: 12 Jan 2009 Checkout: 13 Jan 2009  Nearly a date: 13 Dan 2009'),
+        assert.deepEqual(parser('en', 'dd MMM yyyy').parseAll('Checkin: 12 Jan 2009 Checkout: 13 Jan 2009  Nearly a date: 13 Dan 2009'),
             [date(2009, 1, 12), date(2009, 1, 13)]);
     });
 
@@ -140,6 +156,11 @@ describe("dates", function () {
         assertParse('pt-PT', "06 abr 2019", date(2019, 4, 6),"dd MMM yyyy");
         assertParse('cs-CZ', "06 úno 2019", date(2019, 2, 6),"dd MMM yyyy");
         assertParse('de-DE', "01 feb. 2019", date(2019, 2, 1),"dd MMM yyyy");
+    });
+
+    it("when using a format string do not allow extra separators", () => {
+        assert.throws(() => parser('en', 'dd MMM yyyy').parse('10/Jan/1977'));
+
     });
 
     it("can parse using non native implementation", () => {

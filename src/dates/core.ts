@@ -20,6 +20,7 @@ export interface Options {
     month?: MonthFormat;
     day?: 'numeric' | '2-digit';
     weekday?: WeekdayFormat;
+    strict?: boolean;
 }
 
 export const defaultOptions: Options = {
@@ -27,5 +28,6 @@ export const defaultOptions: Options = {
     month: "numeric",
     day: "numeric",
     weekday: 'long',
+    strict: false,
 };
 
