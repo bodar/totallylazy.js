@@ -153,7 +153,7 @@ export abstract class FromFormatStringDataExtractor extends BaseDataExtractor im
         const exact = Object.keys(this.options).length == 1;
         const fullFormats = exactFormat(this.locale, this.options, this.dates);
         if (exact) return fullFormats;
-        const simpleFormats = exactFormat(this.locale, {[this.partType]: (this.options as any)[this.partType]}, this.dates);
+        const simpleFormats = exactFormat(this.locale, {[this.partType]: (this.options as any)[this.partType]} as any, this.dates);
         const diffs = this.diff(fullFormats);
         const result = [];
         for (let i = 0; i < simpleFormats.length; i++) {

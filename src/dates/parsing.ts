@@ -1,13 +1,13 @@
 import {lazy} from "../lazy";
 import {unique} from "../arrays";
 import {characters, isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
-import {date, defaultOptions, formatData, hasNativeFormatToParts, Months, Options, Weekdays,} from "./index";
+import {date, defaultOptions, Format, formatData, hasNativeFormatToParts, Months, Options, Weekdays,} from "./index";
 import {mappingParser, namedRegexParser, or, Parser, preProcess} from "../parsing";
-import DateTimeFormatPart = Intl.DateTimeFormatPart;
-import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import {array} from "../collections";
 import {map} from "../transducers";
 import {cache} from "../cache";
+import DateTimeFormatPart = Intl.DateTimeFormatPart;
+import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
 export function parse(value: string, locale: string, options?: string | Options, native = hasNativeFormatToParts): Date {
     return parser(locale, options, native).parse(value);
@@ -48,15 +48,15 @@ export class RegexBuilder {
     }
 
     private addExtraLiterals(part: DateTimeFormatPart) {
-        if (this.options.strict) return part.value;
+        if (this.options.format) return part.value;
         return part.value + ' ,.-/';
     }
 
     private monthsPattern(): string {
         const numericPattern = `\\d{1,2}`;
         const textPattern = Months.get(this.locale).pattern.toLocaleLowerCase(this.locale);
-        if (this.options.strict) {
-            if(this.options.month === "2-digit" || this.options.month === "numeric") return numericPattern;
+        if (this.options.format) {
+            if (this.options.month === "2-digit" || this.options.month === "numeric") return numericPattern;
             return textPattern;
         }
         return `(?:${numericPattern}|${textPattern})`;
@@ -129,25 +129,6 @@ export function formatFrom(type: DateTimeFormatPartTypes, length: number): strin
 
 export const formatRegex = NamedRegExp.create('(?:(?<year>y+)|(?<month>M+)|(?<day>d+)|(?<weekday>E+))', 'g');
 
-/**
- * Format:
- *  Year
- *      yy: 2 digit (01)
- *      yyyy: numeric (normally 4 digit)
- *  Month
- *      M: numeric (1 or 10)
- *      MM: 2 digit (01)
- *      MMM: short (Jan)
- *      MMMM: long (January)
- *  Day
- *      d: numeric (1 or 10)
- *      dd: 2 digit (01)
- *  Weekday
- *      EEE: short (Mon)
- *      EEEE: long (Monday)
- */
-export type Format = string;
-
 export function partsFrom(format: Format): DateTimeFormatPart[] {
     return array(formatRegex.iterate(format), map(matchOrNot => {
         if (isNamedMatch(matchOrNot)) {
@@ -167,13 +148,11 @@ export function optionsFrom(formatOrParts: Format | DateTimeFormatPart[]): Optio
     return parts.filter(p => keys.indexOf(p.type) != -1).reduce((a, p) => {
         a[p.type] = p.value;
         return a;
-    }, {strict: true} as any);
+    }, typeof formatOrParts === "string" ? {format: formatOrParts} : {} as any);
 }
 
 export function formatBuilder(locale: string, format: Format): RegexBuilder {
-    const parts = partsFrom(format);
-
-    return new RegexBuilder(locale, optionsFrom(parts), parts)
+    return new RegexBuilder(locale, optionsFrom(format), partsFrom(format))
 }
 
 
