@@ -51,7 +51,7 @@ export class RegexBuilder {
 
     private addExtraLiterals(part: DateTimeFormatPart) {
         if (this.options.format) return part.value;
-        return part.value + (this.options.separators || ' ,.-/');
+        return part.value + (this.options.separators || escapeCharacters(' ,.-/'));
     }
 
     private monthsPattern(): string {
@@ -61,6 +61,10 @@ export class RegexBuilder {
         if (this.options.month === "short" || this.options.month === "long") return textPattern;
         return `(?:${numericPattern}|${textPattern})`;
     }
+}
+
+export function escapeCharacters(value:string) {
+    return value.replace(/[\-]/g, '\\$&');
 }
 
 export class DateParser {
