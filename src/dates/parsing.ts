@@ -29,7 +29,7 @@ export class RegexBuilder {
     }
 
     @lazy get pattern() {
-        return this.formatted.map(part => {
+        return this.formatted.map((part, index) => {
             switch (part.type) {
                 case "year":
                     return '(?<year>\\d{4})';
@@ -41,7 +41,9 @@ export class RegexBuilder {
                     return `(?<weekday>${Weekdays.get(this.locale).pattern.toLocaleLowerCase(this.locale)})`;
                 default: {
                     const chars = unique(characters(this.addExtraLiterals(part))).join('').replace(' ', '\\s');
-                    return `[${chars}]+?`;
+                    const isLast = index === this.formatted.length - 1;
+                    const quantifier = isLast ? '*' : '+';
+                    return `[${chars}]${quantifier}?`;
                 }
             }
         }).join("");
@@ -49,16 +51,14 @@ export class RegexBuilder {
 
     private addExtraLiterals(part: DateTimeFormatPart) {
         if (this.options.format) return part.value;
-        return part.value + ' ,.-/';
+        return part.value + (this.options.separators || ' ,.-/');
     }
 
     private monthsPattern(): string {
         const numericPattern = `\\d{1,2}`;
         const textPattern = Months.get(this.locale).pattern.toLocaleLowerCase(this.locale);
-        if (this.options.format) {
-            if (this.options.month === "2-digit" || this.options.month === "numeric") return numericPattern;
-            return textPattern;
-        }
+        if (this.options.month === "2-digit" || this.options.month === "numeric") return numericPattern;
+        if (this.options.month === "short" || this.options.month === "long") return textPattern;
         return `(?:${numericPattern}|${textPattern})`;
     }
 }

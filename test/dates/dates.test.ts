@@ -49,6 +49,14 @@ describe("dates", function () {
         assertDates(second, date(2020, 4, 3));
     });
 
+    it('when we set specific option do not allow alternative formats', function () {
+        assert.throws(() => parser('en-GB', {day: 'numeric', month: "short", year: 'numeric'}).parse('10/1/1977'));
+    });
+
+    it('supports custom separators', function () {
+        assertDates(parser('en-GB', {separators: '@'}).parse('1@02@2020'), date(2020, 2, 1));
+    });
+
     it('supports dots a separators', function () {
         assertDates(parser('en-GB').parse('1.02.2020'), date(2020, 2, 1));
         assertDates(parser('en-US').parse('1.02.2020'), date(2020, 1, 2));
@@ -135,13 +143,17 @@ describe("dates", function () {
         assertParse('en-US', value, date(2019, 1, 20), {year: 'numeric', month: 'short', day: '2-digit'});
     });
 
+    it("can parse a date with a trailing literal", () => {
+        assertParse('ru-RU', '31 янв 2019', date(2019, 1, 31));
+        assertParse('ru-RU', '31 янв. 2019 г.', date(2019, 1, 31));
+    });
+
     it("can parse a date without specifying any options", () => {
         assertParse('en-US', 'August 16, 2019', date(2019, 8, 16));
         assertParse('en-GB', '18/12/2018', date(2018, 12, 18));
         assertParse('en-US', 'Monday, December 17, 2018', date(2018, 12, 17));
         assertParse('en-US', 'Sunday, January 20, 2019', date(2019, 1, 20));
         assertParse('ru-RU', '15 январь 2019 г.', date(2019, 1, 15));
-        assertParse('ru-RU', '31 янв 2019', date(2019, 1, 31));
         assertParse('ru-RU', 'пятница, 01 февр. 2019 г.', date(2019, 2, 1));
         assertParse('ru-RU', '01.2.2019', date(2019, 2, 1));
     });

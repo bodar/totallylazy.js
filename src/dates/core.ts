@@ -40,6 +40,7 @@ export interface Options {
     month?: MonthFormat;
     day?: 'numeric' | '2-digit';
     weekday?: WeekdayFormat;
+    separators?: string;
     format?: Format;
 }
 
