@@ -60,7 +60,7 @@ export class ImprovedDateTimeFormat implements DateTimeFormat {
         if (Formatters.isNativelySupported(this.locale, this.options)) {
             return this.delegate.formatToParts(date);
         } else {
-            return FormatToParts.create(this.locale, this.options).formatToParts(typeof date === "number" ? new Date(date) : date);
+            return DateParts.create(this.locale, this.options).toParts(typeof date === "number" ? new Date(date) : date);
         }
     }
 
@@ -89,7 +89,7 @@ export class SimpleFormat implements DateTimeFormat {
 
     formatToParts(raw: Date | number = new Date()): Intl.DateTimeFormatPart[] {
         const date = typeof raw === "number" ? new Date(raw) : raw;
-        const partsWithValues = FormatToParts.create(this.locale, this.options).formatToParts(date);
+        const partsWithValues = DateParts.create(this.locale, this.options).toParts(date);
         return this.partsInOrder.map(p => ({type: p.type, value: this.valueFor(partsWithValues, p.type, p.value)}));
     }
 
@@ -103,15 +103,15 @@ export class SimpleFormat implements DateTimeFormat {
     }
 }
 
-export const hasNativeFormatToParts = typeof Intl.DateTimeFormat.prototype.formatToParts == 'function';
+export const hasNativeToParts = typeof Intl.DateTimeFormat.prototype.formatToParts == 'function';
 
-export function formatData(value: Date, locale: string , options: Options = defaultOptions, native = hasNativeFormatToParts): DateTimeFormatPart[] {
+export function formatData(value: Date, locale: string , options: Options = defaultOptions, native = hasNativeToParts): DateTimeFormatPart[] {
     const formatter = Formatters.create(locale, options);
     if (native) return formatter.formatToParts(value);
-    return FormatToParts.create(locale, options).formatToParts(value);
+    return DateParts.create(locale, options).toParts(value);
 }
 
-export class FormatToParts {
+export class DateParts {
     private constructor(private locale: string,
                         private options: Options = defaultOptions,
                         private year = 3333,
@@ -121,8 +121,8 @@ export class FormatToParts {
     }
 
     @cache
-    static create(locale: string, options: Options = defaultOptions): FormatToParts {
-        return new FormatToParts(locale, options);
+    static create(locale: string, options: Options = defaultOptions): DateParts {
+        return new DateParts(locale, options);
     }
 
     @lazy get formatter(): DateTimeFormat {
@@ -175,7 +175,7 @@ export class FormatToParts {
         return NamedRegExp.create("^" + result.join("") + "$");
     }
 
-    formatToParts(date: Date): DateTimeFormatPart[] {
+    toParts(date: Date): DateTimeFormatPart[] {
         const regex = this.actualNamesPattern;
         const actualResult = this.formatter.format(date);
 

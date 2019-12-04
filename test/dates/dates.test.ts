@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {date, format, hasNativeFormatToParts, Options, parse, parser, parsers} from "../../src/dates";
+import {date, format, hasNativeToParts, Options, parse, parser, parsers} from "../../src/dates";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
@@ -12,7 +12,7 @@ export function assertDates(parsed: Date, expected: Date) {
     assert.equal(parsed.toISOString(), expected.toISOString());
 }
 
-export function assertParse(locale: string, value: string, expected: Date, options?: string | Options, native = hasNativeFormatToParts) {
+export function assertParse(locale: string, value: string, expected: Date, options?: string | Options, native = hasNativeToParts) {
     const parsed = parse(value, locale, options, native);
     assertDates(parsed, expected);
 }

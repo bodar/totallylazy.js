@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import {
     CurrencySymbols,
-    format, Formatter, formatToPartsPonyfill,
+    format, Formatter, toPartsPonyfill,
     money,
     moneyFrom,
     parse,
@@ -36,7 +36,7 @@ describe("Money", function () {
     });
 
     it('formatToPartsPonyfill', function () {
-        assert.deepEqual(formatToPartsPonyfill(money('GBP', 123456.78), 'en'), [
+        assert.deepEqual(toPartsPonyfill(money('GBP', 123456.78), 'en'), [
             {type: 'currency', value: 'GBP'},
             {type: "literal", value: " "},
             {type: 'integer', value: '123'},
@@ -197,7 +197,7 @@ describe("Money", function () {
                 for (const amount of amounts) {
                     const original = money(code, amount);
                     const formatter = Formatter.create(original.currency, locale);
-                    const ponyResult = formatToPartsPonyfill(original, locale);
+                    const ponyResult = toPartsPonyfill(original, locale);
                     const nativeResult = formatter.formatToParts(original.amount);
                     assert.deepEqual(ponyResult, nativeResult);
                 }

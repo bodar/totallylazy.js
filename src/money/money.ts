@@ -67,18 +67,18 @@ export class Formatter {
     }
 }
 
-export const hasNativeFormatToParts = typeof Intl.NumberFormat.prototype.formatToParts == 'function';
+export const hasNativeToParts = typeof Intl.NumberFormat.prototype.formatToParts == 'function';
 
-export function partsFrom(money: Money, locale: string, currencyDisplay: CurrencyDisplay = 'code', hasNative = hasNativeFormatToParts): NumberFormatPart[] {
+export function partsFrom(money: Money, locale: string, currencyDisplay: CurrencyDisplay = 'code', hasNative = hasNativeToParts): NumberFormatPart[] {
     const formatter = Formatter.create(money.currency, locale, currencyDisplay);
-    return hasNative ? formatter.formatToParts(money.amount) : formatToPartsPonyfill(money, locale, currencyDisplay);
+    return hasNative ? formatter.formatToParts(money.amount) : toPartsPonyfill(money, locale, currencyDisplay);
 }
 
 export function format(money: Money, locale: string, currencyDisplay: CurrencyDisplay = 'code'): string {
     return Formatter.create(money.currency, locale, currencyDisplay).format(money.amount);
 }
 
-export function formatToPartsPonyfill(actual: Money, locale: string, currencyDisplay: CurrencyDisplay = 'code'): NumberFormatPart[] {
+export function toPartsPonyfill(actual: Money, locale: string, currencyDisplay: CurrencyDisplay = 'code'): NumberFormatPart[] {
     const currency = actual.currency;
     const amount = actual.amount;
     return FormatToParts.create(currency, locale, currencyDisplay).format(amount);
@@ -176,7 +176,7 @@ export class CurrencySymbols extends DatumLookup<string> {
 
 const gbpSymbol = /[£GBP]+/;
 
-export function symbolFor(locale: string, isoCurrency: string, hasNative = hasNativeFormatToParts): string {
+export function symbolFor(locale: string, isoCurrency: string, hasNative = hasNativeToParts): string {
     if (hasNative) {
         const parts = partsFrom(money(isoCurrency, 0), locale, "symbol");
         const [currency] = parts.filter(p => p.type === 'currency');

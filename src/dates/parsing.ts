@@ -1,7 +1,7 @@
 import {lazy} from "../lazy";
 import {unique} from "../arrays";
 import {characters, isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
-import {date, defaultOptions, Format, formatData, hasNativeFormatToParts, Months, Options, Weekdays,} from "./index";
+import {date, defaultOptions, Format, formatData, hasNativeToParts, Months, Options, Weekdays,} from "./index";
 import {mappingParser, namedRegexParser, or, Parser, preProcess} from "../parsing";
 import {array} from "../collections";
 import {map} from "../transducers";
@@ -9,7 +9,7 @@ import {cache} from "../cache";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
-export function parse(value: string, locale: string, options?: string | Options, native = hasNativeFormatToParts): Date {
+export function parse(value: string, locale: string, options?: string | Options, native = hasNativeToParts): Date {
     return parser(locale, options, native).parse(value);
 }
 
@@ -20,7 +20,7 @@ export class RegexBuilder {
     }
 
     @cache
-    static create(locale: string, options: string | Options = defaultOptions, native = hasNativeFormatToParts): RegexBuilder {
+    static create(locale: string, options: string | Options = defaultOptions, native = hasNativeToParts): RegexBuilder {
         if (typeof options == 'string') {
             return formatBuilder(locale, options);
         } else {
@@ -69,7 +69,7 @@ export function escapeCharacters(value:string) {
 
 export class DateParser {
     @cache
-    static create(locale: string, options: string | Options = defaultOptions, native = hasNativeFormatToParts) {
+    static create(locale: string, options: string | Options = defaultOptions, native = hasNativeToParts) {
         const pattern = RegexBuilder.create(locale, options, native).pattern;
         return mappingParser(DateTimeFormatPartParser.create(NamedRegExp.create(pattern), locale), p => dateFrom(p, locale));
     }
@@ -168,7 +168,7 @@ export const defaultParserOptions: (Format | Options)[] = [
     {year: 'numeric', month: 'long', day: 'numeric'}
 ];
 
-export function parser(locale: string, options?: Format | Options, native = hasNativeFormatToParts): Parser<Date> {
+export function parser(locale: string, options?: Format | Options, native = hasNativeToParts): Parser<Date> {
     if (typeof options == 'string') {
         return simpleParser(locale, options, native);
     } else {
@@ -176,11 +176,11 @@ export function parser(locale: string, options?: Format | Options, native = hasN
     }
 }
 
-export function simpleParser(locale: string, format: Format, native = hasNativeFormatToParts): Parser<Date> {
+export function simpleParser(locale: string, format: Format, native = hasNativeToParts): Parser<Date> {
     return DateParser.create(locale, format, native);
 }
 
-export function localeParser(locale: string, options?: Format | Options, native = hasNativeFormatToParts): Parser<Date> {
+export function localeParser(locale: string, options?: Format | Options, native = hasNativeToParts): Parser<Date> {
     if (!options) {
         return or(...defaultParserOptions.map(o => localeParser(locale, o, native)));
     }

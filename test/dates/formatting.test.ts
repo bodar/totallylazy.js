@@ -1,4 +1,4 @@
-import {date, format, Formatters, FormatToParts, ImprovedDateTimeFormat, Options} from "../../src/dates";
+import {date, format, Formatters, DateParts, ImprovedDateTimeFormat, Options} from "../../src/dates";
 import {assert} from 'chai';
 import {options, supported} from "./dates.test";
 import {runningInNode} from "../../src/node";
@@ -18,7 +18,7 @@ describe("FormatToParts", function () {
     function assertPartsMatch(locale: string, option: Options, original: Date) {
         const formatter = Formatters.create(locale, option);
         const expected = formatter.formatToParts(original);
-        const actual = FormatToParts.create(locale, option).formatToParts(original);
+        const actual = DateParts.create(locale, option).toParts(original);
         assert.deepEqual(actual.map(v => v.value).join(""), expected.map(v => v.value).join(""), `${locale} ${JSON.stringify(option)}`);
         assert.deepEqual(actual.map(v => v.type), expected.map(v => v.type), `${locale} ${JSON.stringify(option)}`)
     }

@@ -1,6 +1,6 @@
 import {flatten} from "../arrays";
 import {date, MonthFormat, Options, WeekdayFormat} from "./core";
-import {Formatters, hasNativeFormatToParts} from "./formatting";
+import {Formatters, hasNativeToParts} from "./formatting";
 import {different, replace} from "../characters";
 import {Datum, DatumLookup} from "../parsing";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
@@ -44,7 +44,7 @@ export class Months extends NumericLookup {
         return flatten(Months.formats.map(f => Months.dataFor(locale, f)));
     }
 
-    static dataFor(locale: string, options: Options, native = hasNativeFormatToParts): Month[] {
+    static dataFor(locale: string, options: Options, native = hasNativeToParts): Month[] {
         return months(locale, options, native).map((m, i) => ({name: m, value: i + 1}));
     }
 }
@@ -60,7 +60,7 @@ function range(start: number, end: number): number[] {
 
 const months_cache: { [key: string]: string[] } = {};
 
-export function months(locale: string, monthFormat: MonthFormat | Options = 'long', native = hasNativeFormatToParts): string[] {
+export function months(locale: string, monthFormat: MonthFormat | Options = 'long', native = hasNativeToParts): string[] {
     const key = JSON.stringify({locale, monthFormat, native});
     return months_cache[key] = months_cache[key] || (() => {
         const options: Options = {...typeof monthFormat == 'string' ? {month: monthFormat} : monthFormat};
@@ -100,14 +100,14 @@ export class Weekdays extends NumericLookup {
         return flatten(Weekdays.formats.map(f => Weekdays.dataFor(locale, f)));
     }
 
-    static dataFor(locale: string, options: Options, native = hasNativeFormatToParts): Weekday[] {
+    static dataFor(locale: string, options: Options, native = hasNativeToParts): Weekday[] {
         return weekdays(locale, options, native).map((m, i) => ({name: m, value: i + 1}));
     }
 }
 
 const weekdays_cache: { [key: string]: string[] } = {};
 
-export function weekdays(locale: string, weekdayFormat: WeekdayFormat | Options = 'long', native = hasNativeFormatToParts): string[] {
+export function weekdays(locale: string, weekdayFormat: WeekdayFormat | Options = 'long', native = hasNativeToParts): string[] {
     const key = JSON.stringify({locale, weekdayFormat, native});
     return weekdays_cache[key] = weekdays_cache[key] || (() => {
         const options: Options = {...typeof weekdayFormat == 'string' ? {weekday: weekdayFormat} : weekdayFormat};
