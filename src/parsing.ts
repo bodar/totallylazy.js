@@ -1,7 +1,7 @@
 import {characters, NamedMatch, NamedRegExp} from "./characters";
-import {PrefixTree} from "./trie";
+import {DEFAULT_COMPARATOR, PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
-import {array, by, Mapper} from "./collections";
+import {array, by, Comparator, Mapper} from "./collections";
 import {flatMap, map} from "./transducers";
 import {cache} from "./cache";
 
@@ -78,12 +78,12 @@ export interface Datum<V> {
 export class DatumLookup<V> {
     private readonly prefixTree: PrefixTree<Datum<V>[]>;
 
-    constructor(private readonly data: Datum<V>[]) {
+    constructor(private readonly data: Datum<V>[], comparator: Comparator<string> = DEFAULT_COMPARATOR) {
         this.prefixTree = this.data.reduce((t, m) => {
             const data = t.lookup(m.name) || [];
             data.push(m);
             return t.insert(m.name, data);
-        }, new PrefixTree<Datum<V>[]>());
+        }, new PrefixTree<Datum<V>[]>(undefined, comparator));
     }
 
     parse(value: string, strategy: MatchStrategy<V> = uniqueMatch): V {

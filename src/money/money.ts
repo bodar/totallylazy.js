@@ -1,6 +1,6 @@
 import {different, isNamedMatch, MatchOrNot, NamedMatch, NamedRegExp} from "../characters";
 import {dedupe, filter, first, flatMap, map, sort} from "../transducers";
-import {array, by, descending, single} from "../collections";
+import {array, ascending, by, descending, single} from "../collections";
 import {flatten} from "../arrays";
 import {currencies} from "./currencies";
 import {lazy} from "../lazy";
@@ -156,6 +156,10 @@ export type CurrencySymbolDatum = Datum<string>;
 
 export class CurrencySymbols extends DatumLookup<string> {
     static cache: { [key: string]: CurrencySymbols } = {};
+
+    constructor(data: Datum<string>[]) {
+        super(data, ascending);
+    }
 
     static get(locale: string, additionalData: CurrencySymbolDatum[] = []): CurrencySymbols {
         return CurrencySymbols.cache[locale] = CurrencySymbols.cache[locale] || CurrencySymbols.create(locale, additionalData);

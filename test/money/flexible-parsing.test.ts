@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {money} from "../../src/money";
+import {money, parser} from "../../src/money";
 import {prefer} from "../../src/parsing";
 import {flexibleMoneyParser, flexibleParse, numberParser, NumberParser} from "../../src/money/flexible-parsing";
 
@@ -46,6 +46,11 @@ describe('NumberParser', () => {
 });
 
 describe("Flexible Parsing", function () {
+    it('should use exact match for currency code or symbol', function () {
+        assert.deepEqual(flexibleMoneyParser().parseAll('23 m'), []);
+        assert.deepEqual(flexibleMoneyParser().parseAll('23 M'), [money('LSL', 23)]);
+    });
+
     it('do not use prefer strategy when explicit currency code is present', function () {
         assert.deepEqual(flexibleMoneyParser('en', {strategy: prefer('USD')}).parseAll('From $220 CAD'), [money('CAD', 220)]);
     });
