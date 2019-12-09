@@ -46,6 +46,10 @@ describe('NumberParser', () => {
 });
 
 describe("Flexible Parsing", function () {
+    it('do not use prefer strategy when explicit currency code is present', function () {
+        assert.deepEqual(flexibleMoneyParser('en', {strategy: prefer('USD')}).parseAll('From $220 CAD'), [money('CAD', 220)]);
+    });
+
     it('handles when there is a false match on the currency regex', function () {
         assert.deepEqual(flexibleMoneyParser().parseAll('From 1 234,56 USD'), [money('USD', 1234.56)]);
     });

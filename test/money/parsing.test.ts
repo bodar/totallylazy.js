@@ -21,6 +21,10 @@ const amounts = [1234567.89, 156, 156.89, .1234, 0];
 describe("Money", function () {
     this.timeout(10000);
 
+    it('do not use prefer strategy when explicit currency code is present', function () {
+        assert.deepEqual(parser('en', {strategy: prefer('USD')}).parseAll('From $220 CAD'), [money('CAD', 220)]);
+    });
+
     it('handles when there is a false match on the currency regex', function () {
         assert.deepEqual(parser('en').parseAll('From 1,234.56 USD'), [money('USD', 1234.56)]);
     });

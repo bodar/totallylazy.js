@@ -1,8 +1,8 @@
 import {atBoundaryOnly, CurrencySymbols, decimalsFor, money, Money, Spaces} from "./money";
 import {MatchStrategy, Parser} from "../parsing";
 import {NamedMatch, NamedRegExp} from "../characters";
-import {filter, find, first, flatMap, map} from "../transducers";
-import {array, Mapper, single} from "../collections";
+import {filter, find, first, flatMap, map, sort} from "../transducers";
+import {array, by, descending, Mapper, single} from "../collections";
 import {unique} from "../arrays";
 
 export interface Options {
@@ -48,15 +48,17 @@ export class FlexibleMoneyParser implements Parser<Money> {
     }
 
     private parseSingle(result: NamedMatch[]) {
-        const currency = single(result,
+        const {currency} = single(result,
             filter(m => m.name === 'currency' && m.value !== undefined),
             flatMap(m => {
                 try {
-                    return [CurrencySymbols.get(this.locale).parse(m.value, this.options && this.options.strategy)];
+                    const currency = CurrencySymbols.get(this.locale).parse(m.value, this.options && this.options.strategy);
+                    return [{currency, exactMatch: currency === m.value}];
                 } catch (e) {
                     return [];
                 }
             }),
+            sort(by('exactMatch', descending)),
             first());
         const amount = single(result, find(m => m.name === 'number' && m.value !== undefined)).value;
         const instance = numberParser((this.options && this.options.decimalSeparator) || findDecimalSeparator(currency, amount));
