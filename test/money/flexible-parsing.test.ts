@@ -46,6 +46,10 @@ describe('NumberParser', () => {
 });
 
 describe("Flexible Parsing", function () {
+    it('handles when there is a false match on the currency regex', function () {
+        assert.deepEqual(flexibleMoneyParser().parseAll('From 1 234,56 USD'), [money('USD', 1234.56)]);
+    });
+
     it('can parse all numbers in a string', function () {
         assert.deepEqual(flexibleMoneyParser().parseAll('Total USD 1 234,56 Tax USD 234,56'), [money('USD', 1234.56), money('USD', 234.56)]);
     });

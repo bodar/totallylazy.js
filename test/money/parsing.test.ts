@@ -21,6 +21,10 @@ const amounts = [1234567.89, 156, 156.89, .1234, 0];
 describe("Money", function () {
     this.timeout(10000);
 
+    it('handles when there is a false match on the currency regex', function () {
+        assert.deepEqual(parser('en').parseAll('From 1,234.56 USD'), [money('USD', 1234.56)]);
+    });
+
     it('can parse South African Rand (ZAR/R)', () => {
         assert.deepEqual(parser('en').parse('R1360.00'), money('ZAR', 1360));
     });

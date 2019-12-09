@@ -119,11 +119,13 @@ export function single(source: Iterable<any> | AsyncIterable<any>, ...transducer
     return toSinglePromise(sequence(source, ...transducers));
 }
 
-function toSingle<A>(iterable: Iterable<A>) {
+function toSingle<A>(iterable: Iterable<A>): A {
     for (const a of iterable) return a;
+    throw new Error("Expected a single value");
 }
 
-async function toSinglePromise<A>(iterable: AsyncIterable<A>) {
+async function toSinglePromise<A>(iterable: AsyncIterable<A>): Promise<A> {
     for await (const value of iterable) return value;
+    throw new Error("Expected a single value");
 }
 

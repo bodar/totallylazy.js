@@ -1,6 +1,6 @@
 import {different, isNamedMatch, MatchOrNot, NamedMatch, NamedRegExp} from "../characters";
-import {dedupe, filter, flatMap, map} from "../transducers";
-import {array, by} from "../collections";
+import {dedupe, filter, first, flatMap, map} from "../transducers";
+import {array, by, single} from "../collections";
 import {flatten} from "../arrays";
 import {currencies} from "./currencies";
 import {lazy} from "../lazy";
@@ -40,11 +40,19 @@ export function money(currency: string, amount: number): Money {
 }
 
 export function moneyFrom(parts: NumberFormatPart[], locale: string, options?: Options): Money {
-    const [currency] = parts.filter(p => p.type === 'currency');
-    if (!currency) throw new Error("No currency found");
+    const currency = single(parts,
+        filter((p: NumberFormatPart) => p.type === 'currency'),
+        flatMap(p => {
+            try {
+                return [CurrencySymbols.get(locale).parse(p.value, options && options.strategy)];
+            } catch (e) {
+                return [];
+            }
+        }),
+        first());
     const filtered = parts.filter(p => p.type === 'integer' || p.type === 'decimal' || p.type === 'fraction');
     const value = Number(filtered.map(p => p.type === 'decimal' ? '.' : p.value).join(''));
-    return money(CurrencySymbols.get(locale).parse(currency.value, options && options.strategy), value)
+    return money(currency, value)
 }
 
 export type CurrencyDisplay = 'symbol' | 'code';
