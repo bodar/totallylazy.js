@@ -90,9 +90,22 @@ export async function* toAsyncIterable<A>(promise: PromiseLike<A>): AsyncIterabl
     yield promise;
 }
 
-export function by<A, K extends keyof A>(key: K, comparator: Comparator<A[K]> = ascending): Comparator<A> {
+export function by<A, K extends keyof A>(key: K, comparator?: Comparator<A[K]>): Comparator<A>;
+export function by<A, K>(mapper: Mapper<A,K>, comparator?: Comparator<K>): Comparator<A>;
+export function by(mapperOfKey: any , comparator: Comparator<any> = ascending): Comparator<any> {
+    if(typeof mapperOfKey === "function") return byFn(mapperOfKey, comparator);
+    return byKey(mapperOfKey, comparator);
+}
+
+function byKey<A, K extends keyof A>(key: K, comparator: Comparator<A[K]> = ascending): Comparator<A> {
     return (a: A, b: A) => {
         return comparator(a[key], b[key]);
+    }
+}
+
+function byFn<A, K>(mapper: Mapper<A,K>, comparator: Comparator<K> = ascending): Comparator<A> {
+    return (a: A, b: A) => {
+        return comparator(mapper(a), mapper(b));
     }
 }
 

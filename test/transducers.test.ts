@@ -114,16 +114,16 @@ describe("Transducer", () => {
         assert.deepEqual(array(range(1), windowed(3, 4), take(3)), [[1, 2, 3], [5, 6, 7], [9, 10, 11]]);
     });
 
-    it("can sort by property of object", async () => {
-        class Cat {
-            constructor(public name: string, public age: number) {
-            }
+    class Cat {
+        constructor(public name: string, public age: number) {
         }
+    }
 
-        const freaky = new Cat('Freaky', 17);
-        const fatty = new Cat('Fatty', 18);
-        const cats = [freaky, fatty];
+    const freaky = new Cat('Freaky', 17);
+    const fatty = new Cat('Fatty', 18);
+    const cats = [freaky, fatty];
 
+    it("can sort by property of object", async () => {
         const comparator: Comparator<Cat> = by('name');
         assertSync(sort<Cat>(comparator).sync(cats), fatty, freaky);
         assertSync(sort<Cat>(by('name', ascending)).sync(cats), fatty, freaky);
@@ -131,6 +131,12 @@ describe("Transducer", () => {
         assertSync(sort<Cat>(by('age')).sync(cats), freaky, fatty);
         assertSync(sort<Cat>(by('age', ascending)).sync(cats), freaky, fatty);
         assertSync(sort<Cat>(by('age', descending)).sync(cats), fatty, freaky);
+        assertSync(sort<Cat>(by(c => c.age, descending)).sync(cats), fatty, freaky);
+    });
+
+    it("can sort by a function", async () => {
+        assertSync(sort<Cat>(by(c => c.age, descending)).sync(cats), fatty, freaky);
+        assertSync(sort<Cat>(by(c => c.name.length / 2, descending)).sync(cats), freaky, fatty);
     });
 
     it("can sort by two properties of the same object", async () => {
