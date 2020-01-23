@@ -144,10 +144,9 @@ describe("Flexible Parsing", function () {
         assert.deepEqual(flexibleParse('USD 1,234,568'), money('USD', 1234568));
     });
 
-    it('can handle currency that is 2 character country code and symbol if you provide a locale', () => {
+    it('can handle currency that is 2 character country code and symbol with or without a locale', () => {
         assert.deepEqual(flexibleParse('1000 $US', 'fr-FR'), money('USD', 1000));
-        // $US is not in locale en, if we get 2 digit country code data we could support this without the locale
-        // assert.deepEqual(flexibleParse('1000 $US'), money('USD', 1000));
+        assert.deepEqual(flexibleParse('1000 $US'), money('USD', 1000));
     });
 
     it('only parses at the word boundary', () => {

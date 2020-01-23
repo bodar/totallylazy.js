@@ -177,10 +177,20 @@ export class CurrencySymbols extends DatumLookup<string> {
         return flatten(Object.keys(currencies).map(c => CurrencySymbols.dataFor(locale, c, currencies[c])));
     }
 
+    static generateAdditionalSymbols = ['$', '¥', '£'];
+
     static dataFor(locale: string, iso: string, currency: Currency): CurrencySymbolDatum[] {
         return [{name: iso, value: iso},
             {name: symbolFor(locale, iso), value: iso},
-            ...currency.symbols.map(s => ({name: s, value: iso}))];
+            ...array(currency.symbols, flatMap(s => {
+                const result = [{name: s, value: iso}];
+                if(CurrencySymbols.generateAdditionalSymbols.indexOf(s) !== -1) {
+                    const countyCode = iso.substring(0, 2);
+                    result.push({name: s + countyCode, value: iso});
+                    result.push({name: countyCode + s, value: iso});
+                }
+                return result;
+            }))];
     }
 
     parse(value: string, strategy: MatchStrategy<string> = prefer('GBP')): string {

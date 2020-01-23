@@ -238,6 +238,24 @@ describe("CurrencySymbols", function () {
         assert.deepEqual(fr.parse('CAD'), 'CAD');
     });
 
+    it('supports additional 2 digit country code and symbol for $ ¥ £', () => {
+        const en = CurrencySymbols.get('en');
+        assert.deepEqual(en.parse('CA$'), 'CAD');
+        assert.deepEqual(en.parse('$CA'), 'CAD');
+        assert.deepEqual(en.parse('US$'), 'USD');
+        assert.deepEqual(en.parse('$US'), 'USD');
+        assert.deepEqual(en.parse('AU$'), 'AUD');
+        assert.deepEqual(en.parse('$AU'), 'AUD');
+        assert.deepEqual(en.parse('JP¥'), 'JPY');
+        assert.deepEqual(en.parse('¥JP'), 'JPY');
+        assert.deepEqual(en.parse('CN¥'), 'CNY');
+        assert.deepEqual(en.parse('¥CN'), 'CNY');
+        assert.deepEqual(en.parse('GB£'), 'GBP');
+        assert.deepEqual(en.parse('£GB'), 'GBP');
+        assert.deepEqual(en.parse('GI£'), 'GIP');
+        assert.deepEqual(en.parse('£GI'), 'GIP');
+    });
+
     it('Yen symbol is ambiguous so throw', () => {
         const fr = CurrencySymbols.get('en');
         assert.throw(() => fr.parse('¥'));
