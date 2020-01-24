@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {date, format, hasNativeToParts, Options, parse, parser, parsers} from "../../src/dates";
+import {date, format, hasNativeToParts, Options, parse, parser, parsers, pivotOn, slidingPivot} from "../../src/dates";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
@@ -30,12 +30,26 @@ export const options: Options[] = [
     {day: 'numeric', year: 'numeric', month: 'short', weekday: 'short'},
 ];
 
+describe('pivotYear', () => {
+    it('when converting 2 digit years use the pivotYear to correctly wrap around', function () {
+        assert.equal(pivotOn(2070)(0), 2000);
+        assert.equal(pivotOn(2070)(20), 2020);
+        assert.equal(pivotOn(2070)(70), 2070);
+        assert.equal(pivotOn(2070)(71), 1971);
+        assert.equal(pivotOn(2070)(71), 1971);
+    });
+})
+
 describe("dates", function () {
     before(function () {
         if (runningInNode() && process.env.NODE_ICU_DATA != './node_modules/full-icu') {
             console.log("To run these tests you must set 'NODE_ICU_DATA=./node_modules/full-icu'");
             this.skip();
         }
+    });
+
+    it('can parse 2 digit years', function () {
+        assertParse('en-GB', '31 Jan 19', date(2019, 1, 31), {day: "2-digit", month: "short", year: "2-digit", yearWindow: slidingPivot()});
     });
 
     it('should support a number of separators', function () {
@@ -98,7 +112,7 @@ describe("dates", function () {
     });
 
     it('can format and parse a specific date format', function () {
-        // assertFormat('en-GB', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'Fri, 25 Jan 2019');
+        assertFormat('en-GB', date(2019, 1, 25), {day: 'numeric', year: 'numeric', month: 'short', weekday: "short"}, 'Fri, 25 Jan 2019');
         assertFormat('en-GB', date(2019, 1, 25), {
             day: 'numeric',
             year: 'numeric',

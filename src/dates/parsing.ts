@@ -6,6 +6,7 @@ import {mappingParser, namedRegexParser, or, Parser, preProcess} from "../parsin
 import {array} from "../collections";
 import {map} from "../transducers";
 import {cache} from "../cache";
+import {get, identity} from "../functions";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
@@ -32,7 +33,7 @@ export class RegexBuilder {
         return this.formatted.map((part, index) => {
             switch (part.type) {
                 case "year":
-                    return '(?<year>\\d{4})';
+                    return `(?<year>\\d{${this.lengthOf(part.value)}})`;
                 case "month":
                     return `(?<month>${this.monthsPattern()})`;
                 case "day":
@@ -49,6 +50,12 @@ export class RegexBuilder {
         }).join("");
     }
 
+    private lengthOf(year: string) {
+        if(year.length === 2) return 2;
+        if(year === '2-digit') return 2;
+        return 4;
+    }
+
     private addExtraLiterals(part: DateTimeFormatPart) {
         if (this.options.format) return part.value;
         return part.value + (this.options.separators || escapeCharacters(' ,.-/'));
@@ -63,7 +70,7 @@ export class RegexBuilder {
     }
 }
 
-export function escapeCharacters(value:string) {
+export function escapeCharacters(value: string) {
     return value.replace(/[\-]/g, '\\$&');
 }
 
@@ -71,7 +78,7 @@ export class DateParser {
     @cache
     static create(locale: string, options: string | Options = defaultOptions, native = hasNativeToParts) {
         const pattern = RegexBuilder.create(locale, options, native).pattern;
-        return mappingParser(DateTimeFormatPartParser.create(NamedRegExp.create(pattern), locale), p => dateFrom(p, locale));
+        return mappingParser(DateTimeFormatPartParser.create(NamedRegExp.create(pattern), locale), p => dateFrom(p, locale, typeof options === "object" ? options : undefined));
     }
 }
 
@@ -93,10 +100,12 @@ export class DateTimeFormatPartParser {
     }
 }
 
-export function dateFrom(parts: DateTimeFormatPart[], locale: string): Date {
+export function dateFrom(parts: DateTimeFormatPart[], locale: string, options?: Options): Date {
     const [year] = parts.filter(p => p.type === 'year');
     if (!year) throw new Error("No year found");
-    const yyyy = Number(year.value);
+    // @ts-ignore
+    const windowing: (year: number) => number = get(() => options.yearWindow, identity());
+    const yyyy = windowing(Number(year.value));
 
     const [month] = parts.filter(p => p.type === 'month');
     if (!month) throw new Error("No month found");
@@ -107,6 +116,21 @@ export function dateFrom(parts: DateTimeFormatPart[], locale: string): Date {
     const dd = Number(day.value);
 
     return date(yyyy, MM, dd);
+}
+
+export function pivotOn(pivotYear: number) {
+    const century = Math.floor(pivotYear / 100) * 100;
+    const years = pivotYear % 100;
+    return (candidateYear: number) => {
+        if(candidateYear >= 100) return candidateYear;
+        return candidateYear + century - (candidateYear <= years ? 0 : 100);
+    }
+}
+
+export function slidingPivot() {
+    const now = new Date();
+    now.setUTCFullYear(now.getUTCFullYear() + 50);
+    return pivotOn(now.getUTCFullYear());
 }
 
 export function formatFrom(type: DateTimeFormatPartTypes, length: number): string {

@@ -42,6 +42,7 @@ export interface Options {
     weekday?: WeekdayFormat;
     separators?: string;
     format?: Format;
+    yearWindow?: (year:number) => number;
 }
 
 export const defaultOptions: Options = {
