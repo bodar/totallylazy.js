@@ -51,8 +51,8 @@ export class RegexBuilder {
     }
 
     private lengthOf(year: string) {
-        if(year.length === 2) return 2;
-        if(year === '2-digit') return 2;
+        if (year.length === 2) return 2;
+        if (year === '2-digit') return 2;
         return 4;
     }
 
@@ -101,36 +101,58 @@ export class DateTimeFormatPartParser {
 }
 
 export function dateFrom(parts: DateTimeFormatPart[], locale: string, options?: Options): Date {
-    const [year] = parts.filter(p => p.type === 'year');
-    if (!year) throw new Error("No year found");
-    // @ts-ignore
-    const windowing: (year: number) => number = get(() => options.yearWindow, identity());
-    const yyyy = windowing(Number(year.value));
+    const [day] = parts.filter(p => p.type === 'day');
+    if (!day) throw new Error("No day found");
+    const dd = Number(day.value);
 
     const [month] = parts.filter(p => p.type === 'month');
     if (!month) throw new Error("No month found");
     const MM = Months.get(locale).parse(month.value);
 
-    const [day] = parts.filter(p => p.type === 'day');
-    if (!day) throw new Error("No day found");
-    const dd = Number(day.value);
+    const [year] = parts.filter(p => p.type === 'year');
+    const yyyy = year ? Number(year.value) : undefined;
 
-    return date(yyyy, MM, dd);
+    // @ts-ignore
+    const windowing: (year: number | undefined, month: number, day: number) => Date = get(() => options.windowing, (year, month, day) => {
+        if (!year) throw new Error("No year found");
+        return date(year, month, day);
+    });
+    return windowing(yyyy, MM, dd);
 }
 
-export function pivotOn(pivotYear: number) {
+export function pivotOn(rawDate: Date) {
+    const pivotDate = Days.startOf(rawDate);
+    const pivotYear = pivotDate.getUTCFullYear();
     const century = Math.floor(pivotYear / 100) * 100;
     const years = pivotYear % 100;
-    return (candidateYear: number) => {
-        if(candidateYear >= 100) return candidateYear;
-        return candidateYear + century - (candidateYear <= years ? 0 : 100);
+    return (candidateYear: number | undefined, month: number, day: number) => {
+        const year: number = (() => {
+            if (candidateYear === undefined) return pivotYear;
+            if (candidateYear >= 100) return candidateYear;
+            return candidateYear + century - (candidateYear <= years ? 0 : 100);
+        })();
+        const result = date(year, month, day);
+        if (candidateYear === undefined && result < pivotDate) {
+            result.setUTCFullYear(result.getUTCFullYear() + 1);
+        }
+        return result;
     }
 }
 
-export function slidingPivot() {
+export function slidingPivot(years: number) {
     const now = new Date();
-    now.setUTCFullYear(now.getUTCFullYear() + 50);
-    return pivotOn(now.getUTCFullYear());
+    now.setUTCFullYear(now.getUTCFullYear() + years);
+    return pivotOn(now);
+}
+
+export function futurePivot() {
+    return slidingPivot(0);
+}
+
+class Days {
+    static startOf(date: Date) {
+        return new Date(date.toDateString());
+    }
 }
 
 export function formatFrom(type: DateTimeFormatPartTypes, length: number): string {

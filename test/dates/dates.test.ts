@@ -1,6 +1,17 @@
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {date, format, hasNativeToParts, Options, parse, parser, parsers, pivotOn, slidingPivot} from "../../src/dates";
+import {
+    date,
+    format,
+    futurePivot,
+    hasNativeToParts,
+    Options,
+    parse,
+    parser,
+    parsers,
+    pivotOn,
+    slidingPivot
+} from "../../src/dates";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
@@ -32,11 +43,15 @@ export const options: Options[] = [
 
 describe('pivotYear', () => {
     it('when converting 2 digit years use the pivotYear to correctly wrap around', function () {
-        assert.equal(pivotOn(2070)(0), 2000);
-        assert.equal(pivotOn(2070)(20), 2020);
-        assert.equal(pivotOn(2070)(70), 2070);
-        assert.equal(pivotOn(2070)(71), 1971);
-        assert.equal(pivotOn(2070)(71), 1971);
+        assert.equal(pivotOn(date(2070, 1,2))(0, 1, 2).toISOString(), date(2000, 1, 2).toISOString());
+        assert.equal(pivotOn(date(2070, 1,2))(20, 1, 2).toISOString(), date(2020, 1, 2).toISOString());
+        assert.equal(pivotOn(date(2070, 1,2))(70, 1, 2).toISOString(), date(2070, 1, 2).toISOString());
+        assert.equal(pivotOn(date(2070, 1,2))(71, 1, 2).toISOString(), date(1971, 1, 2).toISOString());
+
+        assert.equal(pivotOn(date(2000, 1,2))(0, 1, 2).toISOString(), date(2000, 1, 2).toISOString());
+        assert.equal(pivotOn(date(2000, 1,2))(20, 1, 2).toISOString(), date(1920, 1, 2).toISOString());
+        assert.equal(pivotOn(date(2000, 1,2))(70, 1, 2).toISOString(), date(1970, 1, 2).toISOString());
+        assert.equal(pivotOn(date(2000, 1,2))(71, 1, 2).toISOString(), date(1971, 1, 2).toISOString());
     });
 })
 
@@ -48,8 +63,17 @@ describe("dates", function () {
         }
     });
 
+    it('can parse dates with no years', function () {
+        assertParse('en-GB', '1 Jan', date(2021, 1, 1), {day: "2-digit", month: "short", windowing: futurePivot()});
+    });
+
     it('can parse 2 digit years', function () {
-        assertParse('en-GB', '31 Jan 19', date(2019, 1, 31), {day: "2-digit", month: "short", year: "2-digit", yearWindow: slidingPivot()});
+        // assertParse('en-GB', '31 Jan 19', date(2019, 1, 31), {day: "2-digit", month: "short", year: "2-digit", windowing: slidingPivot(50)});
+        assertParse('en-GB', '1 Jan 19', date(1919, 1, 1), {day: "2-digit", month: "short", year: "2-digit", windowing: pivotOn(date(2000, 1,1))});
+    });
+
+    it('preserves 2 digit years even when using futurePivot', function () {
+        assertParse('en-GB', '01 Jan 19', date(2019, 1, 1), {day: "2-digit", month: "short", year: "2-digit", windowing: futurePivot()});
     });
 
     it('should support a number of separators', function () {

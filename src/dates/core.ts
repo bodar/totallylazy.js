@@ -42,7 +42,10 @@ export interface Options {
     weekday?: WeekdayFormat;
     separators?: string;
     format?: Format;
-    yearWindow?: (year:number) => number;
+    /**
+     * Date Windowing https://en.wikipedia.org/wiki/Date_windowing
+     */
+    windowing?: (year:number, month:number, day:number) => Date;
 }
 
 export const defaultOptions: Options = {
