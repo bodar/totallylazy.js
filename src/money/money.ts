@@ -5,7 +5,7 @@ import {flatten} from "../arrays";
 import {currencies} from "./currencies";
 import {lazy} from "../lazy";
 import {Datum, DatumLookup} from "../dates";
-import {mappingParser, MatchStrategy, namedRegexParser, Parser, prefer} from "../parsing";
+import {atBoundaryOnly, mappingParser, MatchStrategy, namedRegexParser, Parser, prefer} from "../parsing";
 import {Currencies, Currency} from "./currencies-def";
 import NumberFormatPart = Intl.NumberFormatPart;
 import {cache} from "../cache";
@@ -223,10 +223,6 @@ export class Spaces {
     static handle(value: string): string {
         return Spaces.codes.indexOf(value) != -1 ? Spaces.spaces : value;
     }
-}
-
-export function atBoundaryOnly(pattern: string) {
-    return `(?:^|\\s)${pattern}(?=\\s|$)`;
 }
 
 export class RegexBuilder {

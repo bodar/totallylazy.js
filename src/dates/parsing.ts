@@ -2,7 +2,7 @@ import {lazy} from "../lazy";
 import {unique} from "../arrays";
 import {characters, isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
 import {date, defaultOptions, Format, formatData, hasNativeToParts, Months, Options, Weekdays,} from "./index";
-import {mappingParser, namedRegexParser, or, Parser, preProcess} from "../parsing";
+import {atBoundaryOnly, mappingParser, namedRegexParser, or, Parser, preProcess} from "../parsing";
 import {array} from "../collections";
 import {map} from "../transducers";
 import {cache} from "../cache";
@@ -31,7 +31,7 @@ export class RegexBuilder {
     }
 
     @lazy get pattern() {
-        return this.formatted.map((part, index) => {
+        const pattern = this.formatted.map((part, index) => {
             switch (part.type) {
                 case "year":
                     return `(?<year>\\d{${this.lengthOf(part.value)}})`;
@@ -49,6 +49,7 @@ export class RegexBuilder {
                 }
             }
         }).join("");
+        return atBoundaryOnly(pattern);
     }
 
     private lengthOf(year: string) {

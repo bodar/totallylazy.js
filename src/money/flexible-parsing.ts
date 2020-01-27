@@ -1,5 +1,5 @@
-import {atBoundaryOnly, CurrencySymbols, decimalsFor, money, Money, Spaces} from "./money";
-import {MatchStrategy, Parser} from "../parsing";
+import {CurrencySymbols, decimalsFor, money, Money, Spaces} from "./money";
+import {atBoundaryOnly, MatchStrategy, Parser} from "../parsing";
 import {NamedMatch, NamedRegExp} from "../characters";
 import {filter, find, first, flatMap, map, sort} from "../transducers";
 import {array, by, descending, Mapper, single} from "../collections";
