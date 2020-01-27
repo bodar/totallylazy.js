@@ -113,41 +113,48 @@ export function dateFrom(parts: DateTimeFormatPart[], locale: string, options?: 
     const yyyy = year ? Number(year.value) : undefined;
 
     // @ts-ignore
-    const windowing: (year: number | undefined, month: number, day: number) => Date = get(() => options.windowing, (year, month, day) => {
-        if (!year) throw new Error("No year found");
-        return date(year, month, day);
-    });
-    return windowing(yyyy, MM, dd);
+    const factory = get<DateFactory>(() => options.factory, new DefaultDateFactory());
+    return factory.create(yyyy, MM, dd);
 }
 
-export function pivotOn(rawDate: Date) {
-    const pivotDate = Days.startOf(rawDate);
-    const pivotYear = pivotDate.getUTCFullYear();
-    const century = Math.floor(pivotYear / 100) * 100;
-    const years = pivotYear % 100;
-    return (candidateYear: number | undefined, month: number, day: number) => {
-        const year: number = (() => {
-            if (candidateYear === undefined) return pivotYear;
-            if (candidateYear >= 100) return candidateYear;
-            return candidateYear + century - (candidateYear <= years ? 0 : 100);
-        })();
-        const result = date(year, month, day);
-        if (candidateYear === undefined && result < pivotDate) {
-            result.setUTCFullYear(result.getUTCFullYear() + 1);
-        }
-        return result;
+export interface DateFactory {
+    create(year: number | undefined, month: number, day: number): Date;
+}
+
+export class DefaultDateFactory implements DateFactory {
+    create(year: number | undefined, month: number, day: number): Date {
+        if (typeof year === "undefined") throw new Error("No year found");
+        return date(year, month, day);
     }
 }
 
-export function slidingPivot(years: number) {
-    const now = new Date();
-    now.setUTCFullYear(now.getUTCFullYear() + years);
-    return pivotOn(now);
+export class Pivot implements DateFactory {
+    private constructor(private pivotYear: number) {
+    }
+    
+    static on(pivotYear: number): Pivot {
+        return new Pivot(pivotYear)
+    }
+
+    static sliding(years: number) {
+        const now = new Date();
+        return Pivot.on(now.getUTCFullYear() + years);
+    }
+
+    create(year: number | undefined, month: number, day: number): Date {
+        if (typeof year === "undefined") throw new Error("No year found");
+
+        const century = Math.floor(this.pivotYear / 100) * 100;
+        const years = this.pivotYear % 100;
+
+        const actualYear: number = (() => {
+            if (year >= 100) return year;
+            return year + century - (year <= years ? 0 : 100);
+        })();
+        return date(actualYear, month, day) 
+    }
 }
 
-export function futurePivot() {
-    return slidingPivot(0);
-}
 
 class Days {
     static startOf(date: Date) {

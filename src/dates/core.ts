@@ -1,3 +1,5 @@
+import {DateFactory} from "./parsing";
+
 declare global {
     interface String {
         toLocaleLowerCase(locale: string): string;
@@ -42,10 +44,7 @@ export interface Options {
     weekday?: WeekdayFormat;
     separators?: string;
     format?: Format;
-    /**
-     * Date Windowing https://en.wikipedia.org/wiki/Date_windowing
-     */
-    windowing?: (year:number, month:number, day:number) => Date;
+    factory?: DateFactory;
 }
 
 export const defaultOptions: Options = {
