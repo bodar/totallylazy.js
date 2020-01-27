@@ -4,6 +4,7 @@ import {flatten, unique} from "./arrays";
 import {array, by, Comparator, Mapper} from "./collections";
 import {flatMap, map} from "./transducers";
 import {cache} from "./cache";
+import {PreferredCurrencies} from "./money/preferred-currencies";
 
 export class NamedRegexParser implements Parser<NamedMatch[]> {
     constructor(protected regex: NamedRegExp) {
@@ -123,6 +124,16 @@ export function prefer<V>(...values: V[]): MatchStrategy<V> {
         const [match] = data.filter(m => values.indexOf(m) !== -1);
         return match;
     };
+}
+
+function localeParts(locale: string): string[] {
+    if (!locale) return [];
+    return locale.split(/[-_]/).filter(Boolean);
+}
+
+export function infer(locale:string): MatchStrategy<string> {
+    const [, country] = localeParts(locale);
+    return prefer(...PreferredCurrencies.for(country))
 }
 
 export class OrParser<T> implements Parser<T> {

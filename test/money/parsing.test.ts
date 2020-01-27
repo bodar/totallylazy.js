@@ -11,7 +11,7 @@ import {
 import {locales} from "../dates/dates.test";
 import {currencies} from "../../src/money/currencies";
 import {runningInNode} from "../../src/node";
-import {prefer} from "../../src/parsing";
+import {infer, prefer} from "../../src/parsing";
 import NumberFormatPart = Intl.NumberFormatPart;
 import {Currency} from "../../src/money/currencies-def";
 
@@ -28,6 +28,11 @@ describe("Money", function () {
 
     it('do not use prefer strategy when explicit currency code is present', function () {
         assert.deepEqual(parser('en', {strategy: prefer('USD')}).parseAll('From $220 CAD'), [money('CAD', 220)]);
+    });
+
+    it('can use locale country to infer currency code', function () {
+        const locale = 'en-AU';
+        assert.deepEqual(parser(locale, {strategy: infer(locale)}).parseAll('From $220'), [money('AUD', 220)]);
     });
 
     it('handles when there is a false match on the currency regex', function () {
