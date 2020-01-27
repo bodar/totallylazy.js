@@ -2,13 +2,14 @@ import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
 import {
     date,
-    format,
+    format, SmartDate,
     hasNativeToParts,
     Options,
     parse,
     parser,
     parsers, Pivot,
 } from "../../src/dates";
+import {StoppedClock} from "../../src/dates/clock";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
@@ -38,7 +39,7 @@ export const options: Options[] = [
     {day: 'numeric', year: 'numeric', month: 'short', weekday: 'short'},
 ];
 
-describe('pivotYear', () => {
+describe('Pivot', () => {
     it('when converting 2 digit years use the pivotYear to correctly wrap around', function () {
         assert.equal(Pivot.on(2070).create(0, 1, 2).toISOString(), date(2000, 1, 2).toISOString());
         assert.equal(Pivot.on(2070).create(20, 1, 2).toISOString(), date(2020, 1, 2).toISOString());
@@ -50,7 +51,48 @@ describe('pivotYear', () => {
         assert.equal(Pivot.on(2000).create(70, 1, 2).toISOString(), date(1970, 1, 2).toISOString());
         assert.equal(Pivot.on(2000).create(71, 1, 2).toISOString(), date(1971, 1, 2).toISOString());
     });
-})
+
+    it('if we pass a 4 digit year in, use it', function () {
+        assert.equal(Pivot.on(2070).create(1999, 1, 2).toISOString(), date(1999, 1, 2).toISOString());
+    });
+
+    it('can parse 2 digit years', function () {
+        const factory = Pivot.sliding(50, new StoppedClock(date(2000, 1, 2)));
+        assertParse('en-GB', '31 Jan 19', date(2019, 1, 31), {day: "2-digit", month: "short", year: "2-digit", factory: factory});
+        assertParse('en-GB', '1 Jan 19', date(1919, 1, 1), {
+            day: "2-digit",
+            month: "short",
+            year: "2-digit",
+            factory: Pivot.on(2000)
+        });
+    });
+});
+
+describe('SmartDate and Pivot', () => {
+    it('can parse dates with no years using SmartDate factory', function () {
+        const now = date(2000, 2, 3);
+        const option:Options = {day: "2-digit", month: "short", factory: new SmartDate(new StoppedClock(now))};
+        assertParse('en-GB', '1 March', date(2000, 3, 1), option);
+        assertParse('en-GB', '1 Jan', date(2001, 1, 1), option);
+        assertParse('en-GB', '3 Feb', date(2000, 2, 3), option);
+    });
+
+    it('preserves 4 digit years when using SmartDate factory', function () {
+        const now = date(2010, 2, 3);
+        const option:Options = {day: "2-digit", month: "short", year:'numeric',  factory: new SmartDate(new StoppedClock(now))};
+        assertParse('en-GB', '3 Feb 2020', date(2020, 2, 3), option);
+        assertParse('en-GB', '3 Feb 2010', date(2010, 2, 3), option);
+        assertParse('en-GB', '3 Feb 1999', date(1999, 2, 3), option);
+    });
+
+    it('when using 2 digit years will use a sliding window of 50 years with SmartDate factory', function () {
+        const now = date(2010, 2, 3);
+        const option:Options = {day: "2-digit", month: "short", year:'2-digit', factory: new SmartDate(new StoppedClock(now))};
+        assertParse('en-GB', '3 Feb 20', date(2020, 2, 3), option);
+        assertParse('en-GB', '3 Feb 10', date(2010, 2, 3), option);
+        assertParse('en-GB', '3 Feb 99', date(1999, 2, 3), option);
+    });
+});
 
 describe("dates", function () {
     before(function () {
@@ -59,29 +101,6 @@ describe("dates", function () {
             this.skip();
         }
     });
-
-    // it('can parse dates with no years', function () {
-    //     assertParse('en-GB', '1 Jan', date(2021, 1, 1), {day: "2-digit", month: "short", factory: futurePivot()});
-    // });
-
-    it('can parse 2 digit years', function () {
-        assertParse('en-GB', '31 Jan 19', date(2019, 1, 31), {day: "2-digit", month: "short", year: "2-digit", factory: Pivot.sliding(50)});
-        assertParse('en-GB', '1 Jan 19', date(1919, 1, 1), {
-            day: "2-digit",
-            month: "short",
-            year: "2-digit",
-            factory: Pivot.on(2000)
-        });
-    });
-
-    // it('preserves 2 digit years even when using futurePivot', function () {
-    //     assertParse('en-GB', '01 Jan 19', date(2019, 1, 1), {
-    //         day: "2-digit",
-    //         month: "short",
-    //         year: "2-digit",
-    //         factory: futurePivot()
-    //     });
-    // });
 
     it('should support a number of separators', function () {
         assertDates(parser('en-GB', {

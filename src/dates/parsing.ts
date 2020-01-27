@@ -9,6 +9,7 @@ import {cache} from "../cache";
 import {get, identity} from "../functions";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
+import {Clock, SystemClock} from "./clock";
 
 export function parse(value: string, locale: string, options?: string | Options, native = hasNativeToParts): Date {
     return parser(locale, options, native).parse(value);
@@ -131,27 +132,42 @@ export class DefaultDateFactory implements DateFactory {
 export class Pivot implements DateFactory {
     private constructor(private pivotYear: number) {
     }
-    
+
     static on(pivotYear: number): Pivot {
         return new Pivot(pivotYear)
     }
 
-    static sliding(years: number) {
-        const now = new Date();
+    static sliding(years: number, clock: Clock = new SystemClock()) {
+        const now = clock.now();
         return Pivot.on(now.getUTCFullYear() + years);
     }
 
     create(year: number | undefined, month: number, day: number): Date {
         if (typeof year === "undefined") throw new Error("No year found");
+        if (year >= 100) return date(year, month, day);
 
         const century = Math.floor(this.pivotYear / 100) * 100;
         const years = this.pivotYear % 100;
 
-        const actualYear: number = (() => {
-            if (year >= 100) return year;
-            return year + century - (year <= years ? 0 : 100);
-        })();
-        return date(actualYear, month, day) 
+        const actualYear: number = year + century - (year <= years ? 0 : 100);
+        return date(actualYear, month, day)
+    }
+}
+
+export class SmartDate implements DateFactory {
+    static readonly windowSize = 50;
+
+    constructor(private clock: Clock = new SystemClock()) {
+    }
+
+    create(year: number | undefined, month: number, day: number): Date {
+        const now = Days.startOf(this.clock.now());
+        if (typeof year === "undefined") {
+            const future = date(now.getUTCFullYear(), month, day);
+            if (future < now) future.setUTCFullYear(future.getUTCFullYear() + 1);
+            return future;
+        }
+        return Pivot.sliding(SmartDate.windowSize, this.clock).create(year, month, day);
     }
 }
 
