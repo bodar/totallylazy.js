@@ -1,14 +1,6 @@
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {
-    date,
-    format, SmartDate,
-    hasNativeToParts,
-    Options,
-    parse,
-    parser,
-    parsers, Pivot,
-} from "../../src/dates";
+import {date, format, hasNativeToParts, Options, parse, parser, parsers, Pivot, SmartDate,} from "../../src/dates";
 import {StoppedClock} from "../../src/dates/clock";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
@@ -69,10 +61,22 @@ describe('Pivot', () => {
 });
 
 describe('SmartDate and Pivot', () => {
+    it('can parse dates with no years in different formats', function () {
+        const now = date(2019, 1, 1);
+        const [a, b] = parser('en-US', {
+            weekday: "short",
+            day: "numeric",
+            month: "short",
+            factory: new SmartDate(new StoppedClock(now))
+        }).parseAll('Fri, Dec 6 - Sat, Dec 7');
+        assertDates(a, date(2019, 12, 6));
+        assertDates(b, date(2019, 12, 7));
+    });
+
     it('can parse dates with no years using SmartDate factory', function () {
         const now = date(2000, 2, 3);
         const option:Options = {day: "2-digit", month: "short", factory: new SmartDate(new StoppedClock(now))};
-        assertParse('en-GB', '1 March', date(2000, 3, 1), option);
+        assertParse('en-GB', '1 Mar', date(2000, 3, 1), option);
         assertParse('en-GB', '1 Jan', date(2001, 1, 1), option);
         assertParse('en-GB', '3 Feb', date(2000, 2, 3), option);
     });
