@@ -198,6 +198,8 @@ export class CachingParser<T> implements Parser<T> {
     }
 }
 
+export const boundaryDelimiters = ',.';
+
 export function atBoundaryOnly(pattern: string) {
-    return `(?:^|\\s)${pattern}(?=[\\s,.]|$)`;
+    return `(?:^|\\s)${pattern}(?=[\\s${boundaryDelimiters}]|$)`;
 }

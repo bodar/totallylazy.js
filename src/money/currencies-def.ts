@@ -12,6 +12,7 @@ export interface CurrencySymbol {
     symbol: string
 }
 
-export const additionalSymbols: CurrencySymbol[] = [{
-    iso: 'KES', symbol: 'KSh'
-}];
+export const additionalSymbols: CurrencySymbol[] = [
+    {iso: 'KES', symbol: 'KSh'},
+    {iso: 'EEK', symbol: 'kr'},
+];

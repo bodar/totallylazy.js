@@ -39,6 +39,10 @@ describe('PreferredCurrencies', () => {
         assert.deepEqual(PreferredCurrencies.dollarSymbol('ZW'), 'USD');
     });
 
+    it('does not switch dinar to dollar', () => {
+        assert.deepEqual(PreferredCurrencies.dollarSymbol('SD'), 'USD');
+    });
+
     it('poundSymbol', () => {
         assert.deepEqual(PreferredCurrencies.poundSymbol('EG'), 'EGP');
         assert.deepEqual(PreferredCurrencies.poundSymbol('FK'), 'FKP');
@@ -59,11 +63,21 @@ describe('PreferredCurrencies', () => {
         assert.deepEqual(PreferredCurrencies.yenSymbol('JP'), 'JPY');
     });
 
+    it('kroneSymbol', () => {
+        assert.deepEqual(PreferredCurrencies.kroneSymbol('DK'), 'DKK');
+        assert.deepEqual(PreferredCurrencies.kroneSymbol('FO'), 'DKK');
+        assert.deepEqual(PreferredCurrencies.kroneSymbol('GL'), 'DKK');
+        assert.deepEqual(PreferredCurrencies.kroneSymbol('IS'), 'ISK');
+        assert.deepEqual(PreferredCurrencies.kroneSymbol('NO'), 'NOK');
+        assert.deepEqual(PreferredCurrencies.kroneSymbol('SE'), 'SEK');
+        assert.deepEqual(PreferredCurrencies.kroneSymbol('EE'), 'EEK');
+    });
+
     it('for', () => {
-        assert.deepEqual(PreferredCurrencies.for('GB'), ['USD', 'GBP', 'JPY']);
-        assert.deepEqual(PreferredCurrencies.for('AU'), ['AUD', 'GBP', 'JPY']);
-        assert.deepEqual(PreferredCurrencies.for('SD'), ['USD', 'SDG', 'JPY']);
-        assert.deepEqual(PreferredCurrencies.for('CN'), ['USD', 'GBP', 'CNY']);
-        assert.deepEqual(PreferredCurrencies.for(undefined), ['USD', 'GBP', 'JPY']);
+        assert.deepEqual(PreferredCurrencies.for('GB'), ['USD', 'GBP', 'JPY', 'DKK']);
+        assert.deepEqual(PreferredCurrencies.for('AU'), ['AUD', 'GBP', 'JPY', 'DKK']);
+        assert.deepEqual(PreferredCurrencies.for('SD'), ['USD', 'SDG', 'JPY', 'DKK']);
+        assert.deepEqual(PreferredCurrencies.for('CN'), ['USD', 'GBP', 'CNY', 'DKK']);
+        assert.deepEqual(PreferredCurrencies.for(undefined), ['USD', 'GBP', 'JPY', 'DKK']);
     });
 });

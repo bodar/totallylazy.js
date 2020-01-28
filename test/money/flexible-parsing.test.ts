@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {money} from "../../src/money";
-import {prefer} from "../../src/parsing";
+import {infer, prefer} from "../../src/parsing";
 import {flexibleMoneyParser, flexibleParse, numberParser, NumberParser} from "../../src/money/flexible-parsing";
 
 
@@ -46,8 +46,15 @@ describe('NumberParser', () => {
 });
 
 describe("Flexible Parsing", function () {
-    it.skip('ignores extra delimiters', function () {
+    it('ignores extra delimiters', function () {
         assert.deepEqual(flexibleMoneyParser().parseAll('221,38 EUR.'), [money('EUR', 221.38)]);
+        assert.deepEqual(flexibleMoneyParser().parseAll('221,38 EUR,'), [money('EUR', 221.38)]);
+    });
+
+    it('still supports currencies with a delimiter that is part of the code', function () {
+        assert.deepEqual(flexibleMoneyParser().parseAll('221,38 лв.'), [money('BGN', 221.38)]);
+        assert.deepEqual(flexibleMoneyParser().parseAll('221,38 A.M.'), [money('AZN', 221.38)]);
+        assert.deepEqual(flexibleMoneyParser('da-DK').parseAll('221,38 kr.'), [money('DKK', 221.38)]);
     });
 
     it('should use exact match for currency code or symbol', function () {

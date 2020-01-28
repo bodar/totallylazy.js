@@ -5,10 +5,18 @@ import {flatten} from "../arrays";
 import {currencies} from "./currencies";
 import {lazy} from "../lazy";
 import {Datum, DatumLookup} from "../dates";
-import {atBoundaryOnly, mappingParser, MatchStrategy, namedRegexParser, Parser, prefer} from "../parsing";
+import {
+    atBoundaryOnly,
+    boundaryDelimiters, infer,
+    mappingParser,
+    MatchStrategy,
+    namedRegexParser,
+    Parser,
+    prefer
+} from "../parsing";
 import {Currencies, Currency} from "./currencies-def";
-import NumberFormatPart = Intl.NumberFormatPart;
 import {cache} from "../cache";
+import NumberFormatPart = Intl.NumberFormatPart;
 
 /**
  *
@@ -157,8 +165,10 @@ export type CurrencySymbolDatum = Datum<string>;
 export class CurrencySymbols extends DatumLookup<string> {
     static cache: { [key: string]: CurrencySymbols } = {};
 
-    constructor(data: Datum<string>[]) {
-        super(data, ascending);
+    constructor(data: Datum<string>[], private locale:string) {
+        super(data.map(d => {
+            return ({name: d.name.replace(CurrencySymbols.extraDelimiters, ''), value: d.value});
+        }), ascending);
     }
 
     static get(locale: string, additionalData: CurrencySymbolDatum[] = []): CurrencySymbols {
@@ -170,7 +180,7 @@ export class CurrencySymbols extends DatumLookup<string> {
     }
 
     static create(locale: string, additionalData: CurrencySymbolDatum[] = []): CurrencySymbols {
-        return new CurrencySymbols([...CurrencySymbols.generateData(locale), ...additionalData]);
+        return new CurrencySymbols([...CurrencySymbols.generateData(locale), ...additionalData], locale);
     }
 
     static generateData(locale: string): CurrencySymbolDatum[] {
@@ -184,7 +194,7 @@ export class CurrencySymbols extends DatumLookup<string> {
             {name: symbolFor(locale, iso), value: iso},
             ...array(currency.symbols, flatMap(s => {
                 const result = [{name: s, value: iso}];
-                if(CurrencySymbols.generateAdditionalSymbols.indexOf(s) !== -1) {
+                if (CurrencySymbols.generateAdditionalSymbols.indexOf(s) !== -1) {
                     const countyCode = iso.substring(0, 2);
                     result.push({name: s + countyCode, value: iso});
                     result.push({name: countyCode + s, value: iso});
@@ -193,8 +203,10 @@ export class CurrencySymbols extends DatumLookup<string> {
             }))];
     }
 
-    parse(value: string, strategy: MatchStrategy<string> = prefer('GBP')): string {
-        return super.parse(value, strategy);
+    static readonly extraDelimiters = new RegExp(`[${boundaryDelimiters}]$`);
+
+    parse(value: string, strategy: MatchStrategy<string> = infer(this.locale)): string {
+        return super.parse(value.replace(CurrencySymbols.extraDelimiters, ''), strategy);
     }
 }
 

@@ -261,11 +261,6 @@ describe("CurrencySymbols", function () {
         assert.deepEqual(en.parse('£GI'), 'GIP');
     });
 
-    it('Yen symbol is ambiguous so throw', () => {
-        const fr = CurrencySymbols.get('en');
-        assert.throw(() => fr.parse('¥'));
-    });
-
     it('can get pattern', () => {
         const en = CurrencySymbols.get('en');
         assert.deepEqual(new RegExp(en.pattern).test('$CA'), true);

@@ -7,13 +7,21 @@ import {sparqlQuery, simplify} from 'wikidata-sdk';
 import {additionalSymbols, Currency, CurrencySymbol} from "./currencies-def";
 
 (async () => {
-    const symbols = [...await getSymbols(), ...additionalSymbols];
+    const symbols = await getSymbols();
     const currencies = symbols.reduce((c, s) => {
         const currency = c[s.iso] || {symbols: [], decimals: 2};
         if(!currency.symbols.includes(s.symbol)) currency.symbols.push(s.symbol);
         return c;
     }, await getCurrencies());
-    await generateFile(currencies);
+
+    const allCurrencies = additionalSymbols.reduce((c, s) => {
+        const currency = c[s.iso] || {symbols: [], decimals: 2};
+        if(!currency.symbols.includes(s.symbol)) currency.symbols.push(s.symbol);
+        c[s.iso] = currency;
+        return c;
+    }, currencies);
+
+    await generateFile(allCurrencies);
 })();
 
 async function getCurrencies(): Promise<Currencies> {
