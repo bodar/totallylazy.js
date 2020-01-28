@@ -70,7 +70,6 @@ describe('PreferredCurrencies', () => {
         assert.deepEqual(PreferredCurrencies.kroneSymbol('IS'), 'ISK');
         assert.deepEqual(PreferredCurrencies.kroneSymbol('NO'), 'NOK');
         assert.deepEqual(PreferredCurrencies.kroneSymbol('SE'), 'SEK');
-        assert.deepEqual(PreferredCurrencies.kroneSymbol('EE'), 'EEK');
     });
 
     it('for', () => {

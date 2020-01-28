@@ -18,6 +18,19 @@ export function assertParse(locale: string, value: string, expected: Date, optio
     assertDates(parsed, expected);
 }
 
+function assertParseNoYears(locale: string, value: string) {
+    const now = date(2019, 1, 1);
+    const options: Options = {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        factory: new SmartDate(new StoppedClock(now))
+    };
+    const [a, b] = parser(locale, options).parseAll(value);
+    assertDates(a, date(2019, 12, 6));
+    assertDates(b, date(2019, 12, 7));
+}
+
 export const locales: string[] = ['en', 'de', 'fr', 'ja', 'nl', 'de-DE', 'en-US', 'en-GB', 'i-enochian', 'zh-Hant',
     'sr-Cyrl', 'sr-Latn', 'zh-cmn-Hans-CN', 'cmn-Hans-CN', 'zh-yue-HK', 'yue-HK',
     'sr-Latn-RS', 'sl-rozaj', 'sl-rozaj-biske', 'sl-nedis', 'de-CH-1901', 'sl-IT-nedis',
@@ -67,15 +80,8 @@ describe('Pivot', () => {
 
 describe('SmartDate and Pivot', () => {
     it('can parse dates with no years in different formats', function () {
-        const now = date(2019, 1, 1);
-        const [a, b] = parser('en-US', {
-            weekday: "short",
-            day: "numeric",
-            month: "short",
-            factory: new SmartDate(new StoppedClock(now))
-        }).parseAll('Fri, Dec 6 - Sat, Dec 7');
-        assertDates(a, date(2019, 12, 6));
-        assertDates(b, date(2019, 12, 7));
+        assertParseNoYears('en-US', 'Fri, Dec 6 - Sat, Dec 7');
+        assertParseNoYears('en-GB', 'Fri, 6 Dec - Sat, 7 Dec');
     });
 
     it('does not take part of a year as the day when 2 digit parsing - must be at a boundary', function () {

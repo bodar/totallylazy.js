@@ -55,6 +55,11 @@ describe("Flexible Parsing", function () {
         assert.deepEqual(flexibleMoneyParser().parseAll('221,38 лв.'), [money('BGN', 221.38)]);
         assert.deepEqual(flexibleMoneyParser().parseAll('221,38 A.M.'), [money('AZN', 221.38)]);
         assert.deepEqual(flexibleMoneyParser('da-DK').parseAll('221,38 kr.'), [money('DKK', 221.38)]);
+        assert.deepEqual(flexibleMoneyParser('fo-FO').parseAll('221,38 kr.'), [money('DKK', 221.38)]);
+        assert.deepEqual(flexibleMoneyParser('kl-GL').parseAll('221,38 kr.'), [money('DKK', 221.38)]);
+        assert.deepEqual(flexibleMoneyParser('is-IS').parseAll('221,38 kr.'), [money('ISK', 221.38)]);
+        assert.deepEqual(flexibleMoneyParser('nn-NO').parseAll('221,38 kr.'), [money('NOK', 221.38)]);
+        assert.deepEqual(flexibleMoneyParser('sv-SE').parseAll('221,38 kr.'), [money('SEK', 221.38)]);
     });
 
     it('should use exact match for currency code or symbol', function () {

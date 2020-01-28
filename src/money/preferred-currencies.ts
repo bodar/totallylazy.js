@@ -82,7 +82,6 @@ export class PreferredCurrencies {
         'IS': 'ISK',
         'NO': 'NOK',
         'SE': 'SEK',
-        'EE': 'EEK',
     };
 
     static kroneSymbol(country?: string): string {
