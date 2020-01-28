@@ -2,6 +2,8 @@ import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
 import {date, format, hasNativeToParts, Options, parse, parser, parsers, Pivot, SmartDate,} from "../../src/dates";
 import {StoppedClock} from "../../src/dates/clock";
+import {sequence} from "../../src/sequence";
+import {zip} from "../../src/transducers";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
@@ -18,7 +20,7 @@ export function assertParse(locale: string, value: string, expected: Date, optio
     assertDates(parsed, expected);
 }
 
-function assertParseNoYears(locale: string, value: string) {
+function assertParseNoYears(locale: string, value: string, ...expected: Date[]) {
     const now = date(2019, 1, 1);
     const options: Options = {
         weekday: "short",
@@ -26,9 +28,9 @@ function assertParseNoYears(locale: string, value: string) {
         month: "short",
         factory: new SmartDate(new StoppedClock(now))
     };
-    const [a, b] = parser(locale, options).parseAll(value);
-    assertDates(a, date(2019, 12, 6));
-    assertDates(b, date(2019, 12, 7));
+    for (const [a, e] of sequence(parser(locale, options).parseAll(value), zip(expected))) {
+        assertDates(a, e);
+    }
 }
 
 export const locales: string[] = ['en', 'de', 'fr', 'ja', 'nl', 'de-DE', 'en-US', 'en-GB', 'i-enochian', 'zh-Hant',
@@ -80,8 +82,8 @@ describe('Pivot', () => {
 
 describe('SmartDate and Pivot', () => {
     it('can parse dates with no years in different formats', function () {
-        assertParseNoYears('en-US', 'Fri, Dec 6 - Sat, Dec 7');
-        assertParseNoYears('en-GB', 'Fri, 6 Dec - Sat, 7 Dec');
+        assertParseNoYears('en-US', 'Fri, Dec 6 - Sat, Dec 7', date(2019, 12, 6), date(2019, 12, 7));
+        assertParseNoYears('en-GB', 'Fri, 6 Dec - Sat, 7 Dec', date(2019, 12, 6), date(2019, 12, 7));
     });
 
     it('does not take part of a year as the day when 2 digit parsing - must be at a boundary', function () {
