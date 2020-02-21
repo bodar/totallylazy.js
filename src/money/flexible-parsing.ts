@@ -4,6 +4,8 @@ import {NamedMatch, NamedRegExp} from "../characters";
 import {filter, find, first, flatMap, map, sort} from "../transducers";
 import {array, by, descending, Mapper, single} from "../collections";
 import {unique} from "../arrays";
+import {cache} from "../cache";
+import {lazy} from "../lazy";
 
 export interface Options {
     strategy?: MatchStrategy<string>;
@@ -30,9 +32,15 @@ export function mapIgnoreError<A, B>(mapper: Mapper<A, B>) {
 }
 
 export class FlexibleMoneyParser implements Parser<Money> {
-    readonly pattern = NamedRegExp.create(atBoundaryOnly(`(?<currency>${CurrencySymbols.get(this.locale).pattern})?(?<literal>[${Spaces.spaces}])?(?<number>${numberPattern})(?<literal>[${Spaces.spaces}])?(?<currency>${CurrencySymbols.get(this.locale).pattern})?`));
-
     constructor(private locale: string, private options?: Options) {
+    }
+
+    @lazy private get pattern(): NamedRegExp {
+        return FlexibleMoneyParser.patternFor(this.locale);
+    }
+
+    @cache private static patternFor(locale:string):NamedRegExp {
+        return NamedRegExp.create(atBoundaryOnly(`(?<currency>${CurrencySymbols.get(locale).pattern})?(?<literal>[${Spaces.spaces}])?(?<number>${numberPattern})(?<literal>[${Spaces.spaces}])?(?<currency>${CurrencySymbols.get(locale).pattern})?`));
     }
 
     parse(value: string): Money {
