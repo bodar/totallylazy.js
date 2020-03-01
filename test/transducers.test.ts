@@ -32,8 +32,8 @@ describe("Transducer", () => {
     });
 
     it("can dropWhile", () => {
-        assertSync(dropWhile((a) => a <= 2).sync([1, 2, 3, 2, 1]), 3, 2, 1);
-        assertSync(dropWhile((a) => a < 4).sync([1, 2, 3, 2, 1]), ...[]);
+        assertSync(dropWhile<number>((a) => a <= 2).sync([1, 2, 3, 2, 1]), 3, 2, 1);
+        assertSync(dropWhile<number>((a) => a < 4).sync([1, 2, 3, 2, 1]), ...[]);
     });
 
     it("can zip", () => {
@@ -45,7 +45,7 @@ describe("Transducer", () => {
     });
 
     it("can map", () => {
-        assertSync(map(n => n.toString()).sync([2]), "2");
+        assertSync(map<number, string>(n => n.toString()).sync([2]), "2");
     });
 
     it("can filter", () => {
@@ -67,8 +67,8 @@ describe("Transducer", () => {
     });
 
     it("can find", () => {
-        assertSync(find(n => n > 2).sync([0, 1, 2, 3, 4]), 3);
-        assertSync(find(n => n > 2).sync([]));
+        assertSync(find<number>(n => n > 2).sync([0, 1, 2, 3, 4]), 3);
+        assertSync(find<number>(n => n > 2).sync([]));
     });
 
     it("can scan", () => {
@@ -91,7 +91,7 @@ describe("Transducer", () => {
     });
 
     it("can take while", async () => {
-        assertSync(takeWhile(n => n < 4).sync([0, 1, 2, 3, 4, 5, 6, 7, 8]), 0, 1, 2, 3);
+        assertSync(takeWhile<number>(n => n < 4).sync([0, 1, 2, 3, 4, 5, 6, 7, 8]), 0, 1, 2, 3);
     });
 
     it("can sort", async () => {
