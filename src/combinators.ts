@@ -61,13 +61,19 @@ export function is<A>(a: A): Combinator<A, A> {
 }
 
 export class IsCombinator<A> implements Combinator<A, A> {
-    constructor(private instance: A) {
+    constructor(private expected: A) {
     }
 
     parse(input: ReadonlyArray<A>): Result<A, A> {
-        const [head, ...tail] = input;
-        if (head === this.instance) return {value: head, remainder: tail};
-        throw new Error()
+        const [actual, ...remainder] = input;
+        if (actual === this.expected) return {value: actual, remainder};
+        throw new AssertionError(actual, this.expected);
+    }
+}
+
+export class AssertionError extends Error {
+    constructor(public actual: any, public expected: any, public showDiff = true) {
+        super(`Failed to parse '${actual}' expected '${expected}'`);
     }
 }
 
@@ -80,11 +86,11 @@ export class Values<A> implements Combinator<A, ReadonlyArray<A>> {
     }
 
     parse(input: ReadonlyArray<A>): Result<A, ReadonlyArray<A>> {
-        if (input.length < this.values.length) throw new Error(`expect ${input} to equal ${this.values}`);
+        if (input.length < this.values.length) throw new AssertionError(input, this.values);
         for (let i = 0; i < this.values.length; i++) {
-            const a = this.values[i];
-            const b = input[i];
-            if (a !== b) throw new Error(`expect ${b} to equal ${a}`);
+            const expected = this.values[i];
+            const actual = input[i];
+            if (expected !== actual) throw new AssertionError(actual, expected);
         }
         const remainder = input.slice(this.values.length);
         return {value: this.values, remainder};
