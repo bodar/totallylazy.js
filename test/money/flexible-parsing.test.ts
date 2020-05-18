@@ -94,6 +94,11 @@ describe("Flexible Parsing", function () {
         assert.deepEqual(flexibleParse('$1234', 'en', {strategy: prefer('USD')}), money('USD', 1234));
     });
 
+    it('can parse when we have both currency code and symbol', () => {
+        assert.deepEqual(flexibleParse('AUD $12,000.00', 'en-AU'), money('AUD', 12000));
+        assert.deepEqual(flexibleParse('AUD$ 12,000.00', 'en-AU'), money('AUD', 12000));
+    });
+
     it('can parse when we have both group separators and decimal', () => {
         assert.deepEqual(flexibleParse('USD 1,234.56'), money('USD', 1234.56));
         assert.deepEqual(flexibleParse('USD 1.234,56'), money('USD', 1234.56));

@@ -198,6 +198,7 @@ export class CurrencySymbols extends DatumLookup<string> {
                     const countyCode = iso.substring(0, 2);
                     result.push({name: s + countyCode, value: iso});
                     result.push({name: countyCode + s, value: iso});
+                    result.push({name: iso + s, value: iso});
                 }
                 return result;
             }))];
