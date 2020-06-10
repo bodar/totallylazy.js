@@ -23,11 +23,10 @@ export class RegexBuilder {
 
     @cache
     static create(locale: string, options: string | Options = defaultOptions, native = hasNativeToParts): RegexBuilder {
-        if (typeof options == 'string') {
-            return formatBuilder(locale, options);
-        } else {
-            return new RegexBuilder(locale, options, formatData(new Date(), locale, options, native));
-        }
+        if (typeof options == 'string') return formatBuilder(locale, options);
+        if (typeof options.format == 'string') return formatBuilder(locale, options.format);
+
+        return new RegexBuilder(locale, options, formatData(new Date(), locale, options, native));
     }
 
     @lazy get pattern() {

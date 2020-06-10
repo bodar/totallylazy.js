@@ -104,6 +104,11 @@ describe('SmartDate and Pivot', () => {
         assertParse('en-GB', '3 Feb', date(2000, 2, 3), option);
     });
 
+    it('can parse dates with no years using SmartDate factory and a format string', function () {
+        const factory = new SmartDate(new StoppedClock(date(2000, 2, 3)));
+        assertParse('en', 'Tue, Sep 15', date(2000, 9, 15), {format: 'EEE, MMM dd', factory});
+    });
+
     it('preserves 4 digit years when using SmartDate factory', function () {
         const now = date(2010, 2, 3);
         const option: Options = {
