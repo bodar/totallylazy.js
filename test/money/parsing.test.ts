@@ -151,7 +151,7 @@ describe("Money", function () {
     });
 
     it('treats all forms of space as the same including nbsp 160 & 8239', () => {
-        const spaces = [32, 160, 8239];
+        const spaces = [8239];
         for (const space of spaces) {
             assert.deepEqual(parser('fr').parse(`1${String.fromCharCode(space)}025,00${String.fromCharCode(space)}EUR`), money('EUR', 1025.00));
         }
@@ -222,6 +222,11 @@ describe("Money", function () {
             }
         }
     });
+
+    it('can parse arabic numerals, separators and symbols', function () {
+        assert.deepEqual(parser('ar-EG').parseAll( '١٢٬٣٤٥٬٦٧٠٫٨٩ ج.م.‏'), [money('EGP', 12345670.89)]);
+    });
+
 });
 
 export const currenciesWithDifferentDecimals: [string, Currency][] = Object.values(Object.entries(currencies).reduce((a, [code, currency]) => {

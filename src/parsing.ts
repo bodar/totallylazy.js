@@ -5,7 +5,6 @@ import {array, Comparator, Mapper} from "./collections";
 import {flatMap, map, zip} from "./transducers";
 import {cache} from "./cache";
 import {PreferredCurrencies} from "./money/preferred-currencies";
-import {hasNativeToParts, months, Options} from "./dates";
 
 export class NamedRegexParser implements Parser<NamedMatch[]> {
     constructor(protected regex: NamedRegExp) {
@@ -132,7 +131,7 @@ function localeParts(locale: string): string[] {
     return locale.split(/[-_]/).filter(Boolean);
 }
 
-export function infer(locale:string): MatchStrategy<string> {
+export function infer(locale: string): MatchStrategy<string> {
     const [, country] = localeParts(locale);
     return prefer(...PreferredCurrencies.for(country))
 }
@@ -230,7 +229,21 @@ export class Numerals extends NumericLookup {
     }
 
     static generateData(locale: string): Numeral[] {
-        const digits = new Intl.NumberFormat(locale).format(1234567890).replace(/[,. '٬٫]/g, '');
-        return array(characters(digits), zip([1,2,3,4,5,6,7,8,9,0]), map(([c, d]) => ({name:c, value:d})));
+        const digits = new Intl.NumberFormat(locale, {useGrouping: false}).format(1234567890).replace(/[,. '٬٫]/g, '');
+        return array(characters(digits), zip([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]), map(([c, d]) => ({name: c, value: d})));
+    }
+}
+
+export function digits(locale: string): string {
+    return `\\d${Numerals.get(locale).characters.join('')}`;
+}
+
+export class Spaces {
+    static codes: string[] = [32, 160, 8239].map(code => String.fromCharCode(code));
+    static spaces = Spaces.codes.join('');
+    static pattern = new RegExp(`[${Spaces.spaces}]`, 'g');
+
+    static handle(value: string): string {
+        return Spaces.codes.indexOf(value) != -1 ? Spaces.spaces : value;
     }
 }

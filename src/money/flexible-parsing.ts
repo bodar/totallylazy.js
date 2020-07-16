@@ -1,5 +1,5 @@
-import {CurrencySymbols, decimalsFor, money, Money, Spaces} from "./money";
-import {atBoundaryOnly, MatchStrategy, Numerals, Parser} from "../parsing";
+import {CurrencySymbols, decimalsFor, money, Money} from "./money";
+import {atBoundaryOnly, digits, MatchStrategy, Numerals, Parser, Spaces} from "../parsing";
 import {characters, NamedMatch, NamedRegExp} from "../characters";
 import {filter, find, first, flatMap, map, sort} from "../transducers";
 import {array, by, descending, Mapper, single} from "../collections";
@@ -19,9 +19,11 @@ export function flexibleParse(value: string, locale: string = 'en', options?: Op
 
 
 const allowedSeparators = `٬٫,.'’${Spaces.spaces}`;
+
+
 const numberPattern = caching((locale: string) => {
-    const digits = `[\\d${Numerals.get(locale).characters.join('')}]+`;
-    return `(?:${digits}[${allowedSeparators}])*${digits}`;
+    const d = digits(locale);
+    return `(?:[${d}]+[${allowedSeparators}])*[${d}]+`;
 });
 
 export function mapIgnoreError<A, B>(mapper: Mapper<A, B>) {

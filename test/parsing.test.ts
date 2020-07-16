@@ -1,5 +1,5 @@
-import {CachingParser, Numerals, Parser} from "../src/parsing";
-import { assert } from 'chai';
+import {CachingParser, digits, Numerals, Parser} from "../src/parsing";
+import {assert} from 'chai';
 import {characters} from "../src/characters";
 import {zip} from "../src/transducers";
 import {sequence} from "../src/sequence";
@@ -28,7 +28,13 @@ describe('Numerals', () => {
         const locale = 'ar-EG';
         for (const [character, number] of sequence(characters('١٢٣٤٥٦٧٨٩٠'), zip([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]))) {
             assert.equal(Numerals.get(locale).parse(character), number);
-
         }
+    });
+})
+
+
+describe('digits', () => {
+    it('works', function () {
+        assert.equal(digits('fr'), '\\d0123456789')
     });
 })
