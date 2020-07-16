@@ -227,6 +227,17 @@ describe("dates", function () {
         }
     });
 
+    it('can handle arabic dates', function () {
+        assertFormat('ar-EG', date(2019, 1, 25), {
+            day: 'numeric', year: 'numeric', month: 'short', weekday: "short"
+        }, 'الجمعة، ٢٥ يناير ٢٠١٩');
+
+        // TODO
+        // assertFormat('ar-EG', date(2019, 1, 25), {
+        //     day: 'numeric', year: 'numeric', month: 'numeric'
+        // }, '٢٥/١/٢٠١٩');
+    });
+
     it('can format and parse a specific date format', function () {
         assertFormat('en-GB', date(2019, 1, 25), {
             day: 'numeric',

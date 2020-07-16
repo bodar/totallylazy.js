@@ -6,19 +6,19 @@ import {currencies} from "./currencies";
 import {lazy} from "../lazy";
 import {Datum, DatumLookup} from "../dates";
 import {
+    AllowedDecimalSeparators,
     atBoundaryOnly,
     boundaryDelimiters,
     digits,
     infer,
     mappingParser,
     MatchStrategy,
-    namedRegexParser,
+    namedRegexParser, numberParser,
     Parser,
     Spaces
 } from "../parsing";
 import {Currencies, Currency} from "./currencies-def";
 import {cache} from "../cache";
-import {AllowedDecimalSeparators, numberParser} from "./flexible-parsing";
 import NumberFormatPart = Intl.NumberFormatPart;
 import {get} from "../functions";
 

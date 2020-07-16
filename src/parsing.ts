@@ -3,8 +3,9 @@ import {DEFAULT_COMPARATOR, PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
 import {array, Comparator, Mapper} from "./collections";
 import {flatMap, map, zip} from "./transducers";
-import {cache} from "./cache";
+import {cache, caching} from "./cache";
 import {PreferredCurrencies} from "./money/preferred-currencies";
+import {get} from "./functions";
 
 export class NamedRegexParser implements Parser<NamedMatch[]> {
     constructor(protected regex: NamedRegExp) {
@@ -246,4 +247,81 @@ export class Spaces {
     static handle(value: string): string {
         return Spaces.codes.indexOf(value) != -1 ? Spaces.spaces : value;
     }
+}
+
+const allowedSeparators = `٬٫,.'’${Spaces.spaces}`;
+export const numberPattern = caching((locale: string) => {
+    const d = digits(locale);
+    return `(?:[${d}]+[${allowedSeparators}])*[${d}]+`;
+});
+
+export function mapIgnoreError<A, B>(mapper: Mapper<A, B>) {
+    return flatMap((value: A) => {
+        try {
+            return [mapper(value)]
+        } catch (e) {
+            return [];
+        }
+    });
+}
+
+const separatorsPattern = NamedRegExp.create(`(?<separator>[${allowedSeparators}])`);
+
+export function separatorsOf(amount: string): string[] {
+    return array(separatorsPattern.exec(amount), map(([match]) => match.value));
+}
+
+export type AllowedDecimalSeparators = '.' | ',' | '٫'
+
+export class NumberParser implements Parser<number> {
+    readonly strictNumberPattern: RegExp;
+    readonly globalNumberPattern: NamedRegExp;
+
+    constructor(private decimalSeparator: AllowedDecimalSeparators, private locale: string) {
+        this.strictNumberPattern = new RegExp(`^${numberPattern(locale)}$`);
+        this.globalNumberPattern = NamedRegExp.create(`(?<number>${numberPattern(locale)})`, 'g');
+    }
+
+    parse(value: string): number {
+        if (!this.strictNumberPattern.test(value)) throw new Error(`Unable to parse '${value}'`);
+        return this.parseSingle(value);
+    }
+
+    parseAll(value: string): number[] {
+        return array(this.globalNumberPattern.exec(value), mapIgnoreError(([match]) => this.parseSingle(match.value.trim())));
+    }
+
+    private parseSingle(value: string): number {
+        const separators = separatorsOf(value);
+        if (separators.length === 0) return this.numberOf(value);
+        const lastSeparator = separators[separators.length - 1];
+        const groupSeparators = lastSeparator === this.decimalSeparator ? separators.slice(0, separators.length - 1) : separators;
+        if (groupSeparators.indexOf(this.decimalSeparator) !== -1) throw new Error(`Unable to parse '${value}'`);
+        if (unique(groupSeparators).length > 1) throw new Error(`Unable to parse '${value}'`);
+
+        return this.numberOf(value);
+    }
+
+    private convert(value: string): string {
+        const numerals = Numerals.get(this.locale);
+        return characters(value).map(c => {
+            if (c === this.decimalSeparator) return '.';
+            const number = get(() => numerals.parse(c));
+            if (isNaN(number)) return '';
+            return number.toString();
+        }).join('');
+    }
+
+    private numberOf(value: string) {
+        const text = this.convert(value);
+        const result = Number(text);
+        if (isNaN(result)) {
+            throw new Error(`Unable to parse '${value}'`);
+        }
+        return result;
+    }
+}
+
+export function numberParser(decimalSeparator: AllowedDecimalSeparators, locale: string = 'en') {
+    return new NumberParser(decimalSeparator, locale);
 }

@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import {money} from "../../src/money";
-import {infer, prefer} from "../../src/parsing";
-import {flexibleMoneyParser, flexibleParse, numberParser, NumberParser} from "../../src/money/flexible-parsing";
+import {NumberParser, numberParser, prefer} from "../../src/parsing";
+import {flexibleMoneyParser, flexibleParse} from "../../src/money/flexible-parsing";
 
 
 describe('NumberParser', () => {

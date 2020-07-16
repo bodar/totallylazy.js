@@ -2,7 +2,16 @@ import {lazy} from "../lazy";
 import {unique} from "../arrays";
 import {characters, isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
 import {date, defaultOptions, Format, formatData, hasNativeToParts, Months, Options, Weekdays,} from "./index";
-import {atBoundaryOnly, mappingParser, namedRegexParser, or, Parser, preProcess} from "../parsing";
+import {
+    atBoundaryOnly,
+    digits,
+    mappingParser,
+    namedRegexParser,
+    numberParser,
+    or,
+    Parser,
+    preProcess
+} from "../parsing";
 import {array} from "../collections";
 import {map} from "../transducers";
 import {cache} from "../cache";
@@ -33,11 +42,11 @@ export class RegexBuilder {
         const pattern = this.formatted.map((part, index) => {
             switch (part.type) {
                 case "year":
-                    return `(?<year>\\d{${this.lengthOf(part.value)}})`;
+                    return `(?<year>[${digits(this.locale)}]{${this.lengthOf(part.value)}})`;
                 case "month":
                     return `(?<month>${this.monthsPattern()})`;
                 case "day":
-                    return '(?<day>\\d{1,2})';
+                    return `(?<day>[${digits(this.locale)}]{1,2})`;
                 case "weekday":
                     return `(?<weekday>${Weekdays.get(this.locale).pattern.toLocaleLowerCase(this.locale)})`;
                 default: {
@@ -63,7 +72,7 @@ export class RegexBuilder {
     }
 
     private monthsPattern(): string {
-        const numericPattern = `\\d{1,2}`;
+        const numericPattern = `[${digits(this.locale)}]{1,2}`;
         const textPattern = Months.get(this.locale).pattern.toLocaleLowerCase(this.locale);
         if (this.options.month === "2-digit" || this.options.month === "numeric") return numericPattern;
         if (this.options.month === "short" || this.options.month === "long") return textPattern;
@@ -102,16 +111,17 @@ export class DateTimeFormatPartParser {
 }
 
 export function dateFrom(parts: DateTimeFormatPart[], locale: string, options?: Options): Date {
+    const parser = numberParser('.', locale);
     const [day] = parts.filter(p => p.type === 'day');
     if (!day) throw new Error("No day found");
-    const dd = Number(day.value);
+    const dd = parser.parse(day.value);
 
     const [month] = parts.filter(p => p.type === 'month');
     if (!month) throw new Error("No month found");
     const MM = Months.get(locale).parse(month.value);
 
     const [year] = parts.filter(p => p.type === 'year');
-    const yyyy = year ? Number(year.value) : undefined;
+    const yyyy = year ? parser.parse(year.value) : undefined;
 
     // @ts-ignore
     const factory = get<DateFactory>(() => options.factory, new DefaultDateFactory());

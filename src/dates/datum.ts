@@ -12,7 +12,7 @@ export class Months extends NumericLookup {
     static formats: Options[] = [
         {month: "long"}, {month: "short"},
         {year: 'numeric', month: "long", day: 'numeric'},
-        {year: 'numeric', month: 'short', day: 'numeric'}
+        {year: 'numeric', month: 'short', day: 'numeric'},
     ];
 
     static cache: { [key: string]: Months } = {};
