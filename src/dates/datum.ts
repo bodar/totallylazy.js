@@ -2,20 +2,9 @@ import {flatten} from "../arrays";
 import {date, MonthFormat, Options, WeekdayFormat} from "./core";
 import {Formatters, hasNativeToParts} from "./formatting";
 import {different, replace} from "../characters";
-import {Datum, DatumLookup} from "../parsing";
+import {Datum, NumericLookup} from "../parsing";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
-
-export class NumericLookup extends DatumLookup<number> {
-    constructor(data: Datum<number>[]) {
-        super(data);
-    }
-
-    parse(value: string): number {
-        const number = parseInt(value);
-        return !isNaN(number) ? number : super.parse(value);
-    }
-}
 
 export type Month = Datum<number>;
 

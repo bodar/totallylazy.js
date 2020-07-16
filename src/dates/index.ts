@@ -6,3 +6,4 @@ export {DatumLookup} from "../parsing";
 export {Datum} from "../parsing";
 export {parsers} from "../parsing";
 export {OrParser} from "../parsing";
+export {NumericLookup} from "../parsing";

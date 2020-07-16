@@ -1,10 +1,11 @@
 import {characters, NamedMatch, NamedRegExp} from "./characters";
 import {DEFAULT_COMPARATOR, PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
-import {array, by, Comparator, Mapper} from "./collections";
-import {flatMap, map} from "./transducers";
+import {array, Comparator, Mapper} from "./collections";
+import {flatMap, map, zip} from "./transducers";
 import {cache} from "./cache";
 import {PreferredCurrencies} from "./money/preferred-currencies";
+import {hasNativeToParts, months, Options} from "./dates";
 
 export class NamedRegexParser implements Parser<NamedMatch[]> {
     constructor(protected regex: NamedRegExp) {
@@ -202,4 +203,34 @@ export const boundaryDelimiters = ',.';
 
 export function atBoundaryOnly(pattern: string) {
     return `(?:^|\\s)${pattern}(?=[\\s${boundaryDelimiters}]|$)`;
+}
+
+export class NumericLookup extends DatumLookup<number> {
+    constructor(data: Datum<number>[]) {
+        super(data);
+    }
+
+    parse(value: string): number {
+        const number = parseInt(value);
+        return !isNaN(number) ? number : super.parse(value);
+    }
+}
+
+export type Numeral = Datum<number>;
+
+export class Numerals extends NumericLookup {
+    static cache: { [key: string]: Numerals } = {};
+
+    static get(locale: string, additionalData: Numeral[] = []): Numerals {
+        return Numerals.cache[locale] = Numerals.cache[locale] || Numerals.create(locale, additionalData);
+    }
+
+    static create(locale: string, additionalData: Numeral[] = []): Numerals {
+        return new Numerals([...Numerals.generateData(locale), ...additionalData]);
+    }
+
+    static generateData(locale: string): Numeral[] {
+        const digits = new Intl.NumberFormat(locale).format(1234567890).replace(/[,. '٬٫]/g, '');
+        return array(characters(digits), zip([1,2,3,4,5,6,7,8,9,0]), map(([c, d]) => ({name:c, value:d})));
+    }
 }

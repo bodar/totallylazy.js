@@ -43,9 +43,17 @@ describe('NumberParser', () => {
     it('handles large numbers with multiple group separators', () => {
         assert.equal(numberParser('.').parse("1,234,568"), 1234568);
     });
+
+    it('can parse arabic numerals', () => {
+        assert.equal(numberParser('٫', 'ar-EG').parse("١٢٬٣٤٥٬٦٧٠٫٨٩"), 12345670.89);
+    });
 });
 
 describe("Flexible Parsing", function () {
+    it('can parse arabic numerals, separators and symbols', function () {
+        assert.deepEqual(flexibleMoneyParser('ar-EG').parseAll( '١٢٬٣٤٥٬٦٧٠٫٨٩ ج.م.‏'), [money('EGP', 12345670.89)]);
+    });
+
     it('ignores extra delimiters', function () {
         assert.deepEqual(flexibleMoneyParser().parseAll('221,38 EUR.'), [money('EUR', 221.38)]);
         assert.deepEqual(flexibleMoneyParser().parseAll('221,38 EUR,'), [money('EUR', 221.38)]);

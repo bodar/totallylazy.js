@@ -28,7 +28,9 @@ function assertParseNoYears(locale: string, value: string, ...expected: Date[]) 
         month: "short",
         factory: new SmartDate(new StoppedClock(now))
     };
-    for (const [a, e] of sequence(parser(locale, options).parseAll(value), zip(expected))) {
+    const result = parser(locale, options).parseAll(value);
+    assert.equal(result.length, expected.length);
+    for (const [a, e] of sequence(result, zip(expected))) {
         assertDates(a, e);
     }
 }

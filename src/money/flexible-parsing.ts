@@ -1,11 +1,12 @@
 import {CurrencySymbols, decimalsFor, money, Money, Spaces} from "./money";
-import {atBoundaryOnly, MatchStrategy, Parser} from "../parsing";
-import {NamedMatch, NamedRegExp} from "../characters";
+import {atBoundaryOnly, MatchStrategy, Numerals, Parser} from "../parsing";
+import {characters, NamedMatch, NamedRegExp} from "../characters";
 import {filter, find, first, flatMap, map, sort} from "../transducers";
 import {array, by, descending, Mapper, single} from "../collections";
 import {unique} from "../arrays";
-import {cache} from "../cache";
+import {cache, caching} from "../cache";
 import {lazy} from "../lazy";
+import {get} from "../functions";
 
 export interface Options {
     strategy?: MatchStrategy<string>;
@@ -17,9 +18,11 @@ export function flexibleParse(value: string, locale: string = 'en', options?: Op
 }
 
 
-const allowedSeparators = `,.'’${Spaces.spaces}`;
-const numberPattern = `(?:\\d+[${allowedSeparators}])*\\d+`;
-
+const allowedSeparators = `٬٫,.'’${Spaces.spaces}`;
+const numberPattern = caching((locale: string) => {
+    const digits = `[\\d${Numerals.get(locale).characters.join('')}]+`;
+    return `(?:${digits}[${allowedSeparators}])*${digits}`;
+});
 
 export function mapIgnoreError<A, B>(mapper: Mapper<A, B>) {
     return flatMap((value: A) => {
@@ -35,12 +38,14 @@ export class FlexibleMoneyParser implements Parser<Money> {
     constructor(private locale: string, private options?: Options) {
     }
 
-    @lazy private get pattern(): NamedRegExp {
+    @lazy
+    private get pattern(): NamedRegExp {
         return FlexibleMoneyParser.patternFor(this.locale);
     }
 
-    @cache private static patternFor(locale:string):NamedRegExp {
-        return NamedRegExp.create(atBoundaryOnly(`(?<currency>${CurrencySymbols.get(locale).pattern})?(?<literal>[${Spaces.spaces}])?(?<number>${numberPattern})(?<literal>[${Spaces.spaces}])?(?<currency>${CurrencySymbols.get(locale).pattern})?`));
+    @cache
+    private static patternFor(locale: string): NamedRegExp {
+        return NamedRegExp.create(atBoundaryOnly(`(?<currency>${CurrencySymbols.get(locale).pattern})?(?<literal>[${Spaces.spaces}])?(?<number>${numberPattern(locale)})(?<literal>[${Spaces.spaces}])?(?<currency>${CurrencySymbols.get(locale).pattern})?`));
     }
 
     parse(value: string): Money {
@@ -69,7 +74,7 @@ export class FlexibleMoneyParser implements Parser<Money> {
             sort(by('exactMatch', descending)),
             first());
         const amount = single(result, find(m => m.name === 'number' && m.value !== undefined)).value;
-        const instance = numberParser((this.options && this.options.decimalSeparator) || findDecimalSeparator(currency, amount));
+        const instance = numberParser((this.options && this.options.decimalSeparator) || findDecimalSeparator(currency, amount), this.locale);
         return money(currency, instance.parse(amount));
     }
 }
@@ -85,7 +90,7 @@ function separatorsOf(amount: string): string[] {
 }
 
 function isDecimalSeparator(value: string): value is AllowedDecimalSeparators {
-    return value === '.' || value === ',';
+    return value === '.' || value === ',' || value === '٫';
 }
 
 function decimalSeparator(value: string): AllowedDecimalSeparators {
@@ -121,22 +126,24 @@ export function findDecimalSeparator(isoCurrency: string, amount: string): Allow
 }
 
 
-export type AllowedDecimalSeparators = '.' | ','
+export type AllowedDecimalSeparators = '.' | ',' | '٫'
 
 export class NumberParser implements Parser<number> {
-    static readonly strictNumberPattern = new RegExp(`^${numberPattern}$`);
-    static readonly globalNumberPattern = NamedRegExp.create(`(?<number>${numberPattern})`, 'g');
+    readonly strictNumberPattern: RegExp;
+    readonly globalNumberPattern: NamedRegExp;
 
-    constructor(private decimalSeparator: AllowedDecimalSeparators) {
+    constructor(private decimalSeparator: AllowedDecimalSeparators, private locale: string) {
+        this.strictNumberPattern = new RegExp(`^${numberPattern(locale)}$`);
+        this.globalNumberPattern = NamedRegExp.create(`(?<number>${numberPattern(locale)})`, 'g');
     }
 
     parse(value: string): number {
-        if (!NumberParser.strictNumberPattern.test(value)) throw new Error(`Unable to parse '${value}'`);
+        if (!this.strictNumberPattern.test(value)) throw new Error(`Unable to parse '${value}'`);
         return this.parseSingle(value);
     }
 
     parseAll(value: string): number[] {
-        return array(NumberParser.globalNumberPattern.exec(value), mapIgnoreError(([match]) => this.parseSingle(match.value.trim())));
+        return array(this.globalNumberPattern.exec(value), mapIgnoreError(([match]) => this.parseSingle(match.value.trim())));
     }
 
     private parseSingle(value: string): number {
@@ -147,8 +154,14 @@ export class NumberParser implements Parser<number> {
         if (groupSeparators.indexOf(this.decimalSeparator) !== -1) throw new Error(`Unable to parse '${value}'`);
         if (unique(groupSeparators).length > 1) throw new Error(`Unable to parse '${value}'`);
 
-        const noGroupSeparator = value.replace(new RegExp(`[^${this.decimalSeparator}\\d]`, 'g'), '').replace(this.decimalSeparator, '.');
-        return this.numberOf(noGroupSeparator, value);
+        const numerals = Numerals.get(this.locale);
+        const result = characters(value).map(c => {
+            if(c === this.decimalSeparator) return '.';
+            const number = get(() => numerals.parse(c));
+            if(isNaN(number)) return '';
+            return number.toString();
+        }).join('');
+        return this.numberOf(result, value);
     }
 
     private numberOf(cleaned: string, original: string = cleaned) {
@@ -158,6 +171,6 @@ export class NumberParser implements Parser<number> {
     }
 }
 
-export function numberParser(decimalSeparator: AllowedDecimalSeparators) {
-    return new NumberParser(decimalSeparator);
+export function numberParser(decimalSeparator: AllowedDecimalSeparators, locale: string = 'en') {
+    return new NumberParser(decimalSeparator, locale);
 }
