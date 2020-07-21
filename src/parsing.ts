@@ -205,17 +205,6 @@ export function atBoundaryOnly(pattern: string) {
     return `(?:^|\\s)${pattern}(?=[\\s${boundaryDelimiters}]|$)`;
 }
 
-export class NumericLookup extends DatumLookup<number> {
-    constructor(data: Datum<number>[]) {
-        super(data);
-    }
-
-    parse(value: string): number {
-        const number = numberOf(value);
-        return !isNaN(number) ? number : super.parse(value);
-    }
-}
-
 export type Numeral = Datum<number>;
 
 export class Numerals extends DatumLookup<number> {

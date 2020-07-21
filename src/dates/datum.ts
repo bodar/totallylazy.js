@@ -2,14 +2,14 @@ import {flatten} from "../arrays";
 import {date, MonthFormat, Options, WeekdayFormat} from "./core";
 import {Formatters, hasNativeToParts} from "./formatting";
 import {different, replace} from "../characters";
-import {Datum, DatumLookup, Numerals, NumericLookup} from "../parsing";
+import {Datum, DatumLookup, Numerals} from "../parsing";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import { get } from '../functions';
 
 export type Month = Datum<number>;
 
-export class Months extends NumericLookup {
+export class Months extends DatumLookup<number> {
     private readonly numerals: Numerals
     constructor(data: Datum<number>[], locale:string) {
         super(data);
