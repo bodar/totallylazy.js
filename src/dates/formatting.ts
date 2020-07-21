@@ -19,6 +19,7 @@ import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import {cache} from "../cache";
+import {digits, Numerals} from "../parsing";
 
 export class Formatters {
     @cache
@@ -114,10 +115,11 @@ export function formatData(value: Date, locale: string , options: Options = defa
 export class DateParts {
     private constructor(private locale: string,
                         private options: Options = defaultOptions,
-                        private year = 3333,
+                        private yearValue = 3333,
                         private monthValue = 11,
-                        private day = 20,
-                        private weekdayValue = 5 /*Friday*/) {
+                        private dayValue = 20,
+                        private weekdayValue = 5 /*Friday*/,
+                        private numerals = Numerals.get(locale)) {
     }
 
     @cache
@@ -130,7 +132,7 @@ export class DateParts {
     }
 
     @lazy get formatted(): string {
-        return this.formatter.format(date(this.year, this.monthValue, this.day));
+        return this.formatter.format(date(this.yearValue, this.monthValue, this.dayValue));
     }
 
     @lazy get months(): Months {
@@ -149,6 +151,14 @@ export class DateParts {
         return weekdays(this.locale, this.options, false)[this.weekdayValue - 1];
     }
 
+    @lazy get year(): string {
+        return this.numerals.format(this.yearValue);
+    }
+
+    @lazy get day(): string {
+        return this.numerals.format(this.dayValue);
+    }
+
     @lazy get learningNamesPattern(): NamedRegExp {
         const template = (key: string) => `(?<${key}>${(this as any)[key]})`;
         const patterns = Object.keys(this.options).map(k => template(k));
@@ -157,22 +167,24 @@ export class DateParts {
     }
 
     @lazy get actualNamesPattern(): NamedRegExp {
+        const d = digits(this.locale);
         const learningRegex = this.learningNamesPattern;
 
         const result = array(learningRegex.iterate(this.formatted), map(value => {
             if(isNamedMatch(value)) {
                 let [type] = value.filter(n => Boolean(n.value)).map(n => n.name);
                 if (!type) throw new Error();
-                if (type == 'year') return '(?<year>\\d{4})';
-                else if (type == "day") return '(?<day>\\d{1,2})';
-                else if (type == "month") return `(?<month>(?:\\d{1,2}|${this.months.pattern}))`;
+                if (type == 'year') return `(?<year>[${d}]{4})`;
+                else if (type == "day") return `(?<day>[${d}]{1,2})`;
+                else if (type == "month") return `(?<month>(?:[${d}]{1,2}|${this.months.pattern}))`;
                 else if (type == "weekday") return `(?<weekday>${this.weekdays.pattern})`;
             } else {
                     return `(?<literal>[${value}]+?)`;
             }
         }));
 
-        return NamedRegExp.create("^" + result.join("") + "$");
+        const pattern = "^" + result.join("") + "$";
+        return NamedRegExp.create(pattern);
     }
 
     toParts(date: Date): DateTimeFormatPart[] {
@@ -180,7 +192,7 @@ export class DateParts {
         const actualResult = this.formatter.format(date);
 
         const match = regex.match(actualResult);
-        if (!match) {
+        if (match.length === 0) {
             throw new Error(`${regex} did not match ${actualResult}`);
         }
 

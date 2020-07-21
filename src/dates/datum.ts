@@ -2,7 +2,7 @@ import {flatten} from "../arrays";
 import {date, MonthFormat, Options, WeekdayFormat} from "./core";
 import {Formatters, hasNativeToParts} from "./formatting";
 import {different, replace} from "../characters";
-import {Datum, DatumLookup, Numerals} from "../parsing";
+import {Datum, DatumLookup, numberFormatter, Numerals} from "../parsing";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import { get } from '../functions';
@@ -222,7 +222,7 @@ export class FromFormatStringMonthExtractor extends FromFormatStringDataExtracto
         });
     }
 
-    private day(date: Date) {
+    private day(date: Date): number {
         const day = date.getUTCDay();
         if (day == 0) return 6;
         return day - 1;
@@ -240,10 +240,15 @@ export class FromFormatStringWeekdayExtractor extends FromFormatStringDataExtrac
         const day = this.dates[0].getUTCDate().toString();
         for (let i = 0; i < data.length; i++) {
             const f = data[i];
-            const r = f.replace(this.dates[i].getUTCDate().toString(), day);
+            const d = this.convertToNumeral(this.dates[i].getUTCDate());
+            const r = f.replace(d, day);
             result[i] = r;
         }
         return super.diff(result);
+    }
+
+    private convertToNumeral(number: number): string {
+        return numberFormatter(this.locale).format(number);
     }
 }
 

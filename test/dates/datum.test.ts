@@ -177,6 +177,11 @@ describe("weekdays and months", function () {
         // assertNativeWeekdaysMatches('ja', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
     });
 
+    it("non native version works with arabic symbols", () => {
+        assertNativeWeekdaysMatches('ar-EG', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
+        assertNativeMonthsMatches('ar-EG', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
+    });
+
     it("returns no data when no format is asked for", () => {
         assert.deepEqual(weekdays('en-GB', {}, false),[]);
         assert.deepEqual(months('en-GB', {}, false),[]);

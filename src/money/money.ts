@@ -13,7 +13,7 @@ import {
     infer,
     mappingParser,
     MatchStrategy,
-    namedRegexParser, numberParser,
+    namedRegexParser, numberParser, Numerals,
     Parser,
     Spaces
 } from "../parsing";
@@ -349,7 +349,8 @@ export class PartsFromFormat {
 
     @cache
     static examplePattern(locale: string): PartsFromFormat {
-        const regex = NamedRegExp.create(`(?:(?<integer-group>1.*2)(?:(?<decimal>.)(?<fraction>3+))?|(?<currency>${CurrencySymbols.get(locale).pattern}))`);
+        const numerals = Numerals.get(locale);
+        const regex = NamedRegExp.create(`(?:(?<integer-group>${numerals.format(1)}.*${numerals.format(2)})(?:(?<decimal>.)(?<fraction>${numerals.format(3)}+))?|(?<currency>${CurrencySymbols.get(locale).pattern}))`);
         return new PartsFromFormat(regex, IntegerGroupParser.digits(locale));
     }
 }

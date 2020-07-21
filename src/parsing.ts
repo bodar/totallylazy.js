@@ -208,6 +208,10 @@ export function atBoundaryOnly(pattern: string) {
 export type Numeral = Datum<number>;
 
 export class Numerals extends DatumLookup<number> {
+    constructor(data: Datum<number>[], private locale:string) {
+        super(data);
+    }
+
     static cache: { [key: string]: Numerals } = {};
 
     static get(locale: string, additionalData: Numeral[] = []): Numerals {
@@ -215,11 +219,11 @@ export class Numerals extends DatumLookup<number> {
     }
 
     static create(locale: string, additionalData: Numeral[] = []): Numerals {
-        return new Numerals([...Numerals.generateData(locale), ...additionalData]);
+        return new Numerals([...Numerals.generateData(locale), ...additionalData], locale);
     }
 
     static generateData(locale: string): Numeral[] {
-        const digits = new Intl.NumberFormat(locale, {useGrouping: false}).format(1234567890).replace(/[,. '٬٫]/g, '');
+        const digits = numberFormatter(locale).format(1234567890).replace(/[,. '٬٫]/g, '');
         return array(characters(digits), zip([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]), map(([c, d]) => ({name: c, value: d})));
     }
 
@@ -227,7 +231,14 @@ export class Numerals extends DatumLookup<number> {
         const number = numberOf(value);
         return !isNaN(number) ? number : super.parse(value);
     }
+
+    format(value:number): string {
+        return numberFormatter(this.locale).format(value);
+    }
 }
+
+export const numberFormatter = caching((locale:string) => new Intl.NumberFormat(locale, {useGrouping: false}));
+
 
 export function digits(locale: string): string {
     return `\\d${Numerals.get(locale).characters.join('')}`;
