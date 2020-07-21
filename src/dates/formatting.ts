@@ -134,7 +134,7 @@ export class DateParts {
     }
 
     @lazy get months(): Months {
-        return new Months(Months.dataFor(this.locale, this.options, false));
+        return Months.create(this.locale, Months.dataFor(this.locale, this.options, false));
     }
 
     @lazy get month(): string {

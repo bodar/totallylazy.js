@@ -30,6 +30,13 @@ describe('Numerals', () => {
             assert.equal(Numerals.get(locale).parse(character), number);
         }
     });
+
+    it('should handle western numerals', function () {
+        const locale = 'en';
+        for (const number of [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]) {
+            assert.equal(Numerals.get(locale).parse(number.toString()), number);
+        }
+    });
 })
 
 

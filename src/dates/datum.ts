@@ -2,13 +2,25 @@ import {flatten} from "../arrays";
 import {date, MonthFormat, Options, WeekdayFormat} from "./core";
 import {Formatters, hasNativeToParts} from "./formatting";
 import {different, replace} from "../characters";
-import {Datum, NumericLookup} from "../parsing";
+import {Datum, DatumLookup, Numerals, NumericLookup} from "../parsing";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
+import { get } from '../functions';
 
 export type Month = Datum<number>;
 
 export class Months extends NumericLookup {
+    private readonly numerals: Numerals
+    constructor(data: Datum<number>[], locale:string) {
+        super(data);
+        this.numerals = Numerals.get(locale);
+    }
+
+    parse(value: string): number {
+        const number = get(() => this.numerals.parse(value));
+        return isNaN(number) ? super.parse(value) : number;
+    }
+
     static formats: Options[] = [
         {month: "long"}, {month: "short"},
         {year: 'numeric', month: "long", day: 'numeric'},
@@ -26,7 +38,7 @@ export class Months extends NumericLookup {
     }
 
     static create(locale: string, additionalData: Month[] = []): Months {
-        return new Months([...Months.generateData(locale), ...additionalData]);
+        return new Months([...Months.generateData(locale), ...additionalData], locale);
     }
 
     static generateData(locale: string): Month[] {
@@ -65,7 +77,7 @@ export function months(locale: string, monthFormat: MonthFormat | Options = 'lon
 
 export type Weekday = Datum<number>;
 
-export class Weekdays extends NumericLookup {
+export class Weekdays extends DatumLookup<number> {
     static formats: Options[] = [
         {weekday: "long"}, {weekday: "short"},
         {year: 'numeric', month: "numeric", day: 'numeric', weekday: 'long'},

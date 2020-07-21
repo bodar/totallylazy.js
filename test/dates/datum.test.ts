@@ -47,6 +47,9 @@ describe("Months", function () {
             ["led", "úno", "bře", "dub", "kvě", "čvn", "čvc", "srp", "zář", "říj", "lis", "pro"]);
         assert.deepEqual(months('pt-PT', 'short'),
             ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]);
+
+        assert.deepEqual(months('ar-EG', {year: 'numeric', month: 'short', day: '2-digit'}),
+            ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"]);
     });
 
     it("can add additional data to help parsing", () => {
@@ -55,7 +58,7 @@ describe("Months", function () {
     });
 
     it("can override data to help parsing", () => {
-        Months.set('is-IS', new Months(["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]
+        Months.set('is-IS', Months.create('is-IS', ["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]
             .map((m, i) => ({name: m, value: i + 1}))));
         assertParse('is-IS', "06 jún 2019", date(2019, 6, 6), "dd MMM yyyy");
     });
@@ -123,12 +126,6 @@ describe("Weekdays", function () {
         const ru = Weekdays.get('ru');
         assert.deepEqual(ru.pattern, '[абвгдеиклнопрстуцчья]{2,11}');
         assert.deepEqual(new RegExp(ru.pattern).test('понедельник'), true);
-    });
-
-    it('can also parse numbers', () => {
-        const ru = Weekdays.get('ru');
-        assert.deepEqual(ru.parse('1'), 1);
-        assert.deepEqual(ru.parse('01'), 1);
     });
 
     it('ignores case', () => {

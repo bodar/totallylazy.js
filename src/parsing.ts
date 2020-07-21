@@ -211,14 +211,14 @@ export class NumericLookup extends DatumLookup<number> {
     }
 
     parse(value: string): number {
-        const number = parseInt(value);
+        const number = numberOf(value);
         return !isNaN(number) ? number : super.parse(value);
     }
 }
 
 export type Numeral = Datum<number>;
 
-export class Numerals extends NumericLookup {
+export class Numerals extends DatumLookup<number> {
     static cache: { [key: string]: Numerals } = {};
 
     static get(locale: string, additionalData: Numeral[] = []): Numerals {
@@ -232,6 +232,11 @@ export class Numerals extends NumericLookup {
     static generateData(locale: string): Numeral[] {
         const digits = new Intl.NumberFormat(locale, {useGrouping: false}).format(1234567890).replace(/[,. '٬٫]/g, '');
         return array(characters(digits), zip([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]), map(([c, d]) => ({name: c, value: d})));
+    }
+
+    parse(value: string): number {
+        const number = numberOf(value);
+        return !isNaN(number) ? number : super.parse(value);
     }
 }
 
@@ -314,7 +319,7 @@ export class NumberParser implements Parser<number> {
 
     private numberOf(value: string) {
         const text = this.convert(value);
-        const result = Number(text);
+        const result = numberOf(text);
         if (isNaN(result)) {
             throw new Error(`Unable to parse '${value}'`);
         }
@@ -324,4 +329,9 @@ export class NumberParser implements Parser<number> {
 
 export function numberParser(decimalSeparator: AllowedDecimalSeparators, locale: string = 'en') {
     return new NumberParser(decimalSeparator, locale);
+}
+
+export function numberOf(value:string): number {
+    if(!value || value.trim().length === 0) return NaN;
+    return Number(value);
 }
