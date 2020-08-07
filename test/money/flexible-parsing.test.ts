@@ -50,6 +50,10 @@ describe('NumberParser', () => {
 });
 
 describe("Flexible Parsing", function () {
+    it('examples work', function () {
+        assert.deepEqual(flexibleMoneyParser('en-US', {strategy: prefer('HKD')}).parseAll('$1015 /Night'), [money('HKD', 1015)]);
+    });
+
     it('can parse arabic numerals, separators and symbols', function () {
         assert.deepEqual(flexibleMoneyParser('ar-EG').parseAll( '١٢٬٣٤٥٬٦٧٠٫٨٩ ج.م.‏'), [money('EGP', 12345670.89)]);
     });
