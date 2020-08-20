@@ -182,9 +182,9 @@ export class SmartDate implements DateFactory {
 }
 
 
-class Days {
-    static startOf(date: Date) {
-        return new Date(date.toDateString());
+export class Days {
+    static startOf(value: Date) {
+        return date(value.getUTCFullYear(), value.getUTCMonth() + 1, value.getUTCDate());
     }
 }
 

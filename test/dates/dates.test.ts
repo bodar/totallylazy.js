@@ -1,6 +1,17 @@
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {date, format, hasNativeToParts, Options, parse, parser, parsers, Pivot, SmartDate,} from "../../src/dates";
+import {
+    date,
+    Days,
+    format,
+    hasNativeToParts,
+    Options,
+    parse,
+    parser,
+    parsers,
+    Pivot,
+    SmartDate,
+} from "../../src/dates";
 import {StoppedClock} from "../../src/dates/clock";
 import {sequence} from "../../src/sequence";
 import {zip} from "../../src/transducers";
@@ -429,6 +440,12 @@ describe("dates", function () {
             assertDates(checkin, date(2019, 3, 7));
             assertDates(checkout, date(2019, 3, 8));
         });
+    });
+});
+
+describe("Days", () => {
+    it('startOf strips the time off a Date', function () {
+        assertDates(Days.startOf(new Date("2000-01-02T03:04:05Z")), date(2000, 1, 2));
     });
 });
 
