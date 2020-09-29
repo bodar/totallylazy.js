@@ -61,6 +61,8 @@ describe('pattern matching', function () {
 
     it('can match against a pattern instance', function () {
         assert.equal(match(get('Hello Dan'),
-            case_({uri: regex(/Hello (\w+)/)} as Pattern<Request>, ({uri: [name]}) => name)), "Dan");
+            case_({uri: regex(/Hello (\w+)/)} as Pattern<Request>, (
+                // @ts-ignore
+                {uri: [name]}) => name)), "Dan");
     });
 });

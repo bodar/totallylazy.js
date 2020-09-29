@@ -1,6 +1,5 @@
 import {
     date,
-    DatumLookup,
     defaultOptions, Format,
     months,
     Months,
@@ -19,7 +18,7 @@ import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import {cache} from "../cache";
-import {digits, Numerals} from "../parsing";
+import {DatumLookup, digits, Numerals} from "../parsing";
 
 export class Formatters {
     @cache
