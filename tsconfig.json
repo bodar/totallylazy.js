@@ -1,24 +1,24 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
+    "incremental": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "es6",
     "strict": true,
     "importHelpers": true,
     "experimentalDecorators": true,
-    "downlevelIteration": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "declaration": true,
+    "declarationMap": true,
     "noEmitOnError": true,
-    "outDir": "build/artifacts/out",
     "lib": [
       "dom",
       "esnext"
     ]
   },
   "include": [
-    "src/**/*",
-    "test/**/*"
+    "src/**/*.ts",
+    "test/**/*.ts"
   ]
 }
