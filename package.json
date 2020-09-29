@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "clean": "rm -rf dist && rm tsconfig.tsbuildinfo && find src test -name '*.js' -o -name '*.map' -o -name '*.d.ts' | xargs rm -f",
+    "clean": "rm -rf dist && rm -f tsconfig.tsbuildinfo && find src test -name '*.js' -o -name '*.map' -o -name '*.d.ts' | xargs rm -f",
     "build": "tsc",
     "generate": "ts-node src/money/generate-currencies.ts",
     "test": "NODE_ICU_DATA=./node_modules/full-icu TZ='America/Los_Angeles' yarn run mocha 'test/**/*.test.js'",
