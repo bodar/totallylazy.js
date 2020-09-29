@@ -27,7 +27,8 @@ function package() {
     mkdir -p ${dist}
     envsubst < package.json > ${dist}/package.json
     cp -r ${out}/* ${dist}
-    cp README.md LICENSE ${dist}
+    cp README.md LICENSE tsconfig.tsbuildinfo ${dist}
+    node -p "const c = require('./tsconfig.json'); c.include=['.']; c;" > ${dist}/tsconfig.json
 }
 
 function publish() {
