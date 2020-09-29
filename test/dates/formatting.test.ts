@@ -64,7 +64,6 @@ describe("ImprovedDateTimeFormat", function () {
         const locale = 'en';
         const options: any = {month: 'long'};
         const formatter = new Intl.DateTimeFormat(locale, options);
-        // @ts-ignore
         delete formatter.formatToParts;
         const result = new ImprovedDateTimeFormat(locale, options, formatter).formatToParts(date(2019, 1, 2));
         assert.deepEqual(result, [{type: "month", value: "January"}]);

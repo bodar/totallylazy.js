@@ -7,10 +7,10 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "clean": "rm -rf dist && rm -f tsconfig.tsbuildinfo && find src test -name '*.js' -o -name '*.map' -o -name '*.d.ts' | xargs rm -f",
+    "clean": "rm -rf build/artifacts",
     "build": "tsc",
     "generate": "ts-node src/money/generate-currencies.ts",
-    "test": "NODE_ICU_DATA=./node_modules/full-icu TZ='America/Los_Angeles' yarn run mocha 'test/**/*.test.js'",
+    "test": "NODE_ENV=development NODE_ICU_DATA=./node_modules/full-icu TZ='America/Los_Angeles' yarn run mocha --require ts-node/register 'test/**/*.test.ts'",
     "perf": "ts-node perf/trie.ts"
   },
   "dependencies": {
@@ -29,8 +29,8 @@
     "mocha": "^7.1.0",
     "mocha-headless-chrome": "^2.0.3",
     "node-fetch": "^2.6.0",
-    "ts-node": "^9.0.0",
-    "typescript": "^4.0.3",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3",
     "wikidata-sdk": "^7.0.7"
   },
   "optionalDependencies": {

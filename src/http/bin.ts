@@ -41,7 +41,6 @@ export class BinHandler implements Handler {
         return ok({}, await this.responseBody(request));
     }
 
-    // @ts-ignore
     async streamBytes({uri: [size]}: Matched<Request>) {
         return ok({}, new ByteBody(randomBytes(size)));
     }

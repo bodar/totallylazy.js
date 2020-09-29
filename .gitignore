@@ -4,12 +4,6 @@
 .idea/.gitignore
 .npmrc
 build/artifacts
-dist
 node_modules
 *.log
 src/money/currencies.ts
-
-*.tsbuildinfo
-*.d.ts
-*.map
-*.js

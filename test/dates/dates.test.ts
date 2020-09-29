@@ -8,13 +8,13 @@ import {
     Options,
     parse,
     parser,
+    parsers,
     Pivot,
     SmartDate,
 } from "../../src/dates";
 import {StoppedClock} from "../../src/dates/clock";
 import {sequence} from "../../src/sequence";
 import {zip} from "../../src/transducers";
-import {parsers} from "../../src/parsing";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);

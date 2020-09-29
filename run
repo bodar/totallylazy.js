@@ -11,8 +11,8 @@ fi
 
 yarn install
 
-dist=dist
-out=src
+dist=build/artifacts/dist
+out=build/artifacts/out
 
 yarn clean
 yarn generate
@@ -26,9 +26,8 @@ function package() {
 
     mkdir -p ${dist}
     envsubst < package.json > ${dist}/package.json
-    cp -r ${out}/* ${dist}
-    cp README.md LICENSE tsconfig.tsbuildinfo ${dist}
-    node -p "const c = require('./tsconfig.json'); c.include=['.']; c;" > ${dist}/tsconfig.json
+    cp -r ${out}/src/* ${dist}
+    cp README.md LICENSE ${dist}
 }
 
 function publish() {

@@ -1,24 +1,24 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "composite": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es6",
+    "target": "es5",
     "strict": true,
     "importHelpers": true,
     "experimentalDecorators": true,
-    "sourceMap": true,
+    "downlevelIteration": true,
+    "sourceMap": false,
     "declaration": true,
-    "declarationMap": true,
     "noEmitOnError": true,
+    "outDir": "build/artifacts/out",
     "lib": [
       "dom",
       "esnext"
     ]
   },
   "include": [
-    "src/**/*.ts",
-    "test/**/*.ts"
+    "src/**/*",
+    "test/**/*"
   ]
 }

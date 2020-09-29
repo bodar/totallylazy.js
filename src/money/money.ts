@@ -4,10 +4,11 @@ import {array, ascending, by, descending, single} from "../collections";
 import {flatten} from "../arrays";
 import {currencies} from "./currencies";
 import {lazy} from "../lazy";
+import {Datum, DatumLookup} from "../dates";
 import {
     AllowedDecimalSeparators,
     atBoundaryOnly,
-    boundaryDelimiters, Datum, DatumLookup,
+    boundaryDelimiters,
     digits,
     infer,
     mappingParser,
