@@ -111,6 +111,18 @@ describe("Flexible Parsing", function () {
         assert.deepEqual(flexibleParse('AUD$ 12,000.00', 'en-AU'), money('AUD', 12000));
     });
 
+    it('can parse australian dollars', () => {
+        assert.deepEqual(flexibleParse('AU$ 12', 'en-AU'), money('AUD', 12));
+        assert.deepEqual(flexibleParse('$AU 12', 'en-AU'), money('AUD', 12));
+        assert.deepEqual(flexibleParse('$12', 'en-AU'), money('AUD', 12));
+    });
+
+    it('can parse canadian dollars', () => {
+        assert.deepEqual(flexibleParse('CA$ 12', 'en-CA'), money('CAD', 12));
+        assert.deepEqual(flexibleParse('$CA 12', 'en-CA'), money('CAD', 12));
+        assert.deepEqual(flexibleParse('$12', 'en-CA'), money('CAD', 12));
+    });
+
     it('can parse when we have both group separators and decimal', () => {
         assert.deepEqual(flexibleParse('USD 1,234.56'), money('USD', 1234.56));
         assert.deepEqual(flexibleParse('USD 1.234,56'), money('USD', 1234.56));
