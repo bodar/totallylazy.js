@@ -5,20 +5,25 @@ import {different, replace} from "../characters";
 import {Datum, DatumLookup, numberFormatter, Numerals} from "../parsing";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
-import { get } from '../functions';
+import {get} from '../functions';
 
 export type Month = Datum<number>;
 
 export class Months extends DatumLookup<number> {
     private readonly numerals: Numerals
-    constructor(data: Datum<number>[], locale:string) {
+
+    constructor(data: Datum<number>[], locale: string) {
         super(data);
         this.numerals = Numerals.get(locale);
     }
 
     parse(value: string): number {
         const number = get(() => this.numerals.parse(value));
-        return isNaN(number) ? super.parse(value) : number;
+        return isNaN(number) ? super.parse(cleanValue(value)) : number;
+    }
+
+    get characters(): string[] {
+        return [...super.characters, '.'];
     }
 
     static formats: Options[] = [
@@ -74,10 +79,9 @@ export function months(locale: string, monthFormat: MonthFormat | Options = 'lon
     })();
 }
 
-export function cleanValue(value:string):string {
+export function cleanValue(value: string): string {
     return value.replace('.', '');
 }
-
 
 export type Weekday = Datum<number>;
 
@@ -120,8 +124,8 @@ export function weekdays(locale: string, weekdayFormat: WeekdayFormat | Options 
 
         const dates = range(1, 7).map(i => date(2000, 1, i + 2));
 
-        if (native) return new NativeDataExtractor(locale, options, dates, 'weekday').extract().map(cleanValue);
-        return new FromFormatStringWeekdayExtractor(locale, options, dates).extract().map(cleanValue);
+        if (native) return new NativeDataExtractor(locale, options, dates, 'weekday').extract();
+        return new FromFormatStringWeekdayExtractor(locale, options, dates).extract();
     })();
 }
 

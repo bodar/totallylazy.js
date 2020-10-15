@@ -71,16 +71,17 @@ describe("Months", function () {
         assert.deepEqual(ru.parse('январ'), 1);
         assert.deepEqual(ru.parse('янва'), 1);
         assert.deepEqual(ru.parse('янв'), 1);
+        assert.deepEqual(ru.parse('янв.'), 1);
         assert.deepEqual(ru.parse('фев'), 2);
 
         const de = Months.get('de');
         assert.deepEqual(de.parse('Feb'), 2);
-
+        assert.deepEqual(de.parse('Feb.'), 2);
     });
 
     it('can get pattern', () => {
         const ru = Months.get('ru');
-        assert.deepEqual(ru.pattern, "[абвгдеийклмнопрстуфьюя]{3,8}");
+        assert.deepEqual(ru.pattern, "[абвгдеийклмнопрстуфьюя.]{3,8}");
         assert.deepEqual(new RegExp(ru.pattern).test('январь'), true);
         assert.deepEqual(new RegExp(ru.pattern).test('января'), true);
         assert.deepEqual(new RegExp(ru.pattern).test('янв'), true);

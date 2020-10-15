@@ -95,11 +95,15 @@ export class DatumLookup<V> {
     }
 
     get pattern(): string {
-        const [min, max] = this.data.reduce(([min, max], l) => {
-            const length = characters(l.name).length;
-            return [Math.min(min, length), Math.max(max, length)]
-        }, [Number.MAX_VALUE, Number.MIN_VALUE]);
+        const {min, max} = this.minMax;
         return `[${this.characters.join('')}]{${min},${max}}`;
+    }
+
+    get minMax(): { min: number, max: number } {
+        return this.data.reduce(({min, max}, l) => {
+            const length = characters(l.name).length;
+            return {min: Math.min(min, length), max: Math.max(max, length)};
+        }, {min: Number.MAX_VALUE, max: Number.MIN_VALUE});
     }
 
     get characters(): string[] {
@@ -208,7 +212,7 @@ export function atBoundaryOnly(pattern: string) {
 export type Numeral = Datum<number>;
 
 export class Numerals extends DatumLookup<number> {
-    constructor(data: Datum<number>[], private locale:string) {
+    constructor(data: Datum<number>[], private locale: string) {
         super(data);
     }
 
@@ -232,12 +236,12 @@ export class Numerals extends DatumLookup<number> {
         return !isNaN(number) ? number : super.parse(value);
     }
 
-    format(value:number): string {
+    format(value: number): string {
         return numberFormatter(this.locale).format(value);
     }
 }
 
-export const numberFormatter = caching((locale:string) => new Intl.NumberFormat(locale, {useGrouping: false}));
+export const numberFormatter = caching((locale: string) => new Intl.NumberFormat(locale, {useGrouping: false}));
 
 
 export function digits(locale: string): string {
@@ -331,7 +335,7 @@ export function numberParser(decimalSeparator: AllowedDecimalSeparators, locale:
     return new NumberParser(decimalSeparator, locale);
 }
 
-export function numberOf(value:string): number {
-    if(!value || value.trim().length === 0) return NaN;
+export function numberOf(value: string): number {
+    if (!value || value.trim().length === 0) return NaN;
     return Number(value);
 }
