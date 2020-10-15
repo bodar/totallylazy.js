@@ -80,7 +80,7 @@ export function months(locale: string, monthFormat: MonthFormat | Options = 'lon
 }
 
 export function cleanValue(value: string): string {
-    return value.replace('.', '');
+    return value.replace(/\.$/, '');
 }
 
 export type Weekday = Datum<number>;
