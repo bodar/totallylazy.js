@@ -14,8 +14,9 @@ import {runningInNode} from "../../src/node";
 import {infer, prefer} from "../../src/parsing";
 import NumberFormatPart = Intl.NumberFormatPart;
 import {Currency} from "../../src/money/currencies-def";
+import {get} from "../../src/functions";
 
-export const numberLocales = Intl.NumberFormat.supportedLocalesOf(locales);
+export const numberLocales = locales.flatMap(locale => get(() => Intl.NumberFormat.supportedLocalesOf(locale), []));
 const amounts = [1234567.89, 156, 156.89, .1234, 0];
 
 describe("Money", function () {

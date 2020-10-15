@@ -16,4 +16,5 @@ export const additionalSymbols: CurrencySymbol[] = [
     {iso: 'KES', symbol: 'KSh'},
     {iso: 'HKD', symbol: '$'},
     {iso: 'AUD', symbol: '$'},
+    {iso: 'USD', symbol: '$'},
 ];

@@ -29,7 +29,7 @@ describe("Months", function () {
         assert.deepEqual(months('ru', {year: "numeric", month: 'long', day: 'numeric'}),
             ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"]);
         assert.deepEqual(months('de', {year: 'numeric', month: 'short', day: '2-digit'}),
-            ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sept.", "Okt.", "Nov.", "Dez."]);
+            ["Jan", "Feb", "März", "Apr", "Mai", "Juni", "Juli", "Aug", "Sept", "Okt", "Nov", "Dez"]);
 
         assert.deepEqual(months('zh-CN'),
             ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]);
@@ -41,7 +41,7 @@ describe("Months", function () {
         assert.deepEqual(months('is-IS'),
             ["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]);
         assert.deepEqual(months('is-IS', 'short'),
-            ["jan.", "feb.", "mar.", "apr.", "maí", "jún.", "júl.", "ágú.", "sep.", "okt.", "nóv.", "des."]);
+            ["jan", "feb", "mar", "apr", "maí", "jún", "júl", "ágú", "sep", "okt", "nóv", "des"]);
 
         assert.deepEqual(months('cs-CZ', 'short'),
             ["led", "úno", "bře", "dub", "kvě", "čvn", "čvc", "srp", "zář", "říj", "lis", "pro"]);
@@ -71,20 +71,19 @@ describe("Months", function () {
         assert.deepEqual(ru.parse('январ'), 1);
         assert.deepEqual(ru.parse('янва'), 1);
         assert.deepEqual(ru.parse('янв'), 1);
-        assert.deepEqual(ru.parse('янв.'), 1);
         assert.deepEqual(ru.parse('фев'), 2);
 
         const de = Months.get('de');
-        assert.deepEqual(de.parse('Feb.'), 2);
+        assert.deepEqual(de.parse('Feb'), 2);
 
     });
 
     it('can get pattern', () => {
         const ru = Months.get('ru');
-        assert.deepEqual(ru.pattern, "[.абвгдеийклмнопрстуфьюя]{3,8}");
+        assert.deepEqual(ru.pattern, "[абвгдеийклмнопрстуфьюя]{3,8}");
         assert.deepEqual(new RegExp(ru.pattern).test('январь'), true);
         assert.deepEqual(new RegExp(ru.pattern).test('января'), true);
-        assert.deepEqual(new RegExp(ru.pattern).test('янв.'), true);
+        assert.deepEqual(new RegExp(ru.pattern).test('янв'), true);
     });
 
     it('can also parse numbers', () => {

@@ -69,9 +69,13 @@ export function months(locale: string, monthFormat: MonthFormat | Options = 'lon
 
         const dates = range(1, 12).map(i => date(2000, i, 1));
 
-        if (native) return new NativeDataExtractor(locale, options, dates, 'month').extract();
-        return new FromFormatStringMonthExtractor(locale, options, dates).extract();
+        if (native) return new NativeDataExtractor(locale, options, dates, 'month').extract().map(cleanValue);
+        return new FromFormatStringMonthExtractor(locale, options, dates).extract().map(cleanValue);
     })();
+}
+
+export function cleanValue(value:string):string {
+    return value.replace('.', '');
 }
 
 
@@ -116,8 +120,8 @@ export function weekdays(locale: string, weekdayFormat: WeekdayFormat | Options 
 
         const dates = range(1, 7).map(i => date(2000, 1, i + 2));
 
-        if (native) return new NativeDataExtractor(locale, options, dates, 'weekday').extract();
-        return new FromFormatStringWeekdayExtractor(locale, options, dates).extract();
+        if (native) return new NativeDataExtractor(locale, options, dates, 'weekday').extract().map(cleanValue);
+        return new FromFormatStringWeekdayExtractor(locale, options, dates).extract().map(cleanValue);
     })();
 }
 
