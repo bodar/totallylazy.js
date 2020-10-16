@@ -124,6 +124,10 @@ describe("Money", function () {
         assert.deepEqual(parse('1.234,56 EUR', 'de-DE'), money('EUR', 1234.56));
     });
 
+    it('should infer currency if preferred currency is undefined', function () {
+        assert.deepEqual(parser('en-AU', {strategy: prefer(undefined)}).parse('$ 2890.30'), money('AUD', 2890.30));
+    });
+
     it('can parse ambiguous real examples with a custom strategy', () => {
         assert.deepEqual(parser('en', {strategy: prefer('CNY')}).parse('¥ 2890.30'), money('CNY', 2890.30));
         assert.deepEqual(parser('en', {strategy: prefer('CNY')}).parse('GBP 2890.30'), money('GBP', 2890.30));

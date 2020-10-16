@@ -120,7 +120,10 @@ export function uniqueMatch<V>(prefixTree: PrefixTree<Datum<V>[]>, value: string
     return data[0];
 }
 
-export function prefer<V>(...values: V[]): MatchStrategy<V> {
+export function prefer<V>(value: undefined): undefined;
+export function prefer<V>(...values: V[]): MatchStrategy<V>;
+export function prefer<V>(...values: V[]): MatchStrategy<V> | undefined {
+    if(values.filter(Boolean).length === 0) return undefined;
     return (prefixTree: PrefixTree<Datum<V>[]>, value: string) => {
         const matches = prefixTree.lookup(value) || [];
         const data = unique(matches.map(d => d.value));
