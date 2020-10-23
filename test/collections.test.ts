@@ -1,5 +1,7 @@
 import {assert} from 'chai';
 import {array} from "../src/collections";
+import {range, sequence} from "../src/sequence";
+import {take} from "../src/transducers";
 
 export function assertSync<T>(actual: Iterable<T>, ...expected: T[]) {
     assert.deepEqual(array(actual), expected);
@@ -26,3 +28,13 @@ export async function assertAsyncThrows<T>(iterable: AsyncIterable<T>, error:any
         assert.deepEqual(e, error);
     }
 }
+
+describe("array", () => {
+    it("can iterate over something that is array like", () => {
+        const foo: ArrayLike<string> = {
+            length: 1,
+            [0] : 'bar',
+        }
+        assertSync(array(foo), 'bar');
+    });
+});

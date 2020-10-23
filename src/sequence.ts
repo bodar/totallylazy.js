@@ -1,6 +1,6 @@
 import {add, increment, subtract} from "./numbers";
 import {takeWhile, Transducer} from "./transducers";
-import {isAsyncIterable, isIterable} from "./collections";
+import {isArrayLike, isAsyncIterable, isIterable, iterable, IterableLike} from "./collections";
 
 export function* iterate<T>(generator: (t: T) => T, value: T): Iterable<T> {
     while (true) {
@@ -26,12 +26,12 @@ export function* range(start: number, end?: number, step: number = 1): Iterable<
     }
 }
 
-export function sequence<A>(a: Iterable<A>): Sequence<A>;
-export function sequence<A, B>(a: Iterable<A>, b: Transducer<A, B>): Sequence<B>;
-export function sequence<A, B, C>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>): Sequence<C>;
-export function sequence<A, B, C, D>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>): Sequence<D>;
-export function sequence<A, B, C, D, E>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>): Sequence<E>;
-export function sequence<A, B, C, D, E, F>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>, f: Transducer<E, F>): Sequence<F>;
+export function sequence<A>(a: IterableLike<A>): Sequence<A>;
+export function sequence<A, B>(a: IterableLike<A>, b: Transducer<A, B>): Sequence<B>;
+export function sequence<A, B, C>(a: IterableLike<A>, b: Transducer<A, B>, c: Transducer<B, C>): Sequence<C>;
+export function sequence<A, B, C, D>(a: IterableLike<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>): Sequence<D>;
+export function sequence<A, B, C, D, E>(a: IterableLike<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>): Sequence<E>;
+export function sequence<A, B, C, D, E, F>(a: IterableLike<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>, f: Transducer<E, F>): Sequence<F>;
 
 export function sequence<A>(a: AsyncIterable<A>): AsyncSequence<A>;
 export function sequence<A, B>(a: AsyncIterable<A>, b: Transducer<A, B>): AsyncSequence<B>;
@@ -40,8 +40,14 @@ export function sequence<A, B, C, D>(a: AsyncIterable<A>, b: Transducer<A, B>, c
 export function sequence<A, B, C, D, E>(a: AsyncIterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>): AsyncSequence<E>;
 export function sequence<A, B, C, D, E, F>(a: AsyncIterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>, f: Transducer<E, F>): AsyncSequence<F>;
 
-export function sequence(source: Iterable<any> | AsyncIterable<any>, ...transducers: Transducer<any, any>[]): Sequence<any> | AsyncIterable<any> {
-    return isIterable(source) ? new Sequence<any>(source, transducers) : new AsyncSequence<any>(source, transducers);
+export function sequence(source: IterableLike<any> | AsyncIterable<any>, ...transducers: Transducer<any, any>[]): Sequence<any> | AsyncIterable<any> {
+    if (isIterable(source)) {
+        return new Sequence<any>(source, transducers);
+    }
+    if(isArrayLike(source)) {
+        return new Sequence<any>(iterable(source), transducers);
+    }
+    return new AsyncSequence<any>(source, transducers);
 }
 
 export class Sequence<T> implements Iterable<T> {

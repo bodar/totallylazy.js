@@ -52,12 +52,24 @@ export function toIterable<T>(...t: T[]): Iterable<T> {
     return t;
 }
 
-export function array<A>(iterable: Iterable<A>): Array<A>
-export function array<A, B>(a: Iterable<A>, b: Transducer<A, B>): Array<B>;
-export function array<A, B, C>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>): Array<C>;
-export function array<A, B, C, D>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>): Array<D>;
-export function array<A, B, C, D, E>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>): Array<E>;
-export function array<A, B, C, D, E, F>(a: Iterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>, f: Transducer<E, F>): Array<F>;
+export function* iterable<T>(values: ArrayLike<T>): Iterable<T> {
+    for (let i = 0; i < values.length; i++) {
+        yield values[i];
+    }
+}
+
+export function isArrayLike(value:any): value is ArrayLike<any> {
+    return typeof value === "object" && typeof value['length'] === "number";
+}
+
+export type IterableLike<T> = Iterable<T> | ArrayLike<T>
+
+export function array<A>(iterable: IterableLike<A>): Array<A>
+export function array<A, B>(a: IterableLike<A>, b: Transducer<A, B>): Array<B>;
+export function array<A, B, C>(a: IterableLike<A>, b: Transducer<A, B>, c: Transducer<B, C>): Array<C>;
+export function array<A, B, C, D>(a: IterableLike<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>): Array<D>;
+export function array<A, B, C, D, E>(a: IterableLike<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>): Array<E>;
+export function array<A, B, C, D, E, F>(a: IterableLike<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>, f: Transducer<E, F>): Array<F>;
 
 export function array<A>(iterable: AsyncIterable<A>): Promise<Array<A>>
 export function array<A, B>(a: AsyncIterable<A>, b: Transducer<A, B>): Promise<Array<B>>;
@@ -65,8 +77,8 @@ export function array<A, B, C>(a: AsyncIterable<A>, b: Transducer<A, B>, c: Tran
 export function array<A, B, C, D>(a: AsyncIterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>): Promise<Array<D>>;
 export function array<A, B, C, D, E>(a: AsyncIterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>): Promise<Array<E>>;
 export function array<A, B, C, D, E, F>(a: AsyncIterable<A>, b: Transducer<A, B>, c: Transducer<B, C>, d: Transducer<C, D>, e: Transducer<D, E>, f: Transducer<E, F>): Promise<Array<F>>;
-export function array(source: Iterable<any> | AsyncIterable<any>, ...transducers: Transducer<any, any>[]): Array<any> | Promise<Array<any>> {
-    if (isIterable(source)) {
+export function array(source: IterableLike<any> | AsyncIterable<any>, ...transducers: Transducer<any, any>[]): Array<any> | Promise<Array<any>> {
+    if (isIterable(source) || isArrayLike(source)) {
         // @ts-ignore
         return toArray(sequence(source, ...transducers));
     }
@@ -91,9 +103,9 @@ export async function* toAsyncIterable<A>(promise: PromiseLike<A>): AsyncIterabl
 }
 
 export function by<A, K extends keyof A>(key: K, comparator?: Comparator<A[K]>): Comparator<A>;
-export function by<A, K>(mapper: Mapper<A,K>, comparator?: Comparator<K>): Comparator<A>;
-export function by(mapperOfKey: any , comparator: Comparator<any> = ascending): Comparator<any> {
-    if(typeof mapperOfKey === "function") return byFn(mapperOfKey, comparator);
+export function by<A, K>(mapper: Mapper<A, K>, comparator?: Comparator<K>): Comparator<A>;
+export function by(mapperOfKey: any, comparator: Comparator<any> = ascending): Comparator<any> {
+    if (typeof mapperOfKey === "function") return byFn(mapperOfKey, comparator);
     return byKey(mapperOfKey, comparator);
 }
 
@@ -103,7 +115,7 @@ function byKey<A, K extends keyof A>(key: K, comparator: Comparator<A[K]> = asce
     }
 }
 
-function byFn<A, K>(mapper: Mapper<A,K>, comparator: Comparator<K> = ascending): Comparator<A> {
+function byFn<A, K>(mapper: Mapper<A, K>, comparator: Comparator<K> = ascending): Comparator<A> {
     return (a: A, b: A) => {
         return comparator(mapper(a), mapper(b));
     }
