@@ -59,6 +59,26 @@ describe('cache', () => {
         foo.add(1,3);
         assert.equal(count, 2);
     });
+
+    it('caching is per instance not per class', () => {
+        class Foo {
+            public count = 0;
+            @cache add(a: number, b: number) {
+                this.count++;
+                return undefined;
+            }
+        }
+
+        const foo1 = new Foo();
+        const foo2 = new Foo();
+
+        foo1.add(1,2);
+        assert.equal(foo1.count, 1);
+        foo1.add(1,2);
+        assert.equal(foo1.count, 1);
+        foo2.add(1,2);
+        assert.equal(foo2.count, 1);
+    });
 });
 
 
