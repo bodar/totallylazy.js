@@ -264,7 +264,7 @@ export class Spaces {
 const allowedSeparators = `٬٫,.'’${Spaces.spaces}`;
 export const numberPattern = caching((locale: string) => {
     const d = digits(locale);
-    return `(?:[${d}]+[${allowedSeparators}])*[${d}]+`;
+    return `-?(?:[${d}]+[${allowedSeparators}])*[${d}]+`;
 });
 
 export function mapIgnoreError<A, B>(mapper: Mapper<A, B>) {
@@ -318,6 +318,7 @@ export class NumberParser implements Parser<number> {
         const numerals = Numerals.get(this.locale);
         return characters(value).map(c => {
             if (c === this.decimalSeparator) return '.';
+            if (c === '-') return '-';
             const number = get(() => numerals.parse(c));
             if (isNaN(number)) return '';
             return number.toString();

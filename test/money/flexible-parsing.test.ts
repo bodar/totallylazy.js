@@ -14,6 +14,10 @@ describe('NumberParser', () => {
         assert.equal(numberParser(',').parse('1’234,56'), 1234.56);
     });
 
+    it('can parse a negative number', function () {
+        assert.equal(numberParser('.').parse('-1.23'), -1.23);
+    });
+
     it('can parse all numbers in a string', function () {
         assert.deepEqual(numberParser(',').parseAll('Total 1 234,56 Tax 234,56'), [1234.56, 234.56]);
     });
@@ -52,6 +56,15 @@ describe('NumberParser', () => {
 describe("Flexible Parsing", function () {
     it('examples work', function () {
         assert.deepEqual(flexibleMoneyParser('en-US', {strategy: prefer('HKD')}).parseAll('$1015 /Night'), [money('HKD', 1015)]);
+    });
+
+    it('should handle negatives', function () {
+        assert.deepEqual(flexibleMoneyParser().parseAll('EUR -221,38'), [money('EUR', -221.38)]);
+        assert.deepEqual(flexibleMoneyParser().parseAll('EUR-241,38'), [money('EUR', -241.38)]);
+    });
+
+    it('does not treat a non adjacent hyphen as negative', function () {
+        assert.deepEqual(flexibleMoneyParser().parseAll('EUR - 221,38'), []);
     });
 
     it('can parse arabic numerals, separators and symbols', function () {
