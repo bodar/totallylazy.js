@@ -17,4 +17,5 @@ export const additionalSymbols: CurrencySymbol[] = [
     {iso: 'HKD', symbol: '$'},
     {iso: 'AUD', symbol: '$'},
     {iso: 'USD', symbol: '$'},
+    {iso: 'VND', symbol: 'đ'},
 ];
