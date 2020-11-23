@@ -34,6 +34,10 @@ export function key<A, K extends keyof A>(name: K): Key<A, K> {
     return Object.assign((a: A) => a[name], {name})
 }
 
+export function value<A, K extends keyof A>(name: K): Mapper<A, A[K]> {
+    return a => a[name];
+}
+
 export type Reducer<A, B> = (accumulator: B, value: A) => B;
 
 export function isIterable(instance: any): instance is Iterable<any> {
