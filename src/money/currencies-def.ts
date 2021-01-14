@@ -1,5 +1,4 @@
 import {PreferredCurrencies} from "./preferred-currencies";
-import {symbolFor} from "./money";
 
 export interface Currency {
     decimals: number;
