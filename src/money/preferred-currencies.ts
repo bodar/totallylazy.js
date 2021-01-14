@@ -1,5 +1,3 @@
-import {currencies} from "./currencies";
-
 export class PreferredCurrencies {
 
     static dollarCountries: { [country: string]: string } = {
@@ -35,6 +33,7 @@ export class PreferredCurrencies {
         'TW': 'TWD',
         'TT': 'TTD',
         'TV': 'AUD',
+        'US': 'USD',
         'VC': 'XCD',
         'ZW': 'USD',
     };
@@ -49,6 +48,7 @@ export class PreferredCurrencies {
     static poundCountries: { [country: string]: string } = {
         'EG': 'EGP',
         'FK': 'FKP',
+        'GB': 'GBP',
         'GI': 'GIP',
         'GG': 'GBP',
         'IM': 'GBP',
@@ -69,6 +69,7 @@ export class PreferredCurrencies {
 
     static yenCountries: { [country: string]: string } = {
         'CN': 'CNY',
+        'JP': 'JPY',
     };
 
     static yenSymbol(country?: string): string {

@@ -1,3 +1,6 @@
+import {PreferredCurrencies} from "./preferred-currencies";
+import {symbolFor} from "./money";
+
 export interface Currency {
     decimals: number;
     symbols: string[];
@@ -13,9 +16,9 @@ export interface CurrencySymbol {
 }
 
 export const additionalSymbols: CurrencySymbol[] = [
+    ...Object.entries(PreferredCurrencies.dollarCountries).map(([, iso]) => ({iso, symbol: '$'})),
+    ...Object.entries(PreferredCurrencies.poundCountries).map(([, iso]) => ({iso, symbol: '£'})),
+    ...Object.entries(PreferredCurrencies.yenCountries).flatMap(([, iso]) => ([{iso, symbol: '¥'}, {iso, symbol: '￥'}])),
     {iso: 'KES', symbol: 'KSh'},
-    {iso: 'HKD', symbol: '$'},
-    {iso: 'AUD', symbol: '$'},
-    {iso: 'USD', symbol: '$'},
     {iso: 'VND', symbol: 'đ'},
 ];

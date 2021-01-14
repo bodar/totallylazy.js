@@ -56,6 +56,8 @@ describe('NumberParser', () => {
 describe("Flexible Parsing", function () {
     it('examples work', function () {
         assert.deepEqual(flexibleMoneyParser('en-US', {strategy: prefer('HKD')}).parseAll('$1015 /Night'), [money('HKD', 1015)]);
+        assert.deepEqual(flexibleMoneyParser('en-SG').parseAll('SG$473'), [money('SGD', 473)]);
+        assert.deepEqual(flexibleMoneyParser('en-JP').parseAll('￥19,800'), [money('JPY', 19800)]);
     });
 
     it('should handle negatives', function () {
