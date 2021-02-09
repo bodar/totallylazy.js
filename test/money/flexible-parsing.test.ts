@@ -60,6 +60,24 @@ describe("Flexible Parsing", function () {
         assert.deepEqual(flexibleMoneyParser('en-JP').parseAll('￥19,800'), [money('JPY', 19800)]);
     });
 
+    it('correctly parses rupees', () => {
+        assert.deepEqual(flexibleParse('Rs20,825', 'en-IN', { strategy: prefer('INR') }), money('INR', 20825));
+        assert.deepEqual(flexibleParse('Rs20,825', 'en-IN'), money('INR', 20825));
+        assert.deepEqual(flexibleParse('Rs20,825'), money('INR', 20825));
+        assert.deepEqual(flexibleParse('Rs20,825', 'en-IN'), money('INR', 20825));
+        assert.deepEqual(flexibleParse('₹20,825'), money('INR', 20825));
+
+        assert.deepEqual(flexibleParse('Rs20,825', 'en-PK'), money('PKR', 20825));
+        assert.deepEqual(flexibleParse('Rs20,825', 'en', { strategy: prefer('LKR') }), money('LKR', 20825));
+        assert.deepEqual(flexibleParse('රු20,825'), money('LKR', 20825));
+        assert.deepEqual(flexibleParse('20,825ரூ'), money('LKR', 20825));
+        assert.deepEqual(flexibleParse('Rs20,825', 'en-ID'), money('IDR', 20825));
+        assert.deepEqual(flexibleParse('20,825Rp', 'en-ID'), money('IDR', 20825));
+        assert.deepEqual(flexibleParse('20,825रु', 'en'), money('NPR', 20825));
+        assert.deepEqual(flexibleParse('₨20,825', 'en', { strategy: prefer('NPR') }), money('NPR', 20825));
+        assert.deepEqual(flexibleParse('20,825Re', 'en'), money('NPR', 20825));
+    });
+
     it('should handle negatives', function () {
         assert.deepEqual(flexibleMoneyParser().parseAll('EUR -221,38'), [money('EUR', -221.38)]);
         assert.deepEqual(flexibleMoneyParser().parseAll('EUR-241,38'), [money('EUR', -241.38)]);

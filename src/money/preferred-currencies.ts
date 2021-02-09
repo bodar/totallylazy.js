@@ -89,12 +89,26 @@ export class PreferredCurrencies {
         return (country && PreferredCurrencies.kroneCountries[country]) || 'DKK';
     }
 
+    static rupeeCountries: { [country: string]: string } = {
+        'IN': 'INR',
+        'ID': 'IDR',
+        'MU': 'MUR',
+        'NP': 'NPR',
+        'PK': 'PKR',
+        'LK': 'LKR',
+    };
+
+    static rupeeSymbol(country?: string): string {
+        return (country && PreferredCurrencies.rupeeCountries[country]) || 'INR';
+    }
+
     static for(country?: string): string[] {
         return [
             PreferredCurrencies.dollarSymbol(country),
             PreferredCurrencies.poundSymbol(country),
             PreferredCurrencies.yenSymbol(country),
-            PreferredCurrencies.kroneSymbol(country)
+            PreferredCurrencies.kroneSymbol(country),
+            PreferredCurrencies.rupeeSymbol(country)
         ];
     }
 }
