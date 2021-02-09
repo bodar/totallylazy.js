@@ -261,7 +261,7 @@ export class Spaces {
     }
 }
 
-const allowedSeparators = `٬٫,.'’${Spaces.spaces}`;
+const allowedSeparators = `٬٫,.'’‘${Spaces.spaces}`;
 export const numberPattern = caching((locale: string) => {
     const d = digits(locale);
     return `-?(?:[${d}]+[${allowedSeparators}])*[${d}]+`;
