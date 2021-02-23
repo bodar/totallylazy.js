@@ -52,6 +52,7 @@ export class MappingParser<A, B> implements Parser<B> {
     }
 
     parseAll(value: string): B[] {
+        if(!value) return [];
         return array(this.parser.parseAll(value), flatMap(v => {
             try {
                 return [this.mapper(v)]

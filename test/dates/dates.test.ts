@@ -158,6 +158,10 @@ describe("dates", function () {
         }
     });
 
+    it('should not blow up with undefined input', () => {
+        assert.deepEqual(parser('en-GB', {month: "short", day: "numeric", year: "numeric"}).parseAll(undefined as any), []);
+    });
+
     it('should support a number of separators', function () {
         assertDates(parser('en-GB', {
             month: "short",
