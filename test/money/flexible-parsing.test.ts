@@ -58,6 +58,7 @@ describe("Flexible Parsing", function () {
         assert.deepEqual(flexibleMoneyParser('en-US', {strategy: prefer('HKD')}).parseAll('$1015 /Night'), [money('HKD', 1015)]);
         assert.deepEqual(flexibleMoneyParser('en-SG').parseAll('SG$473'), [money('SGD', 473)]);
         assert.deepEqual(flexibleMoneyParser('en-JP').parseAll('￥19,800'), [money('JPY', 19800)]);
+        assert.deepEqual(flexibleMoneyParser('pt-PT', {strategy: prefer('COP')}).parseAll('$ 811.569'), [money('COP', 811569)]);
     });
 
     it('supports another unicode apostrophe for separator', () => {

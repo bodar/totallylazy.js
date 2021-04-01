@@ -11,6 +11,8 @@ describe('PreferredCurrencies', () => {
         assert.deepEqual(PreferredCurrencies.dollarSymbol('BM'), 'BMD');
         assert.deepEqual(PreferredCurrencies.dollarSymbol('BN'), 'BND');
         assert.deepEqual(PreferredCurrencies.dollarSymbol('CA'), 'CAD');
+        assert.deepEqual(PreferredCurrencies.dollarSymbol('CO'), 'COP');
+        assert.deepEqual(PreferredCurrencies.dollarSymbol('CU'), 'CUP');
         assert.deepEqual(PreferredCurrencies.dollarSymbol('DM'), 'XCD');
         assert.deepEqual(PreferredCurrencies.dollarSymbol('EC'), 'USD');
         assert.deepEqual(PreferredCurrencies.dollarSymbol('FM'), 'USD');
@@ -25,6 +27,7 @@ describe('PreferredCurrencies', () => {
         assert.deepEqual(PreferredCurrencies.dollarSymbol('LC'), 'XCD');
         assert.deepEqual(PreferredCurrencies.dollarSymbol('LR'), 'LRD');
         assert.deepEqual(PreferredCurrencies.dollarSymbol('MH'), 'USD');
+        assert.deepEqual(PreferredCurrencies.dollarSymbol('MX'), 'MXN');
         assert.deepEqual(PreferredCurrencies.dollarSymbol('NA'), 'NAD');
         assert.deepEqual(PreferredCurrencies.dollarSymbol('NZ'), 'NZD');
         assert.deepEqual(PreferredCurrencies.dollarSymbol('SG'), 'SGD');

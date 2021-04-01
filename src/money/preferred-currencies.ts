@@ -2,6 +2,7 @@ export class PreferredCurrencies {
 
     static dollarCountries: { [country: string]: string } = {
         'AG': 'XCD',
+        'AR': 'ARS',
         'AU': 'AUD',
         'BS': 'BSD',
         'BB': 'BBD',
@@ -9,6 +10,9 @@ export class PreferredCurrencies {
         'BM': 'BMD',
         'BN': 'BND',
         'CA': 'CAD',
+        'CO': 'COP',
+        'CL': 'CLP',
+        'CU': 'CUP',
         'DM': 'XCD',
         'EC': 'USD',
         'FM': 'USD',
@@ -23,6 +27,7 @@ export class PreferredCurrencies {
         'LC': 'XCD',
         'LR': 'LRD',
         'MH': 'USD',
+        'MX': 'MXN',
         'NA': 'NAD',
         'NZ': 'NZD',
         'SG': 'SGD',
