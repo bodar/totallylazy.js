@@ -73,6 +73,16 @@ export interface Parser<T> {
     parseAll(value: string): T[];
 }
 
+export class IdentityParser implements Parser<string> {
+    parse(value: string): string {
+        return value;
+    }
+
+    parseAll(value: string): string[] {
+        return [value];
+    }
+}
+
 export interface Datum<V> {
     name: string;
     value: V;

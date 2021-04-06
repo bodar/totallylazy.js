@@ -31,4 +31,9 @@ export const additionalSymbols: CurrencySymbol[] = [
     {iso: 'NPR', symbol: 'रु'},
     {iso: 'NPR', symbol: '₨'},
     {iso: 'NPR', symbol: 'Re'},
+    {iso: 'MZN', symbol: 'MT'},
+    {iso: 'MZN', symbol: 'MTn'},
+    {iso: 'AED', symbol: 'د.إ'},
+    {iso: 'AED', symbol: 'DH'},
+    {iso: 'AED', symbol: 'Dhs'},
 ];

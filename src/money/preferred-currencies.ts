@@ -14,6 +14,7 @@ export class PreferredCurrencies {
         'CL': 'CLP',
         'CU': 'CUP',
         'DM': 'XCD',
+        'DO': 'DOP',
         'EC': 'USD',
         'FM': 'USD',
         'KY': 'KYD',
@@ -39,6 +40,7 @@ export class PreferredCurrencies {
         'TT': 'TTD',
         'TV': 'AUD',
         'US': 'USD',
+        'UY': 'UYU',
         'VC': 'XCD',
         'ZW': 'USD',
     };
