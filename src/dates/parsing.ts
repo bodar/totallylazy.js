@@ -162,7 +162,7 @@ export class InferYear implements DateFactory {
     }
 
     create(year: number | undefined, month: number, day: number): Date {
-        if(year && year >= 0 && year < 10) throw new Error('Illegal year');
+        if(year && year < 10) throw new Error('Illegal year');
         if(year && year >= 100 && year < 1000) throw new Error('Illegal year');
         if(year && year >= 1000) return date(year, month, day);
 
@@ -183,11 +183,9 @@ export class InferYear implements DateFactory {
     }
 
     private calculateYear(year: number | undefined) {
-        if (typeof year === 'undefined') {
-            return this.date.getUTCFullYear();
-        }
+        if (typeof year === 'undefined') return this.date.getUTCFullYear();
         const century = Math.floor(this.date.getUTCFullYear() / 100) * 100;
-        return year + century
+        return year + century;
     }
 }
 

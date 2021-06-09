@@ -62,7 +62,7 @@ export const options: Options[] = [
 ];
 
 describe('InferYear', () => {
-    it('allows a 4 digit year to pass through un changed', function () {
+    it('allows a 4 digit year to pass through unchanged', function () {
         const now = date(2000, 1, 1);
         const option: Options = {day: "2-digit", month: "short", year: 'numeric', factory: InferYear.after(now)};
         assertParse('en-GB', '1 Mar 2034', date(2034, 3, 1), option);
@@ -70,9 +70,10 @@ describe('InferYear', () => {
         assertParse('en-GB', '1 Jan 2021', date(2021, 1, 1), option);
     });
 
-    it('throws on 1 or 3 digit years', function () {
+    it('throws on invalid years', function () {
         const now = date(2000, 1, 1);
         const factory = InferYear.after(now);
+        assert.throws(() => factory.create(-1,1,1));
         assert.throws(() => factory.create(1,1,1));
         assert.throws(() => factory.create(123,1,1));
     });
