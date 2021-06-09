@@ -1,6 +1,7 @@
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
 import {
+    InferYear,
     date,
     Days,
     format,
@@ -60,17 +61,75 @@ export const options: Options[] = [
     {day: 'numeric', year: 'numeric', month: 'short', weekday: 'short'},
 ];
 
+describe('InferYear', () => {
+    it('allows a 4 digit year to pass through un changed', function () {
+        const now = date(2000, 1, 1);
+        const option: Options = {day: "2-digit", month: "short", year: 'numeric', factory: InferYear.after(now)};
+        assertParse('en-GB', '1 Mar 2034', date(2034, 3, 1), option);
+        assertParse('en-GB', '1 Jan 1998', date(1998, 1, 1), option);
+        assertParse('en-GB', '1 Jan 2021', date(2021, 1, 1), option);
+    });
+
+    it('throws on 1 or 3 digit years', function () {
+        const now = date(2000, 1, 1);
+        const factory = InferYear.after(now);
+        assert.throws(() => factory.create(1,1,1));
+        assert.throws(() => factory.create(123,1,1));
+    });
+
+    describe('before examples', () => {
+        it('assumes a date with no year is before the date passed into ', function () {
+            const now = date(2000, 1, 1);
+            const option: Options = {day: "2-digit", month: "short", factory: InferYear.before(now)};
+            assertParse('en-GB', '1 Mar', date(1999, 3, 1), option);
+            assertParse('en-GB', '1 Jan', date(1999, 1, 1), option);
+            assertParse('en-GB', '31 Dec', date(1999, 12, 31), option);
+        });
+
+        it('assumes a date with 2 digit year is before the date passed into ', function () {
+            const now = date(2000, 1, 1);
+            const option: Options = {day: "2-digit", month: "short", year: '2-digit', factory: InferYear.before(now)};
+            assertParse('en-GB', '1 Mar 99', date(1999, 3, 1), option);
+            assertParse('en-GB', '1 Jan 99', date(1999, 1, 1), option);
+            assertParse('en-GB', '1 Jan 00', date(1900, 1, 1), option);
+            assertParse('en-GB', '31 Dec 99', date(1999, 12, 31), option);
+            assertParse('en-GB', '31 Dec 00', date(1900, 12, 31), option);
+        });
+    });
+
+    describe('after examples', () => {
+        it('assumes a date with no year is after the date passed into ', function () {
+            const now = date(2000, 1, 1);
+            const option: Options = {day: "2-digit", month: "short", factory: InferYear.after(now)};
+            assertParse('en-GB', '1 Mar', date(2000, 3, 1), option);
+            assertParse('en-GB', '1 Jan', date(2001, 1, 1), option);
+            assertParse('en-GB', '31 Dec', date(2000, 12, 31), option);
+        });
+
+        it('assumes a date with 2 digit year is after the date passed into ', function () {
+            const now = date(2000, 1, 1);
+            const option: Options = {day: "2-digit", month: "short", year: '2-digit', factory: InferYear.after(now)};
+            assertParse('en-GB', '1 Mar 99', date(2099, 3, 1), option);
+            assertParse('en-GB', '1 Jan 99', date(2099, 1, 1), option);
+            assertParse('en-GB', '1 Jan 00', date(2100, 1, 1), option);
+            assertParse('en-GB', '31 Dec 99', date(2099, 12, 31), option);
+            assertParse('en-GB', '31 Dec 00', date(2000, 12, 31), option);
+        });
+    });
+});
+
 describe('Pivot', () => {
     it('when converting 2 digit years use the pivotYear to correctly wrap around', function () {
         assert.equal(Pivot.on(2070).create(0, 1, 2).toISOString(), date(2000, 1, 2).toISOString());
         assert.equal(Pivot.on(2070).create(20, 1, 2).toISOString(), date(2020, 1, 2).toISOString());
-        assert.equal(Pivot.on(2070).create(70, 1, 2).toISOString(), date(2070, 1, 2).toISOString());
+        assert.equal(Pivot.on(2070).create(70, 1, 2).toISOString(), date(1970, 1, 2).toISOString());
+        assert.equal(Pivot.on(2070).create(70, 1, 1).toISOString(), date(1970, 1, 1).toISOString());
         assert.equal(Pivot.on(2070).create(71, 1, 2).toISOString(), date(1971, 1, 2).toISOString());
 
-        assert.equal(Pivot.on(2000).create(0, 1, 2).toISOString(), date(2000, 1, 2).toISOString());
-        assert.equal(Pivot.on(2000).create(20, 1, 2).toISOString(), date(1920, 1, 2).toISOString());
-        assert.equal(Pivot.on(2000).create(70, 1, 2).toISOString(), date(1970, 1, 2).toISOString());
-        assert.equal(Pivot.on(2000).create(71, 1, 2).toISOString(), date(1971, 1, 2).toISOString());
+        assert.equal(Pivot.on(2001).create(0, 1, 2).toISOString(), date(2000, 1, 2).toISOString());
+        assert.equal(Pivot.on(2001).create(20, 1, 2).toISOString(), date(1920, 1, 2).toISOString());
+        assert.equal(Pivot.on(2001).create(70, 1, 2).toISOString(), date(1970, 1, 2).toISOString());
+        assert.equal(Pivot.on(2001).create(71, 1, 2).toISOString(), date(1971, 1, 2).toISOString());
     });
 
     it('if we pass a 4 digit year in, use it', function () {
@@ -78,7 +137,7 @@ describe('Pivot', () => {
     });
 
     it('can parse 2 digit years', function () {
-        const factory = Pivot.sliding(50, new StoppedClock(date(2000, 1, 2)));
+        const factory = Pivot.sliding(new StoppedClock(date(2000, 1, 2)));
         assertParse('en-GB', '31 Jan 19', date(2019, 1, 31), {
             day: "2-digit",
             month: "short",
@@ -115,7 +174,7 @@ describe('SmartDate and Pivot', () => {
         const option: Options = {day: "2-digit", month: "short", factory: new SmartDate(new StoppedClock(now))};
         assertParse('en-GB', '1 Mar', date(2000, 3, 1), option);
         assertParse('en-GB', '1 Jan', date(2001, 1, 1), option);
-        assertParse('en-GB', '3 Feb', date(2000, 2, 3), option);
+        assertParse('en-GB', '4 Feb', date(2000, 2, 4), option);
     });
 
     it('can parse dates with no years using SmartDate factory and a format string', function () {
