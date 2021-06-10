@@ -145,7 +145,10 @@ export enum InferDirection {
 }
 
 export class InferYear implements DateFactory {
-    private constructor(private date: Date, private direction: InferDirection) {
+    private readonly date: Date;
+
+    private constructor(date: Date, private direction: InferDirection) {
+        this.date = Days.startOf(date);
     }
 
     static before(date: Date): DateFactory {
@@ -214,7 +217,7 @@ export class SmartDate implements DateFactory {
 
     create(year: number | undefined, month: number, day: number): Date {
         if (typeof year === "undefined") {
-            return InferYear.after(Days.startOf(this.clock.now())).create(year, month, day);
+            return InferYear.after(this.clock.now()).create(year, month, day);
         }
         return InferYear.sliding(this.clock).create(year, month, day);
     }
