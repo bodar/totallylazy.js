@@ -22,8 +22,8 @@ export class Months extends DatumLookup<number> {
         return isNaN(number) ? super.parse(cleanValue(value)) : number;
     }
 
-    get characters(): string[] {
-        return [...super.characters, '.'];
+    get pattern(): string {
+        return super.pattern + '[.]?';
     }
 
     static formats: Options[] = [
@@ -91,6 +91,15 @@ export class Weekdays extends DatumLookup<number> {
         {year: 'numeric', month: "numeric", day: 'numeric', weekday: 'long'},
         {year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short'}
     ];
+
+    parse(value: string): number {
+        return super.parse(cleanValue(value));
+    }
+
+    get pattern(): string {
+        return super.pattern + '[.]?';
+    }
+
     static cache: { [key: string]: Weekdays } = {};
 
     static get(locale: string, additionalData: Weekday[] = []): Weekdays {
@@ -124,8 +133,8 @@ export function weekdays(locale: string, weekdayFormat: WeekdayFormat | Options 
 
         const dates = range(1, 7).map(i => date(2000, 1, i + 2));
 
-        if (native) return new NativeDataExtractor(locale, options, dates, 'weekday').extract();
-        return new FromFormatStringWeekdayExtractor(locale, options, dates).extract();
+        if (native) return new NativeDataExtractor(locale, options, dates, 'weekday').extract().map(cleanValue);
+        return new FromFormatStringWeekdayExtractor(locale, options, dates).extract().map(cleanValue);
     })();
 }
 

@@ -24,6 +24,7 @@ export class Formatters {
     @cache
     static create(locale: string , options: string | Options = defaultOptions): DateTimeFormat {
         if (typeof options === "string") return new SimpleFormat(locale, options);
+        if (typeof options.format === "string") return new SimpleFormat(locale, options.format);
         return new ImprovedDateTimeFormat(locale, options);
     }
 

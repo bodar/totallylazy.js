@@ -303,6 +303,11 @@ describe("dates", function () {
         }
     });
 
+    it('can handle spanish dates', function () {
+        assertFormat('es', date(2021, 7, 15), {format: 'EEE, dd MMM yyyy'}   , 'jue., 15 jul. 2021');
+        assertParse('es', 'jue, 15 jul 2021', date(2021, 7, 15), {format: 'EEE, dd MMM yyyy'});
+    });
+
     it('can handle arabic dates', function () {
         assertFormat('ar-EG', date(2019, 1, 25), {
             day: 'numeric', year: 'numeric', month: 'short', weekday: "short"

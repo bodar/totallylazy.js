@@ -167,7 +167,7 @@ export class OrParser<T> implements Parser<T> {
             } catch (ignore) {
             }
         }
-        throw new Error("Unable to value: " + value);
+        throw new Error(`Unable to parse value: ${value}`);
     }
 
     parseAll(value: string): T[] {
