@@ -81,7 +81,7 @@ describe("Months", function () {
 
     it('can get pattern', () => {
         const ru = Months.get('ru');
-        assert.deepEqual(ru.pattern, "[абвгдеийклмнопрстуфьюя]{3,8}[.]?");
+        assert.deepEqual(ru.pattern, "[абвгдеийклмнопрстуфьюя]{3,8}");
         assert.deepEqual(new RegExp(ru.pattern).test('январь'), true);
         assert.deepEqual(new RegExp(ru.pattern).test('января'), true);
         assert.deepEqual(new RegExp(ru.pattern).test('янв.'), true);
@@ -125,13 +125,13 @@ describe("Weekdays", function () {
 
     it('can get pattern', () => {
         const ru = Weekdays.get('ru');
-        assert.deepEqual(ru.pattern, '[абвгдеиклнопрстуцчья]{2,11}[.]?');
+        assert.deepEqual(ru.pattern, '[абвгдеиклнопрстуцчья]{2,11}');
         assert.deepEqual(new RegExp(ru.pattern).test('понедельник'), true);
     });
 
     it('pattern does length does not include dot', () => {
         const es = Weekdays.get('es');
-        assert.deepEqual(es.pattern, '[abcdegijlmnorstuváé]{3,9}[.]?');
+        assert.deepEqual(es.pattern, '[abcdegijlmnorstuváé]{3,9}');
         assert.deepEqual(new RegExp(es.pattern).test('jue.'), true);
         assert.deepEqual(new RegExp(es.pattern).test('jue'), true);
     });
@@ -146,7 +146,7 @@ describe("Weekdays", function () {
         const containsLeadingRtlMarker = "‎Jan";
         assert.equal(containsLeadingRtlMarker.length, 4);
         const weekdays = new Weekdays([{name:containsLeadingRtlMarker, value: 1}]);
-        assert.deepEqual(weekdays.pattern, '[Jan]{3,3}[.]?');
+        assert.deepEqual(weekdays.pattern, '[Jan]{3,3}');
         assert.deepEqual(new RegExp(weekdays.pattern).test(containsLeadingRtlMarker), true);
     });
 });

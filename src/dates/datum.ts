@@ -22,10 +22,6 @@ export class Months extends DatumLookup<number> {
         return isNaN(number) ? super.parse(cleanValue(value)) : number;
     }
 
-    get pattern(): string {
-        return super.pattern + '[.]?';
-    }
-
     static formats: Options[] = [
         {month: "long"}, {month: "short"},
         {year: 'numeric', month: "long", day: 'numeric'},
@@ -94,10 +90,6 @@ export class Weekdays extends DatumLookup<number> {
 
     parse(value: string): number {
         return super.parse(cleanValue(value));
-    }
-
-    get pattern(): string {
-        return super.pattern + '[.]?';
     }
 
     static cache: { [key: string]: Weekdays } = {};
