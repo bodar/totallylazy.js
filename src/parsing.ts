@@ -264,9 +264,11 @@ export class Numerals extends DatumLookup<number> {
 export const numberFormatter = caching((locale: string) => new Intl.NumberFormat(locale, {useGrouping: false}));
 
 
-export function digits(locale: string): string {
-    return `\\d${Numerals.get(locale).characters.join('')}`;
-}
+export const digits = caching((locale: string) => {
+    const characters = Numerals.get(locale).characters.join('');
+    if (characters === '0123456789') return '\\d';
+    return `\\d${characters}`;
+});
 
 export class Spaces {
     static codes: string[] = [32, 160, 8239].map(code => String.fromCharCode(code));

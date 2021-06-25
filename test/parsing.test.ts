@@ -42,6 +42,7 @@ describe('Numerals', () => {
 
 describe('digits', () => {
     it('works', function () {
-        assert.equal(digits('fr'), '\\d0123456789')
+        assert.equal(digits('fr'), '\\d')
+        assert.equal(digits('ar-EG'), '\\d٠١٢٣٤٥٦٧٨٩')
     });
 })
