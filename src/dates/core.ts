@@ -48,6 +48,7 @@ export interface Options {
     weekday?: WeekdayFormat;
     separators?: string;
     format?: Format;
+    strict?: boolean;
     factory?: DateFactory;
 }
 

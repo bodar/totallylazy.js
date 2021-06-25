@@ -3,8 +3,8 @@ import {unique} from "../arrays";
 import {characters, isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
 import {date, defaultOptions, Format, formatData, hasNativeToParts, Months, Options, Weekdays,} from "./index";
 import {
-    atBoundaryOnly,
-    digits,
+    atBoundaryOnly, boundaryDelimiters,
+    digits, extraDelimiters,
     mappingParser,
     namedRegexParser,
     numberParser,
@@ -33,7 +33,7 @@ export class RegexBuilder {
     @cache
     static create(locale: string, options: string | Options = defaultOptions, native = hasNativeToParts): RegexBuilder {
         if (typeof options == 'string') return formatBuilder(locale, options);
-        if (typeof options.format == 'string') return formatBuilder(locale, options.format);
+        if (typeof options.format == 'string') return formatBuilder(locale, options.format, options.strict);
 
         return new RegexBuilder(locale, options, formatData(new Date(), locale, options, native));
     }
@@ -50,7 +50,7 @@ export class RegexBuilder {
                 case "weekday":
                     return `(?<weekday>${Weekdays.get(this.locale).pattern.toLocaleLowerCase(this.locale)})`;
                 default: {
-                    const chars = unique(characters(this.addExtraLiterals(part))).join('').replace(' ', '\\s');
+                    const chars = unique(characters(escapeCharacters(this.addExtraLiterals(part)))).join('').replace(' ', '\\s');
                     const isLast = index === this.formatted.length - 1;
                     const quantifier = isLast ? '*' : '+';
                     return `[${chars}]${quantifier}?`;
@@ -67,8 +67,9 @@ export class RegexBuilder {
     }
 
     private addExtraLiterals(part: DateTimeFormatPart) {
-        if (this.options.format) return part.value;
-        return part.value + (this.options.separators || escapeCharacters(' ,.-/'));
+        if (this.options.strict) return part.value;
+        if (this.options.format) return part.value + (this.options.separators || boundaryDelimiters);
+        return part.value + (this.options.separators || (boundaryDelimiters + extraDelimiters));
     }
 
     private monthsPattern(): string {
@@ -276,8 +277,8 @@ export function optionsFrom(formatOrParts: Format | DateTimeFormatPart[]): Optio
     }, typeof formatOrParts === "string" ? {format: formatOrParts} : {} as any);
 }
 
-export function formatBuilder(locale: string, format: Format): RegexBuilder {
-    return new RegexBuilder(locale, optionsFrom(format), partsFrom(format))
+export function formatBuilder(locale: string, format: Format, strict: boolean = false): RegexBuilder {
+    return new RegexBuilder(locale, {...optionsFrom(format), strict}, partsFrom(format))
 }
 
 

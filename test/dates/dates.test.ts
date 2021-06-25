@@ -307,7 +307,6 @@ describe("dates", function () {
         assertParse('en', 'we. 27 se. 2019', date(2019, 9, 27), 'EEE. dd MMM. yyyy');
     });
 
-
     it('can handle arabic dates', function () {
         assertFormat('ar-EG', date(2019, 1, 25), {
             day: 'numeric', year: 'numeric', month: 'short', weekday: "short"
@@ -483,9 +482,13 @@ describe("dates", function () {
         assert.throws(() => parser('en', 'dd MMM yyyy').parse('10/Jan/1977'));
     });
 
-    it("format string is always explicit even with dots", () => {
-        assertParse('lv', "C 15 okt. 2020", date(2020, 10, 15), "dd MMM. yyyy");
+    it("an optional '.' is allowed after month with format strings as long as strict mode is off (default)", () => {
+        assertParse('lv', "C 15 okt. 2020", date(2020, 10, 15), "dd MMM yyyy");
         assertParse('lv', "C 15 okt 2020", date(2020, 10, 15), "dd MMM yyyy");
+    });
+
+    it("can force strict mode", () => {
+        assert.throws(() => parser('en', {format: 'dd MMM yyyy', strict: true}).parse('10 Jan. 1977'));
     });
 
     it("when using a format string do not switch month format from text to digits or vice versa", () => {

@@ -216,7 +216,8 @@ export class CachingParser<T> implements Parser<T> {
     }
 }
 
-const boundaryDelimiters = ',.';
+export const boundaryDelimiters = ',.';
+export const extraDelimiters = ' -/';
 
 const trailingDelimiters = new RegExp(`[${boundaryDelimiters}]$`);
 
