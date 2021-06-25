@@ -52,7 +52,7 @@ export class MappingParser<A, B> implements Parser<B> {
     }
 
     parseAll(value: string): B[] {
-        if(!value) return [];
+        if (!value) return [];
         return array(this.parser.parseAll(value), flatMap(v => {
             try {
                 return [this.mapper(v)]
@@ -106,15 +106,14 @@ export class DatumLookup<V> {
     }
 
     get pattern(): string {
-        const {min, max} = this.minMax;
-        return `[${this.characters.join('')}]{${min},${max}}`;
+        return `[${this.characters.join('')}]{1,${this.max}}`;
     }
 
-    get minMax(): { min: number, max: number } {
-        return this.data.reduce(({min, max}, l) => {
+    get max(): number {
+        return this.data.reduce((max, l) => {
             const length = characters(l.name).length;
-            return {min: Math.min(min, length), max: Math.max(max, length)};
-        }, {min: Number.MAX_VALUE, max: Number.MIN_VALUE});
+            return Math.max(max, length);
+        }, Number.MIN_VALUE);
     }
 
     get characters(): string[] {
@@ -134,7 +133,7 @@ export function uniqueMatch<V>(prefixTree: PrefixTree<Datum<V>[]>, value: string
 export function prefer<V>(value: undefined): undefined;
 export function prefer<V>(...values: V[]): MatchStrategy<V>;
 export function prefer<V>(...values: V[]): MatchStrategy<V> | undefined {
-    if(values.filter(Boolean).length === 0) return undefined;
+    if (values.filter(Boolean).length === 0) return undefined;
     return (prefixTree: PrefixTree<Datum<V>[]>, value: string) => {
         const matches = prefixTree.lookup(value) || [];
         const data = unique(matches.map(d => d.value));
@@ -217,9 +216,15 @@ export class CachingParser<T> implements Parser<T> {
     }
 }
 
-export const boundaryDelimiters = ',.';
+const boundaryDelimiters = ',.';
 
-export function atBoundaryOnly(pattern: string) {
+const trailingDelimiters = new RegExp(`[${boundaryDelimiters}]$`);
+
+export function cleanValue(value: string): string {
+    return value.replace(trailingDelimiters, '');
+}
+
+export function atBoundaryOnly(pattern: string): string {
     return `(?:^|\\s)${pattern}(?=[\\s${boundaryDelimiters}]|$)`;
 }
 

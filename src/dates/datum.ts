@@ -2,7 +2,7 @@ import {flatten} from "../arrays";
 import {date, MonthFormat, Options, WeekdayFormat} from "./core";
 import {Formatters, hasNativeToParts} from "./formatting";
 import {different, replace} from "../characters";
-import {Datum, DatumLookup, numberFormatter, Numerals} from "../parsing";
+import {cleanValue, Datum, DatumLookup, numberFormatter, Numerals} from "../parsing";
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import {get} from '../functions';
@@ -73,10 +73,6 @@ export function months(locale: string, monthFormat: MonthFormat | Options = 'lon
         if (native) return new NativeDataExtractor(locale, options, dates, 'month').extract().map(cleanValue);
         return new FromFormatStringMonthExtractor(locale, options, dates).extract().map(cleanValue);
     })();
-}
-
-export function cleanValue(value: string): string {
-    return value.replace(/\.$/, '');
 }
 
 export type Weekday = Datum<number>;

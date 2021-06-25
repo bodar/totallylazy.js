@@ -303,6 +303,11 @@ describe("dates", function () {
         }
     });
 
+    it('can parse even shorter months or weekdays if unique enough', function () {
+        assertParse('en', 'we. 27 se. 2019', date(2019, 9, 27), 'EEE. dd MMM. yyyy');
+    });
+
+
     it('can handle arabic dates', function () {
         assertFormat('ar-EG', date(2019, 1, 25), {
             day: 'numeric', year: 'numeric', month: 'short', weekday: "short"

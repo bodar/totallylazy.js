@@ -7,7 +7,7 @@ import {lazy} from "../lazy";
 import {
     AllowedDecimalSeparators,
     atBoundaryOnly,
-    boundaryDelimiters, Datum, DatumLookup,
+    cleanValue, Datum, DatumLookup,
     digits,
     infer,
     mappingParser,
@@ -172,7 +172,7 @@ export class CurrencySymbols extends DatumLookup<string> {
 
     constructor(data: Datum<string>[], private locale:string) {
         super(data.map(d => {
-            return ({name: d.name.replace(CurrencySymbols.extraDelimiters, ''), value: d.value});
+            return ({name: cleanValue(d.name), value: d.value});
         }), ascending);
     }
 
@@ -209,10 +209,8 @@ export class CurrencySymbols extends DatumLookup<string> {
             }))];
     }
 
-    static readonly extraDelimiters = new RegExp(`[${boundaryDelimiters}]$`);
-
     parse(value: string, strategy: MatchStrategy<string> = infer(this.locale)): string {
-        return super.parse(value.replace(CurrencySymbols.extraDelimiters, ''), strategy);
+        return super.parse(cleanValue(value), strategy);
     }
 }
 
