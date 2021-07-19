@@ -44,5 +44,9 @@ describe("array", () => {
     it('can convert an array of promises into an async iterable', async () => {
         await assertAsync(asyncIterable(a), 1,1,1,1);
     });
+
+    it('can force a sync array into an async iterable', async () => {
+        await assertAsync(asyncIterable([1,1,1,1]), 1,1,1,1);
+    });
 });
 
