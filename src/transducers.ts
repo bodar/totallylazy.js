@@ -245,7 +245,7 @@ export class TakeTransducer<A> implements Transducer<A, A> {
     }
 }
 
-export function take<A, B>(count: number): TakeTransducer<A> {
+export function take<A>(count: number): TakeTransducer<A> {
     return new TakeTransducer(count);
 }
 

@@ -62,6 +62,12 @@ export function* iterable<T>(values: ArrayLike<T>): Iterable<T> {
     }
 }
 
+export async function* asyncIterable<T>(values: Array<Promise<T>>): AsyncIterable<T> {
+    for (const t of values) {
+        yield t;
+    }
+}
+
 export function isArrayLike(value:any): value is ArrayLike<any> {
     return typeof value === "object" && typeof value['length'] === "number";
 }
