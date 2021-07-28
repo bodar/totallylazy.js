@@ -375,9 +375,8 @@ export function numberParser(decimalSeparatorOrLocale?: AllowedDecimalSeparators
     return numberParser(inferDecimalSeparator(decimalSeparatorOrLocale), decimalSeparatorOrLocale);
 }
 
-export function inferDecimalSeparator(locale: string): AllowedDecimalSeparators {
-    return get(() => decimalSeparator(new Intl.NumberFormat(locale).formatToParts(.1).find(e => e.type === 'decimal')!.value), '.');
-}
+export const inferDecimalSeparator = caching((locale: string) =>
+    get(() => decimalSeparator(new Intl.NumberFormat(locale).formatToParts(.1).find(e => e.type === 'decimal')!.value), '.'));
 
 export function numberOf(value: string): number {
     if (!value || value.trim().length === 0) return NaN;
