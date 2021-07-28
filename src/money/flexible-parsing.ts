@@ -1,9 +1,9 @@
 import {CurrencySymbols, decimalsFor, money, Money} from "./money";
 import {
     AllowedDecimalSeparators,
-    atBoundaryOnly,
+    atBoundaryOnly, decimalSeparator, infer, inferDecimalSeparator,
     mapIgnoreError,
-    MatchStrategy,
+    MatchStrategy, NumberParser,
     numberParser,
     numberPattern,
     Parser,
@@ -16,6 +16,7 @@ import {array, by, descending, single} from "../collections";
 import {unique} from "../arrays";
 import {cache} from "../cache";
 import {lazy} from "../lazy";
+import {get} from "../functions";
 
 export interface Options {
     strategy?: MatchStrategy<string>;
@@ -76,14 +77,6 @@ export function flexibleMoneyParser(locale: string = 'en', options?: Options) {
     return new FlexibleMoneyParser(locale, options);
 }
 
-function isDecimalSeparator(value: string): value is AllowedDecimalSeparators {
-    return value === '.' || value === ',' || value === '٫';
-}
-
-function decimalSeparator(value: string): AllowedDecimalSeparators {
-    if (isDecimalSeparator(value)) return value;
-    throw new Error(`Invalid decimal separator${value}`);
-}
 
 function flip(value: string): AllowedDecimalSeparators {
     return value === "." ? "," : ".";
@@ -112,4 +105,28 @@ export function findDecimalSeparator(isoCurrency: string, amount: string): Allow
     return decimalSeparator(lastSeparator);
 }
 
+export interface ImplicitMoneyParserOptions {
+    currency: string;
+    locale?: string;
+    strategy?: MatchStrategy<string>;
+}
 
+class ImplicitMoneyParser implements Parser<Money> {
+    constructor(private currency: string,
+                locale: string,
+                private parser = new NumberParser(amount => get(() => findDecimalSeparator(currency, amount), inferDecimalSeparator(locale)), locale)) {
+    }
+
+    parse(value: string): Money {
+        const amount = this.parser.parse(value);
+        return {currency: this.currency, amount};
+    }
+
+    parseAll(value: string): Money[] {
+        return this.parser.parseAll(value).map(amount => ({amount, currency: this.currency}));
+    }
+}
+
+export function implicitMoneyParser({currency, locale = 'en', strategy = infer(locale)}: ImplicitMoneyParserOptions): Parser<Money> {
+    return new ImplicitMoneyParser(CurrencySymbols.get(locale).parse(currency, strategy), locale);
+}

@@ -302,13 +302,23 @@ export function separatorsOf(amount: string): string[] {
     return array(separatorsPattern.exec(amount), map(([match]) => match.value));
 }
 
-export type AllowedDecimalSeparators = '.' | ',' | '٫'
+export type AllowedDecimalSeparators = '.' | ',' | '٫';
+
+export function isDecimalSeparator(value: any): value is AllowedDecimalSeparators {
+    return value && typeof value === "string" && value === '.' || value === ',' || value === '٫';
+}
+
+export function decimalSeparator(value: any): AllowedDecimalSeparators {
+    if (isDecimalSeparator(value)) return value;
+    throw new Error(`Invalid decimal separator${value}`);
+}
+
 
 export class NumberParser implements Parser<number> {
     readonly strictNumberPattern: RegExp;
     readonly globalNumberPattern: NamedRegExp;
 
-    constructor(private decimalSeparator: AllowedDecimalSeparators, private locale: string) {
+    constructor(private decimalSeparator: (amount:string) => AllowedDecimalSeparators, private locale: string) {
         this.strictNumberPattern = new RegExp(`^${numberPattern(locale)}$`);
         this.globalNumberPattern = NamedRegExp.create(`(?<number>${numberPattern(locale)})`, 'g');
     }
@@ -322,21 +332,21 @@ export class NumberParser implements Parser<number> {
         return array(this.globalNumberPattern.exec(value), mapIgnoreError(([match]) => this.parseSingle(match.value.trim())));
     }
 
-    private parseSingle(value: string): number {
+    private parseSingle(value: string, decimalSeparator = this.decimalSeparator(value)): number {
         const separators = separatorsOf(value);
-        if (separators.length === 0) return this.numberOf(value);
+        if (separators.length === 0) return this.numberOf(value, decimalSeparator);
         const lastSeparator = separators[separators.length - 1];
-        const groupSeparators = lastSeparator === this.decimalSeparator ? separators.slice(0, separators.length - 1) : separators;
-        if (groupSeparators.indexOf(this.decimalSeparator) !== -1) throw new Error(`Unable to parse '${value}'`);
+        const groupSeparators = lastSeparator === decimalSeparator ? separators.slice(0, separators.length - 1) : separators;
+        if (groupSeparators.indexOf(decimalSeparator) !== -1) throw new Error(`Unable to parse '${value}'`);
         if (unique(groupSeparators).length > 1) throw new Error(`Unable to parse '${value}'`);
 
-        return this.numberOf(value);
+        return this.numberOf(value, decimalSeparator);
     }
 
-    private convert(value: string): string {
+    private convert(value: string, decimalSeparator: AllowedDecimalSeparators): string {
         const numerals = Numerals.get(this.locale);
         return characters(value).map(c => {
-            if (c === this.decimalSeparator) return '.';
+            if (c === decimalSeparator) return '.';
             if (c === '-') return '-';
             const number = get(() => numerals.parse(c));
             if (isNaN(number)) return '';
@@ -344,8 +354,8 @@ export class NumberParser implements Parser<number> {
         }).join('');
     }
 
-    private numberOf(value: string) {
-        const text = this.convert(value);
+    private numberOf(value: string, decimalSeparator: AllowedDecimalSeparators) {
+        const text = this.convert(value, decimalSeparator);
         const result = numberOf(text);
         if (isNaN(result)) {
             throw new Error(`Unable to parse '${value}'`);
@@ -354,8 +364,19 @@ export class NumberParser implements Parser<number> {
     }
 }
 
-export function numberParser(decimalSeparator: AllowedDecimalSeparators, locale: string = 'en') {
-    return new NumberParser(decimalSeparator, locale);
+export type Locale = string;
+
+export function numberParser(): Parser<number>;
+export function numberParser(decimalSeparatorOrLocale: AllowedDecimalSeparators | Locale): Parser<number>;
+export function numberParser(decimalSeparator: AllowedDecimalSeparators, locale: Locale): Parser<number>;
+export function numberParser(decimalSeparatorOrLocale?: AllowedDecimalSeparators | Locale, locale: Locale = 'en'): Parser<number> {
+    if (!decimalSeparatorOrLocale) return numberParser(locale);
+    if (isDecimalSeparator(decimalSeparatorOrLocale)) return new NumberParser(ignore => decimalSeparatorOrLocale, locale);
+    return numberParser(inferDecimalSeparator(decimalSeparatorOrLocale), decimalSeparatorOrLocale);
+}
+
+export function inferDecimalSeparator(locale: string): AllowedDecimalSeparators {
+    return get(() => decimalSeparator(new Intl.NumberFormat(locale).formatToParts(.1).find(e => e.type === 'decimal')!.value), '.');
 }
 
 export function numberOf(value: string): number {

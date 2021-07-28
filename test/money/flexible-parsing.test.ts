@@ -1,10 +1,41 @@
 import {assert} from 'chai';
 import {money} from "../../src/money";
 import {NumberParser, numberParser, prefer} from "../../src/parsing";
-import {flexibleMoneyParser, flexibleParse} from "../../src/money/flexible-parsing";
+import {flexibleMoneyParser, flexibleParse, implicitMoneyParser} from "../../src/money/flexible-parsing";
+
+describe('ImplicitMoneyParser', () => {
+    it('can parse and convert a number with a currency provided else where', function () {
+        assert.deepEqual(implicitMoneyParser({currency: 'GBP'}).parse('1.23'), {amount: 1.23, currency: 'GBP'});
+        assert.deepEqual(implicitMoneyParser({currency: 'EUR', locale: 'de'}).parse('1,23'), {amount: 1.23, currency: 'EUR'});
+    });
+
+    it('can infer decimal place with currencies that are not ambiguous', function () {
+        assert.deepEqual(implicitMoneyParser({currency: 'EUR'}).parse('1.23'), {amount: 1.23, currency: 'EUR'});
+        assert.deepEqual(implicitMoneyParser({currency: 'EUR'}).parse('1,23'), {amount: 1.23, currency: 'EUR'});
+    });
+
+    it('with ambiguous currencies falls back to locale', function () {
+        assert.deepEqual(implicitMoneyParser({currency: 'BHD'}).parse('4,567'), {amount: 4567, currency: 'BHD'});
+        assert.deepEqual(implicitMoneyParser({currency: 'BHD', locale:'de'}).parse('4.567'), {amount: 4567, currency: 'BHD'});
+    });
+
+    it('even works with currency symbols', function () {
+        assert.deepEqual(implicitMoneyParser({currency: '£'}).parse('1.23'), {amount: 1.23, currency: 'GBP'});
+        assert.deepEqual(implicitMoneyParser({currency: '$', strategy: prefer('CAD')}).parse('1.23'), {amount: 1.23, currency: 'CAD'});
+    });
+});
 
 
 describe('NumberParser', () => {
+    it('can infer decimal separator from locale', function () {
+        assert.equal(numberParser('en').parse('1.23'), 1.23);
+        assert.equal(numberParser('de').parse('1,23'), 1.23);
+        assert.equal(numberParser('en').parse('1,234.56'), 1234.56);
+        assert.equal(numberParser('de').parse('1.234,56'), 1234.56);
+        assert.equal(numberParser('de').parse('1 234,56'), 1234.56);
+        assert.equal(numberParser('de').parse('1’234,56'), 1234.56);
+    });
+
     it('can parse a number', function () {
         assert.equal(numberParser('.').parse('1.23'), 1.23);
         assert.equal(numberParser(',').parse('1,23'), 1.23);
