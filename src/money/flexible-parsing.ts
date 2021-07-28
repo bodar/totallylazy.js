@@ -1,7 +1,7 @@
 import {CurrencySymbols, decimalsFor, money, Money} from "./money";
 import {
     AllowedDecimalSeparators,
-    atBoundaryOnly, decimalSeparator, infer, inferDecimalSeparator,
+    atBoundaryOnly, decimalSeparator, FailParser, infer, inferDecimalSeparator,
     mapIgnoreError,
     MatchStrategy, NumberParser,
     numberParser,
@@ -128,5 +128,6 @@ class ImplicitMoneyParser implements Parser<Money> {
 }
 
 export function implicitMoneyParser({currency, locale = 'en', strategy = infer(locale)}: ImplicitMoneyParserOptions): Parser<Money> {
+    if(!currency) return new FailParser();
     return new ImplicitMoneyParser(CurrencySymbols.get(locale).parse(currency, strategy), locale);
 }

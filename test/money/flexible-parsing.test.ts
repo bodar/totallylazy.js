@@ -1,7 +1,12 @@
 import {assert} from 'chai';
 import {money} from "../../src/money";
 import {NumberParser, numberParser, prefer} from "../../src/parsing";
-import {flexibleMoneyParser, flexibleParse, implicitMoneyParser} from "../../src/money/flexible-parsing";
+import {
+    flexibleMoneyParser,
+    flexibleParse,
+    implicitMoneyParser,
+    ImplicitMoneyParserOptions
+} from "../../src/money/flexible-parsing";
 
 describe('ImplicitMoneyParser', () => {
     it('can parse and convert a number with a currency provided else where', function () {
@@ -22,6 +27,11 @@ describe('ImplicitMoneyParser', () => {
     it('even works with currency symbols', function () {
         assert.deepEqual(implicitMoneyParser({currency: '£'}).parse('1.23'), {amount: 1.23, currency: 'GBP'});
         assert.deepEqual(implicitMoneyParser({currency: '$', strategy: prefer('CAD')}).parse('1.23'), {amount: 1.23, currency: 'CAD'});
+    });
+
+    it('does not blow up on empty currency', function () {
+        assert.doesNotThrow(() => implicitMoneyParser({currency: ''}));
+        assert.doesNotThrow(() => implicitMoneyParser({} as ImplicitMoneyParserOptions));
     });
 });
 

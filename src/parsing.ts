@@ -83,6 +83,16 @@ export class IdentityParser implements Parser<string> {
     }
 }
 
+export class FailParser implements Parser<any> {
+    parse(value: string): any {
+        throw new Error();
+    }
+
+    parseAll(value: string): any[] {
+        return [];
+    }
+}
+
 export interface Datum<V> {
     name: string;
     value: V;
