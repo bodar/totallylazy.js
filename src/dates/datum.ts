@@ -1,5 +1,5 @@
 import {flatten} from "../arrays";
-import {date, MonthFormat, Options, WeekdayFormat} from "./core";
+import {date, MonthFormat, Options, Weekday, WeekdayFormat} from "./core";
 import {Formatters, hasNativeToParts} from "./formatting";
 import {different, replace} from "../characters";
 import {cleanValue, Datum, DatumLookup, numberFormatter, Numerals} from "../parsing";
@@ -75,22 +75,22 @@ export function months(locale: string, monthFormat: MonthFormat | Options = 'lon
     })();
 }
 
-export type Weekday = Datum<number>;
+export type WeekdayDatum = Datum<Weekday>;
 
-export class Weekdays extends DatumLookup<number> {
+export class Weekdays extends DatumLookup<Weekday> {
     static formats: Options[] = [
         {weekday: "long"}, {weekday: "short"},
         {year: 'numeric', month: "numeric", day: 'numeric', weekday: 'long'},
         {year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short'}
     ];
 
-    parse(value: string): number {
+    parse(value: string): Weekday {
         return super.parse(cleanValue(value));
     }
 
     static cache: { [key: string]: Weekdays } = {};
 
-    static get(locale: string, additionalData: Weekday[] = []): Weekdays {
+    static get(locale: string, additionalData: WeekdayDatum[] = []): Weekdays {
         return Weekdays.cache[locale] = Weekdays.cache[locale] || Weekdays.create(locale, additionalData);
     }
 
@@ -98,15 +98,15 @@ export class Weekdays extends DatumLookup<number> {
         return Weekdays.cache[locale] = weekdays;
     }
 
-    static create(locale: string, additionalData: Weekday[] = []): Weekdays {
+    static create(locale: string, additionalData: WeekdayDatum[] = []): Weekdays {
         return new Weekdays([...Weekdays.generateData(locale), ...additionalData]);
     }
 
-    static generateData(locale: string): Weekday[] {
+    static generateData(locale: string): WeekdayDatum[] {
         return flatten(Weekdays.formats.map(f => Weekdays.dataFor(locale, f)));
     }
 
-    static dataFor(locale: string, options: Options, native = hasNativeToParts): Weekday[] {
+    static dataFor(locale: string, options: Options, native = hasNativeToParts): WeekdayDatum[] {
         return weekdays(locale, options, native).map((m, i) => ({name: m, value: i + 1}));
     }
 }

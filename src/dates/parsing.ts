@@ -151,6 +151,13 @@ export enum InferDirection {
     After = 1,
 }
 
+export class InferYearViaWeekday implements DateFactory {
+    create(parts: DateFactoryParts): Date {
+        throw new Error('Not implemented');
+    }
+
+}
+
 export class InferYear implements DateFactory {
     private readonly date: Date;
 

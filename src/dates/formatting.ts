@@ -6,7 +6,7 @@ import {
     Options,
     optionsFrom,
     partsFrom,
-    valueFromParts,
+    valueFromParts, Weekday,
     weekdays,
     Weekdays
 } from "./index";
@@ -118,7 +118,7 @@ export class DateParts {
                         private yearValue = 3333,
                         private monthValue = 11,
                         private dayValue = 20,
-                        private weekdayValue = 5 /*Friday*/,
+                        private weekdayValue = Weekday.Friday,
                         private numerals = Numerals.get(locale)) {
     }
 

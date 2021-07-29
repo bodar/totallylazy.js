@@ -1,4 +1,4 @@
-import {date, months, Months, Options, weekdays, Weekdays} from "../../src/dates";
+import {date, months, Months, Options, Weekday, weekdays, Weekdays} from "../../src/dates";
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
 import {assertParse, options, supported} from "./dates.test";
@@ -116,11 +116,22 @@ describe("Weekdays", function () {
         }
     });
 
+    it('works', () => {
+        const en = Weekdays.get('en-GB');
+        assert.deepEqual(en.parse('Monday'), Weekday.Monday);
+        assert.deepEqual(en.parse('Tuesday'), Weekday.Tuesday);
+        assert.deepEqual(en.parse('Wednesday'), Weekday.Wednesday);
+        assert.deepEqual(en.parse('Thursday'), Weekday.Thursday);
+        assert.deepEqual(en.parse('Friday'), Weekday.Friday);
+        assert.deepEqual(en.parse('Saturday'), Weekday.Saturday);
+        assert.deepEqual(en.parse('Sunday'), Weekday.Sunday);
+    });
+
     it('is flexible in parsing as long as there is a unique match', () => {
         const ru = Weekdays.get('ru');
-        assert.deepEqual(ru.parse('понедельник'), 1);
-        assert.deepEqual(ru.parse('понеде'), 1);
-        assert.deepEqual(ru.parse('пн'), 1);
+        assert.deepEqual(ru.parse('понедельник'), Weekday.Monday);
+        assert.deepEqual(ru.parse('понеде'), Weekday.Monday);
+        assert.deepEqual(ru.parse('пн'), Weekday.Monday);
     });
 
     it('can get pattern', () => {
@@ -139,8 +150,8 @@ describe("Weekdays", function () {
 
     it('ignores case', () => {
         const ru = Weekdays.get('ru');
-        assert.deepEqual(ru.parse('понедельник'.toLocaleLowerCase('ru')), 1);
-        assert.deepEqual(ru.parse('понедельник'.toLocaleUpperCase('ru')), 1);
+        assert.deepEqual(ru.parse('понедельник'.toLocaleLowerCase('ru')), Weekday.Monday);
+        assert.deepEqual(ru.parse('понедельник'.toLocaleUpperCase('ru')), Weekday.Monday);
     });
 
     it('length of pattern is determined by valid unicode characters - exclude RTL marker', () => {
