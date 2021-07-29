@@ -128,18 +128,21 @@ export function dateFrom(parts: DateTimeFormatPart[],
                          locale: string,
                          factory: DateFactory = new DefaultDateFactory()): Date {
     const parser = numberParser('.', locale);
-    const [dayText] = parts.filter(p => p.type === 'day');
+    const dayText = parts.find(p => p.type === 'day');
     if (!dayText) throw new Error("No day found");
     const day = parser.parse(dayText.value);
 
-    const [monthText] = parts.filter(p => p.type === 'month');
+    const monthText = parts.find(p => p.type === 'month');
     if (!monthText) throw new Error("No month found");
     const month = Months.get(locale).parse(monthText.value);
 
-    const [yearText] = parts.filter(p => p.type === 'year');
+    const yearText = parts.find(p => p.type === 'year');
     const year = yearText ? parser.parse(yearText.value) : undefined;
 
-    return factory.create({year, month, day});
+    const weekdayText = parts.find(p => p.type === 'weekday');
+    const weekday = weekdayText ? get(() => Weekdays.get(locale).parse(weekdayText.value)) : undefined;
+
+    return factory.create({year, month, day, weekday});
 }
 
 export interface DateFactoryParts {

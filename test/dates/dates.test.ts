@@ -68,9 +68,9 @@ export const options: Options[] = [
 ];
 
 describe('InferYearViaWeekday', () => {
-    const clock = new StoppedClock(date(2005, 1, 1));
 
     it('Can infer the closest year which matches the weekday provided in a 5 year range (the closest they can be before repeating)', function () {
+        const clock = new StoppedClock(date(2005, 1, 1));
         const factory = InferYearViaWeekday.create(clock);
         const start = 2002, end = 2007;
         const dates = array(iterate(d => Days.add(d, 1), date(start, 1, 1)), takeWhile(d => yearOf(d) <= end));
@@ -79,6 +79,14 @@ describe('InferYearViaWeekday', () => {
         for (const d of dates) {
             assert.deepEqual(factory.create({month: monthOf(d), day: dayOf(d), weekday: weekdayOf(d)}), d);
         }
+    });
+
+    it('examples', function () {
+        const now = date(2021, 7, 29);
+        const clock = new StoppedClock(now);
+        const option: Options = {format: "EEE dd MMMM", factory: InferYearViaWeekday.create(clock)};
+        assertParse('en', 'Mon 27 December', date(2021, 12, 27), option);
+        assertParse('en', 'Tue 04 January', date(2022, 1, 4), option);
     });
 });
 
