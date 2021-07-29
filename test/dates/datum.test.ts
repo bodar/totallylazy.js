@@ -1,4 +1,4 @@
-import {date, months, Months, Options, Weekday, weekdays, Weekdays} from "../../src/dates";
+import {date, Month, months, Months, Options, Weekday, weekdays, Weekdays} from "../../src/dates";
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
 import {assertParse, options, supported} from "./dates.test";
@@ -53,7 +53,7 @@ describe("Months", function () {
     });
 
     it("can add additional data to help parsing", () => {
-        Months.set('de', Months.create('de', [{name: 'Mrz', value: 3}]));
+        Months.set('de', Months.create('de', [{name: 'Mrz', value: Month.March}]));
         assertParse('de', "06 Mrz 2019", date(2019, 3, 6), "dd MMM yyyy");
     });
 
@@ -66,17 +66,17 @@ describe("Months", function () {
 
     it('is flexible in parsing as long as there is a unique match', () => {
         const ru = Months.get('ru');
-        assert.deepEqual(ru.parse('январь'), 1);
-        assert.deepEqual(ru.parse('января'), 1);
-        assert.deepEqual(ru.parse('январ'), 1);
-        assert.deepEqual(ru.parse('янва'), 1);
-        assert.deepEqual(ru.parse('янв'), 1);
-        assert.deepEqual(ru.parse('янв.'), 1);
-        assert.deepEqual(ru.parse('фев'), 2);
+        assert.deepEqual(ru.parse('январь'), Month.January);
+        assert.deepEqual(ru.parse('января'), Month.January);
+        assert.deepEqual(ru.parse('январ'), Month.January);
+        assert.deepEqual(ru.parse('янва'), Month.January);
+        assert.deepEqual(ru.parse('янв'), Month.January);
+        assert.deepEqual(ru.parse('янв.'), Month.January);
+        assert.deepEqual(ru.parse('фев'), Month.February);
 
         const de = Months.get('de');
-        assert.deepEqual(de.parse('Feb'), 2);
-        assert.deepEqual(de.parse('Feb.'), 2);
+        assert.deepEqual(de.parse('Feb'), Month.February);
+        assert.deepEqual(de.parse('Feb.'), Month.February);
     });
 
     it('can get pattern', () => {
@@ -90,20 +90,20 @@ describe("Months", function () {
 
     it('can also parse numbers', () => {
         const months = Months.get('ru');
-        assert.deepEqual(months.parse('1'), 1);
-        assert.deepEqual(months.parse('01'), 1);
+        assert.deepEqual(months.parse('1'), Month.January);
+        assert.deepEqual(months.parse('01'), Month.January);
     });
 
     it('ignores case', () => {
         const months = Months.get('ru');
-        assert.deepEqual(months.parse('январь'.toLocaleUpperCase('ru')), 1);
-        assert.deepEqual(months.parse('января'.toLocaleLowerCase('ru')), 1);
+        assert.deepEqual(months.parse('январь'.toLocaleUpperCase('ru')), Month.January);
+        assert.deepEqual(months.parse('января'.toLocaleLowerCase('ru')), Month.January);
     });
 
     it('can add additional data as needed', () => {
         const original = Months.get('de');
-        const months = Months.set('de', Months.create("de", [{name: 'Mrz', value: 3}]));
-        assert.deepEqual(months.parse('Mrz'), 3);
+        const months = Months.set('de', Months.create("de", [{name: 'Mrz', value: Month.March}]));
+        assert.deepEqual(months.parse('Mrz'), Month.March);
         Months.set('def', original);
     });
 });

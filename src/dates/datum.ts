@@ -1,5 +1,5 @@
 import {flatten} from "../arrays";
-import {date, MonthFormat, Options, Weekday, WeekdayFormat} from "./core";
+import {date, Month, MonthFormat, Options, Weekday, WeekdayFormat} from "./core";
 import {Formatters, hasNativeToParts} from "./formatting";
 import {different, replace} from "../characters";
 import {cleanValue, Datum, DatumLookup, numberFormatter, Numerals} from "../parsing";
@@ -7,17 +7,17 @@ import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import {get} from '../functions';
 
-export type Month = Datum<number>;
+export type MonthDatum = Datum<Month>;
 
-export class Months extends DatumLookup<number> {
+export class Months extends DatumLookup<Month> {
     private readonly numerals: Numerals
 
-    constructor(data: Datum<number>[], locale: string) {
+    constructor(data: Datum<Month>[], locale: string) {
         super(data);
         this.numerals = Numerals.get(locale);
     }
 
-    parse(value: string): number {
+    parse(value: string): Month {
         const number = get(() => this.numerals.parse(value));
         return isNaN(number) ? super.parse(cleanValue(value)) : number;
     }
@@ -30,7 +30,7 @@ export class Months extends DatumLookup<number> {
 
     static cache: { [key: string]: Months } = {};
 
-    static get(locale: string, additionalData: Month[] = []): Months {
+    static get(locale: string, additionalData: MonthDatum[] = []): Months {
         return Months.cache[locale] = Months.cache[locale] || Months.create(locale, additionalData);
     }
 
@@ -38,15 +38,15 @@ export class Months extends DatumLookup<number> {
         return Months.cache[locale] = months;
     }
 
-    static create(locale: string, additionalData: Month[] = []): Months {
+    static create(locale: string, additionalData: MonthDatum[] = []): Months {
         return new Months([...Months.generateData(locale), ...additionalData], locale);
     }
 
-    static generateData(locale: string): Month[] {
+    static generateData(locale: string): MonthDatum[] {
         return flatten(Months.formats.map(f => Months.dataFor(locale, f)));
     }
 
-    static dataFor(locale: string, options: Options, native = hasNativeToParts): Month[] {
+    static dataFor(locale: string, options: Options, native = hasNativeToParts): MonthDatum[] {
         return months(locale, options, native).map((m, i) => ({name: m, value: i + 1}));
     }
 }

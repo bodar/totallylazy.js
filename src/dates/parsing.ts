@@ -113,20 +113,20 @@ export class DateTimeFormatPartParser {
 
 export function dateFrom(parts: DateTimeFormatPart[], locale: string, options?: Options): Date {
     const parser = numberParser('.', locale);
-    const [day] = parts.filter(p => p.type === 'day');
-    if (!day) throw new Error("No day found");
-    const dd = parser.parse(day.value);
+    const [dayText] = parts.filter(p => p.type === 'day');
+    if (!dayText) throw new Error("No day found");
+    const day = parser.parse(dayText.value);
 
-    const [month] = parts.filter(p => p.type === 'month');
-    if (!month) throw new Error("No month found");
-    const MM = Months.get(locale).parse(month.value);
+    const [monthText] = parts.filter(p => p.type === 'month');
+    if (!monthText) throw new Error("No month found");
+    const month = Months.get(locale).parse(monthText.value);
 
-    const [year] = parts.filter(p => p.type === 'year');
-    const yyyy = year ? parser.parse(year.value) : undefined;
+    const [yearText] = parts.filter(p => p.type === 'year');
+    const year = yearText ? parser.parse(yearText.value) : undefined;
 
     // @ts-ignore
     const factory = get<DateFactory>(() => options.factory, new DefaultDateFactory());
-    return factory.create({year: yyyy, month: MM, day: dd});
+    return factory.create({year, month, day});
 }
 
 export interface DateFactoryParts {
