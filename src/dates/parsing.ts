@@ -101,7 +101,8 @@ export class DateParser {
     @cache
     static create(locale: string, options: string | Options = defaultOptions, native = hasNativeToParts) {
         const pattern = RegexBuilder.create(locale, options, native).pattern;
-        return mappingParser(DateTimeFormatPartParser.create(NamedRegExp.create(pattern), locale), p => dateFrom(p, locale, typeof options === "object" ? options : undefined));
+        return mappingParser(DateTimeFormatPartParser.create(NamedRegExp.create(pattern), locale),
+                p => dateFrom(p, locale, typeof options === "object" ? options.factory : undefined));
     }
 }
 
@@ -123,7 +124,9 @@ export class DateTimeFormatPartParser {
     }
 }
 
-export function dateFrom(parts: DateTimeFormatPart[], locale: string, options?: Options): Date {
+export function dateFrom(parts: DateTimeFormatPart[],
+                         locale: string,
+                         factory: DateFactory = new DefaultDateFactory()): Date {
     const parser = numberParser('.', locale);
     const [dayText] = parts.filter(p => p.type === 'day');
     if (!dayText) throw new Error("No day found");
@@ -136,8 +139,6 @@ export function dateFrom(parts: DateTimeFormatPart[], locale: string, options?: 
     const [yearText] = parts.filter(p => p.type === 'year');
     const year = yearText ? parser.parse(yearText.value) : undefined;
 
-    // @ts-ignore
-    const factory = get<DateFactory>(() => options.factory, new DefaultDateFactory());
     return factory.create({year, month, day});
 }
 
@@ -159,11 +160,30 @@ export class DefaultDateFactory implements DateFactory {
     }
 }
 
+class CompositeDateFactory implements DateFactory {
+    constructor(private factories: DateFactory[]) {
+    }
+
+    create(parts: DateFactoryParts): Date {
+        for (const factory of this.factories) {
+            try {
+                return factory.create(parts);
+            } catch (e) {
+            }
+        }
+        throw new Error(`Unable to create date for ${JSON.stringify(parts)}`);
+    }
+}
+
+export function compositeDateFactory(...factories: DateFactory[]): DateFactory {
+    return new CompositeDateFactory(factories)
+}
+
 export class InferYearViaWeekday implements DateFactory {
     private constructor(private clock: Clock) {
     }
 
-    static create(clock:Clock): DateFactory {
+    static create(clock:Clock = new SystemClock()): DateFactory {
         return new InferYearViaWeekday(clock);
     }
 
@@ -207,7 +227,7 @@ export class InferYear implements DateFactory {
 
     static sliding(clock: Clock = new SystemClock()) {
         const now = clock.now();
-        return InferYear.before(date(now.getUTCFullYear() + 50, 1, 1));
+        return InferYear.before(date(yearOf(now) + 50, 1, 1));
     }
 
     create({year, month, day}: DateFactoryParts): Date {
