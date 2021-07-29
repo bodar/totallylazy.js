@@ -126,15 +126,21 @@ export function dateFrom(parts: DateTimeFormatPart[], locale: string, options?: 
 
     // @ts-ignore
     const factory = get<DateFactory>(() => options.factory, new DefaultDateFactory());
-    return factory.create(yyyy, MM, dd);
+    return factory.create({year: yyyy, month: MM, day: dd});
+}
+
+export interface DateFactoryParts {
+    day: number;
+    month: number;
+    year?: number;
 }
 
 export interface DateFactory {
-    create(year: number | undefined, month: number, day: number): Date;
+    create(parts: DateFactoryParts): Date;
 }
 
 export class DefaultDateFactory implements DateFactory {
-    create(year: number | undefined, month: number, day: number): Date {
+    create({year, month, day}: DateFactoryParts): Date {
         if (typeof year === "undefined") throw new Error("No year found");
         return date(year, month, day);
     }
@@ -165,7 +171,7 @@ export class InferYear implements DateFactory {
         return InferYear.before(date(now.getUTCFullYear() + 50, 1, 1));
     }
 
-    create(year: number | undefined, month: number, day: number): Date {
+    create({year, month, day}: DateFactoryParts): Date {
         if(year && year < 10) throw new Error('Illegal year');
         if(year && year >= 100 && year < 1000) throw new Error('Illegal year');
         if(year && year >= 1000) return date(year, month, day);
@@ -179,7 +185,6 @@ export class InferYear implements DateFactory {
         const yearIncrement = this.calculateYearIncrement(year);
         candidate.setUTCFullYear(candidate.getUTCFullYear() + (yearIncrement * this.direction));
         return candidate
-
     }
 
     private calculateYearIncrement(year: number | undefined) {
@@ -216,11 +221,11 @@ export class SmartDate implements DateFactory {
     constructor(private clock: Clock = new SystemClock()) {
     }
 
-    create(year: number | undefined, month: number, day: number): Date {
-        if (typeof year === "undefined") {
-            return InferYear.after(this.clock.now()).create(year, month, day);
+    create(parts: DateFactoryParts): Date {
+        if (typeof parts.year === "undefined") {
+            return InferYear.after(this.clock.now()).create(parts);
         }
-        return InferYear.sliding(this.clock).create(year, month, day);
+        return InferYear.sliding(this.clock).create(parts);
     }
 }
 

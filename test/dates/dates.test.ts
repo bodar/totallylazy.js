@@ -73,9 +73,9 @@ describe('InferYear', () => {
     it('throws on invalid years', function () {
         const now = date(2000, 1, 1);
         const factory = InferYear.after(now);
-        assert.throws(() => factory.create(-1,1,1));
-        assert.throws(() => factory.create(1,1,1));
-        assert.throws(() => factory.create(123,1,1));
+        assert.throws(() => factory.create({year:-1,month:1,day:1}));
+        assert.throws(() => factory.create({year:1,month:1,day:1}));
+        assert.throws(() => factory.create({year:123,month:1,day:1}));
     });
 
     describe('before examples', () => {
@@ -121,20 +121,20 @@ describe('InferYear', () => {
 
 describe('Pivot', () => {
     it('when converting 2 digit years use the pivotYear to correctly wrap around', function () {
-        assert.equal(Pivot.on(2070).create(0, 1, 2).toISOString(), date(2000, 1, 2).toISOString());
-        assert.equal(Pivot.on(2070).create(20, 1, 2).toISOString(), date(2020, 1, 2).toISOString());
-        assert.equal(Pivot.on(2070).create(70, 1, 2).toISOString(), date(1970, 1, 2).toISOString());
-        assert.equal(Pivot.on(2070).create(70, 1, 1).toISOString(), date(1970, 1, 1).toISOString());
-        assert.equal(Pivot.on(2070).create(71, 1, 2).toISOString(), date(1971, 1, 2).toISOString());
+        assert.equal(Pivot.on(2070).create({year: 0, month: 1, day:2}).toISOString(), date(2000, 1, 2).toISOString());
+        assert.equal(Pivot.on(2070).create({year: 20, month: 1, day:2}).toISOString(), date(2020, 1, 2).toISOString());
+        assert.equal(Pivot.on(2070).create({year: 70, month: 1, day:1}).toISOString(), date(1970, 1, 1).toISOString());
+        assert.equal(Pivot.on(2070).create({year: 70, month: 1, day:2}).toISOString(), date(1970, 1, 2).toISOString());
+        assert.equal(Pivot.on(2070).create({year: 71, month: 1, day:2}).toISOString(), date(1971, 1, 2).toISOString());
 
-        assert.equal(Pivot.on(2001).create(0, 1, 2).toISOString(), date(2000, 1, 2).toISOString());
-        assert.equal(Pivot.on(2001).create(20, 1, 2).toISOString(), date(1920, 1, 2).toISOString());
-        assert.equal(Pivot.on(2001).create(70, 1, 2).toISOString(), date(1970, 1, 2).toISOString());
-        assert.equal(Pivot.on(2001).create(71, 1, 2).toISOString(), date(1971, 1, 2).toISOString());
+        assert.equal(Pivot.on(2001).create({year: 0, month: 1, day:2}).toISOString(), date(2000, 1, 2).toISOString());
+        assert.equal(Pivot.on(2001).create({year: 20, month: 1, day:2}).toISOString(), date(1920, 1, 2).toISOString());
+        assert.equal(Pivot.on(2001).create({year: 70, month: 1, day:2}).toISOString(), date(1970, 1, 2).toISOString());
+        assert.equal(Pivot.on(2001).create({year: 71, month: 1, day:2}).toISOString(), date(1971, 1, 2).toISOString());
     });
 
     it('if we pass a 4 digit year in, use it', function () {
-        assert.equal(Pivot.on(2070).create(1999, 1, 2).toISOString(), date(1999, 1, 2).toISOString());
+        assert.equal(Pivot.on(2070).create({year:1999, month:1, day:2}).toISOString(), date(1999, 1, 2).toISOString());
     });
 
     it('can parse 2 digit years', function () {
