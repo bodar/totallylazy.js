@@ -1,10 +1,21 @@
 import {lazy} from "../lazy";
 import {unique} from "../arrays";
 import {characters, isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
-import {date, defaultOptions, Format, formatData, hasNativeToParts, Months, Options, Weekdays,} from "./index";
+import {
+    date, dayOf,
+    defaultOptions,
+    Format,
+    formatData,
+    hasNativeToParts,
+    Month, monthOf,
+    Months,
+    Options,
+    Weekday, weekdayOf,
+    Weekdays, yearOf,
+} from "./index";
 import {
     atBoundaryOnly, boundaryDelimiters,
-    digits, extraDelimiters,
+    digits, extraDelimiters, mapIgnoreError,
     mappingParser,
     namedRegexParser,
     numberParser,
@@ -13,12 +24,13 @@ import {
     preProcess
 } from "../parsing";
 import {array} from "../collections";
-import {map} from "../transducers";
+import {flatMap, identity, map, zip} from "../transducers";
 import {cache} from "../cache";
 import {get} from "../functions";
 import {Clock, SystemClock} from "./clock";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
+import {range} from "../sequence";
 
 export function parse(value: string, locale: string, options?: string | Options, native = hasNativeToParts): Date {
     return parser(locale, options, native).parse(value);
@@ -131,8 +143,9 @@ export function dateFrom(parts: DateTimeFormatPart[], locale: string, options?: 
 
 export interface DateFactoryParts {
     day: number;
-    month: number;
+    month: Month;
     year?: number;
+    weekday?: Weekday;
 }
 
 export interface DateFactory {
@@ -146,16 +159,35 @@ export class DefaultDateFactory implements DateFactory {
     }
 }
 
+export class InferYearViaWeekday implements DateFactory {
+    private constructor(private clock: Clock) {
+    }
+
+    static create(clock:Clock): DateFactory {
+        return new InferYearViaWeekday(clock);
+    }
+
+    create({year, month, day, weekday}: DateFactoryParts): Date {
+        if (year) return date(year, month, day);
+        if (!weekday) throw new Error('No weekday provided');
+        const candidate = this.candidates(month, day).find(c => weekdayOf(c) === weekday);
+        if (candidate) return candidate;
+        throw new Error('No candidate date found that matches');
+    }
+
+    private candidates(month: Month, day: number): Date[] {
+        const now = Days.startOf(this.clock.now());
+        return array(
+            range(0, 5),
+            zip(range(-1, -5)),
+            flatMap(a => a),
+            mapIgnoreError(inc => date(yearOf(now) + inc, month, day)));
+    }
+}
+
 export enum InferDirection {
     Before = -1,
     After = 1,
-}
-
-export class InferYearViaWeekday implements DateFactory {
-    create(parts: DateFactoryParts): Date {
-        throw new Error('Not implemented');
-    }
-
 }
 
 export class InferYear implements DateFactory {
@@ -179,9 +211,9 @@ export class InferYear implements DateFactory {
     }
 
     create({year, month, day}: DateFactoryParts): Date {
-        if(year && year < 10) throw new Error('Illegal year');
-        if(year && year >= 100 && year < 1000) throw new Error('Illegal year');
-        if(year && year >= 1000) return date(year, month, day);
+        if (year && year < 10) throw new Error('Illegal year');
+        if (year && year >= 100 && year < 1000) throw new Error('Illegal year');
+        if (year && year >= 1000) return date(year, month, day);
 
         const calculatedYear = this.calculateYear(year);
         const candidate = date(calculatedYear, month, day);
@@ -195,7 +227,7 @@ export class InferYear implements DateFactory {
     }
 
     private calculateYearIncrement(year: number | undefined) {
-        return typeof year === 'undefined' ? 1 : 100 ;
+        return typeof year === 'undefined' ? 1 : 100;
     }
 
     private calculateYear(year: number | undefined) {
@@ -238,8 +270,24 @@ export class SmartDate implements DateFactory {
 
 
 export class Days {
+    static milliseconds = 24 * 60 * 60 * 1000;
+
     static startOf(value: Date) {
-        return date(value.getUTCFullYear(), value.getUTCMonth() + 1, value.getUTCDate());
+        return date(yearOf(value), monthOf(value), dayOf(value));
+    }
+
+    static add(date: Date, days: number) {
+        const newDate = new Date(date.getTime());
+        newDate.setUTCDate(date.getUTCDate() + days);
+        return newDate;
+    }
+
+    static subtract(date: Date, days: number) {
+        return Days.add(date, days * -1);
+    }
+
+    static between(a: Date, b: Date): number {
+        return Math.abs((a.getTime() - b.getTime()) / Days.milliseconds);
     }
 }
 

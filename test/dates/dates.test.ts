@@ -1,22 +1,28 @@
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
 import {
-    InferYear,
     date,
+    dayOf,
     Days,
     format,
     hasNativeToParts,
+    InferYear,
+    InferYearViaWeekday,
+    monthOf,
     Options,
     parse,
     parser,
     Pivot,
     SmartDate,
+    weekdayOf,
+    yearOf,
 } from "../../src/dates";
 import {StoppedClock} from "../../src/dates/clock";
-import {sequence} from "../../src/sequence";
-import {zip} from "../../src/transducers";
+import {iterate, sequence} from "../../src/sequence";
+import {takeWhile, zip} from "../../src/transducers";
 import {parsers} from "../../src/parsing";
 import {get} from "../../src/functions";
+import {array} from "../../src/collections";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);
@@ -60,6 +66,21 @@ export const options: Options[] = [
     {day: 'numeric', year: 'numeric', month: 'long', weekday: 'short'},
     {day: 'numeric', year: 'numeric', month: 'short', weekday: 'short'},
 ];
+
+describe('InferYearViaWeekday', () => {
+    const clock = new StoppedClock(date(2005, 1, 1));
+
+    it('Can infer the closest year which matches the weekday provided in a 5 year range (the closest they can be before repeating)', function () {
+        const factory = InferYearViaWeekday.create(clock);
+        const start = 2002, end = 2007;
+        const dates = array(iterate(d => Days.add(d, 1), date(start, 1, 1)), takeWhile(d => yearOf(d) <= end));
+        assert.equal(dates.length, 2191);
+
+        for (const d of dates) {
+            assert.deepEqual(factory.create({month: monthOf(d), day: dayOf(d), weekday: weekdayOf(d)}), d);
+        }
+    });
+});
 
 describe('InferYear', () => {
     it('allows a 4 digit year to pass through unchanged', function () {
