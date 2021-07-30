@@ -198,11 +198,13 @@ export class InferYearViaWeekday implements DateFactory {
         throw new Error('No candidate date found that matches');
     }
 
+    // Dates repeat every 5,6 or 11 years so we choose a 12 year range
+    // Then start with today's date (0) and alternate between the future (+1) and the past (-1)
     private candidates(month: Month, day: number): Date[] {
         const now = Days.startOf(this.clock.now());
         return array(
-            range(0, 5),
-            zip(range(-1, -5)),
+            range(0, -6),
+            zip(range(1, 6)),
             flatMap(a => a),
             mapIgnoreError(inc => date(yearOf(now) + inc, month, day)));
     }
