@@ -226,6 +226,7 @@ export function reduce<A, B>(reducer: Reducer<A, B>, seed:B): Transducer<A, B> {
 
 export class TakeTransducer<A> implements Transducer<A, A> {
     constructor(public count: number) {
+        if(typeof count === "undefined") throw new Error('Count can not be undefined');
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
@@ -251,6 +252,7 @@ export function take<A>(count: number): TakeTransducer<A> {
 
 export class DropTransducer<A> implements Transducer<A, A> {
     constructor(public count: number) {
+        if(typeof count === "undefined") throw new Error('Count can not be undefined');
     }
 
     async* async_(iterable: AsyncIterable<A>): AsyncIterable<A> {
