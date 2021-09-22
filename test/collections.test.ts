@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {array, asyncIterable} from "../src/collections";
+import {array, asyncIterable, toIterable} from "../src/collections";
 import {repeat} from "../src/sequence";
 import {filter, take, Transducer} from "../src/transducers";
 import {Predicate} from "../src/predicates";
@@ -46,7 +46,12 @@ describe("array", () => {
     });
 
     it('can force a sync array into an async iterable', async () => {
-        await assertAsync(asyncIterable([1,1,1,1]), 1,1,1,1);
+        await assertAsync(asyncIterable([1,1,Promise.resolve(1),1]), 1,1,1,1);
     });
+
+    it('can force a sync iterable into an async iterable', async () => {
+        await assertAsync(asyncIterable(toIterable<any>(1,1,Promise.resolve(1),1)), 1,1,1,1);
+    });
+
 });
 
