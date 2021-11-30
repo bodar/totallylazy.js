@@ -1,5 +1,6 @@
 import {Body, Chunk, Handler, Header, Headers, host, isBody, Request, request, Response, Server, Uri} from ".";
 import {createServer, IncomingMessage, request as NodeRequest, Server as NodeServer, ServerResponse} from 'http';
+import {AsyncIteratorHandler} from "../collections";
 
 export class ClientHandler implements Handler {
     handle(request: Request): Promise<Response> {
@@ -31,13 +32,13 @@ export class ClientHandler implements Handler {
     }
 }
 
-function headers(rawHeaders: string[]):Headers {
-    if(rawHeaders.length == 0) return {};
+function headers(rawHeaders: string[]): Headers {
+    if (rawHeaders.length == 0) return {};
     const [name, value, ...remainder] = rawHeaders;
-    return {[name]:value, ...headers(remainder)};
+    return {[name]: value, ...headers(remainder)};
 }
 
-export const adapter = (handler:Handler) => (nodeRequest: IncomingMessage, nodeResponse: ServerResponse) => {
+export const adapter = (handler: Handler) => (nodeRequest: IncomingMessage, nodeResponse: ServerResponse) => {
     const req = request(nodeRequest.method || "",
         nodeRequest.url || "",
         headers(nodeRequest.rawHeaders),
@@ -78,7 +79,7 @@ export class ServerHandler implements Server {
         this.server.listen(port);
         this.uri = new Promise<Uri>((resolve) => {
             server.on('listening', () => {
-                const address:string|any = server.address();
+                const address: string | any = server.address();
                 resolve(new Uri(`http://localhost:${typeof address === 'string' ? port : address.port}/`))
             })
         })
@@ -125,15 +126,10 @@ export class MessageBody implements Body {
 
     [Symbol.asyncIterator](): AsyncIterator<Chunk> {
         const iterator = new AsyncIteratorHandler<Chunk>();
-        this.message.on("data", chunk => {
-            iterator.handle({value: typeof chunk == 'string' ? stringChunk(chunk) : bufferChunk(chunk), done: false});
-        });
-        this.message.on("end", () => {
-            iterator.handle({value: null as any, done: true})
-        });
-        this.message.on("error", error => {
-            iterator.handle(error)
-        });
+        this.message.on("data", chunk =>
+            iterator.value(typeof chunk == 'string' ? stringChunk(chunk) : bufferChunk(chunk)));
+        this.message.on("end", () => iterator.close());
+        this.message.on("error", error => iterator.error(error));
         return iterator;
     }
 }
@@ -152,34 +148,4 @@ function bufferChunk(value: Buffer): Chunk {
     }
 }
 
-type StateHandler = [Function, Function];
-type IteratorState<T> = StateHandler | IteratorResult<T> | Error;
-
-function isStateHandler<T>(state: IteratorState<T>): state is StateHandler {
-    return Array.isArray(state);
-}
-
-function consume<T>(state: IteratorResult<T> | Error, [resolve, reject]: [Function, Function]) {
-    if (state instanceof Error) reject(state);
-    else resolve(state);
-}
-
-class AsyncIteratorHandler<T> implements AsyncIterator<T> {
-    private state: IteratorState<T>[] = [];
-
-    handle(newState: IteratorState<T>) {
-        const nextState = this.state.pop();
-        if (typeof nextState == 'undefined') return this.state.push(newState);
-        if (isStateHandler(newState) && !isStateHandler(nextState)) return consume(nextState, newState);
-        if (!isStateHandler(newState) && isStateHandler(nextState)) return consume(newState, nextState);
-        this.state.unshift(nextState);
-        this.state.push(newState);
-    }
-
-    next(): Promise<IteratorResult<T>> {
-        return new Promise<IteratorResult<T>>((resolve, reject) => {
-            this.handle([resolve, reject]);
-        });
-    }
-}
 

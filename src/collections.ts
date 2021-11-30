@@ -164,3 +164,57 @@ async function toSinglePromise<A>(iterable: AsyncIterable<A>): Promise<A> {
     throw new Error("Expected a single value");
 }
 
+
+type StateHandler = [Function, Function];
+type IteratorState<T> = IteratorResult<T> | Error;
+
+export class AsyncIteratorHandler<T> implements AsyncIterableIterator<T> {
+    private handlers: StateHandler[] = [];
+    private state: IteratorState<T>[] = [];
+
+    value(value: T) {
+        this.newState({value, done: false});
+    }
+
+    error(value: Error) {
+        this.newState(value);
+    }
+
+    close() {
+        this.newState({value: undefined, done: true});
+    }
+
+    [Symbol.asyncIterator](): AsyncIterableIterator<T> {
+        return this;
+    }
+
+    next(): Promise<IteratorResult<T>> {
+        return new Promise<IteratorResult<T>>((resolve, reject) => {
+            this.newHandler([resolve, reject]);
+        });
+    }
+
+    private newState(newState: IteratorState<T>) {
+        const handler = this.handlers.shift();
+        if (typeof handler === 'undefined') return this.state.push(newState);
+        const oldState = this.state.shift();
+        if (typeof oldState === 'undefined') return this.consume(newState, handler);
+        this.consume(oldState, handler);
+        this.newState(newState);
+    }
+
+    private newHandler(newHandler: StateHandler) {
+        const state = this.state.shift();
+        if (typeof state === 'undefined') return this.handlers.push(newHandler)
+        const oldHandler = this.handlers.shift();
+        if (typeof oldHandler === 'undefined') return this.consume(state, newHandler);
+        this.consume(state, oldHandler);
+        this.newHandler(newHandler);
+    }
+
+    private consume<T>(state: IteratorState<T>, [resolve, reject]: [Function, Function]) {
+        if (state instanceof Error) reject(state);
+        else resolve(state);
+    }
+}
+

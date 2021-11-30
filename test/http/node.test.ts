@@ -1,4 +1,3 @@
-import {assert} from 'chai';
 import {handlerContract} from "./handler.contract";
 import {runningInNode} from "../../src/node";
 import {BinHandler} from "../../src/http/bin";
