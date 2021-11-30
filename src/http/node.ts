@@ -125,12 +125,12 @@ export class MessageBody implements Body {
     }
 
     [Symbol.asyncIterator](): AsyncIterator<Chunk> {
-        const iterator = new AsyncIteratorHandler<Chunk>();
+        const handler = new AsyncIteratorHandler<Chunk>();
         this.message.on("data", chunk =>
-            iterator.value(typeof chunk == 'string' ? stringChunk(chunk) : bufferChunk(chunk)));
-        this.message.on("end", () => iterator.close());
-        this.message.on("error", error => iterator.error(error));
-        return iterator;
+            handler.value(typeof chunk == 'string' ? stringChunk(chunk) : bufferChunk(chunk)));
+        this.message.on("end", () => handler.close());
+        this.message.on("error", error => handler.error(error));
+        return handler[Symbol.asyncIterator]();
     }
 }
 

@@ -68,7 +68,7 @@ export async function* asyncIterable<T>(values: Array<Promise<T> | T> | Iterable
     }
 }
 
-export function isArrayLike(value:any): value is ArrayLike<any> {
+export function isArrayLike(value: any): value is ArrayLike<any> {
     return typeof value === "object" && typeof value['length'] === "number";
 }
 

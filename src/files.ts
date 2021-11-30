@@ -9,11 +9,11 @@ import {Readable, Writable} from 'stream';
 export class File {
     public absolutePath:string;
 
-    constructor(pathOrName: string, parent:string = process.cwd()) {
+    constructor(pathOrName: string, parent:string | File = process.cwd()) {
         if(pathOrName.charAt(0) === '/') {
             this.absolutePath = pathOrName;
         } else {
-            this.absolutePath = path.resolve(parent, pathOrName);
+            this.absolutePath = path.resolve(parent instanceof File ? parent.absolutePath : parent, pathOrName);
         }
     }
 
