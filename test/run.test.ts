@@ -14,7 +14,13 @@ describe("run", function () {
         assert.deepEqual(result.join(''), 'Hello\nWorld\n');
     });
 
-    it('combines stdout and stderr in the correct order', async () => {
+    it('can use shell redirect to get stdout and stderr in correct order (exec 2>&1)', async () => {
+        const command = script('shell-redirect.sh');
+        const result = await array(run({command}));
+        assert.deepEqual(result.join(''), 'stout\nstderr\n');
+    });
+
+    it('without shell redirect stdout and stderr are buffered (so order is not perfectly preserved)', async () => {
         const command = script('failing.sh');
         const output: string[] = [];
         let exitCode: number | undefined = undefined;
@@ -27,7 +33,7 @@ describe("run", function () {
             exitCode = e.code;
         }
 
-        assert.deepEqual(output.join(''), 'one\ntwo\nthree\nfour\n');
+        assert.deepEqual(output.join(''), 'one\nthree\ntwo\nfour\n');
         assert.deepEqual(exitCode, 1);
     });
 });
