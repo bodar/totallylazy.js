@@ -19,7 +19,7 @@ export function run(options: RunOptions): AsyncIterable<string> {
         if (code === 0) {
             handler.close();
         } else {
-            handler.error(Object.assign(new Error(`Process returned exit code: ${code}`), {code}));
+            handler.error(Object.assign(new Error(`Command ${options.command} returned exit code ${code}`), {code}));
         }
     });
     return handler;
