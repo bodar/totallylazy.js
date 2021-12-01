@@ -15,6 +15,7 @@ export function run(options: RunOptions): AsyncIterable<string> {
 
     process.stdout.on('data', (data: Buffer | string) => handler.value(data.toString()));
     process.stderr.on('data', (data: Buffer | string) => handler.value(data.toString()));
+    process.on('error', e => handler.error(e));
     process.on('close', (code) => {
         if (code === 0) {
             handler.close();

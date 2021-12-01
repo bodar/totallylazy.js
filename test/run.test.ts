@@ -36,4 +36,14 @@ describe("run", function () {
         assert.deepEqual(output.join(''), 'one\nthree\ntwo\nfour\n');
         assert.deepEqual(exitCode, 1);
     });
+
+    it('throw on missing script', async () => {
+        const command = script('missing.sh');
+        try {
+            for await (const text of run({command})) {
+            }
+        } catch (e) {
+            assert.deepEqual(e.code, 'ENOENT');
+        }
+    });
 });
