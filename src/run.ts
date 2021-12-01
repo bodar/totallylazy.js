@@ -1,12 +1,11 @@
 import {File} from './files';
-import {spawn} from 'child_process';
+import {spawn, CommonSpawnOptions} from 'child_process';
 import {AsyncIteratorHandler} from "./collections";
 import {connect, createServer} from 'net';
 
-export interface RunOptions {
+export interface RunOptions extends CommonSpawnOptions {
     command: string;
     arguments?: string[];
-    workingDirectory?: File
 }
 
 function uuid(a?: any, b?: any) {
@@ -22,7 +21,7 @@ export function run(options: RunOptions): AsyncIterable<string> {
     }).listen(handle);
     const client = connect(handle);
     const process = spawn(options.command, options.arguments || [], {
-        cwd: options.workingDirectory?.absolutePath,
+        ...options,
         stdio: ['ignore', client, client]
     });
     process.on('close', (code) => {
