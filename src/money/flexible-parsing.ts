@@ -10,7 +10,7 @@ import {
     separatorsOf,
     Spaces
 } from "../parsing";
-import {NamedMatch, NamedRegExp} from "../characters";
+import {characters, NamedMatch, NamedRegExp, removeUnicodeMarkers} from "../characters";
 import {filter, find, first, flatMap, sort} from "../transducers";
 import {array, by, descending, single} from "../collections";
 import {unique} from "../arrays";
@@ -44,14 +44,14 @@ export class FlexibleMoneyParser implements Parser<Money> {
 
     parse(value: string): Money {
         try {
-            return this.parseSingle(this.pattern.match(value));
+            return this.parseSingle(this.pattern.match(removeUnicodeMarkers(value)));
         } catch (e) {
             throw new Error(`Unable to parse ${value}`);
         }
     }
 
     parseAll(value: string): Money[] {
-        return array(this.pattern.exec(value), mapIgnoreError(match => this.parseSingle(match)));
+        return array(this.pattern.exec(removeUnicodeMarkers(value)), mapIgnoreError(match => this.parseSingle(match)));
     }
 
     private parseSingle(result: NamedMatch[]) {

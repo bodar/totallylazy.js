@@ -124,13 +124,12 @@ export function different(values: string[]): string[] {
 }
 
 
-export function removeUnneededUnicodeCharacters(char:string):boolean{
-    const code = char.charCodeAt(0);
-    return code != 8206 && code != 8207;
+export function removeUnicodeMarkers(value:string):string{
+    return value.replace(/[\u200E\u200F]/g, '');
 }
 
 export function characters(value:string):string[] {
-    return split(value).filter(removeUnneededUnicodeCharacters);
+    return split(removeUnicodeMarkers(value));
 }
 
 function split(value:string):string[] {

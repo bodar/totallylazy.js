@@ -95,6 +95,11 @@ describe('NumberParser', () => {
 });
 
 describe("Flexible Parsing", function () {
+    it('ignores extra right to left unicode markers', function () {
+        assert.deepEqual(flexibleMoneyParser('iw').parse('‏‏595 ₪'), money('ILS', 595))
+        assert.deepEqual(flexibleMoneyParser('iw').parseAll('‏‏595 ₪'), [money('ILS', 595)])
+    });
+
     it('examples work', function () {
         assert.deepEqual(flexibleMoneyParser('en-US', {strategy: prefer('HKD')}).parseAll('$1015 /Night'), [money('HKD', 1015)]);
         assert.deepEqual(flexibleMoneyParser('en-SG').parseAll('SG$473'), [money('SGD', 473)]);

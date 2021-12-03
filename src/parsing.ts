@@ -1,4 +1,4 @@
-import {characters, NamedMatch, NamedRegExp} from "./characters";
+import {characters, NamedMatch, NamedRegExp, removeUnicodeMarkers} from "./characters";
 import {DEFAULT_COMPARATOR, PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
 import {array, Comparator, Mapper} from "./collections";
@@ -48,12 +48,12 @@ export class MappingParser<A, B> implements Parser<B> {
     }
 
     parse(value: string): B {
-        return this.mapper(this.parser.parse(value));
+        return this.mapper(this.parser.parse(removeUnicodeMarkers(value)));
     }
 
     parseAll(value: string): B[] {
         if (!value) return [];
-        return array(this.parser.parseAll(value), flatMap(v => {
+        return array(this.parser.parseAll(removeUnicodeMarkers(value)), flatMap(v => {
             try {
                 return [this.mapper(v)]
             } catch (e) {
