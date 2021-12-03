@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {money} from "../../src/money";
-import {NumberParser, numberParser, prefer} from "../../src/parsing";
+import {infer, NumberParser, numberParser, prefer} from "../../src/parsing";
 import {
     flexibleMoneyParser,
     flexibleParse,
@@ -96,8 +96,13 @@ describe('NumberParser', () => {
 
 describe("Flexible Parsing", function () {
     it('ignores extra right to left unicode markers', function () {
-        assert.deepEqual(flexibleMoneyParser('iw').parse('‏‏595 ₪'), money('ILS', 595))
-        assert.deepEqual(flexibleMoneyParser('iw').parseAll('‏‏595 ₪'), [money('ILS', 595)])
+        assert.deepEqual(flexibleMoneyParser('iw').parse('‏‏595 ₪'), money('ILS', 595));
+        assert.deepEqual(flexibleMoneyParser('iw').parseAll('‏‏595 ₪'), [money('ILS', 595)]);
+    });
+
+    it('should infer using locale by default', function () {
+        assert.deepEqual(flexibleMoneyParser('en-ZM', {strategy: infer('en-ZM')}).parseAll('K 2,976'), [money('ZMW', 2976)])
+        assert.deepEqual(flexibleMoneyParser('en-ZM').parseAll('K 2,976'), [money('ZMW', 2976)]);
     });
 
     it('examples work', function () {

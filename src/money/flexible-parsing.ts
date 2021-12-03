@@ -59,7 +59,7 @@ export class FlexibleMoneyParser implements Parser<Money> {
             filter(m => m.name === 'currency' && m.value !== undefined),
             flatMap(m => {
                 try {
-                    const currency = CurrencySymbols.get(this.locale).parse(m.value, this.options && this.options.strategy);
+                    const currency = CurrencySymbols.get(this.locale).parse(m.value, (this.options && this.options.strategy) || infer(this.locale));
                     return [{currency, exactMatch: currency === m.value}];
                 } catch (e) {
                     return [];
