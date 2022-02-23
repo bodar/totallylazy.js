@@ -1,5 +1,3 @@
-import {DateFactory} from "./parsing";
-
 declare global {
     interface String {
         toLocaleLowerCase(locale: string): string;
@@ -40,6 +38,17 @@ export type WeekdayFormat = 'short' | 'long';
  *      EEEE: long (Monday)
  */
 export type Format = string;
+
+export interface DateFactory {
+    create(parts: DateFactoryParts): Date;
+}
+
+export interface DateFactoryParts {
+    day: number;
+    month: Month;
+    year?: number;
+    weekday?: Weekday;
+}
 
 export interface Options {
     year?: 'numeric' | '2-digit';
@@ -95,7 +104,6 @@ export enum Month {
     November,
     December
 }
-
 
 export function monthOf(date: Date): Month {
     return date.getUTCMonth() + 1;
