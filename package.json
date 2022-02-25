@@ -8,8 +8,9 @@
   "private": false,
   "scripts": {
     "clean": "rm -rf build/artifacts",
+    "circular": "madge --extensions ts --circular src/",
     "build": "tsc",
-    "generate": "ts-node src/money/generate-currencies.ts",
+    "generate": "ts-node src/parsers/money/generate-currencies.ts",
     "test": "NODE_ENV=development NODE_ICU_DATA=./node_modules/full-icu TZ='America/Los_Angeles' yarn run mocha --require ts-node/register 'test/**/*.test.ts'",
     "perf": "ts-node perf/trie.ts"
   },
@@ -26,6 +27,7 @@
     "benchmark": "^2.1.4",
     "chai": "^4.2.0",
     "libxmljs": "^0.19.7",
+    "madge": "^5.0.1",
     "mocha": "^7.1.0",
     "mocha-headless-chrome": "^2.0.3",
     "node-fetch": "^2.6.0",

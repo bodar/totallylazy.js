@@ -1,7 +1,8 @@
 import {assert} from 'chai';
-import {array, asyncIterable, AsyncIteratorHandler, toIterable} from "../src/collections";
+import {asyncIterable, AsyncIteratorHandler, toIterable} from "../src/collections";
 import {repeat} from "../src/sequence";
-import {take} from "../src/transducers";
+import {array} from "../src/array";
+import {take} from "../src/transducers/take";
 
 export function assertSync<T>(actual: Iterable<T>, ...expected: T[]) {
     assert.deepEqual(array(actual), expected);

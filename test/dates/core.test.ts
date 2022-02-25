@@ -1,4 +1,4 @@
-import {date} from "../../src/dates";
+import {date} from "../../src/parsers/dates";
 import {assert} from 'chai';
 
 describe("core", function () {

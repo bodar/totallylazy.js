@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import {File} from '../src/files';
 import {runningInNode} from "../src/node";
-import {array} from "../src/collections";
+import {array} from "../src/array";
 
 describe("files", function () {
     before(function() {

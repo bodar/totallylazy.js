@@ -1,12 +1,14 @@
 import {assert} from 'chai';
-import {money} from "../../src/money";
-import {infer, NumberParser, numberParser, prefer} from "../../src/parsing";
+import {money} from "../../src/parsers/money";
 import {
     flexibleMoneyParser,
     flexibleParse,
     implicitMoneyParser,
     ImplicitMoneyParserOptions
-} from "../../src/money/flexible-parsing";
+} from "../../src/parsers/money/flexible-parsing";
+import {prefer} from "../../src/parsers/strategy/prefer";
+import {infer} from "../../src/parsers/strategy/infer";
+import {NumberParser, numberParser} from "../../src/parsers/numberParser";
 
 describe('ImplicitMoneyParser', () => {
     it('can parse and convert a number with a currency provided else where', function () {

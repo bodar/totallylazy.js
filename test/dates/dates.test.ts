@@ -16,13 +16,14 @@ import {
     SmartDate,
     weekdayOf,
     yearOf,
-} from "../../src/dates";
-import {StoppedClock} from "../../src/dates/clock";
+} from "../../src/parsers/dates";
+import {StoppedClock} from "../../src/clock";
 import {iterate, sequence} from "../../src/sequence";
-import {takeWhile, zip} from "../../src/transducers";
-import {parsers} from "../../src/parsing";
 import {get} from "../../src/functions";
-import {array} from "../../src/collections";
+import {array} from "../../src/array";
+import {zip} from "../../src/transducers/zip";
+import {takeWhile} from "../../src/transducers/takeWhile";
+import {parsers} from "../../src/parsers/orParser";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);

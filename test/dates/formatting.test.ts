@@ -1,4 +1,4 @@
-import {date, format, Formatters, DateParts, ImprovedDateTimeFormat, Options} from "../../src/dates";
+import {date, format, Formatters, DateParts, ImprovedDateTimeFormat, Options} from "../../src/parsers/dates";
 import {assert} from 'chai';
 import {options, supported} from "./dates.test";
 import {runningInNode} from "../../src/node";

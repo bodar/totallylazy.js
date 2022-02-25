@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {PreferredCurrencies} from "../../src/money/preferred-currencies";
+import {PreferredCurrencies} from "../../src/parsers/money/preferred-currencies";
 
 describe('PreferredCurrencies', () => {
     it('dollarSymbol', () => {

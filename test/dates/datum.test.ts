@@ -1,4 +1,4 @@
-import {date, Month, months, Months, Options, Weekday, weekdays, Weekdays} from "../../src/dates";
+import {date, Month, months, Months, Options, Weekday, weekdays, Weekdays} from "../../src/parsers/dates";
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
 import {assertParse, options, supported} from "./dates.test";

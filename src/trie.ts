@@ -1,9 +1,12 @@
 import {lazy} from "./lazy";
 import {characters} from "./characters";
-import {ascending, Comparator, single} from "./collections";
+import {ascending, Comparator} from "./collections";
 import {AVLTree} from "./avltree";
-import {flatMap, map, reduce} from "./transducers";
 import {sequence} from "./sequence";
+import {single} from "./transducers/single";
+import {map} from "./transducers/map";
+import {flatMap} from "./transducers/flatMap";
+import {reduce} from "./transducers/reduce";
 
 export class TrieFactory<K, V> {
     constructor(public readonly comparator: Comparator<K> = ascending) {

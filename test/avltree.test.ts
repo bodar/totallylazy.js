@@ -1,8 +1,9 @@
 import {assert} from 'chai';
 import {AVLTree} from "../src/avltree";
-import {array} from "../src/collections";
 import {range} from "../src/sequence";
-import {map, take} from "../src/transducers";
+import {array} from "../src/array";
+import {map} from "../src/transducers/map";
+import {take} from "../src/transducers/take";
 
 describe("AVLTree", function () {
     const tree = AVLTree.empty<string, string>();

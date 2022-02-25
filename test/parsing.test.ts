@@ -1,8 +1,10 @@
-import {CachingParser, digits, Numerals, Parser} from "../src/parsing";
 import {assert} from 'chai';
 import {characters} from "../src/characters";
-import {zip} from "../src/transducers";
 import {sequence} from "../src/sequence";
+import {zip} from "../src/transducers/zip";
+import {Parser} from "../src/parsers/parser";
+import {CachingParser} from "../src/parsers/cachingParser";
+import {digits, Numerals} from "../src/parsers/numerals";
 
 describe('CachingParser', () => {
     it('only calls the underlying parser once per value', () => {

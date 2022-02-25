@@ -1,19 +1,16 @@
 import {range, sequence} from "../src/sequence";
 import {assertAsync, assertSync} from "./collections.test";
-import {
-    CompositeTransducer,
-    filter,
-    find,
-    first,
-    flatMap,
-    FlatMapTransducer,
-    last,
-    reduce,
-    take
-} from "../src/transducers";
 import {assert} from 'chai';
-import {single} from "../src/collections";
 import {sum} from "../src/numbers";
+import {single} from "../src/transducers/single";
+import {first} from "../src/transducers/first";
+import {last} from "../src/transducers/last";
+import {flatMap, FlatMapTransducer} from "../src/transducers/flatMap";
+import {filter} from "../src/transducers/filter";
+import {find} from "../src/transducers/find";
+import {CompositeTransducer} from "../src/transducers/compose";
+import {take} from "../src/transducers/take";
+import {reduce} from "../src/transducers/reduce";
 
 describe("Sequence", () => {
     it("supports ranges", () => {

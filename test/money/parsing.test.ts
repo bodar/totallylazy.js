@@ -7,14 +7,15 @@ import {
     parse,
     parser,
     partsFrom, PartsFromFormat, RegexBuilder, symbolFor,
-} from "../../src/money";
+} from "../../src/parsers/money";
 import {locales} from "../dates/dates.test";
-import {currencies} from "../../src/money/currencies";
+import {currencies} from "../../src/parsers/money/currencies";
 import {runningInNode} from "../../src/node";
-import {infer, prefer} from "../../src/parsing";
 import NumberFormatPart = Intl.NumberFormatPart;
-import {Currency} from "../../src/money/currencies-def";
+import {Currency} from "../../src/parsers/money/currencies-def";
 import {get} from "../../src/functions";
+import {prefer} from "../../src/parsers/strategy/prefer";
+import {infer} from "../../src/parsers/strategy/infer";
 
 export const numberLocales = locales.flatMap(locale => get(() => Intl.NumberFormat.supportedLocalesOf(locale), []));
 const amounts = [1234567.89, 156, 156.89, .1234, 0];

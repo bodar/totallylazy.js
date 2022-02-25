@@ -1,8 +1,8 @@
 import {Body, Chunk, delete_, get, Handler, isBody, notFound, ok, patch, post, put, Request, Response} from ".";
 import {match, case_, default_, Matched, regex} from "../pattern";
 import {repeat, sequence} from "../sequence";
-import {take} from "../transducers";
-import {array} from "../collections";
+import {array} from "../array";
+import {take} from "../transducers/take";
 
 export class BinHandler implements Handler {
     handle(request: Request): Promise<Response> {
