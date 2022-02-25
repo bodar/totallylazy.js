@@ -2,7 +2,7 @@ import {lazy} from "../lazy";
 import {unique} from "../arrays";
 import {characters, isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
 import {
-    date, DateFactory, DateFactoryParts, dayOf, Days,
+    date, dayOf,
     defaultOptions,
     Format,
     formatData,
@@ -24,7 +24,7 @@ import {
     preProcess
 } from "../parsing";
 import {array} from "../collections";
-import {flatMap, map, zip} from "../transducers";
+import {flatMap, identity, map, zip} from "../transducers";
 import {cache} from "../cache";
 import {get} from "../functions";
 import {Clock, SystemClock} from "./clock";
@@ -143,6 +143,17 @@ export function dateFrom(parts: DateTimeFormatPart[],
     const weekday = weekdayText ? get(() => Weekdays.get(locale).parse(weekdayText.value)) : undefined;
 
     return factory.create({year, month, day, weekday});
+}
+
+export interface DateFactoryParts {
+    day: number;
+    month: Month;
+    year?: number;
+    weekday?: Weekday;
+}
+
+export interface DateFactory {
+    create(parts: DateFactoryParts): Date;
 }
 
 export class DefaultDateFactory implements DateFactory {
@@ -279,6 +290,29 @@ export class SmartDate implements DateFactory {
             return InferYear.after(this.clock.now()).create(parts);
         }
         return InferYear.sliding(this.clock).create(parts);
+    }
+}
+
+
+export class Days {
+    static milliseconds = 24 * 60 * 60 * 1000;
+
+    static startOf(value: Date) {
+        return date(yearOf(value), monthOf(value), dayOf(value));
+    }
+
+    static add(date: Date, days: number) {
+        const newDate = new Date(date.getTime());
+        newDate.setUTCDate(date.getUTCDate() + days);
+        return newDate;
+    }
+
+    static subtract(date: Date, days: number) {
+        return Days.add(date, days * -1);
+    }
+
+    static between(a: Date, b: Date): number {
+        return Math.abs((a.getTime() - b.getTime()) / Days.milliseconds);
     }
 }
 
