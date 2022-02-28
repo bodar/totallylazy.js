@@ -1,11 +1,12 @@
 import {characters, NamedMatch, NamedRegExp, removeUnicodeMarkers} from "./characters";
 import {DEFAULT_COMPARATOR, PrefixTree} from "./trie";
 import {flatten, unique} from "./arrays";
-import {array, Comparator, Mapper} from "./collections";
+import {Comparator, Mapper} from "./collections";
 import {flatMap, map, zip} from "./transducers";
 import {cache, caching} from "./cache";
 import {PreferredCurrencies} from "./money/preferred-currencies";
 import {get} from "./functions";
+import {array} from "./array";
 
 export class NamedRegexParser implements Parser<NamedMatch[]> {
     constructor(protected regex: NamedRegExp) {

@@ -1,19 +1,16 @@
 import {range, sequence} from "../src/sequence";
-import {assertAsync, assertSync} from "./collections.test";
-import {
-    CompositeTransducer,
-    filter,
-    find,
-    first,
-    flatMap,
-    FlatMapTransducer,
-    last,
-    reduce,
-    take
-} from "../src/transducers";
 import {assert} from 'chai';
-import {single} from "../src/collections";
 import {sum} from "../src/numbers";
+import {single} from "../src/transducers/single";
+import {first} from "../src/transducers/first";
+import {last} from "../src/transducers/last";
+import {flatMap, FlatMapTransducer} from "../src/transducers/flatMap";
+import {filter} from "../src/transducers/filter";
+import {find} from "../src/transducers/find";
+import {CompositeTransducer} from "../src/transducers/compose";
+import {take} from "../src/transducers/take";
+import {reduce} from "../src/transducers/reduce";
+import {assertAsync, assertSync} from "./asserts";
 
 describe("Sequence", () => {
     it("supports ranges", () => {
@@ -46,8 +43,8 @@ describe("Sequence", () => {
     });
 
     it("can get a single value out", () => {
-        assert.equal(single(range(1), filter(n => n % 2 == 0), first()), 2);
-        assert.equal(single(range(1, 10), filter(n => n % 2 == 0), last()), 10);
+        assert.equal(single(range(1), filter((n:number) => n % 2 == 0), first()), 2);
+        assert.equal(single(range(1, 10), filter((n:number) => n % 2 == 0), last()), 10);
         assert.equal(single([], reduce(sum, 0)), 0);
     });
 

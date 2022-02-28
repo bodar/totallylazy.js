@@ -10,13 +10,14 @@ import {
     separatorsOf,
     Spaces
 } from "../parsing";
-import {characters, NamedMatch, NamedRegExp, removeUnicodeMarkers} from "../characters";
-import {filter, find, first, flatMap, sort} from "../transducers";
-import {array, by, descending, single} from "../collections";
+import {NamedMatch, NamedRegExp, removeUnicodeMarkers} from "../characters";
+import {filter, find, first, flatMap, single, sort} from "../transducers";
+import {by, descending} from "../collections";
 import {unique} from "../arrays";
 import {cache} from "../cache";
 import {lazy} from "../lazy";
 import {get} from "../functions";
+import {array} from "../array";
 
 export interface Options {
     strategy?: MatchStrategy<string>;

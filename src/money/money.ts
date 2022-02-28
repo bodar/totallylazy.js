@@ -1,6 +1,6 @@
 import {different, isNamedMatch, MatchOrNot, NamedMatch, NamedRegExp} from "../characters";
-import {dedupe, filter, first, flatMap, map, sort} from "../transducers";
-import {array, ascending, by, descending, single} from "../collections";
+import {dedupe, filter, first, flatMap, map, single, sort} from "../transducers";
+import {ascending, by, descending} from "../collections";
 import {flatten} from "../arrays";
 import {currencies} from "./currencies";
 import {lazy} from "../lazy";
@@ -20,6 +20,7 @@ import {Currencies, Currency} from "./currencies-def";
 import {cache} from "../cache";
 import NumberFormatPart = Intl.NumberFormatPart;
 import {get} from "../functions";
+import {array} from "../array";
 
 /**
  *

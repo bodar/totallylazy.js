@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import {File} from '../src/files';
 import {runningInNode} from "../src/node";
-import {array} from "../src/collections";
+import {array} from "../src/array";
 
 describe("files", function () {
     before(function() {
@@ -46,7 +46,7 @@ describe("files", function () {
     });
 
     it('can write file content as string', async () => {
-        const file = File.tempDirectory.child('totallylazy.js');
+        const file = File.tempDirectory.child('run');
         await file.content('foo');
         const content = await file.content();
         assert(content === 'foo');

@@ -1,6 +1,7 @@
-import {add, increment, subtract} from "./numbers";
-import {takeWhile, Transducer} from "./transducers";
-import {isArrayLike, isAsyncIterable, isIterable, iterable, IterableLike} from "./collections";
+import {add, subtract} from "./numbers";
+import {isArrayLike, isIterable, iterable, IterableLike} from "./collections";
+import {Transducer} from "./transducers";
+import {takeWhile} from "./transducers";
 
 export function* iterate<T>(generator: (t: T) => T, value: T): Iterable<T> {
     while (true) {

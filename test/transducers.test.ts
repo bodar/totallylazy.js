@@ -1,28 +1,27 @@
 import { assert } from 'chai';
-import {
-    dedupe,
-    drop,
-    dropWhile,
-    filter,
-    find,
-    first,
-    last,
-    map,
-    reduce,
-    reject,
-    scan,
-    sort,
-    take,
-    takeWhile,
-    zip,
-    windowed,
-    unique, zipWithIndex
-} from "../src/transducers";
 import { range, repeat } from "../src/sequence";
 import { sum } from "../src/numbers";
-import { assertSync } from "./collections.test";
-import { array, ascending, by, Comparator, comparators, descending } from "../src/collections";
+import { ascending, by, Comparator, comparators, descending } from "../src/collections";
 import { characters } from "../src/characters";
+import {array} from "../src/array";
+import {first} from "../src/transducers/first";
+import {last} from "../src/transducers/last";
+import {map} from "../src/transducers/map";
+import {zip, zipWithIndex} from "../src/transducers/zip";
+import {filter} from "../src/transducers/filter";
+import {find} from "../src/transducers/find";
+import {scan} from "../src/transducers/scan";
+import {take} from "../src/transducers/take";
+import {drop} from "../src/transducers/drop";
+import {sort} from "../src/transducers/sort";
+import {unique} from "../src/transducers/unique";
+import {windowed} from "../src/transducers/windowed";
+import {reduce} from "../src/transducers/reduce";
+import {dropWhile} from "../src/transducers/dropWhile";
+import {reject} from "../src/transducers/reject";
+import {takeWhile} from "../src/transducers/takeWhile";
+import {dedupe} from "../src/transducers/dedupe";
+import {assertSync} from "./asserts";
 
 
 describe("Transducer", () => {

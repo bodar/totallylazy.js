@@ -23,14 +23,14 @@ import {
     Parser,
     preProcess
 } from "../parsing";
-import {array} from "../collections";
-import {flatMap, identity, map, zip} from "../transducers";
+import {flatMap, map, zip} from "../transducers";
 import {cache} from "../cache";
 import {get} from "../functions";
 import {Clock, SystemClock} from "./clock";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import {range} from "../sequence";
+import {array} from "../array";
 
 export function parse(value: string, locale: string, options?: string | Options, native = hasNativeToParts): Date {
     return parser(locale, options, native).parse(value);

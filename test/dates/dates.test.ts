@@ -22,7 +22,7 @@ import {iterate, sequence} from "../../src/sequence";
 import {takeWhile, zip} from "../../src/transducers";
 import {parsers} from "../../src/parsing";
 import {get} from "../../src/functions";
-import {array} from "../../src/collections";
+import {array} from "../../src/array";
 
 export function assertFormat(locale: string, date: Date, options: Options, expected: string) {
     const formatted = format(date, locale, options);

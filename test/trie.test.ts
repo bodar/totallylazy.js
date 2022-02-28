@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import {DEFAULT_COMPARATOR, Pair, pair, PrefixTree, Row, Trie, TrieFactory} from "../src/trie";
 import {characters} from "../src/characters";
-import {array} from "../src/collections";
+import {array} from "../src/array";
 
 describe("Trie", function () {
     it('supports isEmpty', function () {

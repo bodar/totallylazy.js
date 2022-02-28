@@ -13,12 +13,12 @@ import {
 import {lazy} from "../lazy";
 import {characters, isNamedMatch, NamedRegExp} from "../characters";
 import {map} from "../transducers";
-import {array} from "../collections";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import {cache} from "../cache";
 import {DatumLookup, digits, Numerals} from "../parsing";
+import {array} from "../array";
 
 export class Formatters {
     @cache

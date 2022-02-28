@@ -1,7 +1,7 @@
 import {File} from '../src/files';
 import {assert} from 'chai';
-import {array} from "../src/collections";
 import {run} from "../src/run";
+import {array} from "../src/array";
 
 describe("run", function () {
     function script(name: string) {
