@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import {money} from "../../src/money";
-import {infer, NumberParser, numberParser, prefer} from "../../src/parsing";
+import {infer, NumberParser, numberParser, prefer} from "../../src/dates/formatting";
 import {
     flexibleMoneyParser,
     flexibleParse,

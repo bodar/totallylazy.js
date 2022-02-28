@@ -117,3 +117,5 @@ export function dayOf(date: Date): number {
 export function yearOf(date: Date): number {
     return date.getUTCFullYear();
 }
+
+export const hasNativeToParts = typeof Intl.DateTimeFormat.prototype.formatToParts == 'function';

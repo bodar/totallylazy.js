@@ -1,14 +1,6 @@
 import {CurrencySymbols, decimalsFor, money, Money} from "./money";
 import {
-    AllowedDecimalSeparators,
-    atBoundaryOnly, decimalSeparator, FailParser, infer, inferDecimalSeparator,
-    mapIgnoreError,
-    MatchStrategy, NumberParser,
-    numberParser,
-    numberPattern,
-    Parser,
-    separatorsOf,
-    Spaces
+    FailParser, Parser
 } from "../parsing";
 import {NamedMatch, NamedRegExp, removeUnicodeMarkers} from "../characters";
 import {filter, find, first, flatMap, single, sort} from "../transducers";
@@ -18,6 +10,14 @@ import {cache} from "../cache";
 import {lazy} from "../lazy";
 import {get} from "../functions";
 import {array} from "../array";
+import {
+    AllowedDecimalSeparators, atBoundaryOnly,
+    decimalSeparator, infer,
+    inferDecimalSeparator, mapIgnoreError, MatchStrategy,
+    NumberParser,
+    numberParser, numberPattern,
+    separatorsOf, Spaces
+} from "../dates";
 
 export interface Options {
     strategy?: MatchStrategy<string>;

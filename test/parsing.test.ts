@@ -2,7 +2,8 @@ import {assert} from 'chai';
 import {characters} from "../src/characters";
 import {sequence} from "../src/sequence";
 import {zip} from "../src/transducers/zip";
-import {CachingParser, digits, Numerals, Parser} from "../src/parsing";
+import {CachingParser, Parser} from "../src/parsing";
+import {digits, Numerals} from '../src/dates/formatting';
 
 describe('CachingParser', () => {
     it('only calls the underlying parser once per value', () => {
