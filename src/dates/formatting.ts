@@ -1,5 +1,13 @@
 import {lazy} from "../lazy";
-import {characters, different, isNamedMatch, NamedMatch, NamedRegExp, replace} from "../characters";
+import {
+    characters,
+    different,
+    isNamedMatch,
+    NamedMatch,
+    NamedRegExp,
+    removeUnicodeMarkers,
+    replace
+} from "../characters";
 import {flatMap, map, zip} from "../transducers";
 import {cache, caching} from "../cache";
 import {array} from "../array";
@@ -36,8 +44,6 @@ export class Formatters {
     }
 }
 
-
-
 export class ImprovedDateTimeFormat implements DateFormatter {
     constructor(private locale: string, private options: Options, private delegate: DateTimeFormat = ImprovedDateTimeFormat.create(locale, options)) {
     }
@@ -52,7 +58,7 @@ export class ImprovedDateTimeFormat implements DateFormatter {
     }
 
     format(date?: Date | number): string {
-        return characters(this.delegate.format(date)).join("");
+        return removeUnicodeMarkers(this.delegate.format(date));
     }
 
     // Slightly older versions of Safari implement the method but return an empty array!
@@ -726,8 +732,8 @@ export class SimpleFormat implements DateFormatter {
     private partsInOrder: DateTimeFormatPart[];
     private options: Options;
 
-    constructor(private locale: string, private value: string) {
-        this.partsInOrder = partsFrom(value);
+    constructor(private locale: string, private formatString: Format) {
+        this.partsInOrder = partsFrom(formatString);
         this.options = optionsFrom(this.partsInOrder);
     }
 
