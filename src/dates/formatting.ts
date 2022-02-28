@@ -22,31 +22,23 @@ import {extraDelimiters, mappingParser, namedRegexParser, or, Parser, preProcess
 import {DEFAULT_COMPARATOR, PrefixTree} from "../trie";
 import {PreferredCurrencies} from "../money/preferred-currencies";
 import {Comparator, Mapper} from "../collections";
+import {DateFormatter, dateTimeFormat, optionsFrom, partsFrom, StringDateFormatter} from "./format";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
 export class Formatters {
     @cache
-    static create(locale: string , options: string | Options = defaultOptions): DateTimeFormat {
+    static create(locale: string , options: string | Options = defaultOptions): DateFormatter {
         if (typeof options === "string") return new SimpleFormat(locale, options);
         if (typeof options.format === "string") return new SimpleFormat(locale, options.format);
         return new ImprovedDateTimeFormat(locale, options);
     }
-
-    // Slightly older versions of Safari implement the method but return an empty array!
-    @cache
-    static isNativelySupported(locale: string , options: Options = defaultOptions): boolean {
-        const formatter = this.dateTimeFormat(locale, options);
-        return typeof formatter.formatToParts == 'function' && formatter.formatToParts(new Date()).length > 0;
-    }
-
-    static dateTimeFormat(locale: string, options: Options) {
-        return new Intl.DateTimeFormat(locale, {...options, timeZone: 'UTC'});
-    }
 }
 
-export class ImprovedDateTimeFormat implements DateTimeFormat {
+
+
+export class ImprovedDateTimeFormat implements DateFormatter {
     constructor(private locale: string, private options: Options, private delegate: DateTimeFormat = ImprovedDateTimeFormat.create(locale, options)) {
     }
 
@@ -54,7 +46,7 @@ export class ImprovedDateTimeFormat implements DateTimeFormat {
         // Detect IE 11 bug
         const clone = {...options};
         const keys = Object.keys(clone).length;
-        const result = Formatters.dateTimeFormat(locale, clone);
+        const result = dateTimeFormat(locale, clone);
         if (Object.keys(clone).length != keys) throw new Error(`Unsupported DateTimeFormat options provided: ${JSON.stringify(options)}`);
         return result;
     }
@@ -63,16 +55,19 @@ export class ImprovedDateTimeFormat implements DateTimeFormat {
         return characters(this.delegate.format(date)).join("");
     }
 
+    // Slightly older versions of Safari implement the method but return an empty array!
+    @cache
+    static isNativelySupported(locale: string , options: Options = defaultOptions): boolean {
+        const formatter = dateTimeFormat(locale, options);
+        return typeof formatter.formatToParts == 'function' && formatter.formatToParts(new Date()).length > 0;
+    }
+
     formatToParts(date: Date | number = new Date()): Intl.DateTimeFormatPart[] {
-        if (Formatters.isNativelySupported(this.locale, this.options)) {
+        if (ImprovedDateTimeFormat.isNativelySupported(this.locale, this.options)) {
             return this.delegate.formatToParts(date);
         } else {
             return DateParts.create(this.locale, this.options).toParts(typeof date === "number" ? new Date(date) : date);
         }
-    }
-
-    resolvedOptions(): Intl.ResolvedDateTimeFormatOptions {
-        return this.delegate.resolvedOptions();
     }
 }
 
@@ -580,52 +575,6 @@ export class FromFormatStringWeekdayExtractor extends FromFormatStringDataExtrac
     }
 }
 
-export function formatFrom(type: DateTimeFormatPartTypes, length: number): string {
-    if (type === 'year') {
-        if (length === 4) return "numeric";
-        if (length === 2) return "2-digit";
-    }
-    if (type === 'month') {
-        if (length === 4) return "long";
-        if (length === 3) return "short";
-        if (length === 2) return "2-digit";
-        if (length === 1) return "numeric";
-    }
-    if (type === 'day') {
-        if (length === 2) return "2-digit";
-        if (length === 1) return "numeric";
-    }
-    if (type === 'weekday') {
-        if (length === 4) return "long";
-        if (length === 3) return "short";
-    }
-    throw new Error(`Illegal Argument: ${type} ${length}`);
-}
-
-export const formatRegex = NamedRegExp.create('(?:(?<year>y+)|(?<month>M+)|(?<day>d+)|(?<weekday>E+))', 'g');
-
-export function partsFrom(format: Format): DateTimeFormatPart[] {
-    return array(formatRegex.iterate(format), map(matchOrNot => {
-        if (isNamedMatch(matchOrNot)) {
-            const [match] = matchOrNot.filter(m => Boolean(m.value));
-            const type = match.name as DateTimeFormatPartTypes;
-            const value = formatFrom(type, match.value.length);
-            return {type, value};
-        } else {
-            return {type: "literal", value: matchOrNot};
-        }
-    }));
-}
-
-export function optionsFrom(formatOrParts: Format | DateTimeFormatPart[]): Options {
-    const parts = typeof formatOrParts === "string" ? partsFrom(formatOrParts) : formatOrParts;
-    const keys = ['year', 'month', 'day', 'weekday'];
-    return parts.filter(p => keys.indexOf(p.type) != -1).reduce((a, p) => {
-        a[p.type] = p.value;
-        return a;
-    }, typeof formatOrParts === "string" ? {format: formatOrParts} : {} as any);
-}
-
 export class RegexBuilder {
     constructor(private locale: string,
                 private options: Options = defaultOptions,
@@ -773,7 +722,7 @@ export function formatBuilder(locale: string, format: Format, strict: boolean = 
     return new RegexBuilder(locale, {...optionsFrom(format), strict}, partsFrom(format))
 }
 
-export class SimpleFormat implements DateTimeFormat {
+export class SimpleFormat implements DateFormatter {
     private partsInOrder: DateTimeFormatPart[];
     private options: Options;
 
@@ -782,12 +731,11 @@ export class SimpleFormat implements DateTimeFormat {
         this.options = optionsFrom(this.partsInOrder);
     }
 
-    format(date?: Date | number): string {
+    format(date: Date): string {
         return this.formatToParts(date).map(p => p.value).join("");
     }
 
-    formatToParts(raw: Date | number = new Date()): Intl.DateTimeFormatPart[] {
-        const date = typeof raw === "number" ? new Date(raw) : raw;
+    formatToParts(date: Date): Intl.DateTimeFormatPart[] {
         const partsWithValues = DateParts.create(this.locale, this.options).toParts(date);
         return this.partsInOrder.map(p => ({type: p.type, value: this.valueFor(partsWithValues, p.type, p.value)}));
     }
@@ -795,10 +743,6 @@ export class SimpleFormat implements DateTimeFormat {
     private valueFor(partsWithValues: Intl.DateTimeFormatPart[], type: DateTimeFormatPartTypes, value: string): string {
         if (type === 'literal') return value;
         return valueFromParts(partsWithValues, type);
-    }
-
-    resolvedOptions(): Intl.ResolvedDateTimeFormatOptions {
-        return {...this.options, locale: this.locale} as Intl.ResolvedDateTimeFormatOptions;
     }
 }
 
@@ -823,7 +767,7 @@ export class DateParts {
         return new DateParts(locale, options);
     }
 
-    @lazy get formatter(): DateTimeFormat {
+    @lazy get formatter(): StringDateFormatter {
         return Formatters.create(this.locale, this.options);
     }
 

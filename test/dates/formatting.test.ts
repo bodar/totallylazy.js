@@ -84,12 +84,6 @@ describe("format", function () {
             {type: "literal", value: "-"},
             {type: "day", value: "09"}
         ]);
-        assert.include(formatter.resolvedOptions() as any, {
-            day: "2-digit",
-            locale: "en-GB",
-            month: "2-digit",
-            year: "numeric"
-        } as any);
     });
 
     it("throws if undefined date is parsed into format", () => {

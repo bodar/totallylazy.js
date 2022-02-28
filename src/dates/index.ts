@@ -2,3 +2,8 @@ export * from './clock';
 export * from './core';
 export * from './formatting';
 export * from './parsing';
+export {dateTimeFormat} from "./format";
+export {optionsFrom} from "./format";
+export {partsFrom} from "./format";
+export {formatRegex} from "./format";
+export {formatFrom} from "./format";
