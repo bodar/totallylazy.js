@@ -1,0 +1,12 @@
+{
+  "name": "@bodar/totallylazy-test",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "NODE_ENV=development mocha '**/*.test.ts'"
+  },
+  "dependencies": {
+    "@bodar/totallylazy": "0.0.0",
+    "tslib": "^2.3.1"
+  }
+}

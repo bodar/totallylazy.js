@@ -1,51 +1,33 @@
 #!/usr/bin/env bash
-set -e
+set -Eeo pipefail
 
-source ./version.sh
-source ./nvm.sh
+dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+export NPM_TOKEN=${NPM_TOKEN-}
 
+source ${dir}/nvm.sh
 
-if [[ ! $(command -v yarn) ]]; then
-    npm install -g yarn
+if [[ ! $(command -v pnpm) ]]; then
+    npm install -g pnpm
 fi
 
-yarn install
+source ${dir}/version.sh
 
-dist=build/artifacts/dist
-out=build/artifacts/out
-
-yarn clean
-yarn generate
-yarn build
-yarn test
-
-function package() {
-    if [[ ! $(command -v envsubst) ]]; then
-        sudo apt-get install gettext
-    fi
-
-    mkdir -p ${dist}
-    envsubst < package.json > ${dist}/package.json
-    cp -r ${out}/src/* ${dist}
-    cp README.md LICENSE ${dist}
-}
-
-function publish() {
-    mkdir -p ${dist}
-    cat >${dist}/.npmrc <<EOL
-@bodar:registry=https://registry.npmjs.org
-//registry.npmjs.org/:_authToken=${NPM_TOKEN}
-EOL
-    pushd ${dist}
-    npm publish --tag ${TAG} --access public
-    popd
+function build() {
+  if [ "${CI,,}" = "true" ]; then
+    pnpm install
+  else
+    pnpm install --no-frozen-lockfile
+  fi
+  pnpm run generate -r --if-present
+  pnpm exec tsc --build --force
+  NODE_ICU_DATA=./node_modules/full-icu TZ='America/Los_Angeles' pnpm test -r --filter=*test
 }
 
 function ci() {
-    package
-    publish
+  build
+  pnpm publish -r --filter=!*test --no-git-checks --tag ${TAG}
 }
 
-if [[ -n "$1" ]]; then
-    "$1"
-fi
+command="${1-build}"
+set +e; shift; set -Eeo pipefail;
+$command "$@"

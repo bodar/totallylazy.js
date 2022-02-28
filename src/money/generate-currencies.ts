@@ -1,22 +1,21 @@
-///@ts-ignore
-import {Element, parseXml} from "libxmljs";
-///@ts-ignore
-import * as fetch from "node-fetch";
+import {select} from "xpath";
+import {DOMParser} from "xmldom";
+import fetch from "node-fetch";
 import {File} from "../files";
-import {sparqlQuery, simplify} from 'wikidata-sdk';
+import {simplify, sparqlQuery} from 'wikidata-sdk';
 import {additionalSymbols, Currency, CurrencySymbol} from "./currencies-def";
 
 (async () => {
     const symbols = await getSymbols();
     const currencies = symbols.reduce((c, s) => {
         const currency = c[s.iso] || {symbols: [], decimals: 2};
-        if(!currency.symbols.includes(s.symbol)) currency.symbols.push(s.symbol);
+        if (!currency.symbols.includes(s.symbol)) currency.symbols.push(s.symbol);
         return c;
     }, await getCurrencies());
 
     const allCurrencies = additionalSymbols.reduce((c, s) => {
         const currency = c[s.iso] || {symbols: [], decimals: 2};
-        if(!currency.symbols.includes(s.symbol)) currency.symbols.push(s.symbol);
+        if (!currency.symbols.includes(s.symbol)) currency.symbols.push(s.symbol);
         c[s.iso] = currency;
         return c;
     }, currencies);
@@ -27,30 +26,27 @@ import {additionalSymbols, Currency, CurrencySymbol} from "./currencies-def";
 async function getCurrencies(): Promise<Currencies> {
     const url = 'https://www.currency-iso.org/dam/downloads/lists/list_one.xml';
     console.log(`Downloading ${url}`);
-    ///@ts-ignore
     const response = await fetch(url);
     if (response.status !== 200) {
-        throw new Error(response);
+        throw new Error(response.statusText);
     }
-    const doc = parseXml(await response.text());
-    const countries = doc.find('//CcyNtry');
-    return countries.reduce((a: Currencies, country: Element) => {
-        const currency = country.get('Ccy');
-        const decimalPlaces = country.get('CcyMnrUnts');
+    const doc = new DOMParser().parseFromString(await response.text(), 'application/xml');
+    const countries = select('//CcyNtry', doc) as Node[];
+    return countries.reduce((a: Currencies, country: Node) => {
+        const currency = select('string(Ccy)', country, true) as string;
+        const decimalPlaces = select('string(CcyMnrUnts)', country, true) as string;
         if (!currency || !decimalPlaces) return a;
-        const text = decimalPlaces.text();
-        a[currency.text()] = {
-            decimals: text === 'N.A.' ? 0 : Number(text),
+        a[currency] = {
+            decimals: decimalPlaces === 'N.A.' ? 0 : Number(decimalPlaces),
             symbols: []
         };
         return a;
-    }, {});
+    }, {} as Currencies);
 }
 
 export interface Currencies {
-    [code: string] : Currency;
+    [code: string]: Currency;
 }
-
 
 
 async function getSymbols(): Promise<CurrencySymbol[]> {
@@ -60,10 +56,9 @@ async function getSymbols(): Promise<CurrencySymbol[]> {
   ?item wdt:P5061 ?symbol. 
 }`);
 
-    ///@ts-ignore
     const response = await fetch(query);
     if (response.status !== 200) {
-        throw new Error(response);
+        throw new Error(response.statusText);
     }
 
     return (simplify as any).sparqlResults(await response.json());
@@ -72,7 +67,7 @@ async function getSymbols(): Promise<CurrencySymbol[]> {
 async function generateFile(currencies: Currencies) {
     const generated = new File('currencies.ts', __dirname);
     console.log(`Generating ${generated.absolutePath}`);
-    const json = JSON.stringify(currencies, undefined, 2);
+    const json = JSON.stringify(currencies, null, 2);
     const content = `// Generated file do not edit or checkin
 import {Currencies} from "./currencies-def";
     
