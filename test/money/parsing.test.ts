@@ -49,7 +49,7 @@ describe("Money", function () {
             for (const code of Object.keys(currencies)) {
                 const nonNative = symbolFor(locale, code, false);
                 const native = symbolFor(locale, code, true);
-                assert.equal(nonNative, native);
+                assert.equal(nonNative, native, locale + ' ' + code);
             }
         }
     });

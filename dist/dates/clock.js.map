@@ -1,1 +1,0 @@
-{"version":3,"file":"clock.js","sourceRoot":"","sources":["../../src/dates/clock.ts"],"names":[],"mappings":";;;AAIA,MAAa,WAAW;IACpB,GAAG;QACC,OAAO,IAAI,IAAI,EAAE,CAAC;IACtB,CAAC;CACJ;AAJD,kCAIC;AAED,MAAa,YAAY;IACrB,YAAoB,KAAW;QAAX,UAAK,GAAL,KAAK,CAAM;IAC/B,CAAC;IAED,GAAG;QACC,OAAO,IAAI,CAAC,KAAK,CAAC;IACtB,CAAC;CACJ;AAPD,oCAOC"}

@@ -299,6 +299,11 @@ export class Spaces {
     static handle(value: string): string {
         return Spaces.codes.indexOf(value) != -1 ? Spaces.spaces : value;
     }
+
+    static remove(value: string): string {
+        if (!value) return value;
+        return value.replace(Spaces.pattern, '');
+    }
 }
 
 const allowedSeparators = `٬٫,.'’‘${Spaces.spaces}`;
@@ -339,7 +344,7 @@ export class NumberParser implements Parser<number> {
     readonly strictNumberPattern: RegExp;
     readonly globalNumberPattern: NamedRegExp;
 
-    constructor(private decimalSeparator: (amount:string) => AllowedDecimalSeparators, private locale: string) {
+    constructor(private decimalSeparator: (amount: string) => AllowedDecimalSeparators, private locale: string) {
         this.strictNumberPattern = new RegExp(`^${numberPattern(locale)}$`);
         this.globalNumberPattern = NamedRegExp.create(`(?<number>${numberPattern(locale)})`, 'g');
     }
