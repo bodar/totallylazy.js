@@ -6,4 +6,4 @@
 build/artifacts
 node_modules
 *.log
-src/money/currencies.ts
+dist

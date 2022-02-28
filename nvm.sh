@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-set -e
+set -Eeo pipefail
 
 export NVM_DIR=${NVM_DIR-$HOME/.nvm}
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 function install() {
     if [[ ! -d $NVM_DIR ]]; then
@@ -12,23 +13,19 @@ function install() {
     if [[ ! $(command -v nvm) ]]; then
         set +e
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        set -e
-    fi
+        set -Eeo pipefail
+fi
 
     nvm install
 }
 
 function setIdeaToUseNvm() {
-    if [ -f .idea/workspace.xml ]; then
+    if [ -f "${SCRIPT_DIR}/.idea/workspace.xml" ]; then
         NODE_VERSION=$(nvm use |  grep -oEi 'v[0-9.]+' | head -1)
         echo Setting IDEA workspace to $NODE_VERSION
-        sed -ie "s/\.nvm\/versions\/node\/[^/]\+/\.nvm\/versions\/node\/${NODE_VERSION}/g" .idea/workspace.xml
+        sed -ie "s/\.nvm\/versions\/node\/[^/]\+/\.nvm\/versions\/node\/${NODE_VERSION}/g" "${SCRIPT_DIR}/.idea/workspace.xml"
     fi
 }
 
 install
 setIdeaToUseNvm
-
-
-
-

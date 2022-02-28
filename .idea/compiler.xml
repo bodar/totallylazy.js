@@ -2,8 +2,7 @@
 <project version="4">
   <component name="TypeScriptCompiler">
     <option name="enableServiceForProjectsWithoutConfig" value="false" />
-    <option name="nodeInterpreterTextField" value="$USER_HOME$/.nvm/versions/node/v12.16.1/bin/node" />
+    <option name="nodeInterpreterTextField" value="$USER_HOME$/.nvm/versions/node/v16.13.1/bin/node" />
     <option name="recompileOnChanges" value="true" />
-    <option name="showAllErrors" value="true" />
   </component>
 </project>

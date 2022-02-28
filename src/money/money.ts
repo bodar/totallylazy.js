@@ -214,20 +214,20 @@ export class CurrencySymbols extends DatumLookup<string> {
     }
 }
 
-const gbpSymbol = /[£GBP]+/;
+const gbpSymbol = /GBP|£GB|GB£|UK£|£UK/;
 
 export function symbolFor(locale: string, isoCurrency: string, hasNative = hasNativeToParts): string {
     if (hasNative) {
         const parts = partsFrom(money(isoCurrency, 0), locale, "symbol");
         const [currency] = parts.filter(p => p.type === 'currency');
         if (!currency) throw new Error("No currency found");
-        return currency.value;
+        return Spaces.remove(currency.value);
     } else {
         const example = Formatter.create('GBP', locale, "symbol").format(1).replace(gbpSymbol, '@@@');
         const other = Formatter.create(isoCurrency, locale, "symbol").format(1);
         const [, result] = different([example, other]);
         if (!result) return '£';
-        return result.replace(Spaces.pattern, '');
+        return Spaces.remove(result);
     }
 }
 

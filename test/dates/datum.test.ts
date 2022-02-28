@@ -15,7 +15,7 @@ describe("Months", function () {
         assert.deepEqual(months('en-GB'),
             ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
         assert.deepEqual(months('en-GB', "short"),
-            ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]);
+            ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]);
 
         assert.deepEqual(months('de'),
             ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]);
@@ -228,7 +228,7 @@ describe("weekdays and months", function () {
     });
 
     it('months matches native implementation', () => {
-        for (const locale of supported.filter(l => l != 'hy-Latn-IT-arevela')) {
+        for (const locale of supported.filter(l => l !== 'hy-Latn-IT-arevela' && l !== 'hy-Latn-IT')) {
             for (const option of options) {
                 assertNativeMonthsMatches(locale, option);
             }

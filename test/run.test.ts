@@ -29,7 +29,7 @@ describe("run", function () {
             for await (const text of run({command})) {
                 output.push(text);
             }
-        } catch (e) {
+        } catch (e: any) {
             exitCode = e.code;
         }
 
@@ -42,7 +42,7 @@ describe("run", function () {
         try {
             for await (const text of run({command})) {
             }
-        } catch (e) {
+        } catch (e: any) {
             assert.deepEqual(e.code, 'ENOENT');
         }
     });
