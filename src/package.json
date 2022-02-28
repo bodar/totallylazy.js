@@ -16,7 +16,7 @@
     "circular": "madge --extensions ts --circular .",
     "generate": "esr money/generate-currencies.ts",
     "perf": "esr perf/trie.ts",
-    "prepublishOnly": "sed \"s/0\\.0\\.0/${VERSION}/g\" package.json > ../dist/package.json; cp ../../README.md ../dist/",
+    "prepublishOnly": "sed \"s/0\\.0\\.0/${VERSION}/g\" package.json > ../dist/package.json; cp ../README.md ../dist/",
     "postpublish": "rm ../dist/package.json ../dist/README.md"
   },
   "publishConfig": {
