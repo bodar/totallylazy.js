@@ -14,7 +14,7 @@ import {runningInNode} from "../../src/node";
 import NumberFormatPart = Intl.NumberFormatPart;
 import {Currency} from "../../src/money/currencies-def";
 import {get} from "../../src/functions";
-import {infer, prefer} from '../../src/dates/formatting';
+import {infer, prefer} from "../../src/dates/strategy";
 
 export const numberLocales = locales.flatMap(locale => get(() => Intl.NumberFormat.supportedLocalesOf(locale), []));
 const amounts = [1234567.89, 156, 156.89, .1234, 0];

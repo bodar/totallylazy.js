@@ -15,9 +15,11 @@ import {
     date,
     DateFactory,
     DateFactoryParts,
+    Datum,
     defaultOptions,
     Format,
     hasNativeToParts,
+    MatchStrategy,
     Month,
     MonthFormat,
     Options,
@@ -28,9 +30,9 @@ import {flatten, unique} from "../arrays";
 import {get} from "../functions";
 import {extraDelimiters, mappingParser, namedRegexParser, or, Parser, preProcess} from "../parsing";
 import {DEFAULT_COMPARATOR, PrefixTree} from "../trie";
-import {PreferredCurrencies} from "../money/preferred-currencies";
 import {Comparator, Mapper} from "../collections";
 import {DateFormatter, dateTimeFormat, optionsFrom, partsFrom, StringDateFormatter} from "./format";
+import {atBoundaryOnly, boundaryDelimiters, cleanValue, uniqueMatch} from "./functions";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
@@ -82,11 +84,6 @@ export function format(value: Date, locale: string, options: Format | Options = 
     return Formatters.create(locale, options).format(value);
 }
 
-export interface Datum<V> {
-    name: string;
-    value: V;
-}
-
 export class DatumLookup<V> {
     private readonly prefixTree: PrefixTree<Datum<V>[]>;
 
@@ -118,61 +115,6 @@ export class DatumLookup<V> {
     get characters(): string[] {
         return unique(flatten(this.data.map(d => d.name).map(characters))).sort();
     }
-}
-
-export type MatchStrategy<V> = (prefixTree: PrefixTree<Datum<V>[]>, value: string) => V | undefined;
-
-export function uniqueMatch<V>(prefixTree: PrefixTree<Datum<V>[]>, value: string): V | undefined {
-    const matches = flatten(prefixTree.match(value));
-    const data = unique(matches.map(d => d.value));
-    if (data.length != 1) return undefined;
-    return data[0];
-}
-
-export function prefer<V>(value: undefined): undefined;
-export function prefer<V>(...values: V[]): MatchStrategy<V>;
-export function prefer<V>(...values: V[]): MatchStrategy<V> | undefined {
-    if (values.filter(Boolean).length === 0) return undefined;
-    return (prefixTree: PrefixTree<Datum<V>[]>, value: string) => {
-        const matches = prefixTree.lookup(value) || [];
-        const data = unique(matches.map(d => d.value));
-        if (data.length === 0) return;
-        if (data.length === 1) return data[0];
-        return data.find(m => values.indexOf(m) !== -1);
-    };
-}
-
-function localeParts(locale: string): string[] {
-    if (!locale) return [];
-    return locale.split(/[-_]/).filter(Boolean);
-}
-
-export function infer(locale: string): MatchStrategy<string> {
-    const [, country] = localeParts(locale);
-    const preferred = PreferredCurrencies.for(country);
-
-    return (prefixTree: PrefixTree<Datum<string>[]>, value: string) => {
-        const matches = prefixTree.lookup(value) || [];
-        const allCodes = unique(matches.map(d => d.value));
-        if (allCodes.length === 0) return;
-        if (allCodes.length === 1) return allCodes[0];
-
-        const bestMatch = allCodes.filter(iso => iso.startsWith(country));
-        if (bestMatch.length === 1) return bestMatch[0];
-
-        return allCodes.find(m => preferred.indexOf(m) !== -1);
-    };
-}
-
-export const boundaryDelimiters = ',.';
-const trailingDelimiters = new RegExp(`[${boundaryDelimiters}]$`);
-
-export function cleanValue(value: string): string {
-    return value.replace(trailingDelimiters, '');
-}
-
-export function atBoundaryOnly(pattern: string): string {
-    return `(?:^|\\s)${pattern}(?=[\\s${boundaryDelimiters}]|$)`;
 }
 
 export type Numeral = Datum<number>;

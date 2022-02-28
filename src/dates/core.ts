@@ -1,3 +1,5 @@
+import {PrefixTree} from "../trie";
+
 declare global {
     interface String {
         toLocaleLowerCase(locale: string): string;
@@ -119,3 +121,10 @@ export function yearOf(date: Date): number {
 }
 
 export const hasNativeToParts = typeof Intl.DateTimeFormat.prototype.formatToParts == 'function';
+
+export interface Datum<V> {
+    name: string;
+    value: V;
+}
+
+export type MatchStrategy<V> = (prefixTree: PrefixTree<Datum<V>[]>, value: string) => V | undefined;
