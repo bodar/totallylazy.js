@@ -7,7 +7,6 @@ import {
     DateFactory,
     DateFactoryParts,
     dayOf,
-    hasNativeToParts,
     Month,
     monthOf,
     Options,

@@ -5,7 +5,6 @@ import {
     dayOf,
     Days,
     format,
-    hasNativeToParts,
     InferYear,
     InferYearViaWeekday,
     monthOf,
