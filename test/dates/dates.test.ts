@@ -34,8 +34,8 @@ export function assertDates(parsed: Date, expected: Date) {
     assert.equal(parsed.toISOString(), expected.toISOString());
 }
 
-export function assertParse(locale: string, value: string, expected: Date, options?: string | Options, native = hasNativeToParts) {
-    const parsed = parse(value, locale, options, native);
+export function assertParse(locale: string, value: string, expected: Date, options?: string | Options) {
+    const parsed = parse(value, locale, options);
     assertDates(parsed, expected);
 }
 
@@ -526,8 +526,12 @@ describe("dates", function () {
     });
 
     it("can parse using non native implementation", () => {
-        assertParse('en-US', 'Monday, January 28, 2019', date(2019, 1, 28),
-            {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'}, false);
+        assertParse('en-US', 'Monday, January 28, 2019', date(2019, 1, 28), {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+        });
     });
 
     it("can extract multiple dates from the same text", () => {

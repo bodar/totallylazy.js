@@ -16,8 +16,8 @@ import {
 } from "./core";
 import {mapIgnoreError, parser} from "./formatting";
 
-export function parse(value: string, locale: string, options?: string | Options, native = hasNativeToParts): Date {
-    return parser(locale, options, native).parse(value);
+export function parse(value: string, locale: string, options?: string | Options): Date {
+    return parser(locale, options).parse(value);
 }
 
 class CompositeDateFactory implements DateFactory {

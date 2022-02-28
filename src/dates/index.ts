@@ -5,3 +5,5 @@ export * from './formatting';
 export * from "./functions";
 export * from './parsing';
 export * from "./strategy";
+export * from "./datum";
+export * from "./non-native";

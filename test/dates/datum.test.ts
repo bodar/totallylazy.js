@@ -172,7 +172,7 @@ describe("weekdays and months", function () {
     });
 
     it("non native version can still extract months from simple long format", () => {
-        assert.deepEqual(months('en-GB', 'long', false), ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
+        assert.deepEqual(months('en-GB', 'long'), ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
     });
 
     it("non native version can still extract months from contextual long format", () => {
@@ -188,31 +188,31 @@ describe("weekdays and months", function () {
 
     });
 
-    it("non native version can still extract weeks from single long format", () => {
-        assert.deepEqual(weekdays('en-GB', 'long', false), weekdays('en-GB', 'long', true));
-    });
+    // it("non native version can still extract weeks from single long format", () => {
+    //     assert.deepEqual(weekdays('en-GB', 'long'), weekdays('en-GB', 'long'));
+    // });
+    //
+    // it("non native version can still extract weekdays from contextual long format", () => {
+    //     assertNativeWeekdaysMatches('en-GB', {year: 'numeric', month: "long", day: 'numeric', weekday: 'long'});
+    //     // assertNativeWeekdaysMatches('ja', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
+    // });
 
-    it("non native version can still extract weekdays from contextual long format", () => {
-        assertNativeWeekdaysMatches('en-GB', {year: 'numeric', month: "long", day: 'numeric', weekday: 'long'});
-        // assertNativeWeekdaysMatches('ja', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
-    });
-
-    it("non native version works with arabic symbols", () => {
-        assertNativeWeekdaysMatches('ar-EG', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
-        assertNativeMonthsMatches('ar-EG', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
-    });
+    // it("non native version works with arabic symbols", () => {
+    //     assertNativeWeekdaysMatches('ar-EG', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
+    //     assertNativeMonthsMatches('ar-EG', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
+    // });
 
     it("returns no data when no format is asked for", () => {
-        assert.deepEqual(weekdays('en-GB', {}, false),[]);
-        assert.deepEqual(months('en-GB', {}, false),[]);
+        assert.deepEqual(weekdays('en-GB', {}),[]);
+        assert.deepEqual(months('en-GB', {}),[]);
     });
 
     function assertNativeWeekdaysMatches(locale: string, option: Options) {
-        assert.deepEqual(cleanse(weekdays(locale, option, false)), cleanse(weekdays(locale, option, true)), `weekdays dont match '${locale}', ${JSON.stringify(option)}`);
+        assert.deepEqual(cleanse(weekdays(locale, option)), cleanse(weekdays(locale, option)), `weekdays dont match '${locale}', ${JSON.stringify(option)}`);
     }
 
     function assertNativeMonthsMatches(locale: string, option: Options) {
-        assert.deepEqual(cleanse(months(locale, option, false)), cleanse(months(locale, option, true)), `months dont match '${locale}', ${JSON.stringify(option)}`);
+        assert.deepEqual(cleanse(months(locale, option)), cleanse(months(locale, option)), `months dont match '${locale}', ${JSON.stringify(option)}`);
     }
 
     function cleanse(values: string[]):string[] {
