@@ -1,15 +1,3 @@
-import {
-    date,
-    defaultOptions, Format,
-    months,
-    Months,
-    Options,
-    optionsFrom,
-    partsFrom,
-    valueFromParts, Weekday,
-    weekdays,
-    Weekdays
-} from "./index";
 import {lazy} from "../lazy";
 import {characters, isNamedMatch, NamedRegExp} from "../characters";
 import {map} from "../transducers";
@@ -19,6 +7,9 @@ import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import {cache} from "../cache";
 import {DatumLookup, digits, Numerals} from "../parsing";
 import {array} from "../array";
+import {date, defaultOptions, Format, Options, Weekday} from "./core";
+import {Months, months, valueFromParts, Weekdays, weekdays} from "./datum";
+import {optionsFrom, partsFrom} from "./parsing";
 
 export class Formatters {
     @cache

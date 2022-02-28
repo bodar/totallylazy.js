@@ -1,5 +1,3 @@
-import {DateFactory} from "./parsing";
-
 declare global {
     interface String {
         toLocaleLowerCase(locale: string): string;
@@ -40,6 +38,17 @@ export type WeekdayFormat = 'short' | 'long';
  *      EEEE: long (Monday)
  */
 export type Format = string;
+
+export interface DateFactoryParts {
+    day: number;
+    month: Month;
+    year?: number;
+    weekday?: Weekday;
+}
+
+export interface DateFactory {
+    create(parts: DateFactoryParts): Date;
+}
 
 export interface Options {
     year?: 'numeric' | '2-digit';

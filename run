@@ -18,8 +18,8 @@ function build() {
   else
     pnpm install --no-frozen-lockfile
   fi
-  pnpm exec tsc --build --force
 #  pnpm circular -r --if-present
+  pnpm exec tsc --build --force
   pnpm test -r --filter=*test
 }
 

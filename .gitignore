@@ -3,7 +3,7 @@
 .idea/codeStyles
 .idea/.gitignore
 .npmrc
-build/artifacts
 node_modules
 *.log
 dist
+tsconfig.tsbuildinfo

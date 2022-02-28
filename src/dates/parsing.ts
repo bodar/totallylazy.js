@@ -1,21 +1,13 @@
 import {lazy} from "../lazy";
 import {unique} from "../arrays";
 import {characters, isNamedMatch, NamedMatch, NamedRegExp} from "../characters";
+
 import {
-    date, dayOf,
-    defaultOptions,
-    Format,
-    formatData,
-    hasNativeToParts,
-    Month, monthOf,
-    Months,
-    Options,
-    Weekday, weekdayOf,
-    Weekdays, yearOf,
-} from "./index";
-import {
-    atBoundaryOnly, boundaryDelimiters,
-    digits, extraDelimiters, mapIgnoreError,
+    atBoundaryOnly,
+    boundaryDelimiters,
+    digits,
+    extraDelimiters,
+    mapIgnoreError,
     mappingParser,
     namedRegexParser,
     numberParser,
@@ -27,10 +19,24 @@ import {flatMap, map, zip} from "../transducers";
 import {cache} from "../cache";
 import {get} from "../functions";
 import {Clock, SystemClock} from "./clock";
-import DateTimeFormatPart = Intl.DateTimeFormatPart;
-import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 import {range} from "../sequence";
 import {array} from "../array";
+import DateTimeFormatPart = Intl.DateTimeFormatPart;
+import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
+import {
+    date,
+    DateFactory,
+    DateFactoryParts,
+    dayOf,
+    defaultOptions, Format,
+    Month,
+    monthOf,
+    Options,
+    weekdayOf,
+    yearOf
+} from "./core";
+import {formatData, hasNativeToParts} from "./formatting";
+import {Months, Weekdays} from "./datum";
 
 export function parse(value: string, locale: string, options?: string | Options, native = hasNativeToParts): Date {
     return parser(locale, options, native).parse(value);
@@ -143,17 +149,6 @@ export function dateFrom(parts: DateTimeFormatPart[],
     const weekday = weekdayText ? get(() => Weekdays.get(locale).parse(weekdayText.value)) : undefined;
 
     return factory.create({year, month, day, weekday});
-}
-
-export interface DateFactoryParts {
-    day: number;
-    month: Month;
-    year?: number;
-    weekday?: Weekday;
-}
-
-export interface DateFactory {
-    create(parts: DateFactoryParts): Date;
 }
 
 export class DefaultDateFactory implements DateFactory {
