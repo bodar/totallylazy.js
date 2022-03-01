@@ -1,7 +1,8 @@
-import {Format, Options} from "./core";
+import {defaultOptions, Format, Options} from "./core";
 import {array} from "../array";
 import {map} from "../transducers";
-import {isNamedMatch, NamedRegExp} from "../characters";
+import {isNamedMatch, NamedRegExp, removeUnicodeMarkers} from "../characters";
+import {cache} from "../cache";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
@@ -65,4 +66,65 @@ export function optionsFrom(formatOrParts: Format | DateTimeFormatPart[]): Optio
         a[p.type] = p.value;
         return a;
     }, typeof formatOrParts === "string" ? {format: formatOrParts} : {} as any);
+}
+
+export class Formatters {
+    @cache
+    static create(locale: string, options: string | Options): DateFormatter {
+        if (typeof options === "string") return new SimpleFormat(locale, options);
+        if (typeof options.format === "string") return new SimpleFormat(locale, options.format);
+        return new ImprovedDateTimeFormat(locale, options);
+    }
+}
+
+export class ImprovedDateTimeFormat implements DateFormatter {
+    constructor(private locale: string, private options: Options, private delegate: DateTimeFormat = dateTimeFormat(locale, options)) {
+    }
+
+    format(date: Date): string {
+        return removeUnicodeMarkers(this.delegate.format(date));
+    }
+
+    formatToParts(date: Date): Intl.DateTimeFormatPart[] {
+        return this.delegate.formatToParts(date);
+    }
+}
+
+
+export class SimpleFormat implements DateFormatter {
+    private partsInOrder: DateTimeFormatPart[];
+    private options: Options;
+
+    constructor(private locale: string, private formatString: Format) {
+        this.partsInOrder = partsFrom(formatString);
+        this.options = optionsFrom(this.partsInOrder);
+    }
+
+    format(date: Date): string {
+        return this.formatToParts(date).map(p => p.value).join("");
+    }
+
+    formatToParts(date: Date): Intl.DateTimeFormatPart[] {
+        const partsWithValues = dateTimeFormat(this.locale, this.options).formatToParts(date);
+        return this.partsInOrder.map(p => ({type: p.type, value: this.valueFor(partsWithValues, p.type, p.value)}));
+    }
+
+    private valueFor(partsWithValues: Intl.DateTimeFormatPart[], type: DateTimeFormatPartTypes, value: string): string {
+        if (type === 'literal') return value;
+        return valueFromParts(partsWithValues, type);
+    }
+}
+
+export function valueFromParts(parts: DateTimeFormatPart[], partType: Intl.DateTimeFormatPartTypes) {
+    return parts.filter(p => p.type === partType).map(p => p.value).join('');
+}
+
+export function format(value: Date, locale: string, options: Format | Options = defaultOptions): string {
+    if (value == undefined) throw new Error("Date format requires a value");
+    return Formatters.create(locale, options).format(value);
+}
+
+export function formatData(value: Date, locale: string, options: Options = defaultOptions): DateTimeFormatPart[] {
+    const formatter = Formatters.create(locale, options);
+    return formatter.formatToParts(value);
 }

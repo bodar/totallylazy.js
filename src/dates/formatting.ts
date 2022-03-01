@@ -1,5 +1,5 @@
 import {lazy} from "../lazy";
-import {characters, NamedMatch, NamedRegExp, removeUnicodeMarkers} from "../characters";
+import {characters, NamedMatch, NamedRegExp} from "../characters";
 import {flatMap, map, zip} from "../transducers";
 import {cache, caching} from "../cache";
 import {array} from "../array";
@@ -20,39 +20,11 @@ import {flatten, unique} from "../arrays";
 import {get} from "../functions";
 import {extraDelimiters, mappingParser, namedRegexParser, or, Parser, preProcess} from "../parsing";
 import {Mapper} from "../collections";
-import {DateFormatter, dateTimeFormat, optionsFrom, partsFrom} from "./format";
+import {formatData, Formatters, optionsFrom, partsFrom, valueFromParts} from "./format";
 import {atBoundaryOnly, boundaryDelimiters, cleanValue} from "./functions";
 import {DatumLookup} from "./datum";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
-import DateTimeFormat = Intl.DateTimeFormat;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
-
-export class Formatters {
-    @cache
-    static create(locale: string, options: string | Options): DateFormatter {
-        if (typeof options === "string") return new SimpleFormat(locale, options);
-        if (typeof options.format === "string") return new SimpleFormat(locale, options.format);
-        return new ImprovedDateTimeFormat(locale, options);
-    }
-}
-
-export class ImprovedDateTimeFormat implements DateFormatter {
-    constructor(private locale: string, private options: Options, private delegate: DateTimeFormat = dateTimeFormat(locale, options)) {
-    }
-
-    format(date: Date): string {
-        return removeUnicodeMarkers(this.delegate.format(date));
-    }
-
-    formatToParts(date: Date): Intl.DateTimeFormatPart[] {
-        return this.delegate.formatToParts(date);
-    }
-}
-
-export function format(value: Date, locale: string, options: Format | Options = defaultOptions): string {
-    if (value == undefined) throw new Error("Date format requires a value");
-    return Formatters.create(locale, options).format(value);
-}
 
 export type Numeral = Datum<number>;
 
@@ -340,10 +312,6 @@ export class BaseDataExtractor {
     }
 }
 
-export function valueFromParts(parts: DateTimeFormatPart[], partType: Intl.DateTimeFormatPartTypes) {
-    return parts.filter(p => p.type === partType).map(p => p.value).join('');
-}
-
 export class NativeDataExtractor extends BaseDataExtractor implements DataExtractor {
     extract(): string[] {
         const formatter = Formatters.create(this.locale, this.options);
@@ -496,34 +464,5 @@ export function localeParser(locale: string, options?: Format | Options): Parser
 
 export function formatBuilder(locale: string, format: Format, strict: boolean = false): RegexBuilder {
     return new RegexBuilder(locale, {...optionsFrom(format), strict}, partsFrom(format))
-}
-
-export class SimpleFormat implements DateFormatter {
-    private partsInOrder: DateTimeFormatPart[];
-    private options: Options;
-
-    constructor(private locale: string, private formatString: Format) {
-        this.partsInOrder = partsFrom(formatString);
-        this.options = optionsFrom(this.partsInOrder);
-    }
-
-    format(date: Date): string {
-        return this.formatToParts(date).map(p => p.value).join("");
-    }
-
-    formatToParts(date: Date): Intl.DateTimeFormatPart[] {
-        const partsWithValues = dateTimeFormat(this.locale, this.options).formatToParts(date);
-        return this.partsInOrder.map(p => ({type: p.type, value: this.valueFor(partsWithValues, p.type, p.value)}));
-    }
-
-    private valueFor(partsWithValues: Intl.DateTimeFormatPart[], type: DateTimeFormatPartTypes, value: string): string {
-        if (type === 'literal') return value;
-        return valueFromParts(partsWithValues, type);
-    }
-}
-
-export function formatData(value: Date, locale: string, options: Options = defaultOptions): DateTimeFormatPart[] {
-    const formatter = Formatters.create(locale, options);
-    return formatter.formatToParts(value);
 }
 

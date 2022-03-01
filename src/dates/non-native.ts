@@ -3,7 +3,6 @@ import {different, isNamedMatch, NamedRegExp, replace} from "../characters";
 import {
     BaseDataExtractor,
     DataExtractor,
-    Formatters,
     months,
     Months,
     numberFormatter,
@@ -13,7 +12,7 @@ import {
 } from "./formatting";
 import {cache} from "../cache";
 import {lazy} from "../lazy";
-import {DateFormatter, StringDateFormatter} from "./format";
+import {DateFormatter, Formatters, StringDateFormatter} from "./format";
 import {array} from "../array";
 import {map} from "../transducers";
 import {DatumLookup} from "./datum";
