@@ -22,7 +22,7 @@ export interface PartsDateFormatter {
 
 export type DateFormatter = StringDateFormatter & PartsDateFormatter;
 
-export function formatFrom(type: DateTimeFormatPartTypes, length: number): string {
+function formatFrom(type: DateTimeFormatPartTypes, length: number): string {
     if (type === 'year') {
         if (length === 4) return "numeric";
         if (length === 2) return "2-digit";
@@ -44,7 +44,7 @@ export function formatFrom(type: DateTimeFormatPartTypes, length: number): strin
     throw new Error(`Illegal Argument: ${type} ${length}`);
 }
 
-export const formatRegex = NamedRegExp.create('(?:(?<year>y+)|(?<month>M+)|(?<day>d+)|(?<weekday>E+))', 'g');
+const formatRegex = NamedRegExp.create('(?:(?<year>y+)|(?<month>M+)|(?<day>d+)|(?<weekday>E+))', 'g');
 
 export function partsFrom(format: Format): DateTimeFormatPart[] {
     return array(formatRegex.iterate(format), map(matchOrNot => {

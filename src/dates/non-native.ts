@@ -1,8 +1,6 @@
 import {date, defaultOptions, Options, Weekday} from "./core";
 import {different, isNamedMatch, NamedRegExp, replace} from "../characters";
 import {
-    BaseDataExtractor,
-    DataExtractor,
     months,
     Months,
     numberFormatter,
@@ -18,6 +16,7 @@ import {map} from "../transducers";
 import {DatumLookup} from "./datum";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
+import {BaseDataExtractor, DataExtractor} from "./extractors";
 
 export function exactFormat(locale: string, options: Options, dates: Date[]): string[] {
     const formatter = Formatters.create(locale, options);

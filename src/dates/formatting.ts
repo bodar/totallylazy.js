@@ -20,9 +20,10 @@ import {flatten, unique} from "../arrays";
 import {get} from "../functions";
 import {extraDelimiters, mappingParser, namedRegexParser, or, Parser, preProcess} from "../parsing";
 import {Mapper} from "../collections";
-import {formatData, Formatters, optionsFrom, partsFrom, valueFromParts} from "./format";
+import {formatData, optionsFrom, partsFrom} from "./format";
 import {atBoundaryOnly, boundaryDelimiters, cleanValue} from "./functions";
 import {DatumLookup} from "./datum";
+import {NativeDataExtractor} from "./extractors";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
 
@@ -298,25 +299,6 @@ export function weekdays(locale: string, weekdayFormat: WeekdayFormat | Options 
 
         return new NativeDataExtractor(locale, options, dates, 'weekday').extract();
     })();
-}
-
-export interface DataExtractor {
-    extract(): string[];
-}
-
-export class BaseDataExtractor {
-    constructor(protected locale: string,
-                protected options: Options,
-                protected dates: Date[],
-                protected partType: DateTimeFormatPartTypes) {
-    }
-}
-
-export class NativeDataExtractor extends BaseDataExtractor implements DataExtractor {
-    extract(): string[] {
-        const formatter = Formatters.create(this.locale, this.options);
-        return this.dates.map(d => valueFromParts(formatter.formatToParts(d), this.partType)).map(cleanValue);
-    }
 }
 
 export class RegexBuilder {

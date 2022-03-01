@@ -7,3 +7,6 @@ export * from './parsing';
 export * from "./strategy";
 export * from "./datum";
 export * from "./non-native";
+export {NativeDataExtractor} from "./extractors";
+export {BaseDataExtractor} from "./extractors";
+export {DataExtractor} from "./extractors";
