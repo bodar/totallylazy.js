@@ -81,17 +81,18 @@ export class Numerals extends DatumLookup<number> {
         return !isNaN(number) ? number : super.parse(value);
     }
 
+    @lazy get pattern(): string {
+        const characters = this.characters.join('');
+        if (characters === '0123456789') return '\\d';
+        return `\\d${characters}`;
+    }
+
     format(value: number): string {
         return numberFormatter(this.locale).format(value);
     }
 }
 
 export const numberFormatter = caching((locale: string) => new Intl.NumberFormat(locale, {useGrouping: false}));
-export const digits = caching((locale: string) => {
-    const characters = Numerals.get(locale).characters.join('');
-    if (characters === '0123456789') return '\\d';
-    return `\\d${characters}`;
-});
 
 export class Spaces {
     static codes: string[] = [32, 160, 8239].map(code => String.fromCharCode(code));
@@ -110,7 +111,7 @@ export class Spaces {
 
 const allowedSeparators = `٬٫,.'’‘${Spaces.spaces}`;
 export const numberPattern = caching((locale: string) => {
-    const d = digits(locale);
+    const d = Numerals.get(locale).pattern;
     return `-?(?:[${d}]+[${allowedSeparators}])*[${d}]+`;
 });
 
@@ -368,11 +369,11 @@ export class RegexBuilder {
         const pattern = this.formatted.map((part, index) => {
             switch (part.type) {
                 case "year":
-                    return `(?<year>[${digits(this.locale)}]{${this.lengthOf(part.value)}})`;
+                    return `(?<year>[${(Numerals.get(this.locale).pattern)}]{${this.lengthOf(part.value)}})`;
                 case "month":
                     return `(?<month>${this.monthsPattern()})`;
                 case "day":
-                    return `(?<day>[${digits(this.locale)}]{1,2})`;
+                    return `(?<day>[${(Numerals.get(this.locale).pattern)}]{1,2})`;
                 case "weekday":
                     return `(?<weekday>${Weekdays.get(this.locale).pattern.toLocaleLowerCase(this.locale)})`;
                 default: {
@@ -399,7 +400,7 @@ export class RegexBuilder {
     }
 
     private monthsPattern(): string {
-        const numericPattern = `[${digits(this.locale)}]{1,2}`;
+        const numericPattern = `[${(Numerals.get(this.locale).pattern)}]{1,2}`;
         const textPattern = Months.get(this.locale).pattern.toLocaleLowerCase(this.locale);
         if (this.options.month === "2-digit" || this.options.month === "numeric") return numericPattern;
         if (this.options.month === "short" || this.options.month === "long") return textPattern;

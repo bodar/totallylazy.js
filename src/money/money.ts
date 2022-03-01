@@ -4,25 +4,24 @@ import {ascending, by, descending} from "../collections";
 import {flatten} from "../arrays";
 import {currencies} from "./currencies";
 import {lazy} from "../lazy";
-import {
-    mappingParser,
-    namedRegexParser, Parser
-} from "../parsing";
+import {mappingParser, namedRegexParser, Parser} from "../parsing";
 import {Currencies, Currency} from "./currencies-def";
 import {cache} from "../cache";
-import NumberFormatPart = Intl.NumberFormatPart;
 import {get} from "../functions";
 import {array} from "../array";
 import {
     AllowedDecimalSeparators,
     atBoundaryOnly,
-    cleanValue, Datum, DatumLookup,
-    digits,
-    infer, MatchStrategy,
+    cleanValue,
+    Datum,
+    DatumLookup,
+    infer,
+    MatchStrategy,
     numberParser,
     Numerals,
     Spaces
 } from "../dates";
+import NumberFormatPart = Intl.NumberFormatPart;
 
 /**
  *
@@ -246,7 +245,7 @@ export class RegexBuilder {
     static buildFrom(raw: NumberFormatPart[], locale: string, strict: boolean = false): string {
         const noGroups = this.buildParts(raw, strict);
         const [group = ''] = raw.filter(p => p.type === 'group').map(p => p.value);
-        const d = digits(locale);
+        const numbers = Numerals.get(locale).pattern;
 
         const pattern = noGroups.map(part => {
             switch (part.type) {
@@ -255,9 +254,9 @@ export class RegexBuilder {
                 case "decimal":
                     return `(?<decimal>[${part.value}]?)`;
                 case "fraction":
-                    return `(?<fraction>[${d}]*)`;
+                    return `(?<fraction>[${numbers}]*)`;
                 case "integer":
-                    return `(?<integer-group>[${d}${Spaces.handle(group)}]*[${d}]+)`;
+                    return `(?<integer-group>[${numbers}${Spaces.handle(group)}]*[${numbers}]+)`;
                 default:
                     return `(?<${part.type}>[${Spaces.handle(part.value)}]?)`;
             }
@@ -371,7 +370,7 @@ export class IntegerGroupParser {
 
     @cache
     static digits(locale:string): IntegerGroupParser {
-        return new IntegerGroupParser(NamedRegExp.create(`(?<integer>[${digits(locale)}]+)`));
+        return new IntegerGroupParser(NamedRegExp.create(`(?<integer>[${(Numerals.get(locale).pattern)}]+)`));
     }
 
     @lazy

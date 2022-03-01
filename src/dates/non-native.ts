@@ -3,7 +3,6 @@ import {different, isNamedMatch, NamedRegExp, replace} from "../characters";
 import {
     BaseDataExtractor,
     DataExtractor,
-    digits,
     Formatters,
     months,
     Months,
@@ -184,16 +183,16 @@ export class LearningDateFormatter implements DateFormatter {
     }
 
     @lazy get actualNamesPattern(): NamedRegExp {
-        const d = digits(this.locale);
+        const numbers = Numerals.get(this.locale).pattern;
         const learningRegex = this.learningNamesPattern;
 
         const result = array(learningRegex.iterate(this.formatted), map(value => {
             if (isNamedMatch(value)) {
                 let [type] = value.filter(n => Boolean(n.value)).map(n => n.name);
                 if (!type) throw new Error();
-                if (type == 'year') return `(?<year>[${d}]{4})`;
-                else if (type == "day") return `(?<day>[${d}]{1,2})`;
-                else if (type == "month") return `(?<month>(?:[${d}]{1,2}|${this.months.pattern}))`;
+                if (type == 'year') return `(?<year>[${numbers}]{4})`;
+                else if (type == "day") return `(?<day>[${numbers}]{1,2})`;
+                else if (type == "month") return `(?<month>(?:[${numbers}]{1,2}|${this.months.pattern}))`;
                 else if (type == "weekday") return `(?<weekday>${this.weekdays.pattern})`;
             } else {
                 return `(?<literal>[${value}]+?)`;

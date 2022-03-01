@@ -26,7 +26,7 @@ export class DatumLookup<V> {
         return `[${this.characters.join('')}]{1,${this.max}}`;
     }
 
-    get max(): number {
+    private get max(): number {
         return this.data.reduce((max, l) => {
             const length = characters(l.name).length;
             return Math.max(max, length);

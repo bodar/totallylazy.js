@@ -3,7 +3,7 @@ import {characters} from "../src/characters";
 import {sequence} from "../src/sequence";
 import {zip} from "../src/transducers/zip";
 import {CachingParser, Parser} from "../src/parsing";
-import {digits, Numerals} from '../src/dates/formatting';
+import {Numerals} from '../src/dates/formatting';
 
 describe('CachingParser', () => {
     it('only calls the underlying parser once per value', () => {
@@ -46,7 +46,7 @@ describe('Numerals', () => {
 
 describe('digits', () => {
     it('works', function () {
-        assert.equal(digits('fr'), '\\d')
-        assert.equal(digits('ar-EG'), '\\d٠١٢٣٤٥٦٧٨٩')
+        assert.equal(Numerals.get('fr').pattern, '\\d')
+        assert.equal(Numerals.get('ar-EG').pattern, '\\d٠١٢٣٤٥٦٧٨٩')
     });
 })
