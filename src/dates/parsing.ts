@@ -2,17 +2,7 @@ import {flatMap, zip} from "../transducers";
 import {Clock, SystemClock} from "./clock";
 import {range} from "../sequence";
 import {array} from "../array";
-import {
-    date,
-    DateFactory,
-    DateFactoryParts,
-    dayOf,
-    Month,
-    monthOf,
-    Options,
-    weekdayOf,
-    yearOf
-} from "./core";
+import {date, DateFactory, DateFactoryParts, Days, Month, Options, weekdayOf, yearOf} from "./core";
 import {mapIgnoreError, parser} from "./formatting";
 
 export function parse(value: string, locale: string, options?: string | Options): Date {
@@ -146,29 +136,6 @@ export class SmartDate implements DateFactory {
             return InferYear.after(this.clock.now()).create(parts);
         }
         return InferYear.sliding(this.clock).create(parts);
-    }
-}
-
-
-export class Days {
-    static milliseconds = 24 * 60 * 60 * 1000;
-
-    static startOf(value: Date) {
-        return date(yearOf(value), monthOf(value), dayOf(value));
-    }
-
-    static add(date: Date, days: number) {
-        const newDate = new Date(date.getTime());
-        newDate.setUTCDate(date.getUTCDate() + days);
-        return newDate;
-    }
-
-    static subtract(date: Date, days: number) {
-        return Days.add(date, days * -1);
-    }
-
-    static between(a: Date, b: Date): number {
-        return Math.abs((a.getTime() - b.getTime()) / Days.milliseconds);
     }
 }
 
