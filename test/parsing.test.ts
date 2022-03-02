@@ -3,7 +3,7 @@ import {characters} from "../src/characters";
 import {sequence} from "../src/sequence";
 import {zip} from "../src/transducers/zip";
 import {CachingParser, Parser} from "../src/parsing";
-import {Numerals} from '../src/dates/formatting';
+import {Numerals} from "../src/dates/datum";
 
 describe('CachingParser', () => {
     it('only calls the underlying parser once per value', () => {

@@ -52,7 +52,22 @@ export interface DateFactory {
     create(parts: DateFactoryParts): Date;
 }
 
-export interface Options {
+export interface PatternParser<V> {
+    parse(value: string): V;
+    pattern: string;
+}
+
+export interface ParserBuilder<V> {
+    build(locale:string): PatternParser<V>;
+    namesFor(locale: string, options: Options): string[];
+}
+
+export interface Dependencies {
+    factory?: DateFactory;
+    monthsBuilder?: ParserBuilder<Month>;
+}
+
+export interface Options extends Dependencies {
     year?: 'numeric' | '2-digit';
     month?: MonthFormat;
     day?: 'numeric' | '2-digit';
@@ -60,7 +75,6 @@ export interface Options {
     separators?: string;
     format?: Format;
     strict?: boolean;
-    factory?: DateFactory;
 }
 
 export const defaultOptions: Options = {

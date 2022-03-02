@@ -1,7 +1,7 @@
-import {date, Month, months, Months, Options, Weekday, weekdays, Weekdays} from "../../src/dates";
+import {Month, months, Months, MonthsBuilder, Options, Weekday, weekdays, Weekdays} from "../../src/dates";
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {assertParse, options, supported} from "./dates.test";
+import {options, supported} from "./dates.test";
 
 describe("Months", function () {
     before(function () {
@@ -52,20 +52,27 @@ describe("Months", function () {
             ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"]);
     });
 
-    it("can add additional data to help parsing", () => {
-        Months.set('de', Months.create('de', [{name: 'Mrz', value: Month.March}]));
-        assertParse('de', "06 Mrz 2019", date(2019, 3, 6), "dd MMM yyyy");
-    });
+    // it("can add additional data to help parsing", () => {
+    //     Months.set('de', Months.create('de', [{name: 'Mrz', value: Month.March}]));
+    //     assertParse('de', "06 Mrz 2019", date(2019, 3, 6), "dd MMM yyyy");
+    // });
+    //
+    // it("can override data to help parsing", () => {
+    //     Months.set('is-IS', Months.create('is-IS', ["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]
+    //         .map((m, i) => ({name: m, value: i + 1}))));
+    //     assertParse('is-IS', "06 jún 2019", date(2019, 6, 6), "dd MMM yyyy");
+    // });
 
-    it("can override data to help parsing", () => {
-        Months.set('is-IS', Months.create('is-IS', ["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]
-            .map((m, i) => ({name: m, value: i + 1}))));
-        assertParse('is-IS', "06 jún 2019", date(2019, 6, 6), "dd MMM yyyy");
-    });
+    // it('can add additional data as needed', () => {
+    //     const original = new MonthsBuilder().build('de');
+    //     const months = Months.set('de', Months.create("de", [{name: 'Mrz', value: Month.March}]));
+    //     assert.deepEqual(months.parse('Mrz'), Month.March);
+    //     Months.set('def', original);
+    // });
 
 
     it('is flexible in parsing as long as there is a unique match', () => {
-        const ru = Months.get('ru');
+        const ru = new MonthsBuilder().build('ru');
         assert.deepEqual(ru.parse('январь'), Month.January);
         assert.deepEqual(ru.parse('января'), Month.January);
         assert.deepEqual(ru.parse('январ'), Month.January);
@@ -74,13 +81,13 @@ describe("Months", function () {
         assert.deepEqual(ru.parse('янв.'), Month.January);
         assert.deepEqual(ru.parse('фев'), Month.February);
 
-        const de = Months.get('de');
+        const de = new MonthsBuilder().build('de');
         assert.deepEqual(de.parse('Feb'), Month.February);
         assert.deepEqual(de.parse('Feb.'), Month.February);
     });
 
     it('can get pattern', () => {
-        const ru = Months.get('ru');
+        const ru = new MonthsBuilder().build('ru');
         assert.deepEqual(ru.pattern, "[абвгдеийклмнопрстуфьюя]{1,8}");
         assert.deepEqual(new RegExp(ru.pattern).test('январь'), true);
         assert.deepEqual(new RegExp(ru.pattern).test('января'), true);
@@ -89,23 +96,18 @@ describe("Months", function () {
     });
 
     it('can also parse numbers', () => {
-        const months = Months.get('ru');
+        const months = new MonthsBuilder().build('ru');
         assert.deepEqual(months.parse('1'), Month.January);
         assert.deepEqual(months.parse('01'), Month.January);
     });
 
     it('ignores case', () => {
-        const months = Months.get('ru');
+        const months = new MonthsBuilder().build('ru');
         assert.deepEqual(months.parse('январь'.toLocaleUpperCase('ru')), Month.January);
         assert.deepEqual(months.parse('января'.toLocaleLowerCase('ru')), Month.January);
     });
 
-    it('can add additional data as needed', () => {
-        const original = Months.get('de');
-        const months = Months.set('de', Months.create("de", [{name: 'Mrz', value: Month.March}]));
-        assert.deepEqual(months.parse('Mrz'), Month.March);
-        Months.set('def', original);
-    });
+
 });
 
 describe("Weekdays", function () {
@@ -202,10 +204,10 @@ describe("weekdays and months", function () {
     //     assertNativeMonthsMatches('ar-EG', {day: "numeric", year: "numeric", month: "long", weekday: "long"});
     // });
 
-    it("returns no data when no format is asked for", () => {
-        assert.deepEqual(weekdays('en-GB', {}),[]);
-        assert.deepEqual(months('en-GB', {}),[]);
-    });
+    // it("returns no data when no format is asked for", () => {
+    //     assert.deepEqual(weekdays('en-GB', {}),[]);
+    //     assert.deepEqual(months('en-GB', {}),[]);
+    // });
 
     function assertNativeWeekdaysMatches(locale: string, option: Options) {
         assert.deepEqual(cleanse(weekdays(locale, option)), cleanse(weekdays(locale, option)), `weekdays dont match '${locale}', ${JSON.stringify(option)}`);

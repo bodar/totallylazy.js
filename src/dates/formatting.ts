@@ -1,71 +1,20 @@
 import {lazy} from "../lazy";
 import {characters, NamedMatch, NamedRegExp} from "../characters";
-import {flatMap, map, zip} from "../transducers";
+import {flatMap, map} from "../transducers";
 import {cache, caching} from "../cache";
 import {array} from "../array";
-import {
-    date,
-    DateFactory,
-    DateFactoryParts,
-    Datum,
-    defaultOptions,
-    Format,
-    Month,
-    MonthFormat,
-    Options,
-    Weekday,
-    WeekdayFormat
-} from "./core";
+import {date, DateFactory, DateFactoryParts, Datum, defaultOptions, Format, Options, Weekday} from "./core";
 import {flatten, unique} from "../arrays";
 import {get} from "../functions";
 import {extraDelimiters, mappingParser, namedRegexParser, or, Parser, preProcess} from "../parsing";
 import {Mapper} from "../collections";
 import {formatData, optionsFrom, partsFrom} from "./format";
 import {atBoundaryOnly, boundaryDelimiters, cleanValue} from "./functions";
-import {DatumLookup} from "./datum";
-import {NativeDataExtractor} from "./extractors";
+import {DatumLookup, numberOf, Numerals} from "./datum";
+import {weekdays} from "./extractors";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
-
-export type Numeral = Datum<number>;
-
-export class Numerals extends DatumLookup<number> {
-    constructor(data: Datum<number>[], private locale: string) {
-        super(data);
-    }
-
-    static cache: { [key: string]: Numerals } = {};
-
-    static get(locale: string, additionalData: Numeral[] = []): Numerals {
-        return Numerals.cache[locale] = Numerals.cache[locale] || Numerals.create(locale, additionalData);
-    }
-
-    static create(locale: string, additionalData: Numeral[] = []): Numerals {
-        return new Numerals([...Numerals.generateData(locale), ...additionalData], locale);
-    }
-
-    static generateData(locale: string): Numeral[] {
-        const digits = numberFormatter(locale).format(1234567890).replace(/[,. '٬٫]/g, '');
-        return array(characters(digits), zip([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]), map(([c, d]) => ({name: c, value: d})));
-    }
-
-    parse(value: string): number {
-        const number = numberOf(value);
-        return !isNaN(number) ? number : super.parse(value);
-    }
-
-    @lazy get pattern(): string {
-        const characters = this.characters.join('');
-        if (characters === '0123456789') return '\\d';
-        return `\\d${characters}`;
-    }
-
-    format(value: number): string {
-        return numberFormatter(this.locale).format(value);
-    }
-}
-
-export const numberFormatter = caching((locale: string) => new Intl.NumberFormat(locale, {useGrouping: false}));
+import {MonthsBuilder} from "./generators";
 
 export class Spaces {
     static codes: string[] = [32, 160, 8239].map(code => String.fromCharCode(code));
@@ -179,78 +128,6 @@ export function numberParser(decimalSeparatorOrLocale?: AllowedDecimalSeparators
 export const inferDecimalSeparator = caching((locale: string) =>
     get(() => decimalSeparator(new Intl.NumberFormat(locale).formatToParts(.1).find(e => e.type === 'decimal')!.value), '.'));
 
-export function numberOf(value: string): number {
-    if (!value || value.trim().length === 0) return NaN;
-    return Number(value);
-}
-
-export type MonthDatum = Datum<Month>;
-
-export class Months extends DatumLookup<Month> {
-    private readonly numerals: Numerals
-
-    constructor(data: Datum<Month>[], locale: string) {
-        super(data);
-        this.numerals = Numerals.get(locale);
-    }
-
-    parse(value: string): Month {
-        const number = get(() => this.numerals.parse(value));
-        return isNaN(number) ? super.parse(cleanValue(value)) : number;
-    }
-
-    static formats: Options[] = [
-        {month: "long"}, {month: "short"},
-        {year: 'numeric', month: "long", day: 'numeric'},
-        {year: 'numeric', month: 'short', day: 'numeric'},
-    ];
-
-    static cache: { [key: string]: Months } = {};
-
-    static get(locale: string, additionalData: MonthDatum[] = []): Months {
-        return Months.cache[locale] = Months.cache[locale] || Months.create(locale, additionalData);
-    }
-
-    static set(locale: string, months: Months): Months {
-        return Months.cache[locale] = months;
-    }
-
-    static create(locale: string, additionalData: MonthDatum[] = []): Months {
-        return new Months([...Months.generateData(locale), ...additionalData], locale);
-    }
-
-    static generateData(locale: string): MonthDatum[] {
-        return flatten(Months.formats.map(f => Months.dataFor(locale, f)));
-    }
-
-    static dataFor(locale: string, options: Options): MonthDatum[] {
-        return months(locale, options).map((m, i) => ({name: m, value: i + 1}));
-    }
-}
-
-// No dep version
-function range(start: number, end: number): number[] {
-    const result = [];
-    for (let i = start; i <= end; i++) {
-        result.push(i);
-    }
-    return result;
-}
-
-const months_cache: { [key: string]: string[] } = {};
-
-export function months(locale: string, monthFormat: MonthFormat | Options = 'long'): string[] {
-    const key = JSON.stringify({locale, monthFormat});
-    return months_cache[key] = months_cache[key] || (() => {
-        const options: Options = {...typeof monthFormat == 'string' ? {month: monthFormat} : monthFormat};
-        if (!options.month) return [];
-
-        const dates = range(1, 12).map(i => date(2000, i, 1));
-
-        return new NativeDataExtractor(locale, options, dates, 'month').extract();
-    })();
-}
-
 export type WeekdayDatum = Datum<Weekday>;
 
 export class Weekdays extends DatumLookup<Weekday> {
@@ -285,20 +162,6 @@ export class Weekdays extends DatumLookup<Weekday> {
     static dataFor(locale: string, options: Options): WeekdayDatum[] {
         return weekdays(locale, options).map((m, i) => ({name: m, value: i + 1}));
     }
-}
-
-const weekdays_cache: { [key: string]: string[] } = {};
-
-export function weekdays(locale: string, weekdayFormat: WeekdayFormat | Options = 'long'): string[] {
-    const key = JSON.stringify({locale, weekdayFormat});
-    return weekdays_cache[key] = weekdays_cache[key] || (() => {
-        const options: Options = {...typeof weekdayFormat == 'string' ? {weekday: weekdayFormat} : weekdayFormat};
-        if (!options.weekday) return [];
-
-        const dates = range(1, 7).map(i => date(2000, 1, i + 2));
-
-        return new NativeDataExtractor(locale, options, dates, 'weekday').extract();
-    })();
 }
 
 export class RegexBuilder {
@@ -351,7 +214,7 @@ export class RegexBuilder {
 
     private monthsPattern(): string {
         const numericPattern = `[${(Numerals.get(this.locale).pattern)}]{1,2}`;
-        const textPattern = Months.get(this.locale).pattern.toLocaleLowerCase(this.locale);
+        const textPattern = MonthsBuilder.create(this.options).build(this.locale).pattern.toLocaleLowerCase(this.locale);
         if (this.options.month === "2-digit" || this.options.month === "numeric") return numericPattern;
         if (this.options.month === "short" || this.options.month === "long") return textPattern;
         return `(?:${numericPattern}|${textPattern})`;
@@ -364,10 +227,10 @@ export function escapeCharacters(value: string) {
 
 export class DateParser {
     @cache
-    static create(locale: string, options: string | Options = defaultOptions) {
+    static create(locale: string, options: Options) {
         const pattern = RegexBuilder.create(locale, options).pattern;
         return mappingParser(DateTimeFormatPartParser.create(NamedRegExp.create(pattern), locale),
-            p => dateFrom(p, locale, typeof options === "object" ? options.factory : undefined));
+            p => dateFrom(p, locale, options));
     }
 }
 
@@ -391,7 +254,7 @@ export class DateTimeFormatPartParser {
 
 export function dateFrom(parts: DateTimeFormatPart[],
                          locale: string,
-                         factory: DateFactory = new DefaultDateFactory()): Date {
+                         options: Options): Date {
     const parser = numberParser('.', locale);
     const dayText = parts.find(p => p.type === 'day');
     if (!dayText) throw new Error("No day found");
@@ -399,7 +262,7 @@ export function dateFrom(parts: DateTimeFormatPart[],
 
     const monthText = parts.find(p => p.type === 'month');
     if (!monthText) throw new Error("No month found");
-    const month = Months.get(locale).parse(monthText.value);
+    const month = MonthsBuilder.create(options).build(locale).parse(monthText.value);
 
     const yearText = parts.find(p => p.type === 'year');
     const year = yearText ? parser.parse(yearText.value) : undefined;
@@ -407,7 +270,7 @@ export function dateFrom(parts: DateTimeFormatPart[],
     const weekdayText = parts.find(p => p.type === 'weekday');
     const weekday = weekdayText ? get(() => Weekdays.get(locale).parse(weekdayText.value)) : undefined;
 
-    return factory.create({year, month, day, weekday});
+    return (options.factory ?? new DefaultDateFactory()).create({year, month, day, weekday});
 }
 
 export class DefaultDateFactory implements DateFactory {
@@ -426,23 +289,13 @@ export const defaultParserOptions: (Format | Options)[] = [
 ];
 
 export function parser(locale: string, options?: Format | Options): Parser<Date> {
-    if (typeof options == 'string') {
-        return simpleParser(locale, options);
-    } else {
-        return localeParser(locale, options);
+    switch (typeof options){
+        case "string": return DateParser.create(locale, {format: options});
+        case "object": return DateParser.create(locale, options);
+        default: return or(...defaultParserOptions.map(o => parser(locale, o)));
     }
 }
 
-export function simpleParser(locale: string, format: Format): Parser<Date> {
-    return DateParser.create(locale, format);
-}
-
-export function localeParser(locale: string, options?: Format | Options): Parser<Date> {
-    if (!options) {
-        return or(...defaultParserOptions.map(o => localeParser(locale, o)));
-    }
-    return DateParser.create(locale, options);
-}
 
 export function formatBuilder(locale: string, format: Format, strict: boolean = false): RegexBuilder {
     return new RegexBuilder(locale, {...optionsFrom(format), strict}, partsFrom(format))

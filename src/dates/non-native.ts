@@ -1,22 +1,16 @@
-import {date, defaultOptions, Options, Weekday} from "./core";
+import {date, defaultOptions, Month, Options, PatternParser, Weekday} from "./core";
 import {different, isNamedMatch, NamedRegExp, replace} from "../characters";
-import {
-    months,
-    Months,
-    numberFormatter,
-    Numerals,
-    Weekdays,
-    weekdays
-} from "./formatting";
+import {Weekdays} from "./formatting";
 import {cache} from "../cache";
 import {lazy} from "../lazy";
 import {DateFormatter, Formatters, StringDateFormatter} from "./format";
 import {array} from "../array";
 import {map} from "../transducers";
-import {DatumLookup} from "./datum";
+import {numberFormatter, Numerals} from "./datum";
+import {BaseDataExtractor, DataExtractor, weekdays} from "./extractors";
+import {MonthsBuilder} from "./generators";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
-import {BaseDataExtractor, DataExtractor} from "./extractors";
 
 export function exactFormat(locale: string, options: Options, dates: Date[]): string[] {
     const formatter = Formatters.create(locale, options);
@@ -149,12 +143,12 @@ export class LearningDateFormatter implements DateFormatter {
         return this.formatter.format(date(this.yearValue, this.monthValue, this.dayValue));
     }
 
-    @lazy get months(): Months {
-        return Months.create(this.locale, Months.dataFor(this.locale, this.options));
+    @lazy get months(): PatternParser<Month> {
+        return MonthsBuilder.create(this.options).build(this.locale);
     }
 
     @lazy get month(): string {
-        return months(this.locale, this.options)[this.monthValue - 1];
+        return MonthsBuilder.create(this.options).namesFor(this.locale, this.options)[this.monthValue - 1];
     }
 
     @lazy get weekdays(): Weekdays {
@@ -247,7 +241,7 @@ export class LearningDateFormatter implements DateFormatter {
         return type as any;
     }
 
-    private parsable(lookup: DatumLookup<any>, value: string) {
+    private parsable(lookup: PatternParser<any>, value: string) {
         try {
             return Boolean(lookup.parse(value));
         } catch (e) {
