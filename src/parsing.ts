@@ -1,5 +1,4 @@
 import {NamedMatch, NamedRegExp, removeUnicodeMarkers} from "./characters";
-import {flatten} from "./arrays";
 import {Mapper} from "./collections";
 import {flatMap} from "./transducers";
 import {cache} from "./cache";
@@ -132,7 +131,7 @@ export class AllParser<T> implements Parser<T> {
     }
 
     parseAll(value: string): T[] {
-        return flatten(this.parsers.map(p => p.parseAll(value)));
+        return this.parsers.flatMap(p => p.parseAll(value));
     }
 }
 

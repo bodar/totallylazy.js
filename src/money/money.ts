@@ -1,7 +1,6 @@
 import {different, isNamedMatch, MatchOrNot, NamedMatch, NamedRegExp} from "../characters";
 import {dedupe, filter, first, flatMap, map, single, sort} from "../transducers";
 import {ascending, by, descending} from "../collections";
-import {flatten} from "../arrays";
 import {currencies} from "./currencies";
 import {lazy} from "../lazy";
 import {mappingParser, namedRegexParser, Parser} from "../parsing";
@@ -191,7 +190,7 @@ export class CurrencySymbols extends DatumLookup<string> {
     }
 
     static generateData(locale: string): CurrencySymbolDatum[] {
-        return flatten(Object.keys(currencies).map(c => CurrencySymbols.dataFor(locale, c, currencies[c])));
+        return Object.keys(currencies).flatMap(c => CurrencySymbols.dataFor(locale, c, currencies[c]));
     }
 
     static generateAdditionalSymbols = ['$', '¥', '£'];

@@ -2,7 +2,7 @@ import {DEFAULT_COMPARATOR, PrefixTree} from "../trie";
 import {Datum, MatchStrategy, Month, Options, Weekday} from "./core";
 import {Comparator} from "../collections";
 import {cleanValue} from "./functions";
-import {flatten, unique} from "../arrays";
+import {unique} from "../arrays";
 import {characters} from "../characters";
 import {get} from "../functions";
 import {array} from "../array";

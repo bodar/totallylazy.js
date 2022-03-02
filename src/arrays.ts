@@ -1,5 +1,5 @@
 export function flatten<T>(values: T[][]): T[] {
-    return values.reduce((a, ms) => a.concat(ms), []);
+    return values.flatMap(v => v);
 }
 
 function isNativeFunction(instance: any): boolean {
