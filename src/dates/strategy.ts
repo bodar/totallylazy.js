@@ -1,7 +1,7 @@
 import {Datum, MatchStrategy} from "./core";
 import {PreferredCurrencies} from "../money/preferred-currencies";
 import {PrefixTree} from "../trie";
-import {unique} from "../arrays";
+import {flatten, unique} from "../arrays";
 
 export function prefer<V>(value: undefined): undefined;
 export function prefer<V>(...values: V[]): MatchStrategy<V>;
@@ -36,4 +36,11 @@ export function infer(locale: string): MatchStrategy<string> {
 
         return allCodes.find(m => preferred.indexOf(m) !== -1);
     };
+}
+
+export function uniqueMatch<V>(prefixTree: PrefixTree<Datum<V>[]>, value: string): V | undefined {
+    const matches = flatten(prefixTree.match(value));
+    const data = unique(matches.map(d => d.value));
+    if (data.length != 1) return undefined;
+    return data[0];
 }

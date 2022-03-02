@@ -1,7 +1,7 @@
 import {DEFAULT_COMPARATOR, PrefixTree} from "../trie";
 import {Datum, MatchStrategy, Month} from "./core";
 import {Comparator} from "../collections";
-import {cleanValue, uniqueMatch} from "./functions";
+import {cleanValue} from "./functions";
 import {flatten, unique} from "../arrays";
 import {characters} from "../characters";
 import {get} from "../functions";
@@ -9,6 +9,7 @@ import {array} from "../array";
 import {map, zip} from "../transducers";
 import {lazy} from "../lazy";
 import {caching} from "../cache";
+import {uniqueMatch} from "./strategy";
 
 export class DatumLookup<V> {
     private readonly prefixTree: PrefixTree<Datum<V>[]>;
