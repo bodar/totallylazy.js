@@ -7,5 +7,4 @@ export * from './parsing';
 export * from "./strategy";
 export * from "./datum";
 export * from "./non-native";
-export * from "./extractors";
-export * from "./generators";
+export * from "./builders";

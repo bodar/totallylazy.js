@@ -65,6 +65,7 @@ export interface ParserBuilder<V> {
 export interface Dependencies {
     factory?: DateFactory;
     monthsBuilder?: ParserBuilder<Month>;
+    weekdaysBuilder?: ParserBuilder<Weekday>;
 }
 
 export interface Options extends Dependencies {

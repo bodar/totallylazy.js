@@ -1,16 +1,26 @@
 import {date, defaultOptions, Month, Options, PatternParser, Weekday} from "./core";
 import {different, isNamedMatch, NamedRegExp, replace} from "../characters";
-import {Weekdays} from "./formatting";
 import {cache} from "../cache";
 import {lazy} from "../lazy";
 import {DateFormatter, Formatters, StringDateFormatter} from "./format";
 import {array} from "../array";
 import {map} from "../transducers";
-import {numberFormatter, Numerals} from "./datum";
-import {BaseDataExtractor, DataExtractor, weekdays} from "./extractors";
-import {MonthsBuilder} from "./generators";
+import {numberFormatter, Numerals, Weekdays} from "./datum";
+import {MonthsBuilder, weekdays, WeekdaysBuilder} from "./builders";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
+
+export interface DataExtractor {
+    extract(): string[];
+}
+
+export class BaseDataExtractor {
+    constructor(protected locale: string,
+                protected options: Options,
+                protected dates: Date[],
+                protected partType: DateTimeFormatPartTypes) {
+    }
+}
 
 export function exactFormat(locale: string, options: Options, dates: Date[]): string[] {
     const formatter = Formatters.create(locale, options);
@@ -151,8 +161,8 @@ export class LearningDateFormatter implements DateFormatter {
         return MonthsBuilder.create(this.options).namesFor(this.locale, this.options)[this.monthValue - 1];
     }
 
-    @lazy get weekdays(): Weekdays {
-        return new Weekdays(Weekdays.dataFor(this.locale, this.options));
+    @lazy get weekdays(): PatternParser<Weekday> {
+        return WeekdaysBuilder.create(this.options).build(this.locale);
     }
 
     @lazy get weekday(): string {

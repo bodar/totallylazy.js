@@ -3,18 +3,17 @@ import {characters, NamedMatch, NamedRegExp} from "../characters";
 import {flatMap, map} from "../transducers";
 import {cache, caching} from "../cache";
 import {array} from "../array";
-import {date, DateFactory, DateFactoryParts, Datum, defaultOptions, Format, Options, Weekday} from "./core";
-import {flatten, unique} from "../arrays";
+import {date, DateFactory, DateFactoryParts, defaultOptions, Format, Options} from "./core";
+import {unique} from "../arrays";
 import {get} from "../functions";
 import {extraDelimiters, mappingParser, namedRegexParser, or, Parser, preProcess} from "../parsing";
 import {Mapper} from "../collections";
 import {formatData, optionsFrom, partsFrom} from "./format";
-import {atBoundaryOnly, boundaryDelimiters, cleanValue} from "./functions";
-import {DatumLookup, numberOf, Numerals} from "./datum";
-import {weekdays} from "./extractors";
+import {atBoundaryOnly, boundaryDelimiters} from "./functions";
+import {numberOf, Numerals} from "./datum";
+import {MonthsBuilder, WeekdaysBuilder} from "./builders";
 import DateTimeFormatPart = Intl.DateTimeFormatPart;
 import DateTimeFormatPartTypes = Intl.DateTimeFormatPartTypes;
-import {MonthsBuilder} from "./generators";
 
 export class Spaces {
     static codes: string[] = [32, 160, 8239].map(code => String.fromCharCode(code));
@@ -128,42 +127,6 @@ export function numberParser(decimalSeparatorOrLocale?: AllowedDecimalSeparators
 export const inferDecimalSeparator = caching((locale: string) =>
     get(() => decimalSeparator(new Intl.NumberFormat(locale).formatToParts(.1).find(e => e.type === 'decimal')!.value), '.'));
 
-export type WeekdayDatum = Datum<Weekday>;
-
-export class Weekdays extends DatumLookup<Weekday> {
-    static formats: Options[] = [
-        {weekday: "long"}, {weekday: "short"},
-        {year: 'numeric', month: "numeric", day: 'numeric', weekday: 'long'},
-        {year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short'}
-    ];
-
-    parse(value: string): Weekday {
-        return super.parse(cleanValue(value));
-    }
-
-    static cache: { [key: string]: Weekdays } = {};
-
-    static get(locale: string, additionalData: WeekdayDatum[] = []): Weekdays {
-        return Weekdays.cache[locale] = Weekdays.cache[locale] || Weekdays.create(locale, additionalData);
-    }
-
-    static set(locale: string, weekdays: Weekdays): Weekdays {
-        return Weekdays.cache[locale] = weekdays;
-    }
-
-    static create(locale: string, additionalData: WeekdayDatum[] = []): Weekdays {
-        return new Weekdays([...Weekdays.generateData(locale), ...additionalData]);
-    }
-
-    static generateData(locale: string): WeekdayDatum[] {
-        return flatten(Weekdays.formats.map(f => Weekdays.dataFor(locale, f)));
-    }
-
-    static dataFor(locale: string, options: Options): WeekdayDatum[] {
-        return weekdays(locale, options).map((m, i) => ({name: m, value: i + 1}));
-    }
-}
-
 export class RegexBuilder {
     constructor(private locale: string,
                 private options: Options = defaultOptions,
@@ -188,7 +151,7 @@ export class RegexBuilder {
                 case "day":
                     return `(?<day>[${(Numerals.get(this.locale).pattern)}]{1,2})`;
                 case "weekday":
-                    return `(?<weekday>${Weekdays.get(this.locale).pattern.toLocaleLowerCase(this.locale)})`;
+                    return `(?<weekday>${WeekdaysBuilder.create(this.options).build(this.locale).pattern.toLocaleLowerCase(this.locale)})`;
                 default: {
                     const chars = unique(characters(escapeCharacters(this.addExtraLiterals(part)))).join('').replace(' ', '\\s');
                     const isLast = index === this.formatted.length - 1;
@@ -268,7 +231,7 @@ export function dateFrom(parts: DateTimeFormatPart[],
     const year = yearText ? parser.parse(yearText.value) : undefined;
 
     const weekdayText = parts.find(p => p.type === 'weekday');
-    const weekday = weekdayText ? get(() => Weekdays.get(locale).parse(weekdayText.value)) : undefined;
+    const weekday = weekdayText ? get(() => WeekdaysBuilder.create(options).build(locale).parse(weekdayText.value)) : undefined;
 
     return (options.factory ?? new DefaultDateFactory()).create({year, month, day, weekday});
 }

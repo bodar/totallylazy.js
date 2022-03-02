@@ -1,5 +1,5 @@
 import {DEFAULT_COMPARATOR, PrefixTree} from "../trie";
-import {Datum, MatchStrategy, Month} from "./core";
+import {Datum, MatchStrategy, Month, Options, Weekday} from "./core";
 import {Comparator} from "../collections";
 import {cleanValue} from "./functions";
 import {flatten, unique} from "../arrays";
@@ -40,7 +40,7 @@ export class DatumLookup<V> {
     }
 
     protected get characters(): string[] {
-        return unique(flatten(this.data.map(d => d.name).map(characters))).sort();
+        return unique(this.data.map(d => d.name).flatMap(characters)).sort();
     }
 }
 
@@ -102,5 +102,13 @@ export class Months extends DatumLookup<Month> {
     parse(value: string): Month {
         const number = get(() => this.numerals.parse(value));
         return isNaN(number) ? super.parse(cleanValue(value)) : number;
+    }
+}
+
+export type WeekdayDatum = Datum<Weekday>;
+
+export class Weekdays extends DatumLookup<Weekday> {
+    parse(value: string): Weekday {
+        return super.parse(cleanValue(value));
     }
 }

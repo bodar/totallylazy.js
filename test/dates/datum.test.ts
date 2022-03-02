@@ -1,4 +1,14 @@
-import {Month, months, Months, MonthsBuilder, Options, Weekday, weekdays, Weekdays} from "../../src/dates";
+import {
+    Month,
+    months,
+    Months,
+    MonthsBuilder,
+    Options,
+    Weekday,
+    weekdays,
+    Weekdays,
+    WeekdaysBuilder
+} from "../../src/dates";
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
 import {options, supported} from "./dates.test";
@@ -119,7 +129,7 @@ describe("Weekdays", function () {
     });
 
     it('works', () => {
-        const en = Weekdays.get('en-GB');
+        const en = new WeekdaysBuilder().build('en-GB');
         assert.deepEqual(en.parse('Monday'), Weekday.Monday);
         assert.deepEqual(en.parse('Tuesday'), Weekday.Tuesday);
         assert.deepEqual(en.parse('Wednesday'), Weekday.Wednesday);
@@ -130,20 +140,20 @@ describe("Weekdays", function () {
     });
 
     it('is flexible in parsing as long as there is a unique match', () => {
-        const ru = Weekdays.get('ru');
+        const ru = new WeekdaysBuilder().build('ru');
         assert.deepEqual(ru.parse('понедельник'), Weekday.Monday);
         assert.deepEqual(ru.parse('понеде'), Weekday.Monday);
         assert.deepEqual(ru.parse('пн'), Weekday.Monday);
     });
 
     it('can get pattern', () => {
-        const ru = Weekdays.get('ru');
+        const ru = new WeekdaysBuilder().build('ru');
         assert.deepEqual(ru.pattern, '[абвгдеиклнопрстуцчья]{1,11}');
         assert.deepEqual(new RegExp(ru.pattern).test('понедельник'), true);
     });
 
     it('pattern length does not include dot', () => {
-        const es = Weekdays.get('es');
+        const es = new WeekdaysBuilder().build('es');
         assert.deepEqual(es.pattern, '[abcdegijlmnorstuváé]{1,9}');
         assert.deepEqual(new RegExp(es.pattern).test('jue.'), true);
         assert.deepEqual(new RegExp(es.pattern).test('jue'), true);
@@ -151,7 +161,7 @@ describe("Weekdays", function () {
     });
 
     it('ignores case', () => {
-        const ru = Weekdays.get('ru');
+        const ru = new WeekdaysBuilder().build('ru');
         assert.deepEqual(ru.parse('понедельник'.toLocaleLowerCase('ru')), Weekday.Monday);
         assert.deepEqual(ru.parse('понедельник'.toLocaleUpperCase('ru')), Weekday.Monday);
     });
