@@ -12,12 +12,12 @@ import {get} from "../functions";
 import {array} from "../array";
 import {
     AllowedDecimalSeparators, atBoundaryOnly,
-    decimalSeparator, infer,
-    inferDecimalSeparator, mapIgnoreError, MatchStrategy,
+    decimalSeparator, inferDecimalSeparator, mapIgnoreError, MatchStrategy,
     NumberParser,
     numberParser, numberPattern,
     separatorsOf, Spaces
 } from "../dates";
+import {infer} from "./strategy";
 
 export interface Options {
     strategy?: MatchStrategy<string>;

@@ -15,13 +15,13 @@ import {
     cleanValue,
     Datum,
     DatumLookup,
-    infer,
     MatchStrategy,
     numberParser,
     Numerals,
     Spaces
 } from "../dates";
 import NumberFormatPart = Intl.NumberFormatPart;
+import {infer} from "./strategy";
 
 /**
  *
