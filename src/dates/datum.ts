@@ -1,15 +1,28 @@
 import {DEFAULT_COMPARATOR, PrefixTree} from "../trie";
-import {Datum, MatchStrategy, Month, Options, Weekday} from "./core";
+import {Month, Weekday} from "./core";
 import {Comparator} from "../collections";
 import {cleanValue} from "./functions";
-import {unique} from "../arrays";
+import {flatten, unique} from "../arrays";
 import {characters} from "../characters";
 import {get} from "../functions";
 import {array} from "../array";
 import {map, zip} from "../transducers";
 import {lazy} from "../lazy";
 import {caching} from "../cache";
-import {uniqueMatch} from "./strategy";
+
+export interface Datum<V> {
+    name: string;
+    value: V;
+}
+
+export type MatchStrategy<V> = (prefixTree: PrefixTree<Datum<V>[]>, value: string) => V | undefined;
+
+export function uniqueMatch<V>(prefixTree: PrefixTree<Datum<V>[]>, value: string): V | undefined {
+    const matches = flatten(prefixTree.match(value));
+    const data = unique(matches.map(d => d.value));
+    if (data.length != 1) return undefined;
+    return data[0];
+}
 
 export class DatumLookup<V> {
     private readonly prefixTree: PrefixTree<Datum<V>[]>;
