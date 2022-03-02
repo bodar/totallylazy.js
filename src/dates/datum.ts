@@ -39,7 +39,7 @@ export class DatumLookup<V> {
         }, Number.MIN_VALUE);
     }
 
-    get characters(): string[] {
+    protected get characters(): string[] {
         return unique(flatten(this.data.map(d => d.name).map(characters))).sort();
     }
 }
