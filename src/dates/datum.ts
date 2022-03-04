@@ -57,14 +57,12 @@ export class DatumLookup<V> {
     }
 }
 
-export type MonthDatum = Datum<Month>;
-
-export type Numeral = Datum<number>;
-
 export function numberOf(value: string): number {
     if (!value || value.trim().length === 0) return NaN;
     return Number(value);
 }
+
+export type Numeral = Datum<number>;
 
 export class Numerals extends DatumLookup<number> {
     constructor(data: Datum<number>[], private locale: string) {
@@ -103,6 +101,8 @@ export class Numerals extends DatumLookup<number> {
 }
 
 export const numberFormatter = caching((locale: string) => new Intl.NumberFormat(locale, {useGrouping: false}));
+
+export type MonthDatum = Datum<Month>;
 
 export class Months extends DatumLookup<Month> {
     private readonly numerals: Numerals

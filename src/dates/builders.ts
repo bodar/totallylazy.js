@@ -15,8 +15,10 @@ function range(start: number, end: number): number[] {
 }
 
 export class MonthsBuilder implements ParserBuilder<Month>{
+    static readonly defaultInstance = new MonthsBuilder();
+
     static create(dependencies:Dependencies): ParserBuilder<Month> {
-        return dependencies.monthsBuilder ?? new MonthsBuilder();
+        return dependencies.monthsBuilder ?? MonthsBuilder.defaultInstance;
     }
 
     private static formats: Options[] = [
@@ -47,8 +49,10 @@ export function months(locale: string,  monthFormat: MonthFormat | Options = 'lo
 
 
 export class WeekdaysBuilder implements ParserBuilder<Weekday>{
+    static readonly defaultInstance = new WeekdaysBuilder();
+
     static create(dependencies:Dependencies): ParserBuilder<Weekday> {
-        return dependencies.weekdaysBuilder ?? new WeekdaysBuilder();
+        return dependencies.weekdaysBuilder ?? this.defaultInstance;
     }
 
     private static formats: Options[] = [
