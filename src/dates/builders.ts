@@ -1,8 +1,18 @@
-import {ParserBuilder, date, Month, Options, MonthFormat, Dependencies, WeekdayFormat, Weekday} from "./core";
+import {
+    ParserBuilder,
+    date,
+    Month,
+    Options,
+    MonthFormat,
+    Dependencies,
+    WeekdayFormat,
+    Weekday,
+    WeekdayDatum, MonthDatum
+} from "./core";
 import {Formatters, valueFromParts} from "./format";
 import {cleanValue} from "./functions";
 import {cache} from "../cache";
-import {MonthDatum, Months, WeekdayDatum, Weekdays} from "./datum";
+import {Months, Weekdays} from "./datum";
 
 
 // No dep version
@@ -15,10 +25,16 @@ function range(start: number, end: number): number[] {
 }
 
 export class MonthsBuilder implements ParserBuilder<Month>{
-    static readonly defaultInstance = new MonthsBuilder();
+    constructor(private monthsData: MonthDatum[] = []) {
+    }
 
     static create(dependencies:Dependencies): ParserBuilder<Month> {
-        return dependencies.monthsBuilder ?? MonthsBuilder.defaultInstance;
+        const monthsData = dependencies.monthsData;
+        return this._create(monthsData);
+    }
+
+    @cache private static _create(monthsData: MonthDatum[] | undefined) {
+        return new MonthsBuilder(monthsData);
     }
 
     private static formats: Options[] = [
@@ -28,7 +44,8 @@ export class MonthsBuilder implements ParserBuilder<Month>{
     ];
 
     @cache build(locale: string): Months {
-        return new Months(MonthsBuilder.formats.flatMap(o => this.datumFor(locale, o)), locale);
+        const data = MonthsBuilder.formats.flatMap(o => this.datumFor(locale, o));
+        return new Months([...this.monthsData, ...data], locale);
     }
 
     private datumFor(locale: string, options: Options): MonthDatum[] {
@@ -49,10 +66,16 @@ export function months(locale: string,  monthFormat: MonthFormat | Options = 'lo
 
 
 export class WeekdaysBuilder implements ParserBuilder<Weekday>{
-    static readonly defaultInstance = new WeekdaysBuilder();
+    constructor(private weekdayData: WeekdayDatum[] = []) {
+    }
 
     static create(dependencies:Dependencies): ParserBuilder<Weekday> {
-        return dependencies.weekdaysBuilder ?? this.defaultInstance;
+        const weekdaysData = dependencies.weekdaysData;
+        return this._create(weekdaysData);
+    }
+
+    @cache private static _create(weekdayData: WeekdayDatum[] | undefined) {
+        return new WeekdaysBuilder(weekdayData);
     }
 
     private static formats: Options[] = [

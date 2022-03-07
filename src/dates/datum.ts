@@ -1,5 +1,5 @@
 import {DEFAULT_COMPARATOR, PrefixTree} from "../trie";
-import {Month, Weekday} from "./core";
+import {Datum, Month, MonthDatum, Weekday} from "./core";
 import {Comparator} from "../collections";
 import {cleanValue} from "./functions";
 import {flatten, unique} from "../arrays";
@@ -9,11 +9,6 @@ import {array} from "../array";
 import {map, zip} from "../transducers";
 import {lazy} from "../lazy";
 import {caching} from "../cache";
-
-export interface Datum<V> {
-    name: string;
-    value: V;
-}
 
 export type MatchStrategy<V> = (prefixTree: PrefixTree<Datum<V>[]>, value: string) => V | undefined;
 
@@ -102,8 +97,6 @@ export class Numerals extends DatumLookup<number> {
 
 export const numberFormatter = caching((locale: string) => new Intl.NumberFormat(locale, {useGrouping: false}));
 
-export type MonthDatum = Datum<Month>;
-
 export class Months extends DatumLookup<Month> {
     private readonly numerals: Numerals
 
@@ -117,8 +110,6 @@ export class Months extends DatumLookup<Month> {
         return isNaN(number) ? super.parse(cleanValue(value)) : number;
     }
 }
-
-export type WeekdayDatum = Datum<Weekday>;
 
 export class Weekdays extends DatumLookup<Weekday> {
     parse(value: string): Weekday {

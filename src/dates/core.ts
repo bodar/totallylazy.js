@@ -60,10 +60,18 @@ export interface ParserBuilder<V> {
     namesFor(locale: string, options: Options): string[];
 }
 
+export interface Datum<V> {
+    name: string;
+    value: V;
+}
+
+export type MonthDatum = Datum<Month>;
+export type WeekdayDatum = Datum<Weekday>;
+
 export interface Dependencies {
     factory?: DateFactory;
-    monthsBuilder?: ParserBuilder<Month>;
-    weekdaysBuilder?: ParserBuilder<Weekday>;
+    monthsData?: MonthDatum[];
+    weekdaysData?: WeekdayDatum[];
 }
 
 export interface Options extends Dependencies {
@@ -156,3 +164,4 @@ export class Days {
         return Math.abs((a.getTime() - b.getTime()) / Days.milliseconds);
     }
 }
+
