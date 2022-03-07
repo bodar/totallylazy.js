@@ -1,4 +1,5 @@
 import {
+    date,
     Month,
     months,
     Months,
@@ -11,7 +12,7 @@ import {
 } from "../../src/dates";
 import {assert} from 'chai';
 import {runningInNode} from "../../src/node";
-import {options, supported} from "./dates.test";
+import {assertParse, options, supported} from "./dates.test";
 
 describe("Months", function () {
     before(function () {
@@ -62,24 +63,17 @@ describe("Months", function () {
             ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"]);
     });
 
-    // it("can add additional data to help parsing", () => {
-    //     Months.set('de', Months.create('de', [{name: 'Mrz', value: Month.March}]));
-    //     assertParse('de', "06 Mrz 2019", date(2019, 3, 6), "dd MMM yyyy");
-    // });
-    //
-    // it("can override data to help parsing", () => {
-    //     Months.set('is-IS', Months.create('is-IS', ["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]
-    //         .map((m, i) => ({name: m, value: i + 1}))));
-    //     assertParse('is-IS', "06 jún 2019", date(2019, 6, 6), "dd MMM yyyy");
-    // });
+    it("can add additional data to help parsing", () => {
+        const options:Options = {format: 'dd MMM yyyy', monthsData: {'de' : [{name: 'Mrz', value: Month.March}] } };
+        assertParse('de', "06 Mrz 2019", date(2019, 3, 6), options);
+    });
 
-    // it('can add additional data as needed', () => {
-    //     const original = new MonthsBuilder().build('de');
-    //     const months = Months.set('de', Months.create("de", [{name: 'Mrz', value: Month.March}]));
-    //     assert.deepEqual(months.parse('Mrz'), Month.March);
-    //     Months.set('def', original);
-    // });
-
+    it("can override data to help parsing", () => {
+        const data = ["janúar", "febrúar", "mars", "apríl", "maí", "júní", "júlí", "ágúst", "september", "október", "nóvember", "desember"]
+            .map((m, i) => ({name: m, value: i + 1}));
+        const options:Options = {format: 'dd MMM yyyy', monthsData: {'is-IS' : data } };
+        assertParse('is-IS', "06 jún 2019", date(2019, 6, 6), "dd MMM yyyy");
+    });
 
     it('is flexible in parsing as long as there is a unique match', () => {
         const ru = new MonthsBuilder().build('ru');

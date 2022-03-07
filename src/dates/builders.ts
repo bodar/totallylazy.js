@@ -7,7 +7,7 @@ import {
     Dependencies,
     WeekdayFormat,
     Weekday,
-    WeekdayDatum, MonthDatum
+    WeekdayDatum, MonthDatum, LocalisedData
 } from "./core";
 import {Formatters, valueFromParts} from "./format";
 import {cleanValue} from "./functions";
@@ -25,7 +25,7 @@ function range(start: number, end: number): number[] {
 }
 
 export class MonthsBuilder implements ParserBuilder<Month>{
-    constructor(private monthsData: MonthDatum[] = []) {
+    constructor(private monthsData: LocalisedData<MonthDatum> = {}) {
     }
 
     static create(dependencies:Dependencies): ParserBuilder<Month> {
@@ -33,7 +33,7 @@ export class MonthsBuilder implements ParserBuilder<Month>{
         return this._create(monthsData);
     }
 
-    @cache private static _create(monthsData: MonthDatum[] | undefined) {
+    @cache private static _create(monthsData: LocalisedData<MonthDatum>  | undefined) {
         return new MonthsBuilder(monthsData);
     }
 
@@ -45,7 +45,7 @@ export class MonthsBuilder implements ParserBuilder<Month>{
 
     @cache build(locale: string): Months {
         const data = MonthsBuilder.formats.flatMap(o => this.datumFor(locale, o));
-        return new Months([...this.monthsData, ...data], locale);
+        return new Months([...this.monthsData[locale] || [], ...data], locale);
     }
 
     private datumFor(locale: string, options: Options): MonthDatum[] {
@@ -66,7 +66,7 @@ export function months(locale: string,  monthFormat: MonthFormat | Options = 'lo
 
 
 export class WeekdaysBuilder implements ParserBuilder<Weekday>{
-    constructor(private weekdayData: WeekdayDatum[] = []) {
+    constructor(private weekdayData: LocalisedData<WeekdayDatum> = {}) {
     }
 
     static create(dependencies:Dependencies): ParserBuilder<Weekday> {
@@ -74,7 +74,7 @@ export class WeekdaysBuilder implements ParserBuilder<Weekday>{
         return this._create(weekdaysData);
     }
 
-    @cache private static _create(weekdayData: WeekdayDatum[] | undefined) {
+    @cache private static _create(weekdayData: LocalisedData<WeekdayDatum> | undefined) {
         return new WeekdaysBuilder(weekdayData);
     }
 
@@ -85,7 +85,8 @@ export class WeekdaysBuilder implements ParserBuilder<Weekday>{
     ];
 
     @cache build(locale: string): Weekdays {
-        return new Weekdays(WeekdaysBuilder.formats.flatMap(o => this.datumFor(locale, o)));
+        const data = WeekdaysBuilder.formats.flatMap(o => this.datumFor(locale, o));
+        return new Weekdays([...this.weekdayData[locale] || [], ...data]);
     }
 
     private datumFor(locale: string, options: Options): WeekdayDatum[] {

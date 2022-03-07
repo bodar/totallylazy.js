@@ -68,10 +68,14 @@ export interface Datum<V> {
 export type MonthDatum = Datum<Month>;
 export type WeekdayDatum = Datum<Weekday>;
 
+export interface LocalisedData<V extends Datum<any>> {
+    [locale: string] : V[];
+}
+
 export interface Dependencies {
     factory?: DateFactory;
-    monthsData?: MonthDatum[];
-    weekdaysData?: WeekdayDatum[];
+    monthsData?: LocalisedData<MonthDatum>;
+    weekdaysData?: LocalisedData<WeekdayDatum>;
 }
 
 export interface Options extends Dependencies {
