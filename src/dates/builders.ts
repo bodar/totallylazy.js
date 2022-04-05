@@ -1,13 +1,15 @@
 import {
-    ParserBuilder,
     date,
-    Month,
-    Options,
-    MonthFormat,
     Dependencies,
-    WeekdayFormat,
+    LocalisedData,
+    Month,
+    MonthDatum,
+    MonthFormat,
+    Options,
+    ParserBuilder,
     Weekday,
-    WeekdayDatum, MonthDatum, LocalisedData
+    WeekdayDatum,
+    WeekdayFormat
 } from "./core";
 import {Formatters, valueFromParts} from "./format";
 import {cleanValue} from "./functions";
@@ -24,17 +26,33 @@ function range(start: number, end: number): number[] {
     return result;
 }
 
+export function monthDatum<V>(months: string[]): MonthDatum[] {
+    return months.map((m, i) => ({ name: m, value: i + 1 }));
+}
+
+const german = [{ name: 'Mrz', value: 3 }, { name: 'Sep.', value: 9 }];
+const icelandic = [['janúar', 'febrúar', 'mars', 'apríl', 'maí', 'júní', 'júlí', 'ágúst', 'september', 'október', 'nóvember', 'desember'],
+    ['jan.', 'feb.', 'mar.', 'apr.', 'maí', 'jún.', 'júl.', 'ágú.', 'sep.', 'okt.', 'nóv.', 'des.']].flatMap(monthDatum);
+const catalan = monthDatum(['gener', 'febrer', 'març', 'abril', 'maig', 'juny', 'juliol', 'agost', 'setembre', 'octubre', 'novembre', 'desembre']);
+const spanish = [  { name: 'ene', value: 1 }, { name: 'abr', value: 4 }, { name: 'ago', value: 8 }, { name: 'dic', value: 12 },]
+
+export const additionalMonthsDatum:LocalisedData<MonthDatum> = {
+    de: german,
+    'de-DE': german,
+    ca: catalan,
+    'ca-ES': catalan,
+    es: spanish,
+    'es-ES': spanish,
+    is: icelandic,
+    'is-IS': icelandic
+}
+
 export class MonthsBuilder implements ParserBuilder<Month>{
     constructor(private monthsData: LocalisedData<MonthDatum> = {}) {
     }
 
     static create(dependencies:Dependencies): ParserBuilder<Month> {
-        const monthsData = dependencies.monthsData;
-        return this._create(monthsData);
-    }
-
-    @cache private static _create(monthsData: LocalisedData<MonthDatum>  | undefined) {
-        return new MonthsBuilder(monthsData);
+        return new MonthsBuilder(dependencies.monthsData);
     }
 
     private static formats: Options[] = [
@@ -45,11 +63,11 @@ export class MonthsBuilder implements ParserBuilder<Month>{
 
     @cache build(locale: string): Months {
         const data = MonthsBuilder.formats.flatMap(o => this.datumFor(locale, o));
-        return new Months([...this.monthsData[locale] || [], ...data], locale);
+        return new Months([...this.monthsData[locale] || [], ...additionalMonthsDatum[locale] || [], ...data], locale);
     }
 
     private datumFor(locale: string, options: Options): MonthDatum[] {
-        return this.namesFor(locale, options).map((m, i) => ({name: m, value: i + 1}))
+        return monthDatum(this.namesFor(locale, options));
     }
 
     @cache namesFor(locale: string, options: Options): string[] {

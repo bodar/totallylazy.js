@@ -246,6 +246,10 @@ describe("dates", function () {
         }
     });
 
+    it("examples", () => {
+        assert.deepEqual(parser('ca', 'dd / MMMM / yyyy').parseAll('des de 19 / abril / 2022 fins a 20 / abril / 2022'), [date(2022,4,19), date(2022,4,20)]);
+    });
+
     it('should not blow up with undefined input', () => {
         assert.deepEqual(parser('en-GB', {month: "short", day: "numeric", year: "numeric"}).parseAll(undefined as any), []);
     });
