@@ -2,7 +2,6 @@
 .idea/encodings.xml
 .idea/codeStyles
 .idea/.gitignore
-.npmrc
 node_modules
 *.log
 dist
