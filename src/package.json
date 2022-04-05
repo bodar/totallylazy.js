@@ -23,10 +23,6 @@
     "directory": "../dist",
     "access": "public"
   },
-  "files": [
-    "*.js",
-    "*.d.ts"
-  ],
   "dependencies": {
     "tslib": "^2.3.1"
   },
