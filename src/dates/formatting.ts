@@ -259,7 +259,6 @@ export function parser(locale: string, options?: Format | Options): Parser<Date>
     }
 }
 
-
 export function formatBuilder(locale: string, format: Format, strict: boolean = false): RegexBuilder {
     return new RegexBuilder(locale, {...optionsFrom(format), strict}, partsFrom(format))
 }
