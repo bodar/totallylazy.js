@@ -36,4 +36,5 @@ export const additionalSymbols: CurrencySymbol[] = [
     {iso: 'AED', symbol: 'د.إ'},
     {iso: 'AED', symbol: 'DH'},
     {iso: 'AED', symbol: 'Dhs'},
+    {iso: 'ADP', symbol: 'Pta'},
 ];

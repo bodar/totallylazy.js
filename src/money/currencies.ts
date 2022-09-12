@@ -1,4 +1,7 @@
-// Generated file do not edit or checkin
+// Generated file do not edit
+// Instead edit currencies-def.ts
+// run "cd src && yarn run generate"
+// then do a diff and commit
 import {Currencies} from "./currencies-def";
     
 export const currencies: Currencies = {
@@ -302,6 +305,7 @@ export const currencies: Currencies = {
   "CUC": {
     "decimals": 2,
     "symbols": [
+      "CUC$",
       "$"
     ]
   },
@@ -491,7 +495,8 @@ export const currencies: Currencies = {
   "IQD": {
     "decimals": 3,
     "symbols": [
-      "د.ع"
+      "د.ع",
+      "ID"
     ]
   },
   "ILS": {
@@ -844,6 +849,12 @@ export const currencies: Currencies = {
       "Le"
     ]
   },
+  "SLE": {
+    "decimals": 2,
+    "symbols": [
+        'Le'
+    ]
+  },
   "SGD": {
     "decimals": 2,
     "symbols": [
@@ -1102,5 +1113,11 @@ export const currencies: Currencies = {
   "XAG": {
     "decimals": 0,
     "symbols": []
+  },
+  "ADP": {
+    "symbols": [
+      "Pta"
+    ],
+    "decimals": 2
   }
 };

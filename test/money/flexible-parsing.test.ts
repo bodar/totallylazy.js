@@ -117,6 +117,10 @@ describe("Flexible Parsing", function () {
         assert.deepEqual(flexibleParse('CHF 1‘152'), money('CHF', 1152));
     });
 
+    it('correctly parses Andorran Peseta', () => {
+        assert.deepEqual(flexibleParse('ADP 271', 'en'), money('ADP', 271));
+    });
+
     it('correctly parses rupees', () => {
         assert.deepEqual(flexibleParse('Rs20,825', 'en-IN', { strategy: prefer('INR') }), money('INR', 20825));
         assert.deepEqual(flexibleParse('Rs20,825', 'en-IN'), money('INR', 20825));
