@@ -6,7 +6,7 @@ import {asyncReturned} from "../src/collections";
 
 describe("run", function () {
     function script(name: string) {
-        return new File('example-scripts/' + name, __dirname).absolutePath;
+        return [new File('example-scripts/' + name, __dirname).absolutePath];
     }
 
     it('when running a command streams stdout', async () => {
@@ -47,5 +47,10 @@ describe("run", function () {
         } catch (e: any) {
             assert.deepEqual(e.code, 'ENOENT');
         }
+    });
+
+    it('can run a command with multiple arguments', async () => {
+        const result = await array(run({command: ['ls', '-a', 'package.json']}));
+        assert.deepEqual(result, ['package.json\n']);
     });
 });

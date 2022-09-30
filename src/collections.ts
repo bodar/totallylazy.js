@@ -153,9 +153,17 @@ export class AsyncIteratorHandler<T, R = any> implements AsyncIterableWithReturn
     }
 }
 
-export type Returned<R> = {returned: R};
 export type Yielded<T> = {yielded: T};
+export type Returned<R> = {returned: R};
 export type ReturnedResult<T, R> = Yielded<T> | Returned<R>;
+
+export function isYielded<T>(value: any): value is Yielded<T> {
+    return value && typeof value === "object" && 'yielded' in value;
+}
+
+export function isReturned<R>(value: any): value is Returned<R> {
+    return value && typeof value === "object" && 'returned' in value;
+}
 
 export async function* asyncReturned<T, R>(iterator: AsyncIterator<T, R>): AsyncIterableIterator<ReturnedResult<T, R>> {
     while (true) {

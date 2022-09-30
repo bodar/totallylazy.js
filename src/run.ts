@@ -2,13 +2,13 @@ import {spawn, CommonSpawnOptions} from 'child_process';
 import {AsyncIterableWithReturn, AsyncIteratorHandler} from "./collections";
 
 export interface RunOptions extends CommonSpawnOptions {
-    command: string;
-    arguments?: string[];
+    command: string[];
 }
 
 export function run(options: RunOptions): AsyncIterableWithReturn<string, number> {
     const handler = new AsyncIteratorHandler<string, number>();
-    const process = spawn(options.command, options.arguments || [], {
+    const [command, ...args] = options.command;
+    const process = spawn(command, args, {
         ...options,
         stdio: ['ignore', 'pipe', 'pipe']
     });
