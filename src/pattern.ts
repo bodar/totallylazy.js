@@ -11,7 +11,7 @@ export interface Matcher<T, R> {
     matches(instance: T): R | undefined
 }
 
-export function case_<T, R>(pattern: Pattern<T>, handler: (instance: Matched<T>) => R): Matcher<T, R> {
+export function case_<T extends Object, R>(pattern: Pattern<T>, handler: (instance: Matched<T>) => R): Matcher<T, R> {
     return new CaseMatcher(pattern, handler)
 }
 
@@ -19,7 +19,7 @@ export function default_<T, R>(handler: () => R): Matcher<any, R> {
     return case_({}, handler);
 }
 
-export class CaseMatcher<T, R> implements Matcher<T, R> {
+export class CaseMatcher<T extends Object, R> implements Matcher<T, R> {
     constructor(private pattern: Pattern<T>, private handler: (instance: Matched<T>) => R,) {
     }
 
@@ -60,7 +60,7 @@ export function isPartial<T>(instance: T, partial: Partial<T>): boolean {
     });
 }
 
-function value<T>(instance: T, key:keyof T) {
+function value<T extends Object>(instance: T, key:keyof T) {
     const value = instance[key];
     if(typeof value === 'undefined'){
         const lower = key.toString().toLowerCase();
@@ -72,7 +72,7 @@ function value<T>(instance: T, key:keyof T) {
     return value;
 }
 
-export function apply<T>(instance: T, pattern: Pattern<T>): Matched<T> | undefined {
+export function apply<T extends Object>(instance: T, pattern: Pattern<T>): Matched<T> | undefined {
     let clone: Matched<T> = Object.assign({}, instance);
     const keys = Object.keys(pattern);
     for (let i = 0; i < keys.length; i++) {

@@ -3,10 +3,7 @@ import {characters} from "./characters";
 import {ascending, Comparator} from "./collections";
 import {AVLTree} from "./avltree";
 import {sequence} from "./sequence";
-import {single} from "./transducers";
-import {map} from "./transducers";
-import {flatMap} from "./transducers";
-import {reduce} from "./transducers";
+import {flatMap, map, reduce, single} from "./transducers";
 
 export class TrieFactory<K, V> {
     constructor(public readonly comparator: Comparator<K> = ascending) {
@@ -53,9 +50,10 @@ export class Trie<K, V> {
     }
 
     match(key: K[]): V[] {
-        if (key.length == 0) return single(this.children.values(), reduce((a, t) => {
-            return a.concat(t.match(key));
-        }, this.value ? [this.value] : []));
+        if (key.length == 0) {
+            const seed: V[] = this.value ? [this.value] : [];
+            return single(this.children.values(), reduce((a, t) => a.concat(t.match(key)), seed));
+        }
         const [head, ...tail] = key;
         const child = this.children.lookup(head);
         return child ? child.match(tail) : [];
