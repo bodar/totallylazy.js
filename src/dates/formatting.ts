@@ -125,7 +125,8 @@ export function numberParser(decimalSeparatorOrLocale?: AllowedDecimalSeparators
 }
 
 export const inferDecimalSeparator = caching((locale: string) =>
-    get(() => decimalSeparator(new Intl.NumberFormat(locale).formatToParts(.1).find(e => e.type === 'decimal')!.value), '.'));
+    get(() => decimalSeparator(new Intl.NumberFormat(locale).
+    formatToParts(.1).find(e => e.type === 'decimal')!.value), '.'));
 
 export class RegexBuilder {
     constructor(private locale: string,

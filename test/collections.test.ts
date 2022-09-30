@@ -25,6 +25,19 @@ describe("AsyncIteratorHandler", function () {
         handler.close();
         assert.deepEqual((await finished), {value: undefined, done: true});
     });
+
+    it('can also return different type', async () => {
+        const handler = new AsyncIteratorHandler<number, string>();
+        const one = handler.next();
+        const two = handler.next();
+        const finished = handler.next();
+        handler.value(1);
+        assert.deepEqual((await one), {value: 1, done: false});
+        handler.value(2);
+        assert.deepEqual((await two), {value: 2, done: false});
+        handler.close('RETURN');
+        assert.deepEqual((await finished), {value: 'RETURN', done: true});
+    });
 });
 
 

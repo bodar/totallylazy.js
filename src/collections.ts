@@ -96,11 +96,15 @@ function byFn<A, K>(mapper: Mapper<A, K>, comparator: Comparator<K> = ascending)
 
 
 type StateHandler = [Function, Function];
-type IteratorState<T> = IteratorResult<T> | Error;
+type IteratorState<T, R = any> = IteratorResult<T, R> | Error;
 
-export class AsyncIteratorHandler<T> implements AsyncIterableIterator<T> {
+export interface AsyncIterableWithReturn<T, R = any> extends AsyncIterator<T, R> {
+    [Symbol.asyncIterator](): AsyncIterableWithReturn<T, R>;
+}
+
+export class AsyncIteratorHandler<T, R = any> implements AsyncIterableWithReturn<T, R> {
     private handlers: StateHandler[] = [];
-    private state: IteratorState<T>[] = [];
+    private state: IteratorState<T, R>[] = [];
 
     value(value: T) {
         this.newState({value, done: false});
@@ -110,8 +114,9 @@ export class AsyncIteratorHandler<T> implements AsyncIterableIterator<T> {
         this.newState(value);
     }
 
-    close() {
-        this.newState({value: undefined, done: true});
+    close(value?: R) {
+        // @ts-ignore
+        this.newState({value, done: true});
     }
 
     [Symbol.asyncIterator](): AsyncIterableIterator<T> {
@@ -124,7 +129,7 @@ export class AsyncIteratorHandler<T> implements AsyncIterableIterator<T> {
         });
     }
 
-    private newState(newState: IteratorState<T>) {
+    private newState(newState: IteratorState<T, R>) {
         const handler = this.handlers.shift();
         if (typeof handler === 'undefined') return this.state.push(newState);
         const oldState = this.state.shift();
@@ -142,9 +147,37 @@ export class AsyncIteratorHandler<T> implements AsyncIterableIterator<T> {
         this.newHandler(newHandler);
     }
 
-    private consume<T>(state: IteratorState<T>, [resolve, reject]: [Function, Function]) {
+    private consume<T>(state: IteratorState<T, R>, [resolve, reject]: [Function, Function]) {
         if (state instanceof Error) reject(state);
         else resolve(state);
+    }
+}
+
+export type Returned<R> = {returned: R};
+export type Yielded<T> = {yielded: T};
+export type ReturnedResult<T, R> = Yielded<T> | Returned<R>;
+
+export async function* asyncReturned<T, R>(iterator: AsyncIterator<T, R>): AsyncIterableIterator<ReturnedResult<T, R>> {
+    while (true) {
+        const {value, done} = await iterator.next();
+        if (done) {
+            yield {returned: value as R};
+            break;
+        } else {
+            yield {yielded: value as T}
+        }
+    }
+}
+
+export function* syncReturned<T, R>(iterator: Iterator<T, R>): IterableIterator<ReturnedResult<T, R>> {
+    while (true) {
+        const {value, done} = iterator.next();
+        if (done) {
+            yield {returned: value as R};
+            break;
+        } else {
+            yield {yielded: value as T}
+        }
     }
 }
 

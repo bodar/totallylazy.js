@@ -1,6 +1,3 @@
 #!/usr/bin/env bash
-echo one
->&2 echo two
-echo three
->&2 echo four
+echo This command returns an exit code of 1
 exit 1
