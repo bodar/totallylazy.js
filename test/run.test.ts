@@ -2,7 +2,6 @@ import {File} from '../src/files';
 import {assert} from 'chai';
 import {run} from "../src/run";
 import {array} from "../src/array";
-import {asyncReturned, isReturned, isYielded, Returned, Yielded} from "../src/collections";
 
 describe("run", function () {
     function script(name: string) {
@@ -23,20 +22,36 @@ describe("run", function () {
 
     it('can capture exit code and stdout', async () => {
         const command = script('failing.sh');
-        const result = await array(asyncReturned(run({command})));
-        assert.deepEqual(result, [
-            {yielded: 'This command returns an exit code of 1\n'},
-            {returned: 1},
-        ]);
+        const output: string[] = [];
+        let exitCode: number | undefined = undefined;
+
+        try {
+            for await (const text of run({command})) {
+                output.push(text);
+            }
+        } catch (e: any) {
+            exitCode = e.code;
+        }
+
+        assert.deepEqual(output, ['This command returns an exit code of 1\n']);
+        assert.deepEqual(exitCode, 1);
     });
 
     it('without shell redirect stdout and stderr are buffered (so order is not perfectly preserved)', async () => {
         const command = script('no-redirect.sh');
-        const result = await array(asyncReturned(run({command})));
-        const log = (result.filter(isYielded) as Yielded<string>[]).map(v => v.yielded).join('');
-        assert.deepEqual(log, 'one\nthree\ntwo\nfour\n');
-        const code = (result.find(isReturned) as Returned<number>)?.returned;
-        assert.deepEqual(code, 1);
+        const output: string[] = [];
+        let exitCode: number | undefined = undefined;
+
+        try {
+            for await (const text of run({command})) {
+                output.push(text);
+            }
+        } catch (e: any) {
+            exitCode = e.code;
+        }
+
+        assert.deepEqual(output.join(''), 'one\nthree\ntwo\nfour\n');
+        assert.deepEqual(exitCode, 1);
     });
 
     it('throw on missing script', async () => {

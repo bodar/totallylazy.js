@@ -16,6 +16,12 @@ export function run(options: RunOptions): AsyncIterableWithReturn<string, number
     process.stdout.on('data', (data: Buffer | string) => handler.value(data.toString()));
     process.stderr.on('data', (data: Buffer | string) => handler.value(data.toString()));
     process.on('error', e => handler.error(e));
-    process.on('close', (code) => handler.close(code));
+    process.on('close', (code) => {
+        if (code === 0) {
+            handler.close();
+        } else {
+            handler.error(Object.assign(new Error(`Command ${options.command} returned exit code ${code}`), {code}));
+        }
+    });
     return handler;
 }
