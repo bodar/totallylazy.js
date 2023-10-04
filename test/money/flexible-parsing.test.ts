@@ -9,6 +9,12 @@ import {
 } from "../../src/money/flexible-parsing";
 
 describe('ImplicitMoneyParser', () => {
+    it(`doesn't blow up`, function () {
+        assert.deepEqual(implicitMoneyParser({currency: 'GBP', locale: 'en'}).parse(undefined as any), undefined);
+        assert.deepEqual(implicitMoneyParser({currency: 'GBP', locale: 'en'}).parseAll(null as any), []);
+        assert.deepEqual(implicitMoneyParser({currency: 'GBP', locale: 'en'}).parseAll(0.1 as any), []);
+    });
+
     it('can parse and convert a number with a currency provided else where', function () {
         assert.deepEqual(implicitMoneyParser({currency: 'GBP'}).parse('1.23'), {amount: 1.23, currency: 'GBP'});
         assert.deepEqual(implicitMoneyParser({currency: 'EUR', locale: 'de'}).parse('1,23'), {amount: 1.23, currency: 'EUR'});
@@ -35,8 +41,13 @@ describe('ImplicitMoneyParser', () => {
     });
 });
 
-
 describe('NumberParser', () => {
+    it(`doesn't blow up`, function () {
+        assert.deepEqual(numberParser('en').parse(undefined as any), undefined);
+        assert.deepEqual(numberParser('en').parseAll(null as any), []);
+        assert.deepEqual(numberParser('en').parseAll(0.1 as any), []);
+    });
+
     it('can infer decimal separator from locale', function () {
         assert.equal(numberParser('en').parse('1.23'), 1.23);
         assert.equal(numberParser('de').parse('1,23'), 1.23);
@@ -95,6 +106,12 @@ describe('NumberParser', () => {
 });
 
 describe("Flexible Parsing", function () {
+    it(`doesn't blow up`, function () {
+        assert.deepEqual(flexibleMoneyParser('en').parse(undefined as any), undefined);
+        assert.deepEqual(flexibleMoneyParser('en').parseAll(null as any), []);
+        assert.deepEqual(flexibleMoneyParser('en').parseAll(0.1 as any), []);
+    });
+
     it('ignores extra right to left unicode markers', function () {
         assert.deepEqual(flexibleMoneyParser('iw').parse('‏‏595 ₪'), money('ILS', 595));
         assert.deepEqual(flexibleMoneyParser('iw').parseAll('‏‏595 ₪'), [money('ILS', 595)]);
