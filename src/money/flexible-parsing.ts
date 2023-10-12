@@ -1,6 +1,6 @@
 import {CurrencySymbols, decimalsFor, money, Money} from "./money";
 import {
-    FailParser, Parser
+    FailParser, Parser, RuntimeSafeParser
 } from "../parsing";
 import {NamedMatch, NamedRegExp, removeUnicodeMarkers} from "../characters";
 import {filter, find, first, flatMap, single, sort} from "../transducers";
@@ -75,7 +75,7 @@ export class FlexibleMoneyParser implements Parser<Money> {
 }
 
 export function flexibleMoneyParser(locale: string = 'en', options?: Options) {
-    return new FlexibleMoneyParser(locale, options);
+    return new RuntimeSafeParser(new FlexibleMoneyParser(locale, options));
 }
 
 
@@ -130,5 +130,5 @@ class ImplicitMoneyParser implements Parser<Money> {
 
 export function implicitMoneyParser({currency, locale = 'en', strategy = infer(locale)}: ImplicitMoneyParserOptions): Parser<Money> {
     if(!currency) return new FailParser();
-    return new ImplicitMoneyParser(CurrencySymbols.get(locale).parse(currency, strategy), locale);
+    return new RuntimeSafeParser(new ImplicitMoneyParser(CurrencySymbols.get(locale).parse(currency, strategy), locale));
 }

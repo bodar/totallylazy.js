@@ -6,7 +6,7 @@ import {array} from "../array";
 import {date, DateFactory, DateFactoryParts, defaultOptions, Format, Options} from "./core";
 import {unique} from "../arrays";
 import {get} from "../functions";
-import {extraDelimiters, mappingParser, namedRegexParser, or, Parser, preProcess} from "../parsing";
+import {extraDelimiters, mappingParser, namedRegexParser, or, Parser, preProcess, RuntimeSafeParser} from "../parsing";
 import {Mapper} from "../collections";
 import {formatData, optionsFrom, partsFrom} from "./format";
 import {atBoundaryOnly, boundaryDelimiters} from "./functions";
@@ -120,7 +120,7 @@ export function numberParser(decimalSeparatorOrLocale: AllowedDecimalSeparators 
 export function numberParser(decimalSeparator: AllowedDecimalSeparators, locale: Locale): Parser<number>;
 export function numberParser(decimalSeparatorOrLocale?: AllowedDecimalSeparators | Locale, locale: Locale = 'en'): Parser<number> {
     if (!decimalSeparatorOrLocale) return numberParser(locale);
-    if (isDecimalSeparator(decimalSeparatorOrLocale)) return new NumberParser(ignore => decimalSeparatorOrLocale, locale);
+    if (isDecimalSeparator(decimalSeparatorOrLocale)) return new RuntimeSafeParser(new NumberParser(ignore => decimalSeparatorOrLocale, locale));
     return numberParser(inferDecimalSeparator(decimalSeparatorOrLocale), decimalSeparatorOrLocale);
 }
 
