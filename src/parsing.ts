@@ -20,7 +20,7 @@ export class NamedRegexParser implements Parser<NamedMatch[]> {
 }
 
 export function namedRegexParser(regex: NamedRegExp) {
-    return new NamedRegexParser(regex);
+    return new RuntimeSafeParser(new NamedRegexParser(regex));
 }
 
 export class PreProcessor<T> implements Parser<T> {
@@ -61,7 +61,7 @@ export class MappingParser<A, B> implements Parser<B> {
 }
 
 export function mappingParser<A, B>(parser: Parser<A>, mapper: Mapper<A, B>) {
-    return new MappingParser(parser, mapper);
+    return new RuntimeSafeParser(new MappingParser(parser, mapper));
 }
 
 export interface Parser<T> {
@@ -148,6 +148,21 @@ export class CachingParser<T> implements Parser<T> {
     }
 
     @cache parseAll(value: string): T[] {
+        return this.parser.parseAll(value);
+    }
+}
+
+export class RuntimeSafeParser<T> implements Parser<T> {
+    constructor(private parser: Parser<T>) {
+    }
+
+    parse(value: unknown): T {
+        if(typeof value !== 'string') throw new Error(`Expected string, got ${typeof value}`);
+        return this.parser.parse(value);
+    }
+
+    parseAll(value: unknown): T[] {
+        if(typeof value !== 'string') return [];
         return this.parser.parseAll(value);
     }
 }
