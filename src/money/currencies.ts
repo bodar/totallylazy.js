@@ -717,7 +717,8 @@ export const currencies: Currencies = {
       "N₨",
       "रु",
       "₨",
-      "Re"
+      "Re",
+      "नेरू"
     ]
   },
   "NIO": {
