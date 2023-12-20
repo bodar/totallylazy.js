@@ -221,7 +221,7 @@ describe("Flexible Parsing", function () {
     it('can parse when we have both currency code and symbol', () => {
         assert.deepEqual(flexibleParse('AUD $12,000.00', 'en-AU'), money('AUD', 12000));
         assert.deepEqual(flexibleParse('AUD$ 12,000.00', 'en-AU'), money('AUD', 12000));
-    });git
+    });
 
     it('can parse nepalese devanagari', () => {
         assert.deepEqual(flexibleParse('नेरू ४२,३१६', 'ne-NP'), money('NPR', 42316));
